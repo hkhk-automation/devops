@@ -35,6 +35,8 @@ theme:
   - navigation.instant.progress
   - navigation.prune
   - navigation.sections
+  - navigation.tabs
+  - navigation.tabs.sticky
   - navigation.top
   - navigation.tracking
   - search.highlight
@@ -80,68 +82,71 @@ plugins:
 
 # Navigation
 nav:
-- Avaleht: index.md
-- Töökeskkond: kodulabor.md
+- Kursus:
+  - Avaleht: index.md
+  - Töökeskkond: kodulabor.md
 
-- N1 · Miks automatiseerimine?:
-  - Loeng: week01/lecture.md
-  - Praktikum: week01/lab.md
+- Nädalad:
+  - N1 · Miks automatiseerimine?:
+    - Loeng: week01/lecture.md
+    - Praktikum: week01/lab.md
 
-- N2 · Muudatuste jälgimine meeskonnas:
-  - Praktikum: week02/lab.md
-  - Kodutöö: week02/homework.md
+  - N2 · Muudatuste jälgimine meeskonnas:
+    - Praktikum: week02/lab.md
+    - Kodutöö: week02/homework.md
 
-- N3 · Serveri konfiguratsiooni automatiseerimine:
-  - Loeng: week03/lecture.md
-  - Praktikum: week03/lab.md
-  - Kodutöö: week03/homework.md
+  - N3 · Serveri konfiguratsiooni automatiseerimine:
+    - Loeng: week03/lecture.md
+    - Praktikum: week03/lab.md
+    - Kodutöö: week03/homework.md
 
-- N4 · Dünaamiline konfiguratsioon ja saladuste kaitse:
-  - Loeng: week04/lecture.md
-  - Praktikum: week04/lab.md
-  - Kodutöö: week04/homework.md
+  - N4 · Dünaamiline konfiguratsioon ja saladuste kaitse:
+    - Loeng: week04/lecture.md
+    - Praktikum: week04/lab.md
+    - Kodutöö: week04/homework.md
 
-- N5 · Rakenduse pakkimine ja ümberpaigutamine:
-  - Loeng: week05/lecture.md
-  - Praktikum: week05/lab.md
-  - Kodutöö: week05/homework.md
+  - N5 · Rakenduse pakkimine ja ümberpaigutamine:
+    - Loeng: week05/lecture.md
+    - Praktikum: week05/lab.md
+    - Kodutöö: week05/homework.md
 
-- N6 · Mitme teenuse käitamine koos:
-  - Loeng: week06/lecture.md
-  - Praktikum: week06/lab.md
-  - Kodutöö: week06/homework.md
+  - N6 · Mitme teenuse käitamine koos:
+    - Loeng: week06/lecture.md
+    - Praktikum: week06/lab.md
+    - Kodutöö: week06/homework.md
 
-- N7 · Automaatne testimine ja tarnekonveier:
-  - Loeng: week07/lecture.md
-  - Praktikum: week07/lab.md
-  - Kodutöö: week07/homework.md
+  - N7 · Automaatne testimine ja tarnekonveier:
+    - Loeng: week07/lecture.md
+    - Praktikum: week07/lab.md
+    - Kodutöö: week07/homework.md
 
-- N8 · Automaatne ehitamine ja levitamine:
-  - Loeng: week08/lecture.md
-  - Praktikum: week08/lab.md
-  - Kodutöö: week08/homework.md
+  - N8 · Automaatne ehitamine ja levitamine:
+    - Loeng: week08/lecture.md
+    - Praktikum: week08/lab.md
+    - Kodutöö: week08/homework.md
 
-- N9 · Infrastruktuur koodina — mõtteviis (ASYNC):
-  - Iseseisvtöö: week09/async_task.md
+  - N9 · Infrastruktuur koodina — mõtteviis (ASYNC):
+    - Iseseisvtöö: week09/async_task.md
 
-- N10 · Infrastruktuuri kirjeldamine koodina:
-  - Loeng: week10/lecture.md
-  - Praktikum: week10/lab.md
+  - N10 · Infrastruktuuri kirjeldamine koodina:
+    - Loeng: week10/lecture.md
+    - Praktikum: week10/lab.md
 
-- N11 · Korduvkasutatav infrastruktuur:
-  - Valik 1 — Terraform moodulid: week11/lab_terraform_modules.md
-  - Valik 2 — Ansible rollid (loeng): week11/lecture_ansible_roles.md
-  - Valik 2 — Ansible rollid (praktikum): week11/lab_ansible_roles.md
-  - Valik 2 — Ansible rollid (kodutöö): week11/homework_ansible_roles.md
+  - N11 · Korduvkasutatav infrastruktuur:
+    - Valik 1 — Terraform moodulid: week11/lab_terraform_modules.md
+    - Valik 2 — Ansible rollid (loeng): week11/lecture_ansible_roles.md
+    - Valik 2 — Ansible rollid (praktikum): week11/lab_ansible_roles.md
+    - Valik 2 — Ansible rollid (kodutöö): week11/homework_ansible_roles.md
 
-- N12 · Infrastruktuur koodina — Ansible IaC:
-  - Loeng: week12/lecture.md
-  - Praktikum: week12/lab.md
+  - N12 · Terve serveripark koodina:
+    - Loeng: week12/lecture.md
+    - Praktikum: week12/lab.md
 
-- N13 · Täielik tarnekonveier — otsast lõpuni:
-  - Capstone: week13/capstone.md
+  - N13 · Täielik tarnekonveier — otsast lõpuni:
+    - Capstone: week13/capstone.md
 
-- Litsents: litsents.md
+- Info:
+  - Litsents: litsents.md
 
 # Markdown extensions
 markdown_extensions:
