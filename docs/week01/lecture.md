@@ -96,7 +96,7 @@ graph LR
 | Auditeeritav? | Raske — mis samm, millal? | Täielik logi |
 | Mis juhtub öösel / puhkusel? | Keegi peab kohal olema | Masin töötab ise |
 
-*Tabel 1.1. Manuaalse ja automatiseeritud töövoo võrdlus.*
+*Tabel 1.2. Manuaalse ja automatiseeritud töövoo võrdlus.*
 
 Manuaalne töö ei ole halb, kõike ei pea automatiseerima. Aga korduv ja tähtis protsess — seal hoiab automatiseerimine aja ja vead ära.
 
@@ -198,7 +198,7 @@ graph LR
     E -->|Terraform + Ansible| F[Infra koodis]
     F -->|mitu serverit| G[Korratav park]
 ```
-  <figcaption>Joonis 1.2. Kursuse tööriistad ühe tarnekonveieri lülidena (Talvik, 2025).</figcaption>
+  <figcaption>Joonis 1.4. Kursuse tööriistad ühe tarnekonveieri lülidena (Talvik, 2025).</figcaption>
 </figure>
 
 | Tööriist | Lahendab | Kursuses |
@@ -211,9 +211,9 @@ graph LR
 | Terraform | Infrastruktuur koodina | Nädal 10–11 |
 | Ansible IaC | Mitu serverit, keskkonnad | Nädal 12 |
 
-*Tabel 1.2. Kursuse tööriistad ja millal neid võetakse.*
+*Tabel 1.3. Kursuse tööriistad ja millal neid võetakse.*
 
-Nädal 13 ehitad meeskonnaga terve ahela ise — koodist töötava, monitooritud rakenduseni serveris.
+Nädal 13 ehitad meeskonnaga terve ahela ise — koodist töötava rakenduseni serveris.
 
 ---
 

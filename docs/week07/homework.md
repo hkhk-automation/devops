@@ -1,3 +1,10 @@
+---
+tags:
+  - CI
+  - GitHubActions
+  - Kodutöö
+---
+
 # Kodutöö — CI oma Flask rakendusele
 
 **Eeldused:** labor on tehtud. Sul on nädala 5 repo Flask rakendusega, mis jookseb Dockeris.
@@ -12,7 +19,7 @@ Lisa **oma nädala 5 repole** töötav CI pipeline, mis erineb laborist kolme as
 
 ## Sammud
 
-1. Loo oma Flaski repos fail `.github/workflows/ci.yml`.
+1. Loo oma Flaski repos fail `.github/workflows/ci.yml`. Branch: `n07-lab`.
 
 2. Kirjuta trigger, mis kuulab mõlemat sündmust:
 
@@ -40,7 +47,7 @@ Lisa **oma nädala 5 repole** töötav CI pipeline, mis erineb laborist kolme as
 
 ## Esita
 
-Saada õppejõule (Moodle/vastavalt kokkuleppele) **link oma GitHub Actions run'ile**, mis on roheline — mitte lingi töövoo failile ega repole, vaid otse konkreetsele run'ile (Actions tab → vali run → kopeeri URL aadressiribalt).
+Esita **PR-i / run'i link GitHub Projectis** — roheline run, mitte link töövoo failile ega repole, vaid otse konkreetsele run'ile (Actions tab → vali run → kopeeri URL aadressiribalt).
 
 Link peab olema kujul:
 `https://github.com/<sinu-kasutajanimi>/<repo>/actions/runs/<number>`

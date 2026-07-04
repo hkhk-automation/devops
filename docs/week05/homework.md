@@ -51,11 +51,11 @@ Lae `app.py` õpetaja lingilt/repost oma töökausta, nt `w05-homework/app.py`. 
 
 ## Esitamine
 
-1. Uus haru, nt `w05-flask-docker`.
+1. Uus haru `n05-lab`.
 2. Lisa harusse **ainult** `Dockerfile` (mitte `app.py`, kui õpetaja pole öelnud teisiti).
 3. Ekraanipilt, kus on näha töötav rakendus **ja** `docker ps` väljund (konteiner `Up`).
 4. Lisa screenshot reposse samas PR-is.
-5. Ava **Pull Request** `main` vastu. Kirjelda lühidalt: mis baas-image, kas pidid `app.py`-d muutma (ja miks).
+5. Ava **Pull Request** `main` vastu, esita **PR-i link GitHub Projectis**. Kirjelda lühidalt: mis baas-image, kas pidid `app.py`-d muutma (ja miks).
 
 ## Enesekontroll
 

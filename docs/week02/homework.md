@@ -9,7 +9,7 @@ tags:
 # Kodutöö — Review teiselt poolt lauda
 
 **Tähtaeg:** pühapäev 23:59
-**Esitamine:** kahe merged PR-i lingid (mitte repo link) Slackis
+**Esitamine:** kahe merged PR-i lingid GitHub Projectis. Branch: `n02-lab`.
 
 ---
 
@@ -97,10 +97,10 @@ Ava PR, approve ise (kui reegel lubab) või selgita description'is miks see eran
 - [ ] Konflikt lahendatud (kui tekkis) — markereid faili ei jäänud
 - [ ] Solo-lisa oma repos läbi PR-i
 - [ ] Commit-sõnumid on konkreetsed
-- [ ] Kaks merged PR-i linki Slackis
+- [ ] Kaks merged PR-i linki GitHub Projectis
 
 !!! tip
-    Link peab viima **PR-ile**, mitte repole. PR peab olema staatuses "Merged". Nii näen kohe, et flow käis reeglite kaudu.
+    Link peab viima **PR-ile**, mitte repole. PR peab olema staatuses "Merged".
 
 ---
 

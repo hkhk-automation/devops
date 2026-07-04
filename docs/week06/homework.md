@@ -28,7 +28,7 @@ Vaba valik. Kui pole kindel, vali **pgAdmin** — annab kohe visuaalse tulemuse 
 
 ### Esitamine
 
-1. Eraldi branch (nt `week06-homework`).
+1. Eraldi branch `n06-lab`.
 2. Käivita kogu stack, veendu et kõik neli töötavad:
 
     ```bash
@@ -38,7 +38,7 @@ Vaba valik. Kui pole kindel, vali **pgAdmin** — annab kohe visuaalse tulemuse 
 
 3. **Kopeeri `docker compose ps` väljund** — kõik neli `running`/`Up`. Läheb PR kirjeldusse.
 4. Commit muudatused (uuendatud `docker-compose.yml`, konfifailid — **mitte** `.env`).
-5. Ava **Pull Request** `main` vastu. PR kirjeldusse:
+5. Ava **Pull Request** `main` vastu, esita **PR-i link GitHub Projectis**. PR kirjeldusse:
     - Milline teenus (Redis/pgAdmin) ja miks
     - `docker compose ps` väljund (tekstina, mitte pilt)
     - Kuidas kontrollisid et teenus päriselt töötab (route või pgAdmin ekraanipilt)

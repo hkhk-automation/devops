@@ -1,8 +1,15 @@
+---
+tags:
+  - CD
+  - GHCR
+  - Kodutöö
+---
+
 # Kodutöö — Automaatne ehitamine ja levitamine
 
 > **Eelmine nädal:** CI pipeline testis koodi automaatselt.
-> **Täna:** Laiendad pipeline'i — CD ehitab ja pusib image'i GHCR-i.
-> **Järgmine nädal:** IaC mõtteviis (async nädal Moodles).
+> **Täna:** Laiendad pipeline'i — CD ehitab ja pusib image'i GHCR-i. Branch: `n08-lab`.
+> **Järgmine nädal:** IaC mõtteviis (async nädal).
 
 ---
 
@@ -35,7 +42,7 @@ Kontrolli, et sinu pipeline teeb järgmist:
 
 ## Esitamine
 
-Esita Moodles link oma GitHubi reposiitooriumile.
+Esita **repo / run'i link GitHub Projectis**.
 
 Repo peab sisaldama:
 - Toimiv `.github/workflows/ci.yml` (CI + CD)
@@ -55,7 +62,6 @@ See on õige käitumine — `if: github.ref == 'refs/heads/main'` takistab image
 
 **VM-il `docker pull` annab `unauthorized` vea?**
 Pead VM-il GHCR-i sisse logima: `echo "token" | docker login ghcr.io -u kasutajanimi --password-stdin`
-
 ---
 
 ## Venitusülesanne (valikuline, lisapunktid)

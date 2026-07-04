@@ -46,11 +46,11 @@ Esimesel käivitusel on uus task tõenäoliselt **changed**. Teisel ja kolmandal
 
 ## Esitamine — GitHub PR
 
-1. Uus branch, nt `week03-homework`
+1. Branch `n03-lab`
 2. Lisa muudetud `nginx.yml` + `index.html`, commit
 3. Push ja ava **Pull Request** `main` vastu
 4. PR kirjeldusse kolmanda käivituse `PLAY RECAP` (tekstina, mitte pilt)
-5. Pärast review'd merge
+5. Pärast review'd merge. Esita **PR-i link GitHub Projectis**.
 
 !!! tip
     Kasuta oma kursuse repot. Kui pole veel — loo `ansible-nginx-<eesnimi>` `hkhk-automation` alla, kaitse `main` (nagu nädal 2), tee kõik läbi PR-i.

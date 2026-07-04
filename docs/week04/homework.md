@@ -82,8 +82,9 @@ Nüüd "PRODUKTSIOON" — sama playbook, sama mall, erinev tulemus, sest muutuja
 
 1. Commit'i muudatused (`inventory.ini`, `group_vars/dev.yml`, `group_vars/prod.yml`, muudetud mall).
 2. **Ära kunagi** commit'i `group_vars/vault.yml`-i lahtikrüpteerituna — `ansible-vault`-iga loodud kujul on ta juba turvaline.
-3. Uus branch (nt `week04-dev-prod`), push, ava **Pull Request** main vastu — läbi reeglite, nagu nädal 2.
+3. Uus branch `n04-lab`, push, ava **Pull Request** main vastu — läbi reeglite, nagu nädal 2.
 4. PR kirjelduses näita mõlema keskkonna väljundit (ekraanipilt või terminal) — dev ja prod peavad selgelt erinema.
+5. Esita **PR-i link GitHub Projectis**.
 
 ---
 

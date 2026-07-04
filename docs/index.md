@@ -42,7 +42,7 @@
 
 ## Enne esimest tundi
 
-**1. GitHub konto** — kasuta kooli e-maili: [github.com](https://github.com)
+**1. GitHub konto** — kasuta kooli e-maili: [github.com](https://github.com). Konto kasutajanimi ja repod käivad kujul **eesnimiperekonnanimi** (nt `mariatalvik`) — nii leiab õpetaja need organisatsioonis üles.
 
 **2. GitHub Education Pack** — kooli e-mailiga tasuta, taotlemine võtab 1–2 päeva, tee kohe:
 [education.github.com/pack](https://education.github.com/pack)
