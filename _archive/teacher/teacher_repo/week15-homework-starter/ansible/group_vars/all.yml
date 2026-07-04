@@ -1,4 +1,0 @@
----
-# Basic variables - students will extend these
-nginx_user: www-data
-postgres_version: "14"

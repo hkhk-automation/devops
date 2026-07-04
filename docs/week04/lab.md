@@ -30,7 +30,7 @@ Labi loogika: **baas → laienda → viga → paranda → laienda → viga → t
 
 ---
 
-## Osa 1 · Setup + baas (20 min)
+## Osa 1 · Setup + baas
 
 Ava projektikaust VS Code'is (`code .`), käivita sihtmärk, kontrolli et nädal 3 `nginx.yml` töötab:
 
@@ -42,7 +42,7 @@ Läbib? Edasi. Ei? Paranda enne — see labi ehitab otse selle peale.
 
 ---
 
-## Osa 2 · Hardcode → muutuja (25 min)
+## Osa 2 · Hardcode → muutuja
 
 Su playbookis on väärtus otse task'i sees, nt:
 
@@ -75,7 +75,7 @@ Sama tulemus. Väärtus on nüüd loogikast eraldi.
 
 ---
 
-## Osa 3 · Undefined variable — kust Ansible otsib (35 min)
+## Osa 3 · Undefined variable — kust Ansible otsib
 
 `vars:` otse playbookis töötab, aga kasvades segunevad muutujad loogikaga. Ansible'il on parem koht: `group_vars/all.yml` rakendub automaatselt kõigile hostidele.
 
@@ -106,7 +106,7 @@ ansible-playbook -i inventory.ini nginx.yml
 
 ---
 
-## Osa 4 · Template vs copy — miks `{{ }}` ei asendu (40 min)
+## Osa 4 · Template vs copy — miks `{{ }}` ei asendu
 
 Tahad dünaamilist `index.html`-i (serveri nimi sees). Loo mall `templates/index.html.j2`:
 
@@ -149,7 +149,7 @@ Nüüd näitab leht serveri nime. `{{ inventory_hostname }}` väärtust sa kuski
 
 ---
 
-## Osa 5 · Vault — saladuse krüpteerimine (30 min)
+## Osa 5 · Vault — saladuse krüpteerimine
 
 Praegu on kõik muutujad tavatekstis. Päris elus lähevad sinna paroolid. Loo krüpteeritud fail (Ansible küsib **krüpteerimisparooli** — mõtle välja ja **jäta meelde**):
 
@@ -177,7 +177,7 @@ Näed jama (`$ANSIBLE_VAULT;1.1;AES256...`), mitte oma parooli. Kasuta muutujat 
 
 ---
 
-## Osa 6 · Decryption failed — Vault ilma paroolita (30 min)
+## Osa 6 · Decryption failed — Vault ilma paroolita
 
 Käivita playbook **tavaliselt** (nagu seni):
 
@@ -206,7 +206,7 @@ Sisesta Osa 5 parool. Leht näitab `True`.
 
 ---
 
-## Osa 7 · Vault parool eraldi faili (20 min)
+## Osa 7 · Vault parool eraldi faili
 
 `--ask-vault-pass` iga kord on tüütu, ja CI/CD ei saa parooli käsitsi trükkida. Pane parool faili:
 
@@ -231,7 +231,7 @@ Läbib ilma küsimata.
 
 ---
 
-## Osa 8 · Taasta ja kontroll (15 min)
+## Osa 8 · Taasta ja kontroll
 
 Lõplik käivitus, kõik koos:
 

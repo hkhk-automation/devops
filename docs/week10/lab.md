@@ -7,10 +7,10 @@ tags:
 
 # Terraform — esimene kontakt — Labor
 
-**Kestus:** 90 minutit
+**Kestus:** 4 tundi
 **Tase:** Algaste
 **Eeldused:** Nädal 9 (async) võrdlustabel + ennustus. Nädal 10 loeng (init/plan/apply, provider/resource/variable). Kui udu — [tagasi loengusse](lecture.md).
-**Töökeskkond:** oma masin, **VS Code**, Terraform installitud (`terraform -version`). `main.tf` annab õpetaja — sina HCL-i ei kirjuta, sina **loed ja jooksutad**. `local` provider loob faile ainult su kettal, serverit vaja pole.
+**Töökeskkond:** oma masin, **VS Code**, Terraform installitud (`terraform -version`). `main.tf` annab õpetaja — alustad **lugedes ja jooksutades** (Osad 1–7), siis **laiendad seda ise** (Osad 8–10). `local` provider loob faile ainult su kettal, serverit vaja pole.
 
 ---
 
@@ -92,7 +92,7 @@ Fail ja sisu peavad vastama `main.tf`-ile.
 
 ---
 
-## Osa 4 · Ketas ja state läksid lahku (20 min)
+## Osa 4 · Ketas ja state läksid lahku
 
 ```bash
 terraform state list
@@ -171,6 +171,93 @@ Võrdle oma nädal 9 ennustusega — mis läks kokku, mis mitte?
 
 ---
 
+## Osa 8 · Muutuja faili — `terraform.tfvars`
+
+Seni oli muutuja `default` väärtus otse `main.tf`-is. Päris elus antakse väärtused eraldi failist, et sama kood töötaks eri keskkondades (meenuta Ansible group_vars). Terraformis on see `terraform.tfvars`.
+
+Loo `terraform.tfvars` (täpselt see nimi — Terraform loeb selle automaatselt):
+
+```hcl
+faili_nimi = "tfvars-test.txt"
+```
+
+```bash
+terraform plan
+```
+
+Väärtus tuli `.tfvars`-ist, mitte `default`-ist. Kontrolli:
+
+```bash
+terraform apply
+ls *.txt
+```
+
+??? question "Mõtle"
+    Nii `default` (`variables.tf`-is) kui `terraform.tfvars` annavad muutujale väärtuse. Kumb võidab, kui mõlemad on olemas? Milleks siis üldse `default`, kui `.tfvars` selle üle kirjutab?
+
+!!! tip
+    `.tfvars` sisaldab sageli keskkonna-spetsiifilisi väärtusi (paroolid, domeenid) — sama loogika mis Ansible `.env` / Vault. Tootmise `.tfvars` ei käi Gitti.
+
+---
+
+## Osa 9 · Lisa ise teine ressurss
+
+Seni muutsid õpetaja faili. Nüüd **kirjuta ise** juurde. Lisa `main.tf`-i teine `local_file` ressurss (uue nimega, et esimesega ei põrka):
+
+```hcl
+resource "local_file" "logi" {
+  filename = "minu-logi.txt"
+  content  = "Selle rea kirjutasin mina, mitte õpetaja."
+}
+```
+
+```bash
+terraform plan
+```
+
+Loe väljund: `Plan: 1 to add`. Esimene ressurss on juba olemas (state teab), ainult uus lisatakse.
+
+```bash
+terraform apply
+cat minu-logi.txt
+terraform state list
+```
+
+`state list` näitab nüüd **kahte** ressurssi — üks õpetaja oma, üks sinu.
+
+??? question "Diagnoosi enne kui parandad"
+    Anna **meelega** teisele ressursile sama `filename` mis esimesel. `terraform apply`. Terraform ei kaeba plan-i tasemel, aga mis juhtub sisuga? Kaks ressurssi, üks fail — kumb võidab? Miks on see ohtlik päris infras (nt kaks VM-i sama nimega)?
+
+Paranda nimi tagasi unikaalseks.
+
+---
+
+## Osa 10 · Output sinu ressursile + terve tsükkel
+
+Lisa `outputs.tf`-i (kui pole, loo) väljund **oma** ressursile:
+
+```hcl
+output "minu_faili_rasi" {
+  value = local_file.logi.content_md5
+}
+```
+
+Jooksuta terve tsükkel algusest lõpuni, nüüd **kahe** ressursiga:
+
+```bash
+terraform apply
+terraform output
+terraform destroy
+ls *.txt
+```
+
+`output` näitab väärtuse ilma faili avamata; `destroy` kustutab **mõlemad** ressursid; `ls` on tühi.
+
+??? question "Mõtle"
+    Sa alustasid õpetaja valmis failiga (Osa 1), lõpetasid oma ressursi + outputiga (Osa 10). Mis on ainus asi, mida sa pead teadma, et lisada kolmas, neljas, kümnes ressurss? Nädal 11 (moodulid) vastab: kuidas seda kordust vältida.
+
+---
+
 ## Lõppkontroll
 
 - [ ] `.terraform/` + `.terraform.lock.hcl` tekkisid `init` järel
@@ -180,6 +267,9 @@ Võrdle oma nädal 9 ennustusega — mis läks kokku, mis mitte?
 - [ ] Muutsid muutujat, lugesid uut `plan`-i enne `apply`-t
 - [ ] `destroy` järel fail kustunud, `state list` tühi
 - [ ] Nädal 9 tabeli Terraformi rida täidetud
+- [ ] `terraform.tfvars` üle kirjutab `default`-i (Osa 8)
+- [ ] Lisasid **ise** teise ressursi, `state list` näitab kahte (Osa 9)
+- [ ] Oma output näitab väärtust, `destroy` kustutab mõlemad (Osa 10)
 
 ---
 

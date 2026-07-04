@@ -5,7 +5,7 @@
 13 nädalaga õpid automatiseerima kõike, mida täna teed käsitsi. Kutsekooli 3. aasta esimene automatiseerimiskursus.
 
 [Alusta kursusega](week01/lecture.md){ .btn-primary }
-[13 nädala ülevaade](kursus.html){ .btn-secondary }
+[13 nädala ülevaade](#programm){ .btn-secondary }
 </div>
 </div>
 
@@ -16,7 +16,7 @@
 3. Pakkida rakendus konteinerisse ja käivitada see kõikjal
 4. Ehitada pipeline, mis testib ja levitab koodi automaatselt iga muudatuse järel
 5. Kirjeldada infrastruktuuri koodina — server on alati täpselt selline nagu peab
-6. Näha, mis su süsteemis tegelikult toimub — mõõdikud, graafikud, teavitused
+6. Näha ja hallata infrastruktuuri koodina — üks playbook, mitu serverit, kõik versioonis
 
 ---
 
@@ -35,7 +35,7 @@
 | N9 | Infrastruktuur koodina — mõtteviis *(iseseisev)* | — |
 | N10 | Infrastruktuuri kirjeldamine koodina | Terraform |
 | N11 | Korduvkasutatav infrastruktuur | Terraform moodulid / Ansible rollid |
-| N12 | Nähtavus — mis toimub tegelikult? | Prometheus, Grafana |
+| N12 | Infrastruktuur koodina — Ansible IaC | Ansible, group_vars |
 | N13 | Täielik tarnekonveier — otsast lõpuni | Kõik tööriistad |
 
 ---
@@ -50,6 +50,8 @@
 **3. VS Code** — [code.visualstudio.com](https://code.visualstudio.com)
 
 Laiendused installime kursuse käigus — ära paigalda praegu midagi ette.
+
+**4. Töökeskkond** — koolis saad Proxmox VM-i, kodus vajad oma Ubuntu sihtmärki (WSL2, VM või pilv — sinu valik). Ainus nõue: SSH ja sudo. Vt [Töökeskkond](kodulabor.md).
 
 ---
 

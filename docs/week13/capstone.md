@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Ülesanne
+## Ülesanne
 
 Ehitage töötav automatiseerimislahendus otsast lõpuni ja esitlege seda.
 
@@ -14,10 +14,10 @@ Valige üks stsenaarium:
 
 | Tase | Stsenaarium | Minimaalne kombinatsioon |
 |---|---|---|
-| Lihtne | Staatiline veebileht | Git + Ansible deploy Proxmox VMile |
+| Lihtne | Staatiline veebileht | Git + Ansible deploy sihtmärgile |
 | Keskmine | Flask app | Git + Docker + Compose + CI pipeline |
 | Keeruline | Täisautomaatne | Git + Docker + CI/CD + GHCR + Ansible deploy |
-| Edasijõudnud | Kõik + monitooring | Eelnev + Terraform + Grafana |
+| Edasijõudnud | Kõik + IaC | Eelnev + Terraform (nädal 10–11) + Ansible IaC mitmele hostile (nädal 12) |
 
 ---
 
@@ -26,7 +26,7 @@ Valige üks stsenaarium:
 Minimaalne kombinatsioon mis peab töötama:
 
 - Versioonihalduse töövoog — branching + PR (nädal 2)
-- Serveri konfiguratsioon — Ansible (nädal 3–4) VÕI infrastruktuur koodina (nädal 10–11)
+- Serveri konfiguratsioon — Ansible (nädal 3–4) VÕI infrastruktuur koodina (nädal 10–12)
 - Üks järgnevatest: CI pipeline / Docker / Compose (nädalad 5–8)
 
 **Nädal 9 võrdlustabel peab esitluses nähtav olema.**
@@ -57,6 +57,6 @@ Esitluses peate suutma vastata:
 
 ---
 
-## 🚀 Lisaülesanne
+## Lisaülesanne
 
-Lisa Prometheus + Grafana monitooringu stack (nädal 12 materjal). Kaasa üks alert rule. Selgita esitluses: mis tähendaks see alert päriselus?
+Laienda Ansible IaC osa (nädal 12): halda **kahte** keskkonda (production + staging) group_vars'iga, tekita ühele hostile käsitsi drift ja näita esitluses, kuidas playbook selle parandab. Selgita: mida tähendaks `changed=0` vs `changed=5` päris serveripargis?

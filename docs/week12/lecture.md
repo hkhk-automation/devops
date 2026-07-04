@@ -1,138 +1,132 @@
 ---
 tags:
-  - Monitooring
-  - Prometheus
-  - Grafana
-  - Observability
+  - Ansible
+  - IaC
+  - Infrastruktuur
 ---
 
-# Loeng — Nähtavus: mis toimub tegelikult?
+# Loeng — Infrastruktuur koodina: Ansible IaC
 
 **Kestus:** ~40 minutit
-**Tase:** Eeldame Docker Compose'i ja CI/CD-d
+**Tase:** Eeldame Ansible playbook'e, rolle ja muutujaid (nädalad 3–4, 11)
 
 ---
 
 !!! abstract "Õpiväljundid"
     Pärast loengut oskad:
 
-    - selgitada miks automatiseerimine ilma monitooringuta on pime
-    - kirjeldada Prometheuse pull-mudelit ja `/metrics` endpointi
-    - eristada mõõdiku tüüpe (counter, gauge, histogram)
-    - selgitada mida Grafana teeb ja mida mitte
+    - selgitada mis vahe on "playbook mis paigaldab nginx'i" ja "infrastruktuur koodina"
+    - kirjeldada kuidas üks playbook haldab mitut serverit korraga (inventory grupid)
+    - eristada `group_vars` ja `host_vars` — sama kood, erinev keskkond
+    - selgitada millal Ansible ja millal Terraform (ja miks mitte kumbki üksi)
 
 ---
 
-## 1. Pime automatiseerimine
+## 1. Nädalatel 3–4 tegid juba Ansible't. Mis siis uut?
 
-Nädal 8 automatiseerisid kogu tarne — koodist serverini. Aga: **kuidas tead, et see mida tarnid ka tegelikult töötab?**
+Nädalatel 3–4 kirjutasid playbook'i, mis paigaldas nginx'i **ühele** serverile. See oli automatiseerimine — aga veel mitte päris "infrastruktuur koodina".
 
-Sa tead et rakendus käivitus. Aga kas ta vastab? Kui kiiresti? Kas vastamisaeg halveneb iga tunniga? Millal midagi läks valesti? Automatiseerimine ilma monitooringuta on pime — sa lükkad koodi tootmisse ja loodad parimat.
+Vahe on skaalas ja hoiakus. Üks server on skript. Kakskümmend serverit, kolmes keskkonnas (arendus, test, tootmine), kus iga keskkond on **koodis kirjeldatud** ja igaüks saab selle nullist üles ehitada sama failikomplektiga — see on IaC. Server ei ole enam "lemmikloom", keda käsitsi hooldad ja kelle kadumine on katastroof. Ta on "kariloom": kui üks katki, kustutad ja playbook ehitab identse asemele.
 
-Monitooring annab **nähtavuse** — akna süsteemi sisse.
-
-!!! example "Näidisstsenaarium"
-    Optimist näeb klaasi pooltäis. Pessimist pooltühi. SRE näeb klaasi **99.99% täis** — ja kirjutab ülejäänud 0.01% kohta postmortemi. Monitooring on see, mis selle 0.01% üldse nähtavaks teeb, enne kui klient helistab.
+Märten hooldas lemmikloomi. Igal serveril oli oma käsitsi tehtud eripära, mida ainult Märten teadis (ja pooli neist ka tema ei mäletanud). Kui server suri, suri temaga Märteni pähe salvestatud "kuidas see üles seati". IaC tähendab: kogu see teadmine on failides, Git-is, loetav ja korratav.
 
 ---
 
-## 2. Kolm kihti
+## 2. Üks playbook, mitu serverit
 
-| Kiht | Küsimus | Tööriist |
-|---|---|---|
-| Mõõdikud | Mis numbrid? | Prometheus |
-| Visualiseerimine | Mis trend? | Grafana |
-| Teavitused | Millal valesti? | Alertmanager |
+Seni oli `inventory.ini`-s üks host. Päris elus on neid mitu, gruppidena:
 
-Täna kaks esimest (Prometheus + Grafana). Alertmanager on venitusülesanne.
+```ini
+[web]
+web1.example.com
+web2.example.com
+
+[db]
+db1.example.com
+
+[production:children]
+web
+db
+```
+
+`[web]` ja `[db]` on grupid. `[production:children]` on **grupp gruppidest**. Playbook ütleb `hosts: web` ja jookseb korraga **kõigil** web-serveritel — sama task, kakskümmend masinat, üks käsk. Nädalal 1 küsisid "aga mis siis kui masinaid on 50?" — see ongi vastus.
 
 <figure markdown="span">
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'primaryColor':'#ede7f6','primaryBorderColor':'#5e35b1','primaryTextColor':'#212121','lineColor':'#7e57c2'}}}%%
-graph LR
-    A[rakendus<br/>/metrics] -->|Prometheus küsib| P[Prometheus<br/>TSDB]
-    P -->|loeb| G[Grafana<br/>dashboard]
+graph TD
+    P[site.yml<br/>hosts: web] --> W1[web1]
+    P --> W2[web2]
+    P --> W3[web3]
+    G[group_vars/web.yml<br/>nginx_port: 80] -.muutujad.-> P
 ```
-  <figcaption>Joonis 12.1. Pull-mudel: Prometheus küsib ise rakenduselt, Grafana loeb Prometheusest (Talvik, 2025).</figcaption>
+  <figcaption>Joonis 12.1. Üks playbook rakendub kõigile grupi hostidele; group_vars annab neile ühised muutujad (Talvik, 2025).</figcaption>
 </figure>
 
 ---
 
-## 3. Prometheus — pull-mudel
+## 3. group_vars ja host_vars — sama kood, erinev keskkond
 
-Prometheus kogub mõõdikuid **pull**-mudeliga: ta läheb ise rakenduse juurde ja küsib, iga N sekundi tagant. Rakendus **ei saada** andmeid Prometheusele — see on vastupidine sellele, mida võiks arvata.
+Kood on kõigil serveritel sama. Aga arendusserver ei tohi kasutada tootmise parooli, ega testserver tootmise domeeni. Kuidas hoida **üks** playbook, aga anda igale keskkonnale **omad väärtused**?
 
-Selleks peab rakendusel olema `/metrics` endpoint Prometheuse formaadis:
+Ansible loeb muutujad automaatselt failinime järgi:
 
-```
-# HELP http_requests_total Päringute koguarv
-# TYPE http_requests_total counter
-http_requests_total{method="GET",status="200"} 1247
-http_requests_total{method="GET",status="500"} 3
-```
+- `group_vars/web.yml` — rakendub kõigile `[web]` grupi hostidele
+- `group_vars/all.yml` — rakendub kõigile (nägid nädalal 4)
+- `host_vars/web1.example.com.yml` — rakendub **ainult** sellele ühele hostile
 
-Inimloetav tekst — iga rida on üks mõõdik siltidega. Prometheus teab kust küsida `scrape_configs`-ist:
+Nii et sama `site.yml` + `roles:` annab arenduses ühe pordi ja tootmises teise, ilma et koodis midagi muudaks. Muutub ainult see, milline `group_vars` fail kehtib. Meenuta nädal 4: siis panid muutujad `group_vars/all.yml`-i ühele masinale. Sama mehaanika, nüüd mitmele.
 
-```yaml
-global:
-  scrape_interval: 15s
-
-scrape_configs:
-  - job_name: 'flask-app'
-    static_configs:
-      - targets: ['flask-app:5000']
-```
-
-`flask-app` on Compose teenuse nimi — võrk lahendab nime automaatselt (sama loogika mis nädal 6).
+See on IaC tuum: **kood kirjeldab struktuuri, muutujad kirjeldavad keskkonda.** Vaheta `group_vars`, saad teise keskkonna — kood puutumata.
 
 ---
 
-## 4. Mõõdiku tüübid
+## 4. Idempotentsus infra tasemel
 
-**Counter** — ainult tõusev loendur (`http_requests_total`). Päringute arv, vigade arv. Ei lähe kunagi alla.
+Nädalal 3 nägid idempotentsust ühe task'i tasemel: `changed` vs `ok`. Infra tasemel on sama põhimõte võimsam.
 
-**Gauge** — hetkeväärtus (`memory_usage_bytes`, `active_connections`). Tõuseb ja langeb.
+Kui kogu su serveripargi seis on kirjeldatud playbook'is, siis playbook'i jooksutamine on **tervisekontroll**. `changed=0` kõigil hostidel tähendab: kõik serverid on täpselt sellises seisus nagu kood ütleb. Kui üks host näitab `changed=3`, tähendab keegi (või miski) muutis seda käsitsi — ja Ansible **parandas selle tagasi** koodis kirjeldatud seisu.
 
-**Histogram** — jaotumine vahemikesse (`..._bucket{le="0.1"}`). Vastamisaegade analüüs: kui palju päringuid mahtus alla mingi piiri.
-
-**Summary** — protsentiilid, arvutab ise. Tänapäeval kasutatakse vähem kui histogrami.
+See on "configuration drift" avastamine ja parandamine ühe käsuga. Käsitsi hooldatud pargis triivivad serverid aeglaselt lahku (üks sai turvapaiga, teine mitte, kolmandal keegi näppis konfi öösel) — ja keegi ei tea, enne kui midagi katki. IaC-ga jooksutad playbook'i cron'is ja drift parandub ise.
 
 ---
 
-## 5. Grafana — visualiseerimine
+## 5. Ansible vs Terraform — millal kumbki?
 
-Grafana **ei kogu** ise mõõdikuid. Ta loeb andmeid allikatest (Prometheus, Elasticsearch, MySQL) ja joonistab. Enne kui midagi näed, lisad **andmeallika** (datasource): `http://prometheus:9090`.
+Nädalatel 10–11 nägid Terraformi. Nüüd Ansible sama "infra koodina" lipu all. Millal kumb?
 
-**Dashboard** on kogum paneele, iga paneel üks graafik või number. Grafanas kirjutad **PromQL** päringu, et öelda mida näidata:
+Lühivastus: nad teevad **eri asju** ja päris meeskonnad kasutavad **mõlemat koos**.
 
-```promql
-rate(http_requests_total[1m])                    # päringud minutis
-sum(rate(http_requests_total[1m]))               # kõik staatused koos
-rate(http_requests_total{status="500"}[1m])      # ainult vead
-histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))  # 95. protsentiil
-```
+| | Terraform | Ansible |
+|---|---|---|
+| Mida teeb | **Loob** infra (VM, võrk, ketas) | **Seadistab** olemasolevat (paketid, konfid, teenused) |
+| Küsimus | "Mis serverid **eksisteerivad**?" | "Mis on serverite **sees**?" |
+| Mudel | Deklaratiivne, hoiab state-faili | Deklaratiivne, state'i ei hoia |
+| Näide | Loo 3 VM-i pilve | Paigalda neile nginx |
 
-Praktikumis kasutad **valmis dashboardi** — PromQL-i ise ei kirjuta. Aga hea on mõista mida graafik kuvab.
+Terraform ehitab tühjad masinad (provisioning). Ansible paneb neisse sisu (configuration). Tüüpiline voog: Terraform loob 3 VM-i → väljastab nende IP-d → Ansible võtab need IP-d inventory'sse ja seadistab. Kumbki üksi jätab poole tööst tegemata: Terraform annab tühja serveri, Ansible eeldab et server juba on.
+
+!!! example "Näidisstsenaarium"
+    Märten kuulis, et "Terraform on parem" ja kirjutas Terraformiga ka nginx-i konfi (`local-exec` provisioner'itega, mis jooksutavad bash-i). See töötas — nagu kruvikeeraja töötab haamrina, kui väga tahad. Kuus kuud hiljem ei saanud keegi aru, miks pool konfist on Terraformis ja pool käsitsi. Tööriist tuleb valida töö järgi, mitte kuulujutu järgi.
 
 ---
 
-## 6. Miks tööl oluline
+## 6. Miks see tööl oluline
 
-Ilma monitooringuta: kasutajad helistavad et midagi katki, sa ei tea millal algas, ei tea mis põhjustas, ja rollback on pime (ei tea kas aitas).
+DevOps-meeskonnas ei logi keegi 20 serverisse käsitsi. Server on koodis kirjeldatud, muudatus käib PR-ina (nädal 2!), CI kontrollib (nädal 7), ja playbook rakendab. Kui uus inimene tuleb, ei küsi ta "kuidas see server üles seati" — ta loeb `site.yml`-i. Kui server sureb, ei paanika keegi — playbook ehitab uue.
 
-Monitooringuga: näed anomaaliat **enne** kasutajaid (vastamisaeg tõuseb), tead täpselt millal algas (Prometheus salvestab ajaloo), näed mis samal ajal muutus (deploy? konfimuutus?), ja rollbacki järel näed graafikult et olukord paranes.
-
-SRE-s on mõiste **MTTD** — Mean Time To Detect. Hea monitooring viib selle minutitesse, mitte tundidesse. Vahe "avastasime 3 minutiga" ja "klient avastas 3 tunniga" on vahe intsidendi ja katastroofi vahel.
+See on kogu kursuse mõte ühes kohas: Märteni pähe salvestatud, käsitsi tehtud, dokumenteerimata teadmine on asendatud koodiga, mida terve meeskond näeb, versioonib ja usaldab.
 
 ---
 
 ## Kokkuvõte
 
-- **Automatiseerimine ilma monitooringuta on pime** — ei tea mis tegelikult toimub
-- **Prometheus kogub pull-mudeliga** — küsib ise rakenduselt `/metrics`-ilt
-- **Mõõdiku tüübid:** counter (tõusev), gauge (hetk), histogram (jaotus)
-- **Grafana visualiseerib** Prometheuse andmeid, ei kogu ise
-- **MTTD** — hea monitooring avastab minutitega, mitte tundidega
+- **IaC ≠ üks playbook** — see on kogu serverpargi seisu kirjeldamine koodis, korratav ja versioneeritud
+- **Üks playbook, mitu hosti** — inventory grupid, `hosts: web` jookseb kõigil
+- **group_vars / host_vars** — sama kood, erinev keskkond; muutub ainult muutujafail
+- **Idempotentsus infra tasemel** — `changed=0` on tervisekontroll, drift parandub ise
+- **Ansible seadistab, Terraform loob** — päris elus mõlemad koos, tööriist töö järgi
+- Server on kariloom, mitte lemmikloom — surm ei ole katastroof, kui seis on koodis
 
 ---
 
@@ -140,13 +134,13 @@ SRE-s on mõiste **MTTD** — Mean Time To Detect. Hea monitooring viib selle mi
 
 | Allikas | URL |
 |---|---|
-| Prometheus dokumentatsioon | <https://prometheus.io/docs/> |
-| Grafana dokumentatsioon | <https://grafana.com/docs/> |
-| Metric types | <https://prometheus.io/docs/concepts/metric_types/> |
-| PromQL basics | <https://prometheus.io/docs/prometheus/latest/querying/basics/> |
+| Ansible inventory | <https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html> |
+| group_vars / host_vars | <https://docs.ansible.com/ansible/latest/playbook_guide/intro_inventory.html#organizing-host-and-group-variables> |
+| Ansible vs Terraform | <https://developer.hashicorp.com/terraform/intro/vs/chef-puppet> |
+| Idempotency (glossary) | <https://docs.ansible.com/ansible/latest/reference_appendices/glossary.html> |
 
-**Versioonid (testitud, juuli 2026):** Prometheus `prom/prometheus:latest`, Grafana `grafana/grafana:latest`.
+**Versioonid (testitud, juuli 2026):** Ansible core 2.17.x.
 
 ---
 
-*Järgmine: Praktikumis deployd stacki, seadistad scrape'i, impordid dashboardi ja genereerid koormust.*
+*Järgmine: laboris laiendad ühe serveri playbook'i mitmele hostile, eraldad keskkonnad group_vars'iga ja võrdled Ansible't Terraformiga.*

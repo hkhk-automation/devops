@@ -29,7 +29,7 @@ Labi loogika: **baas → laienda → viga → paranda → laienda → viga → t
 
 ---
 
-## Osa 1 · Baas — üks teenus (25 min)
+## Osa 1 · Baas — üks teenus
 
 Mine nädal 5 kausta, kus on `app/` (Flask + `Dockerfile`) ja käivita et ikka töötab:
 
@@ -61,7 +61,7 @@ Sama vastus, aga nüüd üks käsk. **Ära edasi mine enne kui vastab.**
 
 ---
 
-## Osa 2 · Andmebaas ilma paroolita (35 min)
+## Osa 2 · Andmebaas ilma paroolita
 
 Lisa **teine teenus**. Näita ainult uut tükki — lisa `web` alla, sama taande tasandile:
 
@@ -101,7 +101,7 @@ Otsi logist `database system is ready to accept connections`. Tuleb paari sekund
 
 ---
 
-## Osa 3 · Vale aadress andmebaasile (35 min)
+## Osa 3 · Vale aadress andmebaasile
 
 Flask peab teadma **kus** db on. Proovime **meelega valesti** — IP-ga. Lisa `web`-le:
 
@@ -144,7 +144,7 @@ curl localhost:5000/db-check
 
 ---
 
-## Osa 4 · Laienda — nginx ja 502 (40 min)
+## Osa 4 · Laienda — nginx ja 502
 
 Paneme nginx'i Flaski ette (pöördproksi). Loo `nginx/default.conf` — **meelega vale** teenuse nimega (`app`, mitte `web`):
 
@@ -202,7 +202,7 @@ curl localhost
 
 ---
 
-## Osa 5 · Andmed kaovad (35 min)
+## Osa 5 · Andmed kaovad
 
 Kirjuta andmebaasi midagi (oma rakenduse route kaudu, või käsitsi):
 
@@ -258,7 +258,7 @@ Rida on **alles**. Volume elab konteinerist eraldi.
 
 ---
 
-## Osa 6 · Parool failis (30 min)
+## Osa 6 · Parool failis
 
 `secret123` on `docker-compose.yml`-is kahes kohas, tavatekstis. Läheb GitHubi = lekkis. (Märteni `.env`, teine fail.) Vii `.env`-i.
 
@@ -303,7 +303,7 @@ curl localhost/db-check
 
 ---
 
-## Osa 7 · Taasta ja koristus (15 min)
+## Osa 7 · Taasta ja koristus
 
 ```bash
 docker compose ps

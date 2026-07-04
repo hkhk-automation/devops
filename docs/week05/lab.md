@@ -29,7 +29,7 @@ Selle labi loogika: **baas → katki → paranda → laienda → viga → taasta
 
 ---
 
-## Osa 1 · Baas — töötav image (30 min)
+## Osa 1 · Baas — töötav image
 
 Loo kaust ja mine sisse:
 
@@ -60,7 +60,7 @@ Näed nginx tervituslehte. Baas töötab. **Ära mine edasi enne kui see vastab.
 
 ---
 
-## Osa 2 · Katki — ja miks (40 min)
+## Osa 2 · Katki — ja miks
 
 Nüüd teed **meelega** vea, mille kõik teevad täpselt ühe korra. Lisa `Dockerfile`-i teine paketirida — aga jäta `-y` **teadlikult ära**:
 
@@ -95,7 +95,7 @@ Läbib. See on reegel, mitte soovitus: Dockerfile'is `apt install` **alati** `-y
 
 ---
 
-## Osa 3 · Laienda — oma sisu image'isse (40 min)
+## Osa 3 · Laienda — oma sisu image'isse
 
 Baas serveerib nginx'i vaikimisi lehte. Paneme oma. Loo `w05` kausta fail `index.html`:
 
@@ -123,7 +123,7 @@ Näed ikka **vana** lehte. See pole viga — see on Osa 4.
 
 ---
 
-## Osa 4 · Rebuild ei uuenda konteinerit (40 min)
+## Osa 4 · Rebuild ei uuenda konteinerit
 
 Ehitasid uue image'i, aga `curl` näitab vana. Miks?
 
@@ -152,7 +152,7 @@ Nüüd "Versioon 1". Jäta meelde see jada: **stop → rm → run**. Uus image e
 
 ---
 
-## Osa 5 · Port juba kinni (30 min)
+## Osa 5 · Port juba kinni
 
 Proovi käivitada teine konteiner samast image'ist, **sama pordiga**:
 
@@ -176,7 +176,7 @@ Nüüd jooksevad mõlemad — `8080` ja `8081`, üks image, kaks konteinerit.
 
 ---
 
-## Osa 6 · Surnud konteiner (30 min)
+## Osa 6 · Surnud konteiner
 
 Muuda `Dockerfile` `CMD` rida selliseks (võta `daemon off;` ära):
 
@@ -212,7 +212,7 @@ CMD ["nginx", "-g", "daemon off;"]
 
 ---
 
-## Osa 7 · Taasta puhas seis (20 min)
+## Osa 7 · Taasta puhas seis
 
 Tegid sassi — kolm konteinerit, üks image. Koristame nagu päris elus:
 

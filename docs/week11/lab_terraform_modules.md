@@ -29,7 +29,7 @@ Labi loogika: **HCL nullist → muutujad → outputs → moodul → korda kaks k
 
 ---
 
-## Osa 1 · Esimene HCL nullist (45 min)
+## Osa 1 · Esimene HCL nullist
 
 Nädal 10 nägid valmis `.tf` faili teise kirjutatuna. Täna kirjutad rea-realt ise. Tee uus tühi kaust, ava VS Code'is:
 
@@ -123,7 +123,7 @@ Kinnita `yes`, kontrolli et fail kadus.
 
 ---
 
-## Osa 2 · Muutujad (40 min)
+## Osa 2 · Muutujad
 
 Kõvasti kirjutatud `"tervitus.txt"` töötab, aga teise nimega faili jaoks pead koodi muutma. Muutuja lahutab sisendi konfist.
 
@@ -196,7 +196,7 @@ terraform apply && cat tervitus.txt
 
 ---
 
-## Osa 3 · Outputs (30 min)
+## Osa 3 · Outputs
 
 Kui konfig loob midagi, tahad tulemust näha ilma faile otsimata — ja Osas 4–5 väärtust edasi anda.
 
@@ -238,7 +238,7 @@ terraform apply && terraform output sisu_rasi
 
 ---
 
-## Osa 4 · Moodul (45 min)
+## Osa 4 · Moodul
 
 Sul on üks fail, mis loob ühe teksti-faili. Kümne jaoks kopeeriksid koodi kümme korda. Moodul pakib loogika korduvkasutatavaks üksuseks — nagu funktsioon.
 
@@ -338,7 +338,7 @@ terraform apply
 
 ---
 
-## Osa 5 · Kutsu moodulit kaks korda (30 min)
+## Osa 5 · Kutsu moodulit kaks korda
 
 See ongi mooduli mõte — üks kood, mitu kasutuskorda.
 

@@ -26,7 +26,7 @@ Autor ei saa neid õigusi tühistada, kui järgid litsentsi tingimusi.
 ## Viitamise näidis
 
 > IT automatiseerimise kursus. Maria Talvik. CC BY-SA 4.0.
-> Allikas: <https://github.com/mtalvik/automation>
+> Allikas: <https://github.com/hkhk-automation/devops>
 > Muudetud: [kuupäev] — [lühikirjeldus, mida muutsid].
 
 ## Täistekst

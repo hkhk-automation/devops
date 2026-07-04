@@ -1,67 +1,80 @@
 # IT automatiseerimise kursus
 
-Serverite ja rakenduste automatiseerimine - Git'ist Kubernetes'eni.
+Serverite ja rakenduste automatiseerimine — Git'ist infrastruktuurini koodina. Kutsekooli 3. aasta esimene automatiseerimiskursus, 13 nädalat.
 
-[Veebileht](https://mtalvik.github.io/automation) | [Discord](https://discord.gg/qXEjUGJKAF)
+[Veebileht](https://hkhk-automation.github.io/devops)
+
+## Sisukord
+
+- [Teemad](#teemad)
+- [Kohalik seadistamine](#kohalik-seadistamine)
+- [Ajakava](#ajakava)
+- [Repo struktuur](#repo-struktuur)
+- [Publitseerimine](#publitseerimine)
+- [Litsents](#litsents)
 
 ## Teemad
 
 - Git versioonihaldus ja meeskonnatöö
-- Docker konteinerid ja orkestratsioon
-- Ansible automatiseerimine ja rollid  
-- CI/CD torujuhtmed
-- Kubernetes orkestreerimine
-- Terraform infrastruktuur koodina
+- Ansible — serverite konfiguratsioon, muutujad, Vault, rollid
+- Docker ja Docker Compose
+- CI/CD — GitHub Actions, GHCR
+- Infrastruktuur koodina — Terraform, Ansible IaC
 
 ## Kohalik seadistamine
 
 ```bash
-git clone https://github.com/mtalvik/automation.git
-cd automation
+git clone https://github.com/hkhk-automation/devops.git
+cd devops
 pip install -r requirements.txt
 mkdocs serve
 ```
 
-Ava brauser: http://127.0.0.1:8000
+Ava brauser: <http://127.0.0.1:8000>
 
 ## Ajakava
 
-| Nädalad | Teema |
-|---------|-------|
-| 9 | Git põhitõed |
-| 10-11 | Docker konteinerid |  
-| 12 | Docker Compose |
-| 13-14 | Ansible alused |
-| 15 | Ansible rollid |
-| 16-18 | CI/CD ja GitHub Actions |
-| 19-20 | Kubernetes |
-| 21-22 | Terraform |
+| Nädal | Teema | Tööriistad |
+|---|---|---|
+| N1 | Miks automatiseerimine? | — |
+| N2 | Muudatuste jälgimine meeskonnas | Git, GitHub |
+| N3 | Serveri konfiguratsiooni automatiseerimine | Ansible |
+| N4 | Dünaamiline konfiguratsioon ja saladuste kaitse | Ansible Vault, Jinja2 |
+| N5 | Rakenduse pakkimine | Docker |
+| N6 | Mitme teenuse käitamine koos | Docker Compose |
+| N7 | Automaatne testimine | GitHub Actions CI |
+| N8 | Automaatne ehitamine ja levitamine | GitHub Actions CD, GHCR |
+| N9 | Infrastruktuur koodina — mõtteviis *(iseseisev)* | — |
+| N10 | Infrastruktuuri kirjeldamine koodina | Terraform |
+| N11 | Korduvkasutatav infrastruktuur | Terraform moodulid / Ansible rollid |
+| N12 | Infrastruktuur koodina — Ansible IaC | Ansible, group_vars |
+| N13 | Täielik tarnekonveier — otsast lõpuni | Kõik tööriistad |
 
-## Struktuur
+## Repo struktuur
 
 ```
 docs/
-├── index.md                    # Avaleht
-├── curriculum.md               # Õppekava
-├── git_version_control/        # Git moodul
-├── docker_fundamentals/        # Docker alused
-├── docker_orchestration/       # Docker Compose
-├── ansible_basics/             # Ansible alused  
-├── ansible_advanced/           # Ansible edasijõudnud
-├── ansible_roles/              # Ansible rollid
-├── terraform_basics/           # Terraform
-└── ci_cd_advanced/             # CI/CD + Kubernetes
+├── index.md              # Avaleht
+├── kodulabor.md          # Töökeskkonna seadistus
+├── litsents.md           # Litsents
+├── week01/ ... week13/   # Nädalate materjalid
+│   ├── lecture.md        # Loeng (teooria)
+│   ├── lab.md            # Praktikum (käed külge)
+│   └── homework.md       # Kodutöö (osal nädalatel)
+└── _archive/             # Arhiveeritud materjal (ei ehitata)
+planning/                 # Koolitaja-juhendid (ajad, riskid)
 ```
 
-Iga moodul sisaldab:
-- `lecture.md` - teooria
-- `lab.md` - praktikum  
-- `homework.md` - kodutöö
+Erandid: N9 on `async_task.md`, N11 on Terraform + Ansible variandid, N13 on `capstone.md`.
 
 ## Publitseerimine
+
+Automaatne juurutamine GitHub Actions'iga peale iga `main`-push'i. Käsitsi:
 
 ```bash
 mkdocs gh-deploy
 ```
 
-Automaatne juurutamine GitHub Actions'iga peale iga push'i.
+## Litsents
+
+CC BY-SA 4.0 — Maria Talvik. Vt [litsents](docs/litsents.md).

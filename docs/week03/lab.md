@@ -30,7 +30,7 @@ Labi loogika: **setup → baas → viga → paranda → laienda → viga → taa
 
 ---
 
-## Osa 1 · Setup — Ansible, inventory, ühendus (30 min)
+## Osa 1 · Setup — Ansible, inventory, ühendus
 
 Paigalda Ansible oma arvutisse:
 
@@ -54,7 +54,6 @@ Ava projektikaust VS Code'is (`code .`), terminal `` Ctrl+` ``. Loo `inventory.i
 
 | Sihtmärk | Rida `inventory.ini`-s |
 |---|---|
-| Kodulabor (Vagrant) | `192.168.56.10 ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/default/virtualbox/private_key` |
 | WSL2 / lokaalne VM | `127.0.0.1 ansible_user=sinu_kasutaja` (või VM-i IP) |
 | Proxmox (koolis) | `192.168.x.x ansible_user=õpetajalt` |
 | Pilve-server | `avalik-IP ansible_user=ubuntu` |
@@ -74,7 +73,7 @@ ansible all -i inventory.ini -m ping
 
 ---
 
-## Osa 2 · Baas — esimene task (30 min)
+## Osa 2 · Baas — esimene task
 
 Loo `nginx.yml`. **Ainus kord terve fail** — edasi lisad task'e:
 
@@ -108,11 +107,9 @@ ansible-playbook -i inventory.ini nginx.yml
 ssh <kasutaja>@<IP> "nginx -v"
 ```
 
-(Kodulaboris kiirem: `vagrant ssh -c "nginx -v"`.)
-
 ---
 
-## Osa 3 · Become puudu — permission denied (30 min)
+## Osa 3 · Become puudu — permission denied
 
 Eemalda **meelega** rida `become: yes` (kommenteeri välja: `# become: yes`). Käivita:
 
@@ -131,7 +128,7 @@ See on esimene asi, mida kontrollida kui näed `Permission denied`: kas task vaj
 
 ---
 
-## Osa 4 · Laienda — teenus ja idempotentsus (30 min)
+## Osa 4 · Laienda — teenus ja idempotentsus
 
 Nginx on paigaldatud, aga kas teenus töötab ja käivitub pärast reboot'i? **Lisa teine task** (fragment, `tasks:` alla):
 
@@ -154,7 +151,7 @@ ansible-playbook -i inventory.ini nginx.yml
 
 ---
 
-## Osa 5 · Katkine idempotentsus — shell alati changed (45 min)
+## Osa 5 · Katkine idempotentsus — shell alati changed
 
 Tahad kontrollida nginx versiooni ja kirjutada selle faili. **Vale viis** — lisa see task `shell:` mooduliga:
 
@@ -194,7 +191,7 @@ Käivita kaks korda — teine kord **ok**. Idempotentsus taastatud.
 
 ---
 
-## Osa 6 · Laienda — oma leht (30 min)
+## Osa 6 · Laienda — oma leht
 
 **Loo fail** `index.html`:
 
@@ -222,7 +219,7 @@ Ava brauseris `http://<sihtmärgi-IP>` — "Ansible töötab!".
 
 ---
 
-## Osa 7 · Kas `copy` on nutikas? (30 min)
+## Osa 7 · Kas `copy` on nutikas?
 
 Muuda `index.html` sisu ("Versioon 2") ja käivita:
 
@@ -245,7 +242,7 @@ Siin näed miks moodul > `shell`: moodul teab kuidas seisu kontrollida, `cp` ei 
 
 ---
 
-## Osa 8 · Taasta ja lõpp-test (15 min)
+## Osa 8 · Taasta ja lõpp-test
 
 Lõplik idempotentsuse test — käivita ilma midagi muutmata:
 
@@ -258,7 +255,7 @@ ansible-playbook -i inventory.ini nginx.yml
 ??? question "Mõtle"
     Kui sul oleks 50 serverit ja see playbook cron'is iga tund — mida tähendaks su monitooringule, kui iga käivitus näitaks `changed=0` vs `changed=5`? Kumb ütleks "keegi näppis servereid käsitsi"?
 
-Katsetasid ja keerasid sassi? Kodulaboris `vagrant destroy -f && vagrant up` annab puhta masina 2 minutiga, playbook ehitab kõik uuesti. Korratava seadistuse mõte: taastamine on odav.
+Kõik `ok`? See on tervik: playbookit võib jooksutada lõputult, tulemus sama.
 
 ---
 

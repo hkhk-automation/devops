@@ -29,7 +29,7 @@ Labi loogika: **baas → laienda → viga → paranda → laienda.** Ehitad work
 
 ---
 
-## Osa 1 · Baas — trigger ja echo (30 min)
+## Osa 1 · Baas — trigger ja echo
 
 Workflow on YAML-fail kaustas `.github/workflows/`. Alusta millestki, mis ei tee midagi kasulikku peale ühe teksti — nii näed kõigepealt kuidas mehhanism töötab.
 
@@ -69,7 +69,7 @@ git push
 
 ---
 
-## Osa 2 · Actions tab — vaata mis juhtus (20 min)
+## Osa 2 · Actions tab — vaata mis juhtus
 
 Ava repo GitHubis → **Actions** tab. Näed push'i järgi käivitunud "CI". Ava see, kliki job'il `hello`, ava samm `Run echo "hello"` — logis peab olema `hello`.
 
@@ -81,7 +81,7 @@ Ava repo GitHubis → **Actions** tab. Näed push'i järgi käivitunud "CI". Ava
 
 ---
 
-## Osa 3 · Checkout — too kood masinasse (30 min)
+## Osa 3 · Checkout — too kood masinasse
 
 Praegu workflow ei tee midagi su koodiga — käivitab `echo` tühjas masinas. Testimiseks peab runner su koodi alla laadima. Selleks on valmis action `actions/checkout` — `uses:` kutsub kellegi teise valmis koodi, `run:` käivitab bash-käsu.
 
@@ -104,7 +104,7 @@ Pushi, vaata `ls -la` logi — nüüd näed oma repo faile (Dockerfile, kood), m
 
 ---
 
-## Osa 4 · Päris test (35 min)
+## Osa 4 · Päris test
 
 Nüüd samm, mis päriselt midagi kontrollib. Vali oma rakenduse järgi:
 
@@ -142,7 +142,7 @@ Lisa valitud variant olemasolevate sammude järele, pushi. Uus samm peab olema r
 
 ---
 
-## Osa 5 · Punane X — kuidas näeb ebaõnnestumine (30 min)
+## Osa 5 · Punane X — kuidas näeb ebaõnnestumine
 
 Enne kui CI-d usaldad, pead nägema kuidas näeb **ebaõnnestumine**. Riku test meelega:
 
@@ -159,13 +159,13 @@ Pushi. Actions tab — viimane run **punase X-iga**. Ava kukkunud samm, loe veat
 
 ---
 
-## Osa 6 · Paranda — roheline linnuke (15 min)
+## Osa 6 · Paranda — roheline linnuke
 
 Tühista meelega tehtud viga, pushi uuesti. Uus run roheline, eelmine (katki) jääb ajalukku punasena. See ajalugu on kasulik: näed täpselt millise commiti juures asjad katki läksid ja millise juures paranesid — nagu `git log`, aga tervise kohta.
 
 ---
 
-## Osa 7 · Teine job — lint (40 min)
+## Osa 7 · Teine job — lint
 
 Üks job testib loogikat. Lisa teine, mis kontrollib Dockerfile'i **kvaliteeti** (linting) — mitte kas kood töötab, vaid kas see on hästi kirjutatud (nt kas kasutad `latest` tag'i, mis on halb tava).
 

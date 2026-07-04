@@ -30,7 +30,7 @@ Labi loogika: **skelett → tasks → laienda → template → viga (port ei muu
 
 ---
 
-## Osa 1 · Skelett — `ansible-galaxy init` (30 min)
+## Osa 1 · Skelett — `ansible-galaxy init`
 
 Roll on kokkulepitud kaustastruktuur, mis paneb tasks, muutujad, mallid ja handlerid **ette antud kohtadesse**. Ansible teab neid kohti ise — sa ei kirjuta `include_vars` käsitsi.
 
@@ -55,7 +55,7 @@ Enamikku kaustadest (`files`, `tests`, `vars`, `meta`) sa täna ei puuduta. See 
 
 ---
 
-## Osa 2 · Kirjuta nginx-roll (60 min)
+## Osa 2 · Kirjuta nginx-roll
 
 Täidame skeleti kihiti — iga sammu järel testime.
 
@@ -157,7 +157,7 @@ Käivita, kontrolli `curl http://<IP>` — dünaamiline leht hostinimega.
 
 ---
 
-## Osa 3 · Viga — muutuja, mis ei muuda midagi (30 min)
+## Osa 3 · Viga — muutuja, mis ei muuda midagi
 
 Malli järgi "töötab pordil {{ nginx_port }}". Muuda `defaults/main.yml`-is `nginx_port: 8080`, käivita, ja proovi:
 
@@ -174,7 +174,7 @@ See on tahtlik lõks — muutuja olemasolu ei tähenda et ta midagi mõjutab. P�
 
 ---
 
-## Osa 4 · Kutsu roll korralikult (25 min)
+## Osa 4 · Kutsu roll korralikult
 
 Osas 2 kasutasid minimaalset `site.yml`-i. Vaatame väljakutsumise korralikult. Lihtne vorm:
 
@@ -199,7 +199,7 @@ Pane tähele: `- nginx` (lihtne nimekiri) vs `- role: nginx` + `vars:`. Mõlemad
 
 ---
 
-## Osa 5 · Galaxy roll (35 min)
+## Osa 5 · Galaxy roll
 
 Kõike ise kirjutama ei pea. Paigalda tuntud roll:
 

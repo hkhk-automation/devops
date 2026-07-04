@@ -19,6 +19,54 @@ tags:
 
 ---
 
+## Kust DevOps tuli
+
+See valdkond, mida sa õppima hakkad, on tegelikult **noorem kui sina**. Enne 2008. aastat oli tarkvarafirmades sein: ühel pool **arendajad** (Dev), kes tahtsid uusi asju välja lasta, teisel pool **operatsioonid** (Ops), kes tahtsid, et server püsiks püsti. Kaks tiimi, vastandlikud eesmärgid, süüdistasid teineteist iga rikke korral. "Töötab minu masinas" ütles üks; "aga mitte tootmises" vastas teine.
+
+<figure markdown="span">
+```mermaid
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#ede7f6','primaryBorderColor':'#5e35b1','primaryTextColor':'#212121','lineColor':'#7e57c2'}}}%%
+graph LR
+    D[Dev<br/>uued asjad kiiresti] -->|sein| O[Ops<br/>stabiilsus, kättesaadavus]
+    O -.süüdistus.-> D
+    D -.süüdistus.-> O
+```
+  <figcaption>Joonis 1.1. Enne DevOps'i: kaks tiimi, vastandlikud eesmärgid, sein vahel (Talvik, 2025).</figcaption>
+</figure>
+
+Paar kuupäeva, mis selle seina maha võtsid:
+
+| Aasta | Mis juhtus |
+|---|---|
+| 2008 | Agile-konverentsil Torontos kutsub Andrew Shafer kokku sessiooni "Agile Infrastructure". Kohale tuleb **üks inimene** — Patrick Debois. Nad kaks moodustavad rühma. |
+| 2009 | Velocity-konverentsil räägivad Allspaw ja Hammond Flickrist: **"10+ deploys a day"** — kuidas Dev ja Ops koos töötades saab päevas kümneid kordi turvaliselt välja lasta. |
+| 2009 okt | Debois korraldab Belgias Ghentis esimese **DevOpsDays** konverentsi. Twitteris tekib hashtag **#DevOps** — ja liikumine saab nime. |
+| 2010– | DevOpsDays levib üle maailma; Jez Humble kirjutab raamatu "Continuous Delivery". Aastaks 2014 võtavad suurettevõtted DevOps'i kasutusele. |
+
+*Tabel 1.1. DevOps'i sünd — paar aastat, mis muutsid tööstust (Devopedia, 2022).*
+
+DevOps ei ole tööriist ega sertifikaat — see on **hoiak**: arendajad, kes mõtlevad nagu operatsioonid, ja operatsioonid, kes mõtlevad nagu arendajad. Tööriistad (Git, Docker, Ansible, mida sa õpid) on selle hoiaku **võimaldajad**, mitte hoiak ise. John Willis võttis selle kokku valemiga **CAMS**: Culture, Automation, Measurement, Sharing — kultuur enne tööriistu.
+
+!!! tip "Vaata (10 min) — kust see kõik algas"
+    Lühike video DevOps'i ajaloost ja sünnist: [The (Short) History of DevOps](https://www.youtube.com/watch?v=o7-IuYS0iSE). Vaata enne järgmist osa — saad aru, **miks** see valdkond üldse tekkis.
+
+    Rohkem ajajoont ja mõisteid: [Devopedia — DevOps milestones](https://devopedia.org/devops#milestones).
+
+---
+
+## Sina ei alusta nullist
+
+Sa oled juba pool teed — lihtsalt keegi pole seda sulle niimoodi öelnud. Kõik, mida CompTIA / senine õpe sulle andis (Linux käsurida, SSH, võrgud, Packet Tracer, serverihaldus), on **täpselt** see vundament, millele DevOps ehitab. Vahe on üks: seni tegid neid asju **käsitsi**, nüüd õpid tegema **koodiga**.
+
+<figure markdown="span">
+  ![Karjääritee: mida juba oskad, mida see kursus õpetab, kelleks saad](../images/n01_karjaaritee.svg)
+  <figcaption>Joonis 1.3. Sinu senine sysadmin-tase on vasakpoolne tulp — kursus tõlgib selle keskmiseks, tööturg maksab parempoolse eest (Talvik, 2025).</figcaption>
+</figure>
+
+Näide, mis sulle kohe tuttav on: nädal 1 seadistad SSH võtme ja logid serverisse — seda oskad juba. Nädal 3 paned **Ansible** tegema sama SSH-ühendust, aga korraga viiekümnele serverile, ühe käsuga. Sama oskus, teine skaala. Kogu kursus on selline: võtab midagi, mida käsitsi juba tead, ja näitab kuidas masin selle sinu eest ära teeb.
+
+---
+
 ## Mis on automatiseerimine?
 
 Kirjutad protsessi ühe korra koodina, ja masin käivitab seda alati täpselt samamoodi.
@@ -33,7 +81,7 @@ graph LR
     B -->|roheline| C[Deploy<br/>serverisse]
     C --> D[Kasutaja näeb<br/>uut versiooni]
 ```
-  <figcaption>Joonis 1.1. Push käivitab ahela — testidest deploy'ni ilma inimese sekkumiseta (Talvik, 2025).</figcaption>
+  <figcaption>Joonis 1.2. Push käivitab ahela — testidest deploy'ni ilma inimese sekkumiseta (Talvik, 2025).</figcaption>
 </figure>
 
 ---
@@ -147,8 +195,8 @@ graph LR
     B -->|Ansible| C[Server õiges seisus]
     C -->|Docker| D[Töötab kõikjal]
     D -->|GitHub Actions| E[Automaatsed testid]
-    E -->|Terraform| F[Infra koodis]
-    F -->|Prometheus + Grafana| G[Nähtavus tootmises]
+    E -->|Terraform + Ansible| F[Infra koodis]
+    F -->|mitu serverit| G[Korratav park]
 ```
   <figcaption>Joonis 1.2. Kursuse tööriistad ühe tarnekonveieri lülidena (Talvik, 2025).</figcaption>
 </figure>
@@ -161,7 +209,7 @@ graph LR
 | Docker Compose | Mitu teenust korraga | Nädal 6 |
 | GitHub Actions | CI/CD pipeline | Nädal 7–8 |
 | Terraform | Infrastruktuur koodina | Nädal 10–11 |
-| Prometheus + Grafana | Monitooring | Nädal 12 |
+| Ansible IaC | Mitu serverit, keskkonnad | Nädal 12 |
 
 *Tabel 1.2. Kursuse tööriistad ja millal neid võetakse.*
 

@@ -29,7 +29,7 @@ Labi loogika: **baas (CI) → laienda → viga (403) → paranda → laienda (se
 
 ---
 
-## Osa 1 · Eeltöö — CI roheline, image ehitub (25 min)
+## Osa 1 · Eeltöö — CI roheline, image ehitub
 
 Ava repo VS Code'is (`code .`). Kontrolli et nädal 7 CI on roheline (Actions tab) ja Dockerfile ehitub lokaalselt:
 
@@ -52,7 +52,7 @@ Kui Dockerfile on alamkaustas (nt `app/`), pane kirja — läheb hiljem `context
 
 ---
 
-## Osa 2 · Trigger + build job ilma õigusteta (35 min)
+## Osa 2 · Trigger + build job ilma õigusteta
 
 Ava `.github/workflows/ci.yml`. Lisa `main`-push trigger (fragment, `on:` alla):
 
@@ -98,7 +98,7 @@ git push origin main
 
 ---
 
-## Osa 3 · Viga — 403 permission_denied (30 min)
+## Osa 3 · Viga — 403 permission_denied
 
 Actions tab — `test` roheline, `build-and-push` **punane**. Ava `build-and-push` → build-push samm. Veateade: `denied: permission_denied` või `403`.
 
@@ -172,7 +172,7 @@ Nüüd `build-and-push` roheline.
 
 ---
 
-## Osa 4 · Kontrolli GHCR-i (20 min)
+## Osa 4 · Kontrolli GHCR-i
 
 Repo pealehel paremal → **Packages**. Näed oma image'it (repo nimega). Kliki → näed tage: `latest` ja commit hash.
 
@@ -181,7 +181,7 @@ Repo pealehel paremal → **Packages**. Näed oma image'it (repo nimega). Kliki 
 
 ---
 
-## Osa 5 · Viga — PR ei tohi buildida (25 min)
+## Osa 5 · Viga — PR ei tohi buildida
 
 Kontrolli et `if: main` päriselt kaitseb. Loo haru, muuda midagi, ava PR:
 
@@ -205,7 +205,7 @@ git switch main
 
 ---
 
-## Osa 6 · Ring sulgub — server pull + run (35 min)
+## Osa 6 · Ring sulgub — server pull + run
 
 Image on GHCR-is. Nüüd server tõmbab selle. **Serveriks on sinu sihtmärk** — kodus valitud (vt [Töökeskkond](../kodulabor.md)), koolis Proxmox. Ühenda:
 
@@ -234,7 +234,7 @@ Rakenduse vastus tuleb — kood GitHubis → CI testis → CD ehitas ja pushis �
 
 ---
 
-## Osa 7 · Taasta (10 min)
+## Osa 7 · Taasta
 
 Serveril koristus:
 

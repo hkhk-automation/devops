@@ -11,7 +11,7 @@ exclude_docs: |
 # Repository
 repo_name: hkhk-automation/devops
 repo_url: https://github.com/hkhk-automation/devops
-edit_uri: edit/main/
+edit_uri: edit/main/docs/
 
 # Theme
 theme:
@@ -91,14 +91,11 @@ nav:
 - N2 · Muudatuste jälgimine meeskonnas:
   - Praktikum: week02/lab.md
   - Kodutöö: week02/homework.md
-  - Lisamaterjal: week02/reading_materials.md
 
 - N3 · Serveri konfiguratsiooni automatiseerimine:
   - Loeng: week03/lecture.md
   - Praktikum: week03/lab.md
   - Kodutöö: week03/homework.md
-  - Lisamaterjal: week03/reading_materials.md
-  - Ressursid: week03/resources.md
 
 - N4 · Dünaamiline konfiguratsioon ja saladuste kaitse:
   - Loeng: week04/lecture.md
@@ -138,14 +135,12 @@ nav:
   - Valik 2 — Ansible rollid (praktikum): week11/lab_ansible_roles.md
   - Valik 2 — Ansible rollid (kodutöö): week11/homework_ansible_roles.md
 
-- N12 · Nähtavus — mis toimub tegelikult?:
+- N12 · Infrastruktuur koodina — Ansible IaC:
   - Loeng: week12/lecture.md
   - Praktikum: week12/lab.md
 
 - N13 · Täielik tarnekonveier — otsast lõpuni:
   - Capstone: week13/capstone.md
-
-- Foorum: https://github.com/hkhk-automation/devops/discussions
 
 - Litsents: litsents.md
 
