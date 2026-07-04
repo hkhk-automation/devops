@@ -1,12 +1,16 @@
-site_name: IT Automatiseerimise Kursus
+site_name: IT automatiseerimise kursus
 site_description: Automatiseerimise praktikad ja tööriistad - versioonihaldusest orkestratsioonini
 site_author: Maria Talvik
-site_url: https://mtalvik.github.io/automation
-copyright: Copyright &copy; 2025 Maria Talvik
+site_url: https://hkhk-automation.github.io/devops
+copyright: Maria Talvik &middot; CC BY-SA 4.0
+
+# Ära ehita arhiivi saiti
+exclude_docs: |
+  _archive/
 
 # Repository
-repo_name: mtalvik/automation
-repo_url: https://github.com/mtalvik/automation
+repo_name: hkhk-automation/devops
+repo_url: https://github.com/hkhk-automation/devops
 edit_uri: edit/main/
 
 # Theme
@@ -31,8 +35,6 @@ theme:
   - navigation.instant.progress
   - navigation.prune
   - navigation.sections
-  - navigation.tabs
-  - navigation.tabs.sticky
   - navigation.top
   - navigation.tracking
   - search.highlight
@@ -74,80 +76,78 @@ theme:
 # Plugins
 plugins:
 - search:
-    separator: '[\s\u200b\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+    separator: '[\s\u200b\-_,:!=\[\]()`"/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
     lang: en
-- git-revision-date-localized:
-    enable_creation_date: true
-    type: date
-    fallback_to_build_date: false
 
-# Navigation - Clean and organized
+# Navigation
 nav:
 - Avaleht: index.md
-- Õppekava: curriculum.md
+- Töökeskkond: kodulabor.md
 
-- Git:
-  - Praktikum: git_version_control/lab.md
-  - Kodutöö: git_version_control/homework.md
-  - Lugemismaterjalid: git_version_control/reading_materials.md
-  - Näited:
-    - Git Diff: git_version_control/examples/git_diff_examples.md
-    - Muudatuste rakendamine: git_version_control/examples/git_apply_changes.md
-  - Spikker:
-    - Käsud: git_version_control/reference/git_commands_reference.md
-    - VS Code: git_version_control/reference/vscode.md
-    - WTC Guide: git_version_control/reference/whatthecommit_guide.md
+- N1 · Miks automatiseerimine?:
+  - Loeng: week01/lecture.md
+  - Praktikum: week01/lab.md
 
-- Docker:
-  - Teooria: docker_fundamentals/lecture.md
-  - Praktikum: docker_fundamentals/lab.md
-  - Kodutöö: docker_fundamentals/homework.md
-  - Compose:
-    - Teooria: docker_orchestration/lecture.md
-    - Praktikum: docker_orchestration/lab.md
-    - Kodutöö: docker_orchestration/homework.md
-    - Kodulabor: docker_orchestration/kodu_masina_ehitus_juhend.md
+- N2 · Muudatuste jälgimine meeskonnas:
+  - Praktikum: week02/lab.md
+  - Kodutöö: week02/homework.md
+  - Lisamaterjal: week02/reading_materials.md
 
-- Ansible:
-  - Alused:
-    - Teooria: ansible_basics/lecture.md
-    - Praktikum: ansible_basics/lab.md
-    - Kodutöö: ansible_basics/homework.md
-    - Lugemismaterjalid: ansible_basics/reading_materials.md
-    - Lisamaterjalid: ansible_basics/resources.md
-    - Arenduskeskkond (Vagrant): ansible_basics/setup.md
-  - Edasijõudnud:
-    - Teooria: ansible_advanced/lecture.md
-    - Praktikum: ansible_advanced/lab.md
-    - Kodutöö: ansible_advanced/homework.md
-  - Rollid:
-    - Teooria: ansible_roles/lecture.md
-    - Praktikum: ansible_roles/lab.md
-    - Kodutöö: ansible_roles/homework.md
+- N3 · Serveri konfiguratsiooni automatiseerimine:
+  - Loeng: week03/lecture.md
+  - Praktikum: week03/lab.md
+  - Kodutöö: week03/homework.md
+  - Lisamaterjal: week03/reading_materials.md
+  - Ressursid: week03/resources.md
 
-- Terraform:
-  - Teooria: terraform_basics/lecture.md
-  - Praktikum: terraform_basics/lab.md
-  - Kodutööd:
-    - HW1 - Põhitõed: terraform_basics/homework1.md
-    - HW2 - Moodulid: terraform_basics/homework2.md
-    - AWS Backup (boonus): terraform_basics/homework_aws_backup.md
-  - Lisamaterjalid:
-    - Workspaces: terraform_basics/workspaces.md
-    - Backend Configuration: terraform_basics/backend.md
-    - Modules: terraform_basics/modules.md
-    - Tööriistad: terraform_basics/tools.md
+- N4 · Dünaamiline konfiguratsioon ja saladuste kaitse:
+  - Loeng: week04/lecture.md
+  - Praktikum: week04/lab.md
+  - Kodutöö: week04/homework.md
 
-- CI/CD + Kubernetes:
-  - CI/CD Teooria: ci_cd_advanced/lecture.md
-  - CI/CD Praktikum: ci_cd_advanced/lab.md
-  - CI/CD Kodutöö: ci_cd_advanced/homework.md
-  - Kubernetes Teooria: kubernetes_overview/lecture.md
-  - Kubernetes Labor 1: kubernetes_overview/lab1.md
-  - Kubernetes Labor 2: kubernetes_overview/lab2.md
-  - Kubernetes Kodutöö: kubernetes_overview/homework.md
+- N5 · Rakenduse pakkimine ja ümberpaigutamine:
+  - Loeng: week05/lecture.md
+  - Praktikum: week05/lab.md
+  - Kodutöö: week05/homework.md
 
-- Foorum: https://github.com/mtalvik/automation/discussions
+- N6 · Mitme teenuse käitamine koos:
+  - Loeng: week06/lecture.md
+  - Praktikum: week06/lab.md
+  - Kodutöö: week06/homework.md
+
+- N7 · Automaatne testimine ja tarnekonveier:
+  - Loeng: week07/lecture.md
+  - Praktikum: week07/lab.md
+  - Kodutöö: week07/homework.md
+
+- N8 · Automaatne ehitamine ja levitamine:
+  - Loeng: week08/lecture.md
+  - Praktikum: week08/lab.md
+  - Kodutöö: week08/homework.md
+
+- N9 · Infrastruktuur koodina — mõtteviis (ASYNC):
+  - Iseseisvtöö: week09/async_task.md
+
+- N10 · Infrastruktuuri kirjeldamine koodina:
+  - Loeng: week10/lecture.md
+  - Praktikum: week10/lab.md
+
+- N11 · Korduvkasutatav infrastruktuur:
+  - Valik 1 — Terraform moodulid: week11/lab_terraform_modules.md
+  - Valik 2 — Ansible rollid (loeng): week11/lecture_ansible_roles.md
+  - Valik 2 — Ansible rollid (praktikum): week11/lab_ansible_roles.md
+  - Valik 2 — Ansible rollid (kodutöö): week11/homework_ansible_roles.md
+
+- N12 · Nähtavus — mis toimub tegelikult?:
+  - Loeng: week12/lecture.md
+  - Praktikum: week12/lab.md
+
+- N13 · Täielik tarnekonveier — otsast lõpuni:
+  - Capstone: week13/capstone.md
+
+- Foorum: https://github.com/hkhk-automation/devops/discussions
+
+- Litsents: litsents.md
 
 # Markdown extensions
 markdown_extensions:
@@ -175,93 +175,42 @@ markdown_extensions:
     anchor_linenums: true
     line_spans: __span
     pygments_lang_class: true
-    auto_title: true
-    linenums: true
 - pymdownx.inlinehilite
 - pymdownx.keys
 - pymdownx.magiclink:
     normalize_issue_symbols: true
     repo_url_shorthand: true
-    user: mtalvik
-    repo: automation
+    user: hkhk-automation
+    repo: devops
 - pymdownx.mark
 - pymdownx.smartsymbols
 - pymdownx.snippets:
-    check_paths: true
-    base_path: docs
+    auto_append:
+    - includes/mkdocs.md
 - pymdownx.superfences:
     custom_fences:
     - name: mermaid
       class: mermaid
       format: !!python/name:pymdownx.superfences.fence_code_format ""
-    - name: plantuml
-      class: plantuml
-      format: !!python/name:pymdownx.superfences.fence_code_format ""
 - pymdownx.tabbed:
     alternate_style: true
     combine_header_slug: true
-    slugify: !!python/name:pymdownx.slugs.slugify ""
+    slugify: !!python/object/apply:pymdownx.slugs.slugify
+      kwds:
+        case: lower
 - pymdownx.tasklist:
     custom_checkbox: true
 - pymdownx.tilde
-- pymdownx.critic
 
-# Extra
-extra:
-  generator: false
-  status:
-    new: Recently added
-    deprecated: Deprecated
-  css:
+
+extra_css:
   - stylesheets/extra.css
-  - https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap
-  - https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap
+
+# Disable last updated date
+extra_javascript:
+  - https://unpkg.com/mermaid@10/dist/mermaid.esm.min.mjs
+
+extra:
   social:
   - icon: fontawesome/brands/github
-    link: https://github.com/mtalvik
-    name: GitHub
-  - icon: fontawesome/brands/linkedin
-    link: https://linkedin.com/in/maria-talvik
-    name: LinkedIn
-  - icon: fontawesome/solid/blog
-    link: https://mariatalvik.ee
-    name: Blogi
-  - icon: fontawesome/brands/twitter
-    link: https://twitter.com/mariatalvik
-    name: Twitter
-  analytics:
-    provider: google
-    property: G-XXXXXXXXXX
-    feedback:
-      title: Kas see leht oli kasulik?
-      ratings:
-      - icon: material/emoticon-happy-outline
-        name: See leht oli kasulik
-        data: 1
-        note: >-
-          Aitäh tagasiside eest! 🚀
-      - icon: material/emoticon-sad-outline
-        name: See leht vajab täiendamist
-        data: 0
-        note: >-
-          Aitäh tagasiside eest! Kasuta <a href="https://github.com/mtalvik/automation/issues/new/?title=[Feedback]+{title}" target="_blank" rel="noopener">GitHub issues</a> täpsema tagasiside andmiseks.
-  consent:
-    title: Küpsiste nõusolek
-    description: >-
-      Kasutame küpsiseid, et jälgida kasutusstatistikat ja parandada kasutajakogemust.  Sinu nõusolekuga aitad meil muuta õppematerjale paremaks.
-    actions:
-    - accept
-    - reject
-    - manage
-  tags:
-    Git: git
-    Docker: docker
-    Ansible: ansible
-    Kubernetes: k8s
-    Terraform: terraform
-    CI/CD: cicd
-    Praktikum: lab
-    Kodutöö: homework
-    Teooria: lecture
-    DevOps: devops
-    Automatiseerimine: automation
+    link: https://github.com/hkhk-automation
