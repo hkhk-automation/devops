@@ -5,7 +5,7 @@ tags:
   - Praktikum
 ---
 
-# Terraform moodulid — käed külge — Labor (Valik 1)
+# Terraform moodulid — Labor (Valik 1)
 
 **Kestus:** 4 tundi
 **Tase:** Algaste

@@ -5,7 +5,7 @@ tags:
   - Praktikum
 ---
 
-# Docker — käed külge — Labor
+# Docker — Labor
 
 **Kestus:** 4 tundi
 **Eeldused:** Loeng antud (image ≠ konteiner, Dockerfile, build/run). Kui udu — [tagasi loengusse](lecture.md). Siit edasi on **ainult käed külge**, teooriat ei korrata.

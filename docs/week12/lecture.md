@@ -5,7 +5,7 @@ tags:
   - Infrastruktuur
 ---
 
-# Loeng — Infrastruktuur koodina: Ansible IaC
+# Loeng — Terve serveripark koodina
 
 **Kestus:** ~40 minutit
 **Tase:** Eeldame Ansible playbook'e, rolle ja muutujaid (nädalad 3–4, 11)

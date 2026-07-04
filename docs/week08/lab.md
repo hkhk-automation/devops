@@ -5,7 +5,7 @@ tags:
   - Praktikum
 ---
 
-# CD ja GHCR — käed külge — Labor
+# CD ja GHCR — Labor
 
 **Kestus:** 4 tundi
 **Eeldused:** Loeng antud (CI vs CD, register, tagid). Nädal 5 repo (Flask + Dockerfile) + nädal 7 pipeline (`.github/workflows/ci.yml` roheline). Kui udu — [tagasi loengusse](lecture.md).

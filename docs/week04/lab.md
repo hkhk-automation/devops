@@ -5,7 +5,7 @@ tags:
   - Turvalisus
 ---
 
-# Muutujad, Jinja2 ja Vault — käed külge — Labor
+# Muutujad, Jinja2 ja Vault — Labor
 
 **Kestus:** 4 tundi
 **Eeldused:** Loeng antud (muutujad, precedence, Jinja2, Vault). Nädal 3 lab tehtud — töötav `nginx.yml`. Kui udu — [tagasi loengusse](lecture.md). Siit edasi **ainult käed külge**.

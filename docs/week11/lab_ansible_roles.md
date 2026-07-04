@@ -5,7 +5,7 @@ tags:
   - Praktikum
 ---
 
-# Ansible rollid — käed külge — Labor (Valik 2)
+# Ansible rollid — Labor (Valik 2)
 
 **Kestus:** 4 tundi
 **Tase:** Algaste

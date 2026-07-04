@@ -35,7 +35,7 @@
 | N9 | Infrastruktuur koodina — mõtteviis *(iseseisev)* | — |
 | N10 | Infrastruktuuri kirjeldamine koodina | Terraform |
 | N11 | Korduvkasutatav infrastruktuur | Terraform moodulid / Ansible rollid |
-| N12 | Infrastruktuur koodina — Ansible IaC | Ansible, group_vars |
+| N12 | Terve serveripark koodina | Ansible, group_vars |
 | N13 | Täielik tarnekonveier — otsast lõpuni | Kõik tööriistad |
 
 ---

@@ -6,12 +6,12 @@ tags:
   - GitHub
 ---
 
-# Miks automatiseerimine? — käed külge — Labor
+# Miks automatiseerimine? — Labor
 
 **Kestus:** 4 tundi
 **Eeldused:** GitHub konto olemas (vt [avaleht](../index.md) — "Enne esimest tundi"). Muud eelteadmist pole vaja.
 **Kontroll-node:** sinu arvuti, kogu töö **VS Code'is**.
-**Sihtmärk:** sinu valik (vt [Töökeskkond](../kodulabor.md)) — kodus lokaalne, koolis Proxmox (õpetaja annab aadressi). Vahe on täpselt üks rida: kuhu sa SSH-ga ühendud.
+**Sihtmärk:** sinu valik (vt [Töökeskkond](../kodulabor.md)); kodus lokaalne, koolis Proxmox (õpetaja annab aadressi). Kodus ja koolis erineb ainult SSH-sihtmärk.
 
 ---
 

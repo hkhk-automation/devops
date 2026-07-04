@@ -6,7 +6,7 @@ tags:
   - Praktikum
 ---
 
-# Infrastruktuur koodina — Ansible IaC — käed külge — Labor
+# Terve serveripark koodina — Labor
 
 **Kestus:** 4 tundi
 **Eeldused:** Loeng antud (inventory grupid, group_vars/host_vars, idempotentsus infra tasemel, Ansible vs Terraform). Nädalad 3–4 (playbook, muutujad, Vault), nädal 11 (rollid, `site.yml`). Kui udu — [tagasi loengusse](lecture.md). Siit edasi **ainult käed külge**.

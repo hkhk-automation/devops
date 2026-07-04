@@ -6,7 +6,7 @@ tags:
   - GitHub
 ---
 
-# Tühjast repost meeskonnani — käed külge — Labor
+# Tühjast repost meeskonnani — Labor
 
 **Kestus:** 4 tundi
 **Eeldused:** Loeng antud (commit, branch, remote, PR mudel). Nädal 1 tehtud — SSH võti GitHubis, sihtmärk töötab. Tead mis on `git clone`, `git add`, `git commit`, `git push`.

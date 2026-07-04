@@ -5,7 +5,7 @@ tags:
   - Praktikum
 ---
 
-# Esimene Ansible playbook — käed külge — Labor
+# Esimene Ansible playbook — Labor
 
 **Kestus:** 4 tundi
 **Eeldused:** Loeng antud (inventory, push-mudel, idempotentsus, moodulid). Git põhialused. Kui udu — [tagasi loengusse](lecture.md). Siit edasi **ainult käed külge**.

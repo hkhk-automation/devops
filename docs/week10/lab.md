@@ -5,7 +5,7 @@ tags:
   - Praktikum
 ---
 
-# Terraform — esimene kontakt — Labor
+# Terraform, esimene kontakt — Labor
 
 **Kestus:** 4 tundi
 **Tase:** Algaste

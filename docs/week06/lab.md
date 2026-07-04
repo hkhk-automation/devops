@@ -5,7 +5,7 @@ tags:
   - Praktikum
 ---
 
-# Docker Compose — käed külge — Labor
+# Docker Compose — Labor
 
 **Kestus:** 4 tundi
 **Eeldused:** Loeng antud (teenus, võrk, volume, miks mitu konteinerit). Nädal 5 Flask + `Dockerfile` olemas. Kui udu — [tagasi loengusse](lecture.md). Siit edasi **ainult käed külge**.

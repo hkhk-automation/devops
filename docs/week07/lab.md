@@ -5,7 +5,7 @@ tags:
   - Praktikum
 ---
 
-# GitHub Actions CI — käed külge — Labor
+# GitHub Actions CI — Labor
 
 **Kestus:** 4 tundi
 **Eeldused:** Loeng antud (CI, trigger/job/step). GitHub repo nädalast 5–6 (Dockerfile + rakenduse kood), push-õigus. Kui udu — [tagasi loengusse](lecture.md).
