@@ -168,7 +168,7 @@ Remote-SSH avab **sõlme sisse** - eraldi oskus, kursuse põhitöö (git, Ansibl
 
 ---
 
-## Osa 5 - Git valmis (sinu arvutil) · *võib teha ka Git-tunnil (n2)*
+## Osa 5 - Git valmis ja esimene commit (sinu arvutil)
 
 Git elab **sinu arvutil**, kus on internet - **mitte sõlmedes** (offline). [Git esmane seadistus](https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup):
 
@@ -300,6 +300,7 @@ See on täpselt see, mida Ansible nädalal 3 teeb - aga sina teed käsitsi, et m
 - [ ] kontrollisid (ping / nc / git ls-remote), kust git päriselt töötab
 - [ ] tegid vähemalt kaks Osa 9 väljakutset ja kirjutasid refleksiooni
 - [ ] tegid vähemalt ühe Osa 10 (Sügavam SSH) katse
+- [ ] tõendid on oma repos **commit'itud ja push'itud** (privaatvõtit repos EI ole)
 
 ---
 
@@ -354,16 +355,35 @@ Kui õpetaja ütleb, et on olemas eraldi bastion-masin, proovi **ProxyJump** - h
 
 ---
 
-## Esitamine
+## Esitamine - commit + push oma repo
 
-Kõik tõendid tekivad **su arvutil** (kontroller). Esita õpetaja määratud viisil:
+Su repo tekib, kui võtad vastu õpetaja jagatud **Classroom 50 accept-lingi** - see loob sulle `lab01-starter` põhjal privaatse repo organisatsioonis `hkhk-automation`. Repos on juba ees `README.md`, `.gitignore` ja tühi `logid/` kaust.
 
-- `logid/ansible-valmis.txt` ja `logid/ansible-ping.txt` (Osa 6-7 väljundid)
-- `inventory.ini`
-- `toend.png` - 1 ekraanipilt (kolm `ssh proxmoxN` login'i)
-- lühivastus: kuidas võtmepaar töötab + miks ilma paroolita
+1. **Klooni oma repo** (mitte starter'it - sinu oma):
 
-Git-esitus (clone/commit/push) tuleb **nädal 2**. ⚠️ Privaatvõtit (`~/.ssh/kursus_ed25519`) ei jaga kunagi.
+```bash
+git clone <sinu-repo-URL>       # URL on su assignment-repo lehelt GitHubis
+cd <repo>
+```
+
+2. **Täida ja lisa failid:**
+   - `README.md` - kirjuta oma **nimi** + lühivastus: kuidas SSH-võtmepaar töötab ja miks saab ilma paroolita.
+   - `logid/ansible-valmis.txt` ja `logid/ansible-ping.txt` (Osa 6-7 väljundid).
+   - `inventory.ini` - su Ansible-inventar.
+   - `toend.png` - 1 ekraanipilt (kolm `ssh proxmoxN` login'i ilma paroolita).
+   - `.gitignore` on juba olemas (välistab võtmed) - ära kustuta.
+
+3. **Commit + push:**
+
+```bash
+git add .
+git commit -m "Lab 01: keskkond valmis, SSH kolme sõlme"
+git push
+```
+
+Iga push loeb esituseks (Classroom 50 järgib default-haru push'e). ⚠️ **Ära kunagi commit'i privaatvõtit** (`~/.ssh/kursus_ed25519`) - `.gitignore` välistab selle; kui kogemata lisasid, eemalda enne push'i.
+
+Git toimib **su arvutil** (kus internet on), mitte offline-sõlmes.
 
 ---
 
