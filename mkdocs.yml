@@ -82,6 +82,7 @@ nav:
 - Kursus:
   - Avaleht: index.md
   - Töökeskkond: kodulabor.md
+  - Ansible seaded (ansible.cfg): ansible-config.md
 
 - Nädalad:
   - N1 · Miks automatiseerimine?:

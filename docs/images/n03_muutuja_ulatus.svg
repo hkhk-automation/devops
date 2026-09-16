@@ -1,0 +1,17 @@
+<svg viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg" font-family="Inter, -apple-system, sans-serif">
+  <text x="450" y="34" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Muutuja ulatus — kus muutuja on nähtav</text>
+
+  <rect x="60" y="66" width="780" height="300" rx="14" fill="#fff3e0" stroke="#ffa726" stroke-width="2"/>
+  <text x="82" y="92" font-size="14" font-weight="700" fill="#e65100">GLOBAALNE ulatus</text>
+  <text x="82" y="112" font-size="12" fill="#ef6c00">extra-vars (-e) — nähtav kõigis play'des</text>
+
+  <rect x="150" y="128" width="600" height="210" rx="12" fill="#ede7f6" stroke="#7e57c2" stroke-width="2"/>
+  <text x="172" y="154" font-size="14" font-weight="700" fill="#4527a0">PLAY-ulatus</text>
+  <text x="172" y="174" font-size="12" fill="#5e35b1">vars: — nähtav ainult selles play's</text>
+
+  <rect x="250" y="190" width="400" height="128" rx="10" fill="#d1c4e9" stroke="#5e35b1" stroke-width="2"/>
+  <text x="272" y="216" font-size="14" font-weight="700" fill="#311b92">HOST-ulatus</text>
+  <text x="272" y="236" font-size="12" fill="#4527a0">host_vars — nähtav ainult sellel hostil</text>
+  <rect x="290" y="252" width="320" height="46" rx="8" fill="#fff" stroke="#b39ddb"/>
+  <text x="450" y="280" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#311b92">web2: dns_server = 10.5.5.4</text>
+</svg>

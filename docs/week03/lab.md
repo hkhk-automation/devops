@@ -5,71 +5,92 @@ tags:
   - Praktikum
 ---
 
-# Esimene Ansible playbook — Labor
+# Esimene Ansible playbook — Praktikum
 
 **Kestus:** 4 tundi
-**Eeldused:** Loeng antud (inventory, push-mudel, idempotentsus, moodulid). Git põhialused. Kui udu — [tagasi loengusse](lecture.md). Siit edasi **ainult käed külge**.
-**Kontroll-node:** sinu arvuti, kogu töö **VS Code'is** (failid redaktoris, käsud integreeritud terminalis).
-**Sihtmärk:** üks Ubuntu-server sinu valik — [Kodulabor](../kodulabor.md), WSL2, oma VM, pilv (kodus); Proxmox (koolis). Playbook on kõigil identne, vahet teeb üks rida `inventory.ini`-s.
+**Eeldused:** Loeng loetud (ptk 1–8: inventory, push-mudel, playbook, idempotentsus). Nädal 1 tehtud — `kursus_ed25519` võti kolmes sõlmes, `ansible -m ping` annab `pong`. Kui udu — [tagasi loengusse](lecture.md).
+**Kontroll-node:** sinu arvuti, kogu töö **VS Code'is** (failid redaktoris, käsud terminalis).
+**Sihtmärk:** su Proxmoxi sõlmed `proxmox1` / `proxmox2` / `proxmox3` (nagu nädal 1). Kui teed kodus, sobib ka WSL2/VM/pilv — playbook on kõigil identne.
 
 ---
 
 !!! abstract "Õpiväljundid"
 
-    Selle labi lõpuks sa:
+    Selle praktikumi lõpuks sa:
 
-    1. Seadistad Ansible kontroll-node'i ja inventory oma sihtmärgile
-    2. Ehitad playbooki kiht-kihi haaval, testides igal sammul
-    3. **Diagnoosid** kolm tüüpilist viga veateate järgi (permission denied, katkine idempotentsus, vale moodul)
-    4. Selgitad idempotentsust näite peal — miks `changed` vs `ok`, ja miks `shell:` selle lõhub
-    5. Taastad korratava seisu ise tehtud sasi järel
-
----
-
-Labi loogika: **setup → baas → viga → paranda → laienda → viga → taasta.** Sa ei kopeeri valmis playbookit. Sa ehitad selle task-haaval, lõhud võtmekohtades meelega, ja saad aru **miks**. Tervet faili näed üks kord — edasi ainult "lisa see task".
+    1. Ehitad playbooki task-haaval, testides igal sammul
+    2. **Diagnoosid** kolm tüüpviga veateate järgi (permission denied, katkine idempotentsus, sisu vs olemasolu)
+    3. Selgitad idempotentsust näite peal — miks `changed` vs `ok`, ja miks `shell:` selle lõhub
+    4. Ajad Märteni monitori roheliseks — Ansible teeb selle, mida Märten käsitsi ei dokumenteerinud
 
 ---
 
-## Osa 1 · Setup — Ansible, inventory, ühendus
+!!! example "Näidisstsenaarium — Märten, teine vaatus"
+    Nädal 2 päästsid Märteni `monitor.sh`. Ta kontrollib, kas nginx töötab — ja ütles kohe "nginx EI tööta", sest nginx polnud kunagi paigaldatud. Märten oleks selle käsitsi installinud, unustanud `enable`, ega kirjutanud kuhugi üles, mis ta tegi.
 
-Paigalda Ansible oma arvutisse:
+    Sina teed teisiti: kirjutad **playbooki**, mis paigaldab ja käivitab nginx'i — korratavalt, dokumenteeritult, koodina. Praktikumi lõpus jooksutad Märteni monitori ja see läheb **roheliseks**.
 
-```bash
-# Linux/WSL
-sudo apt update && sudo apt install -y ansible
-# macOS
-brew install ansible
+---
+
+Praktikumi loogika: **setup → baas → viga → paranda → laienda → viga → taasta.** Sa ei kopeeri valmis playbookit. Ehitad selle task-haaval, lõhud võtmekohtades meelega, ja saad aru **miks**.
+
+<figure markdown="span">
+```mermaid
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#ede7f6','primaryBorderColor':'#5e35b1','primaryTextColor':'#212121','lineColor':'#7e57c2'}}}%%
+graph LR
+    subgraph SA["Sinu arvuti = kontroll-node"]
+        INV["inventory.ini<br/>(web: proxmox1)"]
+        PB["nginx.yml<br/>(playbook)"]
+        ANS(["ansible-playbook"])
+        INV --> ANS
+        PB --> ANS
+    end
+    ANS -->|"SSH (kursus_ed25519)"| N1["proxmox1<br/>nginx paigaldatud + käib"]
+    ANS -. "lisaülesanne" .-> N2[proxmox2]
+    ANS -. "lisaülesanne" .-> N3[proxmox3]
 ```
+  <figcaption>Joonis 1. Kuidas see töötab: sinu arvuti loeb inventory ja playbooki, ja lükkab SSH kaudu (nädala 1 võtmega) muudatuse sõlme. Sõlme ei paigaldata Ansible't — ainult SSH + Python (Talvik, 2025).</figcaption>
+</figure>
 
-```bash
-ansible --version
-```
+---
 
-Ava projektikaust VS Code'is (`code .`), terminal `` Ctrl+` ``. Loo `inventory.ini` — sisu **sõltub su sihtmärgist**:
+## Osa 1 · Setup — kontrolli ühendust
+
+!!! warning "Ansible ei jookse Windowsi käsurealt"
+    Ansible vajab *NIX-käsurida — **Mac, Linux või WSL2**. Windowsi cmd/PowerShell ei sobi kontroll-node'iks. Kolm varianti:
+
+    - **On WSL2 / Mac / Linux** → jooksuta Ansible oma masinast sõlme vastu (nii nagu päriselt tehakse).
+    - **Pole *NIX-i käepärast** → jooksuta Ansible **sõlme seest sõlme enda vastu** (`localhost`). See pole tavapärane kasutus, aga toimib õppimiseks.
+    - Kahtluse korral küsi õpetajalt, kumb tee sinu masinal sobib.
+
+Ansible on su arvutil juba (nädal 1). Ava projektikaust VS Code'is (`code .`), terminal `` Ctrl+` ``. Sinu `inventory.ini` on nädalast 1:
 
 ```ini
 [web]
-<sihtmärgi-IP> ansible_user=<kasutaja>
+proxmox1
 ```
 
-| Sihtmärk | Rida `inventory.ini`-s |
-|---|---|
-| WSL2 / lokaalne VM | `127.0.0.1 ansible_user=sinu_kasutaja` (või VM-i IP) |
-| Proxmox (koolis) | `192.168.x.x ansible_user=õpetajalt` |
-| Pilve-server | `avalik-IP ansible_user=ubuntu` |
-
-*Tabel 3.1. Sama rida, erinevad sihtmärgid.*
-
-Testi ühendust (`ping` moodul — mitte ICMP, vaid SSH + Python kontroll):
+Testi ühendust — [`ping`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/ping_module.html) moodul (mitte ICMP, vaid SSH + Python kontroll):
 
 ```bash
-ansible all -i inventory.ini -m ping
+ansible -i inventory.ini web -m ping
 ```
 
 `SUCCESS` + `"pong"` — valmis. **Ära edasi mine enne kui pong tuleb.**
 
+!!! info "Kes sa Ansible'i silmis oled?"
+    Ansible logib sisse **sama kasutajana**, kellega `ssh proxmox1` töötab — sest `User` ja võti tulevad su nädala 1 `~/.ssh/config`-ist. Teie sõlmedel on see `kasutaja`. Kontrolli üle:
+
+    ```bash
+    ansible -i inventory.ini web -m command -a "whoami"
+    ```
+
+    Väljund peab olema **`kasutaja`** — sama, kellega ise SSH-d. Nii näedki, et Ansible kasutab täpselt sama SSH-teed mis sina.
+
+    > Päris tootmises on Ansible'il sageli **oma teenuskonto** (nt `ansible`), mitte inimese isiklik konto — nii on ligipääs auditeeritav ja piiratud. Meie kursusel piisab ühest `kasutaja`-st; root-õigused tuleb siis `become`-ga (Osa 3).
+
 !!! tip
-    `UNREACHABLE` — kas server käib ja `ssh <kasutaja>@<IP>` töötab käsitsi? Ansible ei tee midagi maagilist: kui SSH käsitsi ei ühendu, ei ühendu ka Ansible.
+    `UNREACHABLE`? Kas `ssh proxmox1` töötab käsitsi? Ansible ei tee midagi maagilist: kui SSH käsitsi ei ühendu, ei ühendu ka Ansible.
 
 ---
 
@@ -79,62 +100,61 @@ Loo `nginx.yml`. **Ainus kord terve fail** — edasi lisad task'e:
 
 ```yaml
 ---
-- name: Paigalda ja seadista nginx   # playbooki nimi, ilmub väljundis
-  hosts: web                         # grupp inventory'st
-  become: yes                        # root-õigused (sudo)
+- name: Paigalda ja seadista nginx
+  hosts: web
+  become: yes                         # root-õigused (sudo)
 
   tasks:
     - name: Paigalda nginx pakett
-      apt:
+      ansible.builtin.package:         # valib ise dnf (Alma) või apt (Ubuntu)
         name: nginx
-        state: present               # "peab olemas olema"
-        update_cache: yes            # apt update enne paigaldust
+        state: present                 # "peab olemas olema"
 ```
 
-Ridade lahtiseletus:
+Kolm asja, mida tähele panna:
 
-- `hosts: web` — grupp `inventory.ini`-st, playbook jookseb kõigil selle grupi masinatel.
-- `become: yes` — nginx paigaldus vajab root-õigusi.
-- `state: present` — kui nginx juba olemas, jätab Ansible vahele. Idempotentsuse esimene vihje.
+- `hosts: web` — grupp `inventory.ini`-st.
+- `become: yes` — paketi paigaldus vajab root-õigusi.
+- **`ansible.builtin.package`** — universaalne paketimoodul. Su koolisõlm on Alma (`dnf`), aga sama task töötab ka Ubuntul (`apt`). Ei pea harusid tegema.
+
+Käivita:
 
 ```bash
 ansible-playbook -i inventory.ini nginx.yml
 ```
 
-`changed=1`, task **changed**. Kontrolli:
+`changed=1`, task **changed**. Kontrolli sõlmes:
 
 ```bash
-ssh <kasutaja>@<IP> "nginx -v"
+ssh proxmox1 "nginx -v"
 ```
 
 ---
 
 ## Osa 3 · Become puudu — permission denied
 
-Eemalda **meelega** rida `become: yes` (kommenteeri välja: `# become: yes`). Käivita:
+Eemalda **meelega** rida `become: yes` (kommenteeri: `# become: yes`). Käivita:
 
 ```bash
 ansible-playbook -i inventory.ini nginx.yml
 ```
 
-**Viga:** midagi stiilis `Permission denied` või `Failed to lock apt`.
+**Viga:** midagi stiilis `Permission denied` või `This command has to be run under the root user`.
 
 ??? question "Diagnoosi enne kui parandad"
-    Sinu `<kasutaja>` ei ole root. `apt install` vajab root-õigusi. Mis rida ütles Ansible'ile "tee seda sudo-ga", ja mis juhtus kui selle ära võtsid? Miks Ansible ei kasuta sudo't vaikimisi?
+    Sinu SSH-kasutaja ei ole root. Paketi paigaldus vajab root-õigusi. Mis rida ütles Ansible'ile "tee sudo-ga", ja mis juhtus kui selle ära võtsid? Miks Ansible ei kasuta sudo't vaikimisi?
 
-**Paranda** — pane `become: yes` tagasi, käivita, veendu et läbib.
-
-See on esimene asi, mida kontrollida kui näed `Permission denied`: kas task vajab root-õigusi ja kas `become` on peal.
+**Paranda** — pane `become: yes` tagasi, käivita, veendu et läbib. See on esimene asi, mida `Permission denied` puhul kontrollida: kas task vajab root'i ja kas `become` on peal.
 
 ---
 
 ## Osa 4 · Laienda — teenus ja idempotentsus
 
-Nginx on paigaldatud, aga kas teenus töötab ja käivitub pärast reboot'i? **Lisa teine task** (fragment, `tasks:` alla):
+Nginx on paigaldatud, aga kas teenus töötab ja käivitub pärast reboot'i? **Lisa teine task** (`tasks:` alla):
 
 ```yaml
     - name: Käivita ja luba nginx
-      service:
+      ansible.builtin.service:
         name: nginx
         state: started         # käivita nüüd
         enabled: yes           # käivitu ka pärast reboot'i
@@ -147,17 +167,19 @@ ansible-playbook -i inventory.ini nginx.yml
 **Vaata `PLAY RECAP` hoolikalt.** Esimene task **ok** (nginx juba paigaldatud — Ansible ei tee midagi), teine **changed** (teenus käivitati esmakordselt).
 
 ??? question "Mõtle"
-    Käivita **veel kord**. Nüüd on mõlemad **ok**. Ansible ei paigaldanud uuesti, ei käivitanud uuesti. Kust ta teadis, et pole midagi teha? See ongi idempotentsus. Osas 5 lõhume selle.
+    Käivita **veel kord**. Nüüd on mõlemad **ok**. Kust Ansible teadis, et pole midagi teha? See ongi idempotentsus. Osas 5 lõhume selle meelega.
+
+`enabled: yes` on täpselt see, mille Märten unustas. Nüüd on see failis kirjas — enam ei unusta.
 
 ---
 
 ## Osa 5 · Katkine idempotentsus — shell alati changed
 
-Tahad kontrollida nginx versiooni ja kirjutada selle faili. **Vale viis** — lisa see task `shell:` mooduliga:
+Tahad kirjutada nginx versiooni faili. **Vale viis** — lisa task `shell:` mooduliga:
 
 ```yaml
     - name: Kirjuta nginx versioon faili
-      shell: nginx -v 2> /tmp/nginx_version.txt
+      ansible.builtin.shell: nginx -v 2> /tmp/nginx_version.txt
 ```
 
 ```bash
@@ -166,83 +188,57 @@ ansible-playbook -i inventory.ini nginx.yml
 ansible-playbook -i inventory.ini nginx.yml
 ```
 
-**Vaata:** see task on **changed** iga kord. Alati. Kolm käivitust, kolm `changed`.
+**Vaata:** see task on **changed** iga kord. Kolm käivitust, kolm `changed`.
 
 ??? question "Diagnoosi"
-    Moodulid nagu `apt` ja `service` **kontrollivad seisu** enne tegutsemist ("kas juba paigaldatud?"). `shell:` ei kontrolli midagi — ta lihtsalt käivitab käsu ja raporteerib alati `changed`, sest Ansible ei tea mida see käsk tegi. Miks on "alati changed" halb, kui sul on 50 serverit ja cron?
+    `package` ja `service` **kontrollivad seisu** enne tegutsemist. `shell:` ei kontrolli midagi — käivitab käsu ja raporteerib alati `changed`, sest Ansible ei tea, mida see käsk tegi. Miks on "alati changed" halb, kui sul on 50 sõlme ja Märteni monitor jooksib cron'is?
 
-**Paranda** — kaks võimalust:
-
-1. Kui käsk peab jooksma ainult kord, lisa `creates` (Ansible jätab vahele kui fail juba olemas):
+**Paranda** — kui käsk peab jooksma ainult kord, lisa `creates` (Ansible jätab vahele kui fail olemas):
 
 ```yaml
     - name: Kirjuta nginx versioon faili
-      shell: nginx -v 2> /tmp/nginx_version.txt
+      ansible.builtin.shell: nginx -v 2> /tmp/nginx_version.txt
       args:
         creates: /tmp/nginx_version.txt
 ```
 
 Käivita kaks korda — teine kord **ok**. Idempotentsus taastatud.
 
-2. Veel parem oleks üldse vältida `shell:`-i ja kasutada mõnda moodulit, kui see olemas. `shell:`/`command:` on viimane abinõu, mitte esimene valik.
-
 !!! tip
     Reegel: enne kui kirjutad `shell:`, küsi kas mõni moodul teeb sama. `shell:` on koht, kus idempotentsus tavaliselt sureb.
 
 ---
 
-## Osa 6 · Laienda — oma leht
+## Osa 6 · Oma leht
 
 **Loo fail** `index.html`:
 
 ```html
-<h1>Ansible töötab!</h1>
+<h1>Ansible töötab — [sinu nimi]</h1>
 ```
 
-**Lisa task** (fragment):
+**Lisa task** (Alma nginx serveerib kaustast `/usr/share/nginx/html/`):
 
 ```yaml
     - name: Kopeeri index.html
-      copy:
+      ansible.builtin.copy:
         src: index.html
-        dest: /var/www/html/index.html
+        dest: /usr/share/nginx/html/index.html
         mode: '0644'
 ```
 
-`src` = sinu masinas, `dest` = serveris.
+`src` = sinu masinas, `dest` = sõlmes.
 
 ```bash
 ansible-playbook -i inventory.ini nginx.yml
+ssh proxmox1 "curl -s localhost"
 ```
 
-Ava brauseris `http://<sihtmärgi-IP>` — "Ansible töötab!".
+Peaksid nägema oma lehte. (`curl localhost` sõlme seest väldib tulemüüri; brauserist väljast töötab, kui port 80 on firewalld-is avatud — vt lisaülesanne.)
 
 ---
 
-## Osa 7 · Kas `copy` on nutikas?
-
-Muuda `index.html` sisu ("Versioon 2") ja käivita:
-
-```bash
-ansible-playbook -i inventory.ini nginx.yml
-```
-
-`copy` task on **changed** — fail muutus, Ansible uuendas. Käivita **uuesti** ilma muutmata:
-
-```bash
-ansible-playbook -i inventory.ini nginx.yml
-```
-
-Nüüd **ok** — fail on juba õige.
-
-??? question "Diagnoosi"
-    `copy` võrdleb faili **sisu** (checksum), mitte ainult olemasolu. Kui sisu klapib, ei tee midagi. Kui oleksid teinud `shell: cp index.html /var/www/html/`, oleks see olnud **changed** ka siis kui midagi ei muutunud. Mis vahe on `copy` ja `shell: cp` idempotentsuse mõttes?
-
-Siin näed miks moodul > `shell`: moodul teab kuidas seisu kontrollida, `cp` ei tea.
-
----
-
-## Osa 8 · Taasta ja lõpp-test
+## Osa 7 · Taasta, lõpp-test ja Märteni monitor
 
 Lõplik idempotentsuse test — käivita ilma midagi muutmata:
 
@@ -250,31 +246,43 @@ Lõplik idempotentsuse test — käivita ilma midagi muutmata:
 ansible-playbook -i inventory.ini nginx.yml
 ```
 
-`PLAY RECAP` — **kõik ok, null changed** (kui `shell` task on `creates`-iga korras). See on tervik: playbookit võib jooksutada lõputult, tulemus sama.
+`PLAY RECAP` — **kõik ok, changed=0**. See on tervik: playbookit võib jooksutada lõputult, tulemus sama.
+
+Nüüd jooksuta **Märteni monitor** sõlmes — teenus, mis nädalal 2 ütles "EI tööta":
+
+```bash
+ssh proxmox1 "bash ~/monitor.sh && cat ~/monitor.log"
+```
+
+```
+... - nginx töötab
+```
+
+Märten oleks selle käsitsi teinud ja unustanud. Sina tegid playbookiga — korratav, dokumenteeritud, Gitis.
 
 ??? question "Mõtle"
-    Kui sul oleks 50 serverit ja see playbook cron'is iga tund — mida tähendaks su monitooringule, kui iga käivitus näitaks `changed=0` vs `changed=5`? Kumb ütleks "keegi näppis servereid käsitsi"?
-
-Kõik `ok`? See on tervik: playbookit võib jooksutada lõputult, tulemus sama.
+    Kui sul oleks 50 sõlme ja see playbook cron'is iga tund — mida ütleks `changed=0` vs `changed=5` su monitooringule? Kumb tähendaks "keegi näppis sõlme käsitsi"?
 
 ---
 
 ## Lõppkontroll — oskad ilma juhendita
 
-- [ ] `ansible -m ping` annab `pong` su sihtmärgile
+- [ ] `ansible -m ping` annab `pong` su sõlmele
 - [ ] `Permission denied` nägemisel kontrollid kohe `become`
-- [ ] Selgitad miks `shell:` on alati `changed` ja `apt`/`copy` ei ole
-- [ ] Tead millal `creates`/`args` idempotentsust päästab
+- [ ] Selgitad miks `shell:` on alati `changed` ja `package`/`copy` ei ole
+- [ ] Tead millal `creates` idempotentsust päästab
 - [ ] Lõpp-test: kõik `ok`, `changed=0`
-- [ ] Brauser näitab sinu lehte
+- [ ] `curl localhost` näitab sinu lehte
+- [ ] Märteni monitor ütleb "nginx töötab"
 
 ---
 
 ## Lisaülesanded (kui jõuad ette)
 
-1. **`--check`:** `ansible-playbook ... --check` — mida teeb ilma reaalsete muudatusteta? Millal kasulik enne tootmist?
-2. **`handlers`:** lisa handler, mis taaskäivitab nginx'i ainult siis kui `index.html` muutus (`notify`). Miks parem kui alati restart?
-3. **Teine grupp:** lisa inventory'sse teine host, jooksuta mõlemal. `--limit` ühele.
+1. **Kolm sõlme korraga.** Lisa `inventory.ini` `[web]` gruppi `proxmox2` ja `proxmox3`, jooksuta sama playbook kõigil. Sama fail, kolm sõlme — see ongi Ansible'i mõte.
+2. **`--check`:** `ansible-playbook -i inventory.ini nginx.yml --check` — mida teeb ilma reaalsete muudatusteta? Millal kasulik enne tootmist?
+3. **`--syntax-check`:** kustuta meelega üks koolon, jooksuta `--syntax-check`. Kuidas Ansible viga näitab?
+4. **Tulemüür:** ava Almal port 80 (`ansible.posix.firewalld` või `firewall-cmd`), et leht avaneks ka brauserist väljast. Miks on port vaikimisi kinni?
 
 ---
 
@@ -282,13 +290,34 @@ Kõik `ok`? See on tervik: playbookit võib jooksutada lõputult, tulemus sama.
 
 | Veateade | Põhjus | Lahendus |
 |---|---|---|
-| `UNREACHABLE` | Server maas või SSH katki | `ssh` käsitsi, kontrolli inventory rida |
-| `Permission denied` / `Failed to lock apt` | `become` puudub | `become: yes` |
-| Task alati `changed` | `shell:`/`command:` ei kontrolli seisu | Moodul, või `args: creates:` |
-| `changed` ka muutmata failil | `shell: cp` sisu ei võrdle | `copy` moodul (checksum) |
-| YAML süntaksiviga | Taane katki, tab-id | VS Code näitab taanet, tühikud mitte tabid |
+| `UNREACHABLE` | SSH katki / sõlm maas | `ssh proxmox1` käsitsi, kontrolli inventory rida |
+| `Permission denied` / root vajalik | `become` puudub | `become: yes` |
+| Task alati `changed` | `shell:` ei kontrolli seisu | Moodul, või `args: creates:` |
+| `No package nginx available` | Alma repo puudu | `ssh proxmox1 "sudo dnf repolist"` — kontrolli appstream |
+| `curl: Connection refused` | teenus maas | kontrolli Osa 4 task, `ssh proxmox1 systemctl status nginx` |
+| YAML süntaksiviga | Taane katki, tab-id | VS Code näitab taanet; `--syntax-check` |
 
-*Tabel 3.2. Iga rida on viga, mille sa selles labis ise tekitasid ja parandasid.*
+*Tabel 3.2. Iga rida on viga, mille sa selles praktikumis ise tekitasid ja parandasid.*
+
+---
+
+## Esitamine — commit + push oma repo
+
+Töö läheb su kursuse repo `hkhk-automation` all, haru ja PR-i kaudu (nagu nädal 2):
+
+1. Salvesta **viimane, muutmata käivitus** logifaili (kontroll otsib seda):
+
+```bash
+ansible-playbook -i inventory.ini nginx.yml | tee logid/play_recap.txt
+```
+
+   `changed=0` tuleb ainult siis, kui kõik on juba paigas — nii tõestab logi, et jooksutasid **ja** playbook on idempotentne.
+
+2. Haru: `git switch -c n03-nginx`
+3. Lisa `nginx.yml`, `index.html`, `inventory.ini` ja `logid/play_recap.txt`, commit
+4. `git push -u origin n03-nginx` ja ava **Pull Request** `main` vastu
+5. Veendu, et automaatne **kontroll (Actions) on roheline** — see tähendab, et failid, süntaks, moodulid, nimi lehel ja `changed=0` on kõik korras
+6. Pärast review'd merge. Esita PR-i link GitHub Projectis.
 
 ---
 
@@ -296,7 +325,11 @@ Kõik `ok`? See on tervik: playbookit võib jooksutada lõputult, tulemus sama.
 
 | Allikas | URL | Miks |
 |---|---|---|
-| Ansible Getting Started | <https://docs.ansible.com/ansible/latest/getting_started/index.html> | Alustamine |
-| apt / service / copy moodulid | <https://docs.ansible.com/ansible/latest/collections/ansible/builtin/> | Parameetrid |
-| shell vs command | <https://docs.ansible.com/ansible/latest/collections/ansible/builtin/shell_module.html> | Millal (mitte) kasutada |
-| Idempotency (glossary) | <https://docs.ansible.com/ansible/latest/reference_appendices/glossary.html> | Definitsioon |
+| Getting Started | <https://docs.ansible.com/ansible/latest/getting_started/index.html> | Alustamine |
+| `package` moodul | <https://docs.ansible.com/ansible/latest/collections/ansible/builtin/package_module.html> | Universaalne paigaldus |
+| `service` moodul | <https://docs.ansible.com/ansible/latest/collections/ansible/builtin/service_module.html> | Teenuse haldus |
+| `shell` vs `command` | <https://docs.ansible.com/ansible/latest/collections/ansible/builtin/shell_module.html> | Millal (mitte) kasutada |
+
+---
+
+*Järgmine: N4 — muutujad välisfailidesse, Jinja2 mallid ja saladuste kaitse (Vault).*

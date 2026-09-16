@@ -1,0 +1,35 @@
+<svg viewBox="0 0 900 370" xmlns="http://www.w3.org/2000/svg" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="lp" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#7e57c2"/>
+    </marker>
+  </defs>
+  <text x="450" y="34" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">loop — üks task, mitu käiku</text>
+
+  <rect x="50" y="120" width="300" height="150" rx="12" fill="#ede7f6" stroke="#7e57c2" stroke-width="2"/>
+  <text x="200" y="148" text-anchor="middle" font-size="13" font-weight="700" fill="#4527a0">Sina kirjutad ühe task'i</text>
+  <g font-family="JetBrains Mono, monospace" font-size="13" fill="#311b92">
+    <text x="72" y="180">user:</text>
+    <text x="92" y="202">name: "{{ item }}"</text>
+    <text x="72" y="232">loop:</text>
+    <text x="92" y="254">- joe · george · ravi</text>
+  </g>
+
+  <line x1="360" y1="195" x2="440" y2="195" stroke="#7e57c2" stroke-width="3" marker-end="url(#lp)"/>
+  <text x="400" y="182" text-anchor="middle" font-size="11" fill="#5e35b1">Ansible teeb</text>
+
+  <g font-family="JetBrains Mono, monospace" font-size="13">
+    <rect x="470" y="96" width="380" height="52" rx="9" fill="#fff" stroke="#b39ddb"/>
+    <text x="490" y="120" fill="#311b92">user: joe</text>
+    <text x="830" y="120" text-anchor="end" font-family="Inter" font-size="11" fill="#7e57c2">item = joe</text>
+
+    <rect x="470" y="160" width="380" height="52" rx="9" fill="#fff" stroke="#b39ddb"/>
+    <text x="490" y="184" fill="#311b92">user: george</text>
+    <text x="830" y="184" text-anchor="end" font-family="Inter" font-size="11" fill="#7e57c2">item = george</text>
+
+    <rect x="470" y="224" width="380" height="52" rx="9" fill="#fff" stroke="#b39ddb"/>
+    <text x="490" y="248" fill="#311b92">user: ravi</text>
+    <text x="830" y="248" text-anchor="end" font-family="Inter" font-size="11" fill="#7e57c2">item = ravi</text>
+  </g>
+  <text x="450" y="330" text-anchor="middle" font-family="Inter" font-size="12" fill="#666">Sama moodul jookseb kord iga elemendi kohta; "item" hoiab parajasti käes olevat väärtust.</text>
+</svg>

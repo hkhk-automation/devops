@@ -8,7 +8,7 @@ tags:
 # Loeng — Dünaamiline konfiguratsioon ja saladuste kaitse
 
 **Kestus:** ~40 minutit
-**Tase:** Algaste — eeldame et kirjutasid eelmisel nädalal esimese Ansible playbooki
+**Tase:** Algaste — eeldame et kirjutasid eelmisel nädalal esimese Ansible playbooki ja tead muutujate aluseid (N3)
 
 ---
 
@@ -16,8 +16,9 @@ tags:
     Pärast loengut oskad:
 
     - selgitada miks kõvakodeeritud väärtused (IP-d, paroolid) playbookis on probleem
-    - kirjeldada Ansible muutujate tüüpe (`host_vars`, `group_vars`, extra-vars)
+    - tõsta muutujad välisfailidesse (`group_vars`, `host_vars`) ja kasutada extra-vars
     - kirjutada Jinja2 mallina konfiguratsioonifaili
+    - selgitada, kuidas handler taaskäivitab teenuse ainult muudatuse korral
     - kaitsta tundlikud andmed Ansible Vault'iga
     - põhjendada miks Vault'i parool ei tohi olla Git-is
 
@@ -54,13 +55,15 @@ graph LR
 
 ---
 
-## 2. Muutujad — kust Ansible neid otsib
+## 2. Muutujad välisfailidesse — group_vars ja host_vars
 
-Ansible otsib muutujaid mitmest kohast, kindlas prioriteedis. Kolm, mida praegu vaja:
+Muutujate alused käisid läbi N3-s: mis on muutuja, viis tüüpi (string, number, boolean, loend, sõnastik), inline `vars:` plokk ja `{{ }}` süntaks, prioriteet, ulatus ja maagilised muutujad. Kui need on udused, vaata [N3 loeng](../week03/lecture.md) enne edasiminekut üle.
+
+Siin läheme sammu edasi. Inline `vars:` playbookis töötab, aga kui sama väärtust on vaja mitmes playbookis või kui see erineb keskkonniti (test vs tootmine), tähendab playbooki sees hoidmine, et pead redigeerima playbooki ennast — täpselt seda, mida tahtsime vältida. Parem on väärtused **välja tõsta** eraldi failidesse: siis puudutad ainult muutujate faili, mitte kunagi playbooki. Ansible loeb neid faile automaatselt, kindlas prioriteedis. Kolm allikat, mida praegu vaja:
 
 **`group_vars/`** — muutujad tervele grupile. Kui inventory's on grupp `webservers`, loeb Ansible automaatselt failist `group_vars/webservers.yml`.
 
-**`host_vars/`** — muutujad ühele konkreetsele serverile. `host_vars/server01.yml` kehtib ainult `server01`-le, isegi kui see kuulub `webservers` gruppi.
+**`host_vars/`** — muutujad ühele konkreetsele serverile. `host_vars/server01.yml` kehtib ainult `server01`-le, isegi kui see kuulub `webservers` gruppi (host võidab grupi üle — prioriteedi nägid N3-s).
 
 **Extra-vars käsurealt** — antakse käivitamise hetkel, kaalub üles kõik muu:
 
@@ -88,7 +91,7 @@ domain_name: example.ee
 nginx_port: 80
 ```
 
-Playbook ise ei tea ega hooli kust väärtus tuli — ta kasutab lihtsalt muutuja nime.
+Playbook ise ei tea ega hooli kust väärtus tuli — ta kasutab lihtsalt muutuja nime. Nii saab sama playbook töötada nii testis kui tootmises: vahet teeb ainult see, mis väärtus tuleb `group_vars`-ist. Just seda mõtleme "dünaamilise konfiguratsiooni" all — üks kood, väärtused väljast.
 
 ---
 
@@ -125,7 +128,43 @@ Ansible asendab käivitamise hetkel `{{ domain_name }}` väärtusega, mis tuli `
 
 ---
 
-## 4. Ansible Vault
+## 4. Handlers — taaskäivita ainult muudatuse korral
+
+Ptk 3 Jinja2-näites oli üks rida, mida me veel ei seletanud: `notify: Taaskäivita nginx`. See on **handler** — ja see sobib täpsalt siia, sest handlerid tulevad mängu just konfiguratsioonifailide muutmisel.
+
+Loogika on lihtne. Kui sa muudad nginx-i konfiguratsiooni (`template` või `copy`), peab teenus taaskäivituma, et uus config jõustuks. Aga kui konfiguratsioon ei muutunudki, pole taaskäivitust vaja — pealegi katkestab iga tarbetu taaskäivitus hetkeks teeninduse. Handler on ülesanne, mis käivitub **ainult siis**, kui teine ülesanne annab talle signaali sõnaga `notify`:
+
+```yaml
+  tasks:
+    - name: Genereeri nginx konfiguratsioon
+      template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/sites-available/app.conf
+      notify: Taaskäivita nginx    # signaali nimi
+
+  handlers:
+    - name: Taaskäivita nginx
+      service:
+        name: nginx
+        state: restarted
+```
+
+<figure markdown="span">
+```mermaid
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#ede7f6','primaryBorderColor':'#5e35b1','primaryTextColor':'#212121','lineColor':'#7e57c2'}}}%%
+graph LR
+    T["template: konfiguratsioon"] -->|changed| N[notify]
+    T -.->|ok: ei muutunud| X["handlerit ei kutsuta"]
+    N --> H["handler: taaskäivita nginx<br/>play lõpus, üks kord"]
+```
+  <figcaption>Joonis 4.2. Handler käivitub ainult siis, kui teda kutsuv task on changed; kui config ei muutunud, jääb teenus puutumata (Talvik, 2025).</figcaption>
+</figure>
+
+Kui konfiguratsioonifail ei muutunud, on `template` olekus `ok`, signaali ei saadeta ja handlerit ei kutsuta — nginx jääb rahule. Kui fail muutus, on `template` olekus `changed`, see saadab signaali, ja handler käivitub **üks kord, play lõpus** (isegi kui mitu task'i teda kutsusid). See on idempotentsus praktikas: taaskäivitus juhtub täpselt siis, kui selleks on tegelik põhjus, ja mitte kunagi muidu.
+
+---
+
+## 5. Ansible Vault
 
 Muutujad lahendavad domeeni ja pordi hästi. Aga mis siis, kui väärtus on andmebaasi parool või API võti? Neid ei saa panna tavalisse `group_vars/webservers.yml` faili — see läheb Git-i, ja Git-i ajalugu on nähtav kõigile, kellel on repole ligipääs.
 
@@ -159,7 +198,7 @@ Ansible dekrüpteerib faili mällu ajutiselt ja kasutab muutujaid täpselt samam
 
 ---
 
-## 5. Miks tööl oluline
+## 6. Miks tööl oluline
 
 Deploy-skripte kirjutav arendaja ei saa kunagi panna andmebaasi parooli otse GitHubi — ka mitte privaatsesse repositooriumisse. Iga inimene, kellel on kunagi olnud ligipääs repole, näeb Git-i ajaloost parooli, isegi kui see hiljem failist eemaldati.
 
@@ -174,6 +213,7 @@ Vault'i enda parool ei tohi muidugi ka Git-is olla — see hoitakse eraldi: kesk
 - **Kõvakodeeritud väärtus** playbookis töötab ühes keskkonnas ja katkeb teises
 - **`group_vars/` ja `host_vars/`** annavad väärtused grupile või serverile; extra-vars kaalub kõik üles
 - **Jinja2 mall (`.j2`)** asendab `{{ muutuja }}` kohad — `template` mooduliga, mitte `copy`-ga
+- **Handler** käivitub ainult `notify` peale, kui task tegi `changed` — nii taaskäivitub teenus ainult siis, kui config muutus
 - **Ansible Vault krüpteerib faili sisu** — krüpteeritud fail võib olla Git-is, selge tekstiga saladus mitte kunagi
 - **`ansible-vault encrypt/edit/decrypt`** + `--ask-vault-pass` käivitamisel
 - **Vault'i parool ise ei tohi olla Git-is** — keskkonnamuutujast või CI/CD secrets-hoidlast
