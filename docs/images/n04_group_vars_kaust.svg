@@ -1,0 +1,44 @@
+<svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="bad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff3e0"/>
+      <stop offset="1" stop-color="#ffe0b2"/>
+    </linearGradient>
+    <linearGradient id="good" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ede7f6"/>
+      <stop offset="1" stop-color="#d1c4e9"/>
+    </linearGradient>
+  </defs>
+
+  <text x="450" y="32" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">group_vars: nimi ütleb, kellele</text>
+  <text x="450" y="54" text-anchor="middle" font-size="12" fill="#666">faili või kausta nimi = grupi nimi inventory's</text>
+
+  <!-- VALE -->
+  <rect x="30" y="72" width="390" height="320" rx="14" fill="url(#bad)" stroke="#ffa726" stroke-width="2"/>
+  <text x="225" y="102" text-anchor="middle" font-size="16" font-weight="700" fill="#e65100">VALE</text>
+  <rect x="70" y="120" width="310" height="92" rx="9" fill="#fff" stroke="#ffcc80"/>
+  <g font-family="JetBrains Mono, monospace" font-size="13" fill="#5d4037">
+    <text x="90" y="146">group_vars/</text>
+    <text x="110" y="170">├── all.yml</text>
+    <text x="110" y="194" fill="#bf360c" font-weight="700">└── vault.yml</text>
+  </g>
+  <text x="225" y="250" text-anchor="middle" font-size="13" fill="#bf360c" font-weight="600">vault.yml = muutujad grupile "vault"</text>
+  <text x="225" y="274" text-anchor="middle" font-size="12" fill="#bf360c">Sellist gruppi pole.</text>
+  <text x="225" y="298" text-anchor="middle" font-size="12" fill="#bf360c">Viga tuleb alles kasutamisel, muutuja on</text>
+  <text x="225" y="320" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#bf360c">undefined</text>
+
+  <!-- ÕIGE -->
+  <rect x="480" y="72" width="390" height="320" rx="14" fill="url(#good)" stroke="#7e57c2" stroke-width="2"/>
+  <text x="675" y="102" text-anchor="middle" font-size="16" font-weight="700" fill="#4527a0">ÕIGE</text>
+  <rect x="520" y="120" width="310" height="92" rx="9" fill="#fff" stroke="#b39ddb"/>
+  <g font-family="JetBrains Mono, monospace" font-size="13" fill="#311b92">
+    <text x="540" y="142">group_vars/</text>
+    <text x="560" y="163">└── all/</text>
+    <text x="600" y="184">├── main.yml</text>
+    <text x="600" y="205" font-weight="700">└── vault.yml</text>
+  </g>
+  <text x="675" y="250" text-anchor="middle" font-size="13" fill="#4527a0" font-weight="600">kaust all/ = grupp "all" = kõik hostid</text>
+  <text x="675" y="274" text-anchor="middle" font-size="12" fill="#4527a0">Ansible loeb kausta KÕIK failid.</text>
+  <text x="675" y="298" text-anchor="middle" font-size="12" fill="#4527a0">main.yml: tavalised muutujad</text>
+  <text x="675" y="320" text-anchor="middle" font-size="12" fill="#4527a0">vault.yml: krüpteeritud saladused</text>
+</svg>

@@ -5,9 +5,9 @@ tags:
   - Kodutöö
 ---
 
-# Kodutöö — Ansible playbook laiendamine
+# Kodutöö: Ansible playbook laiendamine
 
-**Eeldused:** Labor "Esimene Ansible playbook" tehtud — `nginx.yml` töötab, paigaldab nginx + kohandatud index.html.
+**Eeldused:** Labor "Esimene Ansible playbook" tehtud: `nginx.yml` töötab, paigaldab nginx + kohandatud index.html.
 
 ---
 
@@ -17,14 +17,14 @@ Lähtu oma labori `nginx.yml` failist ja laienda seda.
 
 ### 1. Lisa teine pakett
 
-Lisa playbooki uus task, mis paigaldab lisaks nginx'ile veel ühe paketi — nt `curl` või `git` (vali üks). Kasuta sama `apt` moodulit mis laboris.
+Lisa playbooki uus task, mis paigaldab lisaks nginx'ile veel ühe paketi, nt `curl` või `git` (vali üks). Kasuta sama `apt` moodulit mis laboris.
 
 ### 2. Kohanda index.html
 
 Muuda `index.html` nii, et see sisaldab su enda nime:
 
 ```html
-<h1>Ansible töötab — [sinu nimi]</h1>
+<h1>Ansible töötab: [sinu nimi]</h1>
 ```
 
 Käivita playbook uuesti ja kontrolli brauseris.
@@ -37,14 +37,14 @@ ansible-playbook -i inventory.ini nginx.yml
 ansible-playbook -i inventory.ini nginx.yml
 ```
 
-Esimesel käivitusel on uus task tõenäoliselt **changed**. Teisel ja kolmandal peavad **kõik** task'id olema **ok** — see tõestab idempotentsust. Kopeeri kolmanda käivituse `PLAY RECAP` oma PR-i kirjeldusse tõestuseks.
+Esimesel käivitusel on uus task tõenäoliselt **changed**. Teisel ja kolmandal peavad **kõik** task'id olema **ok**, see tõestab idempotentsust. Kopeeri kolmanda käivituse `PLAY RECAP` oma PR-i kirjeldusse tõestuseks.
 
 !!! tip
-    Kui mõni task näitab `changed` ka kolmandal käivitusel — vaata labori Osa 5 ja veaotsingu tabelit. Tavaliselt on põhjus parameetris, mis muutub iga kord (nt ajatempel).
+    Kui mõni task näitab `changed` ka kolmandal käivitusel, vaata labori Osa 5 ja veaotsingu tabelit. Tavaliselt on põhjus parameetris, mis muutub iga kord (nt ajatempel).
 
 ---
 
-## Esitamine — GitHub PR
+## Esitamine: GitHub PR
 
 1. Branch `n03-lab`
 2. Lisa muudetud `nginx.yml` + `index.html`, commit
@@ -53,7 +53,7 @@ Esimesel käivitusel on uus task tõenäoliselt **changed**. Teisel ja kolmandal
 5. Pärast review'd merge. Esita **PR-i link GitHub Projectis**.
 
 !!! tip
-    Kasuta oma kursuse repot. Kui pole veel — loo `ansible-nginx-<eesnimi>` `hkhk-automation` alla, kaitse `main` (nagu nädal 2), tee kõik läbi PR-i.
+    Kasuta oma kursuse repot. Kui pole veel, loo `ansible-nginx-<eesnimi>` `hkhk-automation` alla, kaitse `main` (nagu nädal 2), tee kõik läbi PR-i.
 
 ---
 
