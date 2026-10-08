@@ -47,11 +47,48 @@ Kiiremad: lisaülesanded (`exec`, `save/load` naabrile, push GHCR-i). Kodutöö:
 
 ---
 
+## Mida sa täna ehitad
+
+Vaata enne alustamist seda pilti. Labi lõpuks on sul **kõik see** olemas ja töötab. Kui kaotad järje, tule siia tagasi ja vaata, millise kasti juures sa oled.
+
+<figure markdown="span">
+  ![Sinu arvutist SSH ja brauser Alma VM 1-sse, kus Docker käitab konteinereid web1 8080, web2 8081, turve, flask1 5000, multistage 8084, bind 8083 ja volume'i andmed; image läheb push'iga Docker Hubi ja sealt pull'iga Alma VM 2-sse, kus Podman käitab sama image'i](../images/n05_labi_ylevaade.svg)
+  <figcaption>Joonis 5.9. Labi tervikpilt: üks image liigub sinu VM-ist Docker Hubi ja sealt teise VM-i. Iga kast on üks labi osa (Talvik, 2026).</figcaption>
+</figure>
+
+**Teekond — neli plokki:**
+
+<figure markdown="span">
+```mermaid
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#ede7f6','primaryBorderColor':'#5e35b1','primaryTextColor':'#212121','lineColor':'#7e57c2'}}}%%
+graph LR
+    subgraph A[1 · Valmis seadma]
+      A0[0 Docker] --> A1[0.2 VS Code] --> A2[0.3 Docker Hub] --> A3[0.5 Tag'id]
+    end
+    subgraph B[2 · Esimene image]
+      B1[1–2 build] --> B2[3–4 rebuild] --> B3[5–7 vead + koristus]
+    end
+    subgraph C[3 · Turvaline ja jagatud]
+      C1[8 USER] --> C2[9 push Hubi]
+    end
+    subgraph D[4 · Päris rakendus]
+      D1[10 Flask] --> D2[11 kihid] --> D3[12 multi-stage] --> D4[13 andmed] --> D5[14 Podman]
+    end
+    A --> B --> C --> D
+```
+  <figcaption>Joonis 5.10. Labi järjekord. Iga ploki lõpus on midagi, mis töötab — ära mine järgmisse plokki enne (Talvik, 2026).</figcaption>
+</figure>
+
+---
+
 Selle labi loogika: **baas → katki → paranda → laienda → viga → taasta.** Sa ei kopeeri valmis lahendust — sa ehitad, lõhud meelega, ja saad aru **miks**. Iga samm lisab ainult ühe tüki. Kui tahad tervet faili korraga kopeerida: see labi pole selleks.
 
 ---
 
 ## Osa 0 · Docker VM-i peale
+
+!!! success "Eesmärk"
+    Osa lõpuks: `docker run --rm hello-world` näitab `Hello from Docker!`.
 
 Su VM on **AlmaLinux** (RHEL-i pere, `dnf`). AlmaLinux tuleb Red Hati **Podmaniga**; meie kasutame **Docker Engine'it** Dockeri enda repost — sama, mis tööstuses ja autograderis. Podmani kohta vt loengut ja lisaülesannet.
 
@@ -96,6 +133,9 @@ ls -l /var/run/docker.sock
 
 ## Osa 0.2 · VS Code: Docker otse VM-is
 
+!!! success "Eesmärk"
+    Osa lõpuks: VS Code'i vasakul ribal on konteinerite ikoon ja seal on näha `hello-world` image.
+
 1. VS Code'is on sul juba **Remote - SSH** (N1). Ühenda VM-iga (`F1` → *Remote-SSH: Connect to Host*).
 2. **VM-i aknas** ava Extensions ja paigalda **Container Tools** (`ms-azuretools.vscode-containers`, Microsoft; endine "Docker" laiendus). Vajuta *Install in SSH: ...* — laiendus peab jooksma VM-is, kus on Docker, mitte sinu Windowsis.
 3. Vasakule tekib konteinerite ikoon: näed image'id, konteinerid, saad vaadata logisid (*View Logs*), minna sisse (*Attach Shell*), peatada, kustutada. `Dockerfile`-is tuleb automaatne lõpetamine ja vigade märkimine.
@@ -108,6 +148,9 @@ Kui laiendus ütleb `permission denied`: sama põhjus mis üleval — VS Code'i 
 ---
 
 ## Osa 0.3 · Docker Hubi konto (kohustuslik)
+
+!!! success "Eesmärk"
+    Osa lõpuks: `docker login` ütleb `Login Succeeded`.
 
 Docker Hub on image'ide "GitHub" — sealt tulevad `ubuntu`, `nginx`, `python`, ja sinna paned labi lõpus oma image'i.
 
@@ -130,6 +173,9 @@ Login annab ka kõrgema tõmbamislimiidi — terve klass kooli ühe IP tagant il
 ---
 
 ## Osa 0.5 · Tõmba ja vaata sisse
+
+!!! success "Eesmärk"
+    Osa lõpuks: oskad öelda, mitu korda on `-alpine` väiksem, ja oled käinud konteineri sees.
 
 Enne oma image'it vaata valmis image'it. Tõmba konkreetse tag'iga:
 
@@ -180,6 +226,9 @@ docker ps -a
 
 ## Osa 1 · Baas — töötav image
 
+!!! success "Eesmärk"
+    Osa lõpuks: `curl localhost:8080` näitab nginx-i tervituslehte.
+
 Klooni oma Classroomi repo (`lab-05-...`, link Classroomis), tee haru ja kaustad:
 
 ```bash
@@ -214,6 +263,9 @@ Näed nginx tervituslehte. Baas töötab. **Ära mine edasi enne kui see vastab.
 ---
 
 ## Osa 2 · Katki — ja miks
+
+!!! success "Eesmärk"
+    Osa lõpuks: build läbib, sest Dockerfile'is on `-y`.
 
 Nüüd teed **meelega** vea, mille kõik teevad täpselt ühe korra. Lisa `Dockerfile`-i teine paketirida — aga jäta `-y` **teadlikult ära**:
 
@@ -250,6 +302,9 @@ Läbib. See on reegel, mitte soovitus: Dockerfile'is `apt install` **alati** `-y
 
 ## Osa 3 · Laienda — oma sisu image'isse
 
+!!! success "Eesmärk"
+    Osa lõpuks: uus image on ehitatud (aga leht on veel vana — see on meelega).
+
 Baas serveerib nginx'i vaikimisi lehte. Paneme oma. Loo kausta `nginx/` fail `index.html`:
 
 ```html
@@ -277,6 +332,9 @@ Näed ikka **vana** lehte. See pole viga — see on Osa 4.
 ---
 
 ## Osa 4 · Rebuild ei uuenda konteinerit
+
+!!! success "Eesmärk"
+    Osa lõpuks: `curl localhost:8080` näitab `Versioon 1`.
 
 Ehitasid uue image'i, aga `curl` näitab vana. Miks?
 
@@ -317,13 +375,16 @@ sequenceDiagram
     C->>C: stop + rm
     I->>C: run — uus web1 v1-st
 ```
-  <figcaption>Joonis 5.9. `docker build` loob uue image'i, aga ei puutu töötavat konteinerit — konteiner on kinni selles image'is, millest ta käivitati (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 5.11. `docker build` loob uue image'i, aga ei puutu töötavat konteinerit — konteiner on kinni selles image'is, millest ta käivitati (Talvik, 2026).</figcaption>
 </figure>
  Uus image ei jõua tootmisse ilma selleta.
 
 ---
 
 ## Osa 5 · Port juba kinni
+
+!!! success "Eesmärk"
+    Osa lõpuks: kaks konteinerit jooksevad, `8080` ja `8081`, tõend `logid/docker-ps.txt`.
 
 Proovi käivitada teine konteiner samast image'ist, **sama pordiga**:
 
@@ -347,7 +408,7 @@ Nüüd jooksevad mõlemad — `8080` ja `8081`, üks image, kaks konteinerit.
 
 <figure markdown="span">
   ![Host-pordid 8080 ja 8081 suunavad kahe nginx-konteineri porti 80; teine katse kasutada 8080 annab vea](../images/n05_pordid.svg)
-  <figcaption>Joonis 5.10. Konteineri sees on igaühel oma port 80; hosti port on üks ja selle saab ainult üks konteiner (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 5.12. Konteineri sees on igaühel oma port 80; hosti port on üks ja selle saab ainult üks konteiner (Talvik, 2026).</figcaption>
 </figure>
  Salvesta tõend:
 
@@ -358,6 +419,9 @@ docker ps > ../logid/docker-ps.txt
 ---
 
 ## Osa 6 · Surnud konteiner
+
+!!! success "Eesmärk"
+    Osa lõpuks: `web3` on `docker ps`-is `Up`.
 
 Muuda `Dockerfile` `CMD` rida selliseks (võta `daemon off;` ära):
 
@@ -396,7 +460,7 @@ stateDiagram-v2
     Exited --> [*]: docker rm
     Running --> [*]: docker rm -f
 ```
-  <figcaption>Joonis 5.11. Konteiner elab nii kaua kui PID 1. Ilma `daemon off;` läheb nginx taustale, PID 1 lõpeb ja konteiner on kohe `Exited` (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 5.13. Konteiner elab nii kaua kui PID 1. Ilma `daemon off;` läheb nginx taustale, PID 1 lõpeb ja konteiner on kohe `Exited` (Talvik, 2026).</figcaption>
 </figure>
 
 **Paranda:** pane `daemon off;` tagasi:
@@ -419,6 +483,9 @@ docker ps
 ---
 
 ## Osa 7 · Taasta puhas seis
+
+!!! success "Eesmärk"
+    Osa lõpuks: `docker ps -a` on tühi.
 
 Tegid sassi — kolm konteinerit, üks image. Koristame nagu päris elus:
 
@@ -449,6 +516,9 @@ docker image prune -f   # eemaldab rebuild'idest jäänud nimetud (<none>) image
 ---
 
 ## Osa 8 · Seadistatav ja mitte-root image
+
+!!! success "Eesmärk"
+    Osa lõpuks: väljund ütleb `olen appuser`, tõend `logid/turve.txt`.
 
 Uus kaust kõrvale, et nginx-i labi mitte segada:
 
@@ -495,6 +565,9 @@ docker rmi turve && cd ..
 
 ## Osa 9 · Avalda oma image Docker Hubi
 
+!!! success "Eesmärk"
+    Osa lõpuks: sinu image on Docker Hubi lehel näha ja `docker run kasutaja/minu-nginx:v1` töötab.
+
 Ehita nginx image lõppseisus uuesti (Osa 7 kustutas selle) ja anna sellele Docker Hubi nimi koos tag'iga:
 
 ```bash
@@ -537,6 +610,9 @@ cd ..
 ---
 
 ## Osa 10 · Päris rakendus: Flask konteinerisse
+
+!!! success "Eesmärk"
+    Osa lõpuks: `curl localhost:5000` näitab `Tere konteinerist!`.
 
 Seni pakkisime valmis nginx-i. Nüüd **oma koodi** — täpselt loengu näide. Repo juurest:
 
@@ -597,6 +673,9 @@ curl localhost:5000
 
 ## Osa 11 · Kihid ja vahemälu — miks järjekord loeb
 
+!!! success "Eesmärk"
+    Osa lõpuks: build'i väljundis on `pip install` real `CACHED`, tõend `logid/cache.txt`.
+
 Muuda `app.py`-s tervitust (nt `"Tere, versioon 2!"`) ja ehita uuesti, salvesta väljund:
 
 ```bash
@@ -624,6 +703,9 @@ cd ..
 ---
 
 ## Osa 12 · Multi-stage build — väike lõppimage
+
+!!! success "Eesmärk"
+    Osa lõpuks: `curl localhost:8084` näitab sinu `leht.md` sisu ja image on alla 100 MB.
 
 Probleem: lehe ehitamiseks on vaja tööriistu (Python, teegid), aga lehe **serveerimiseks** ainult nginx-i. Miks peaks tootmisimage'is Python olema?
 
@@ -673,6 +755,9 @@ cd ..
 
 ## Osa 13 · Andmed: bind mount ja volume
 
+!!! success "Eesmärk"
+    Osa lõpuks: faili muutmine VM-is muudab lehte kohe; `logid/volume.txt`-s on kaks rida.
+
 Konteiner on ajutine — kirjutatav kiht kaob `rm`-iga. Kaks viisi andmeid alles hoida.
 
 **Bind mount** — VM-i fail otse konteinerisse (arenduses: muudad faili, leht muutub kohe, rebuild'i pole):
@@ -717,6 +802,9 @@ docker volume ls
 ---
 
 ## Osa 14 · Podman teises Alma VM-is
+
+!!! success "Eesmärk"
+    Osa lõpuks: teises VM-is jookseb sinu Docker Hubi image Podmaniga, tõend `logid/podman.txt`.
 
 AlmaLinux / RHEL vaikimisi tööriist on **Podman**, mitte Docker. Võta oma **teine** Proxmoxi Alma masin (Lab 01 inventory'st) — seal Dockerit pole ja ei tule.
 

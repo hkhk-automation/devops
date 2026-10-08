@@ -1,0 +1,64 @@
+<svg viewBox="0 0 960 560" xmlns="http://www.w3.org/2000/svg" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="ct" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ede7f6"/><stop offset="1" stop-color="#d1c4e9"/></linearGradient>
+    <linearGradient id="pm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8f5e9"/><stop offset="1" stop-color="#c8e6c9"/></linearGradient>
+    <marker id="a5" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#7e57c2"/></marker>
+    <marker id="ab" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#1e88e5"/></marker>
+    <marker id="ag" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#43a047"/></marker>
+  </defs>
+  <text x="480" y="30" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Mida sa täna ehitad — kogu pilt</text>
+
+  <!-- laptop -->
+  <rect x="20" y="70" width="170" height="200" rx="14" fill="#fff3e0" stroke="#ffa726" stroke-width="2"/>
+  <text x="105" y="98" text-anchor="middle" font-size="15" font-weight="700" fill="#e65100">Sinu arvuti</text>
+  <g font-size="12" text-anchor="middle" fill="#bf360c">
+    <rect x="38" y="114" width="134" height="40" rx="6" fill="#fff" stroke="#ffcc80"/><text x="105" y="131">VS Code</text><text x="105" y="146" font-size="10">Remote-SSH + Container Tools</text>
+    <rect x="38" y="164" width="134" height="40" rx="6" fill="#fff" stroke="#ffcc80"/><text x="105" y="181">Brauser</text><text x="105" y="196" font-size="10">http://VM-IP:8080</text>
+    <text x="105" y="232" font-size="11">Osa 0.2</text>
+  </g>
+
+  <!-- VM1 -->
+  <rect x="230" y="60" width="440" height="470" rx="14" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2"/>
+  <text x="450" y="86" text-anchor="middle" font-size="15" font-weight="700" fill="#424242">Alma VM 1 — Docker (Osa 0)</text>
+  <rect x="250" y="100" width="400" height="44" rx="8" fill="#fff" stroke="#5e35b1" stroke-width="2"/>
+  <text x="450" y="120" text-anchor="middle" font-size="13" font-weight="700" fill="#311b92">dockerd</text>
+  <text x="450" y="136" text-anchor="middle" font-size="10" fill="#5e35b1">repo lab05/: nginx/ turve/ flask/ multistage/ logid/</text>
+  <g font-size="12" text-anchor="middle">
+    <rect x="250" y="160" width="190" height="56" rx="8" fill="url(#ct)" stroke="#7e57c2"/><text x="345" y="182" font-weight="700" fill="#311b92">web1 · :8080</text><text x="345" y="200" font-size="10" fill="#5e35b1">nginx, sinu index.html · Osa 1–4</text>
+    <rect x="460" y="160" width="190" height="56" rx="8" fill="url(#ct)" stroke="#7e57c2"/><text x="555" y="182" font-weight="700" fill="#311b92">web2 · :8081</text><text x="555" y="200" font-size="10" fill="#5e35b1">sama image, teine port · Osa 5</text>
+    <rect x="250" y="228" width="190" height="56" rx="8" fill="url(#ct)" stroke="#7e57c2"/><text x="345" y="250" font-weight="700" fill="#311b92">turve</text><text x="345" y="268" font-size="10" fill="#5e35b1">ENV + USER, mitte root · Osa 8</text>
+    <rect x="460" y="228" width="190" height="56" rx="8" fill="url(#ct)" stroke="#7e57c2"/><text x="555" y="250" font-weight="700" fill="#311b92">flask1 · :5000</text><text x="555" y="268" font-size="10" fill="#5e35b1">Python rakendus · Osa 10–11</text>
+    <rect x="250" y="296" width="190" height="56" rx="8" fill="url(#ct)" stroke="#7e57c2"/><text x="345" y="318" font-weight="700" fill="#311b92">multistage · :8084</text><text x="345" y="336" font-size="10" fill="#5e35b1">Python ehitab, nginx serveerib · 12</text>
+    <rect x="460" y="296" width="190" height="56" rx="8" fill="url(#ct)" stroke="#7e57c2"/><text x="555" y="318" font-weight="700" fill="#311b92">bind · :8083</text><text x="555" y="336" font-size="10" fill="#5e35b1">VM-i fail konteineris · Osa 13</text>
+    <rect x="250" y="364" width="400" height="44" rx="8" fill="#fff8e1" stroke="#ffb300"/><text x="450" y="384" font-weight="700" fill="#e65100">volume "andmed"</text><text x="450" y="400" font-size="10" fill="#ef6c00">andmed jäävad alles, kui konteiner kustub · Osa 13</text>
+    <rect x="250" y="420" width="400" height="40" rx="8" fill="#eeeeee" stroke="#9e9e9e"/><text x="450" y="445" fill="#424242">AlmaLinuxi tuum (konteinerite sees Ubuntu / Alpine / Debian)</text>
+    <rect x="250" y="472" width="400" height="44" rx="8" fill="#fff" stroke="#9e9e9e" stroke-dasharray="5 4"/><text x="450" y="492" fill="#424242" font-weight="700">git push → GitHub PR → autograder</text><text x="450" y="508" font-size="10" fill="#616161">Esitamine</text>
+  </g>
+
+  <!-- Docker Hub -->
+  <rect x="720" y="60" width="220" height="110" rx="14" fill="#e3f2fd" stroke="#1e88e5" stroke-width="2"/>
+  <text x="830" y="90" text-anchor="middle" font-size="15" font-weight="700" fill="#0d47a1">Docker Hub ☁</text>
+  <text x="830" y="112" text-anchor="middle" font-size="12" fill="#1565c0">kasutaja/minu-nginx:v1</text>
+  <text x="830" y="132" text-anchor="middle" font-size="11" fill="#1565c0">konto + token · Osa 0.3</text>
+  <text x="830" y="150" text-anchor="middle" font-size="11" fill="#1565c0">push · Osa 9</text>
+
+  <!-- VM2 -->
+  <rect x="720" y="300" width="220" height="190" rx="14" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2"/>
+  <text x="830" y="326" text-anchor="middle" font-size="15" font-weight="700" fill="#424242">Alma VM 2 — Podman</text>
+  <text x="830" y="344" text-anchor="middle" font-size="11" fill="#616161">ilma deemonita, rootless · Osa 14</text>
+  <rect x="740" y="360" width="180" height="56" rx="8" fill="url(#pm)" stroke="#43a047"/>
+  <text x="830" y="382" text-anchor="middle" font-size="12" font-weight="700" fill="#1b5e20">web1 · :8080</text>
+  <text x="830" y="400" text-anchor="middle" font-size="10" fill="#2e7d32">SAMA image Docker Hubist</text>
+  <rect x="740" y="428" width="180" height="44" rx="8" fill="#fff" stroke="#43a047" stroke-dasharray="5 4"/>
+  <text x="830" y="448" text-anchor="middle" font-size="11" fill="#1b5e20">kodutöö: Ansible :8085</text>
+  <text x="830" y="463" text-anchor="middle" font-size="10" fill="#2e7d32">docker_container</text>
+
+  <!-- arrows -->
+  <line x1="190" y1="134" x2="248" y2="122" stroke="#7e57c2" stroke-width="2.5" marker-end="url(#a5)"/>
+  <text x="218" y="114" text-anchor="middle" font-size="10" fill="#5e35b1">SSH</text>
+  <line x1="190" y1="184" x2="248" y2="186" stroke="#7e57c2" stroke-width="2.5" marker-end="url(#a5)"/>
+  <line x1="652" y1="182" x2="716" y2="122" stroke="#1e88e5" stroke-width="2.5" marker-end="url(#ab)"/>
+  <text x="690" y="142" text-anchor="middle" font-size="10" fill="#1565c0">push</text>
+  <line x1="830" y1="172" x2="830" y2="296" stroke="#43a047" stroke-width="2.5" marker-end="url(#ag)"/>
+  <text x="852" y="240" font-size="10" fill="#2e7d32">pull</text>
+</svg>
