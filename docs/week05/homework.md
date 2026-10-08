@@ -1,74 +1,77 @@
 ---
 tags:
   - Docker
-  - Flask
+  - Ansible
   - Kodutöö
 ---
 
-# Kodutöö — Flask rakenduse konteineriseerimine
+# Kodutöö — Ansible paigaldab sinu konteineri
 
-**Eeldused:** nädala 5 lab (Dockerfile, build, run, `COPY`).
-**Esitamine:** GitHub Pull Request.
+**Eeldused:** nädala 5 lab (sinu image Docker Hubis: `<kasutaja>/minu-nginx:v1`), N3–N4 Ansible.
+**Esitamine:** sama repo ja haru mis labis (`n05-docker`), kaust `ansible/`. Sama PR.
 
 ---
 
 ## Ülesanne
 
-Õpetaja antud `app.py` (lihtne Flask rakendus) tuleb pakkida Docker konteinerisse ja käivitada pordil 5000.
+Labis käivitasid konteinerit käsitsi (`docker run`). Päris elus teeb seda **automatiseerimine**: Ansible valmistab serveri ette ja käivitab konteineri — loengu "Ansible haldab serverit, Docker rakendust" praktikas.
 
-Lae `app.py` õpetaja lingilt/repost oma töökausta, nt `w05-homework/app.py`. Docker jookseb seal, kus sul on (kohalik / WSL / server) — sama koht mis labis.
+Kirjuta playbook `ansible/deploy.yml`, mis sinu VM-is (või teises Proxmoxi masinas):
 
-## Sammud
+1. tagab, et Docker töötab (`service`: `docker`, `started`, `enabled`);
+2. paigaldab Pythoni Docker SDK (Ansible'i moodul vajab seda sihtmasinas): `ansible.builtin.dnf` → `python3-pip`, siis `ansible.builtin.pip` → `docker`;
+3. käivitab **sinu Docker Hubi image'i** mooduliga `community.docker.docker_container`: nimi `web-ansible`, image `<kasutaja>/minu-nginx:v1`, port `8085:80`, `restart_policy: always`, `state: started`.
 
-1. **Loo Dockerfile** samas kaustas kui `app.py`. Vajad: Python baas-image (`FROM python:3.12-slim`), faili kopeerimist (`COPY`), Flaski paigaldust (`RUN pip install flask`), käivituskäsku (`CMD`).
+```bash
+ansible-galaxy collection install community.docker
+cd ansible
+ansible-playbook -i inventory.ini deploy.yml
+curl <VM-IP>:8085
+```
 
-    !!! tip
-        Meenuta labist: `COPY` kopeerib build-kontekstist image'isse, `RUN` jookseb ehitamise ajal, `CMD` iga kord konteineri käivitudes.
+Käivita **teist korda** ja salvesta tulemus — idempotentsus (N3): teisel korral `changed=0`.
 
-2. **Ehita image:**
+```bash
+ansible-playbook -i inventory.ini deploy.yml | tee ../logid/deploy_recap.txt
+```
 
-    ```bash
-    docker build -t flask-app .
-    ```
-
-3. **Käivita konteiner** (masina port 5000 → konteineri port 5000):
-
-    ```bash
-    docker run -d -p 5000:5000 --name flask-app-container flask-app
-    ```
-
-4. **Kontrolli:**
-
-    ```bash
-    curl localhost:5000
-    ```
-
-!!! warning
-    `curl localhost:5000` ei vasta? Vaata `docker logs flask-app-container`. Sage põhjus: Flask kuulab vaikimisi ainult `127.0.0.1` peal konteineri **sees**, mis pole väljastpoolt ligipääsetav. Rakendus peab kuulama `0.0.0.0` peal (`app.run(host="0.0.0.0", port=5000)`), et port-mapping töötaks. Kui `app.py` seda ei tee, tuleb see muudatus teha.
+!!! tip
+    `community.docker.docker_container` on deklaratiivne: sa ütled **mis olek** peab olema ("konteiner jookseb sellest image'ist"), mitte käsku. Võrdle `ansible.builtin.command: docker run ...` — mis juhtuks teisel käivitusel? (Osa 5 viga!)
 
 ??? question "Mõtle"
-    Miks peab Flask kuulama `0.0.0.0`, mitte `127.0.0.1`, et see konteineris töötaks? Seosta vastus sellega, mida `-p 5000:5000` tegelikult teeb.
+    Uus versioon: ehitad `v2`, pushid Docker Hubi. Mida muudad playbookis ja mida Ansible siis konteineriga teeb? Kuidas lähed tagasi `v1` peale, kui `v2` on katki?
 
-## Esitamine
+## Repo
 
-1. Uus haru `n05-lab`.
-2. Lisa harusse **ainult** `Dockerfile` (mitte `app.py`, kui õpetaja pole öelnud teisiti).
-3. Ekraanipilt, kus on näha töötav rakendus **ja** `docker ps` väljund (konteiner `Up`).
-4. Lisa screenshot reposse samas PR-is.
-5. Ava **Pull Request** `main` vastu, esita **PR-i link GitHub Projectis**. Kirjelda lühidalt: mis baas-image, kas pidid `app.py`-d muutma (ja miks).
+```text
+ansible/
+├── inventory.ini
+└── deploy.yml
+logid/
+└── deploy_recap.txt     # teine käivitus, changed=0
+```
+
+```bash
+git add ansible logid/deploy_recap.txt
+git commit -m "N5 kodutöö: Ansible deploy"
+git push
+```
+
+PR uueneb ise. PR kirjeldusse 2–3 lauset: miks `docker_container`, mitte `command: docker run`.
 
 ## Enesekontroll
 
-- [ ] `docker build` läbib veata
-- [ ] `docker run` — konteiner jääb tööle (`docker ps` näitab `Up`, mitte `Exited`)
-- [ ] `curl localhost:5000` tagastab rakenduse vastuse
-- [ ] Dockerfile + screenshot samas PR-is
-- [ ] PR kirjeldus selgitab valikuid
+- [ ] `ansible-playbook --syntax-check` läbib
+- [ ] Playbook kasutab `community.docker.docker_container` ja sinu Docker Hubi image'i konkreetse tag'iga
+- [ ] `curl <VM-IP>:8085` näitab sinu lehte
+- [ ] Teine käivitus: `changed=0`
 
 ## Veaotsing
 
 | Probleem | Lahendus |
 |---|---|
-| Konteiner käivitub ja sureb (`Exited`) | `docker logs <konteiner>` — tavaliselt Pythoni viga või `pip install flask` unustatud |
-| `curl` ei vasta, konteiner töötab | Flask vajab `0.0.0.0` (mitte `127.0.0.1`); kontrolli ka `-p 5000:5000` |
-| `port is already allocated` | Mõni teine konteiner (nt labist `web1`) kasutab porti. `docker ps -a` + koristus |
+| `couldn't resolve module/action 'community.docker.docker_container'` | `ansible-galaxy collection install community.docker` |
+| `Failed to import the required Python library (Docker SDK for Python)` | Samm 2: `pip` moodul `name: docker` sihtmasinas |
+| `permission denied ... docker.sock` | `become: true` playbookis |
+| `port is already allocated` | 8085 juba kasutusel — `docker ps`, vali teine port |
+| Teisel korral `changed=1` | Kas kasutad `command`-i? Või tag on `latest`? |
