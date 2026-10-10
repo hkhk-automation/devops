@@ -1,0 +1,15 @@
+*[control node]: Masin, kus Ansible jookseb ja kust teisi masinaid hallatakse.
+*[idempotentne]: Korduv käivitamine ei muuda enam midagi, kui soovitud olek on juba saavutatud.
+*[idempotentsus]: Omadus, et korduv käivitamine ei muuda enam midagi, kui soovitud olek on juba saavutatud.
+*[drift]: Masina tegelik olek on kirjeldatud olekust eemale nihkunud, tavaliselt käsitsi muudatuse tõttu.
+*[ad-hoc]: Üks Ansible'i käsk ilma playbookita, nt ansible veeb -m ping.
+*[inventar]: Fail, kus on kirjas hallatavad masinad ja nende grupid (inventory.ini).
+*[firewalld]: AlmaLinuxi tulemüüri teenus; lubab vaikimisi ainult ssh-d.
+*[SELinux]: AlmaLinuxi turvakiht, mis piirab, mida teenused tohivad teha, ka root-õigustega.
+*[VPN]: Turvaline tunnel koolivõrku; kodust pääsed laborimasinatele ainult sellega.
+*[YAML]: Tekstivorming, milles playbookid kirjutatakse; taane on tähenduslik.
+*[handler]: Task, mis jookseb play lõpus ainult siis, kui mõni muutunud task teda teavitas (notify).
+*[hostvars]: Kõik, mida Ansible iga masina kohta teab: muutujad ja faktid, nt hostvars['vm2'].
+*[koormusjaotur]: Teenus, mis võtab päringud vastu ja jagab need mitme rakendusserveri vahel.
+*[upstream]: nginx-i nimekiri serveritest, kuhu päringud edasi saadetakse.
+*[Vault]: Ansible'i tööriist failide ja väärtuste krüptimiseks, et saladused saaks Gitis hoida.

@@ -43,22 +43,22 @@ theme:
   palette:
   - media: "(prefers-color-scheme)"
     scheme: default
-    primary: deep purple
-    accent: pink
+    primary: indigo
+    accent: teal
     toggle:
       icon: material/brightness-auto
       name: Vaheta tumele režiimile
   - media: "(prefers-color-scheme: light)"
     scheme: default
-    primary: deep purple
-    accent: pink
+    primary: indigo
+    accent: teal
     toggle:
       icon: material/brightness-7
       name: Vaheta tumele režiimile
   - media: "(prefers-color-scheme: dark)"
     scheme: slate
-    primary: deep purple
-    accent: pink
+    primary: indigo
+    accent: teal
     toggle:
       icon: material/brightness-4
       name: Vaheta heledasse režiimi
@@ -157,7 +157,7 @@ markdown_extensions:
 - md_in_html
 - tables
 - toc:
-    permalink: false
+    permalink: true
     title: Sisukord
     toc_depth: 3
 - pymdownx.arithmatex:
@@ -181,7 +181,7 @@ markdown_extensions:
 - pymdownx.smartsymbols
 - pymdownx.snippets:
     auto_append:
-    - includes/mkdocs.md
+    - includes/abbreviations.md
 - pymdownx.superfences:
     custom_fences:
     - name: mermaid
