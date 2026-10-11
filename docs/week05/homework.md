@@ -9,6 +9,7 @@ tags:
 
 **Eeldused:** 5. nädala lab on tehtud (sinu image on Docker Hubis: `<kasutaja>/minu-nginx:v1`), N3–N4 Ansible.
 **Esitamine:** sama repo ja haru mis labis (`n05-docker`), kaust `ansible/`, sama PR.
+**Hinne:** kodutöö on vabatahtlik boonus. Labi hinne tuleb kontrollidest 1–12 (85 punkti); kontroll „BOONUS 13. Kodutöö“ punkte ei anna ega võta. Tehtud boonus annab laboritahvlil tähe ja XP-d. Punane rist Actionsis tähendab siis ainult, et boonus on tegemata.
 
 ---
 
