@@ -66,6 +66,25 @@ Need reeglid pani kirja [Martin Fowler](https://martinfowler.com/articles/contin
 
 *Tabel 7.1. CI ei ole tööriist, vaid harjumus. GitHub Actions, GitLab CI ja Jenkins on masinad, mis seda harjumust automatiseerivad.*
 
+### Kas see on CI?
+
+Väike e-pood, kolm inimest: arendaja Kertu, sysadmin Rasmus ja praktikant Marko. Kõigil on GitHub Actions olemas. Aga tööriist üksi ei tee veel CI-d.
+
+| Mis meeskonnas päriselt toimub | CI? | Miks |
+|---|---|---|
+| Marko muudab ostukorvi koodi, teeb PR-i. Actions jooksutab 2 minutiga testid, üks kukub. Merge-nupp on hall. Marko parandab ja pushib, roheline, merge. | **Jah** | Iga muudatus testitakse automaatselt, punane peatab, parandatakse kohe. |
+| Rasmus muudab `nginx.conf`-i. CI teeb `nginx -t` ja leiab puuduva semikooloni enne, kui fail serverisse jõuab. | **Jah** | Sysadmini konfifail on samuti kood. Viga leiti enne tootmist. |
+| Actions'is on workflow, aga see käivitatakse käsitsi nupuga „enne suurt väljalaset“, kord kuus. | **Ei** | Testid jooksevad harva ja inimese mälu järgi. See on testimise nädal, mitte CI. |
+| `main` on punane juba kaks nädalat. „Ah, see üks test on alati punane“, kõik mergivad edasi. | **Ei** | Tööriist on olemas, harjumus puudub. Punast keegi ei vaata, seega CI ei kaitse millegi eest. |
+| Kertu töötab uue makseviisi kallal kuu aega oma harus ja merge'ib siis 3000 rida korraga. CI on roheline. | **Ei** | Liidetakse harva ja suurelt. Konfliktid ja vead tulevad välja korraga, kui parandamine on kõige kallim. |
+| Workflow'is on üks samm: `run: echo "testid OK"`. Linnuke on alati roheline. | **Ei** | Roheline ei tähenda midagi, kui miski ei saa punaseks minna. |
+| Marko paigaldas oma arvutisse teegi, testid läbivad tema masinas. Pushib otse `main`-i, ilma PR-ita, CI-d ei käivitu. | **Ei** | Kontroll toimus ainult tema masinas. „Töötab minu masinas“ ei ole kontroll. |
+
+*Tabel 7.2. CI on see, mis juhtub iga muudatusega, mitte see, mis on Actions'i vahelehel.*
+
+??? question "Mõtle"
+    Vali tabelist üks „Ei“ rida. Mis peaks muutuma, et see muutuks „Jah“-ks: tööriist, reegel või harjumus?
+
 ### CI, Continuous Delivery, Continuous Deployment
 
 „CI/CD" tähendab kolme järjestikust astet. Need erinevad selles, **kui kaugele** automaatika jõuab ilma inimeseta ([GitLab](https://about.gitlab.com/topics/ci-cd/), [GitHub](https://github.com/resources/articles/ci-cd)).
@@ -81,7 +100,7 @@ Need reeglid pani kirja [Martin Fowler](https://martinfowler.com/articles/contin
 | **Continuous Delivery** | + pakkimine, valmis väljalaskeks igal hetkel | inimene, ühe nupuvajutusega |
 | **Continuous Deployment** | + väljalase tootmisse | keegi — testid on ainus värav |
 
-*Tabel 7.2. Sel nädalal teed CI. Nädal 8 lisab Delivery: image läheb registrisse.*
+*Tabel 7.3. Sel nädalal teed CI. Nädal 8 lisab Delivery: image läheb registrisse.*
 
 Sama konveieri hea ülevaatejoonis (commit → build → test → staging → tootmine ühel pildil): [ByteByteGo — CI/CD pipeline explained in simple terms](https://blog.bytebytego.com/p/ep71-cicd-pipeline-explained-in-simple).
 
@@ -100,7 +119,7 @@ CI-st räägitakse tavaliselt arendajate keeles, aga sysadmini „kood" on samut
 | Saladused | [`gitleaks`](https://github.com/gitleaks/gitleaks) | parool või webhook commitis | N2 `.env`, N4 Vault |
 | Dockerfile | [`hadolint`](https://github.com/hadolint/hadolint) | `latest` tag, root-kasutaja | N5 |
 
-*Tabel 7.3. Sama mõte, sysadmini failid.*
+*Tabel 7.4. Sama mõte, sysadmini failid.*
 
 <figure markdown="span">
   ![Vasakul sysadmini failid Gitis (site.yml, monitor.sh, nginx.conf, Dockerfile, kogu repo), keskel igaühe kontroll CI-s (ansible-lint, idempotentsus, shellcheck, nginx -t, hadolint, gitleaks), paremal kaks tulemust: kõik roheline ja playbook läheb 20 serverisse, või üks punane ja merge on blokeeritud](../images/n07_sysadmin_ci.svg)
@@ -144,7 +163,7 @@ E       AssertionError: assert 'Tervist' in 'Tere konteinerist!'
 | Kiirus | Millisekundid | Kümned sekundid |
 | Leiab | Loogikavead | Pakkimise ja käivitamise vead (nt N5 `127.0.0.1` vs `0.0.0.0`) |
 
-*Tabel 7.4. Ühiktest ütleb, kas kood on õige. Suitsutest ütleb, kas see õige kood ka konteineris töötab.*
+*Tabel 7.5. Ühiktest ütleb, kas kood on õige. Suitsutest ütleb, kas see õige kood ka konteineris töötab.*
 
 Nimi tuleb elektroonikast: lülita seade sisse ja vaata, kas suitsu tuleb. Kui tuleb, pole mõtet edasi testida.
 
@@ -232,7 +251,7 @@ Iga rida vastab ühele küsimusele, mida tühi masin ei tea:
   <figcaption>Joonis 7.5. Iga ci.yml rida vastab ühele asjale, mis sinu VM-is juba on ja runneris mitte. Mida pole repos kirjas, seda runneris ei ole (Talvik, 2026).</figcaption>
 </figure>
 
-*Tabel 7.5. Workflow on kirjeldus sellest, mida sinu masin vaikimisi teab ja runner mitte.*
+*Tabel 7.6. Workflow on kirjeldus sellest, mida sinu masin vaikimisi teab ja runner mitte.*
 
 Praktikumis kirjutad selle faili kokku ridahaaval ja näed iga puuduva rea viga oma silmaga.
 
@@ -250,7 +269,7 @@ Pipeline katkeb, kui mõni käsk lõpetab **exit code'iga ≠ 0**. Sama number, 
 | `5` | Teste ei leitud | Testifaili nimi ei alga `test_`-iga |
 | `127` | Käsku pole olemas | `pytest: command not found` → tööriist paigaldamata |
 
-*Tabel 7.6. Exit code ütleb, kas viga on koodis või konveieris.*
+*Tabel 7.7. Exit code ütleb, kas viga on koodis või konveieris.*
 
 Enamikus meeskondades on reegel: PR-i ei saa `main`-i mergida, kui nõutud check'id pole rohelised. See on **soovitud** käitumine, mitte viga. Parem, et konveier blokeerib merge'i kohe, kui et katkine kood jõuab `main`-i ja sealt tootmisse.
 
@@ -350,7 +369,7 @@ Siin on sama konveier kolmes keeles. Ära õpi süntaksit pähe, vaid otsi igaü
 | Järjekord | `needs:` | `stages:` | `stage`-id järjest |
 | Saladused | Secrets | CI/CD Variables | Credentials |
 
-*Tabel 7.7. Kolm tööriista, üks mudel.*
+*Tabel 7.8. Kolm tööriista, üks mudel.*
 
 <figure markdown="span">
   ![Kolm veergu: GitHub Actions saab iga run'i jaoks uue tühja VM-i, GitLab CI uue konteineri python:3.12 image'ist, Jenkins kasutab sama serverit, kuhu kogunevad eelmiste run'ide jäägid ja „ajutiselt" paigaldatud teegid](../images/n07_kolm_tooriista.svg)
