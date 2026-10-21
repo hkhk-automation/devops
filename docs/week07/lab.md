@@ -536,7 +536,9 @@ Ava loengu [§7](lecture.md#7-sama-mote-teised-tooriistad) ja vaata kolme sakki:
 <figure markdown="span">
   ![Kolm veergu: GitHub Actions saab iga run'i jaoks uue tühja VM-i, GitLab CI uue konteineri, Jenkins kasutab sama serverit, kuhu kogunevad eelmiste run'ide jäägid](../images/n07_kolm_tooriista.svg)
   <figcaption>Joonis 7.6 (loengust). Alumine rida on sinu tabeli vihje: kood, Python ja järjekord kolmes tööriistas (Talvik, 2026).</figcaption>
-</figure> Täida oma README-s tabel (kopeeri see sinna):
+</figure>
+
+Täidame selle tabeli tunnis koos, README-sse seda kirjutama ei pea:
 
 | Küsimus | GitHub Actions (sinu `ci.yml`) | GitLab CI | Jenkins |
 |---|---|---|---|
@@ -563,7 +565,7 @@ lab07/                     # Classroomi repo
 ├── .github/workflows/
 │   └── ci.yml             # test + konteiner, needs, pull_request
 ├── .gitignore             # .venv/
-├── README.md              # + jaotis "## N7 CI" ja Osa 8 tabel
+├── README.md              # jaotis "## N7 CI": 2 linki + 3 lauset
 └── flask/
     ├── app.py             # + /health
     ├── requirements.txt   # Osa 4 parandus sees
@@ -571,13 +573,13 @@ lab07/                     # Classroomi repo
     └── test_app.py        # 3 testi
 ```
 
-`README.md` lõppu jaotis `## N7 CI` (vähemalt 100 sõna). Vasta oma sõnadega:
+`README.md`-sse jaotis `## N7 CI`:
 
-- miks runneris puudusid pytest, kood ja Flask, kuigi sinu VM-is olid olemas (Osa 3);
-- miks Osa 4 viga oli sinu masinas nähtamatu;
-- mida `needs: test` muudab ja miks `-f` on `curl`-il vajalik (Osa 6);
 - link ühele **punasele** ja ühele **rohelisele** run'ile (Actions → run → aadressiriba);
-- Osa 8 tabel täidetud.
+- kolm vastust, igaüks **üks lause**:
+    1. Miks runneris puudus pytest, kuigi sinu VM-is oli see olemas?
+    2. Miks Osa 4 viga sinu masinas ei paistnud?
+    3. Mida muudab `needs: test`?
 
 ```bash
 git add . && git commit -m "N7 CI lab" && git push
