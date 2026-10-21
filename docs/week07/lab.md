@@ -34,28 +34,29 @@ Labi loogika: **baas → laienda → viga → paranda → laienda → viga → p
 Vaata enne alustamist seda pilti. Labi lõpuks on sul **kõik see** olemas ja töötab. Kui kaotad järje, tule siia tagasi ja vaata, millise kasti juures sa oled.
 
 <figure markdown="span">
-  ![Vasakul sinu VM: avalik repo flask/app.py, test_app.py ja ci.yml, venv'is pytest, „töötab minu masinas" näide ja GitLab/Jenkins võrdlus. git push viib GitHubi, kus PR n07-ci käivitab Actionsis job'i test (checkout, setup-python, pip install, pytest) ja sellele järgneva job'i konteiner (docker build, run, curl /health). Mõlemad rohelised: merge lubatud. Üks punane: main ruleset blokeerib merge'i](../images/n07_labi_ylevaade.svg)
+  ![Vasakul sinu VM: Classroomi repo flask/app.py, test_app.py ja ci.yml, venv'is pytest, „töötab minu masinas" näide ja GitLab/Jenkins võrdlus. git push viib GitHubi, kus PR n07-ci käivitab Actionsis job'i test (checkout, setup-python, pip install, pytest) ja sellele järgneva job'i konteiner (docker build, run, curl /health). Mõlemad rohelised: merge lubatud. Üks punane: main ruleset blokeerib merge'i](../images/n07_labi_ylevaade.svg)
   <figcaption>Joonis 7.7. Labi tervikpilt: sinu VM-ist läheb kood push'iga GitHubi, kus kaks job'i järjest otsustavad, kas PR-i võib mergida. Iga kast on üks labi osa (Talvik, 2026).</figcaption>
 </figure>
 
 ---
 
-## Osa 0 · Eeltöö — oma avalik repo ja Python-keskkond
+## Osa 0 · Eeltöö — Classroomi repo ja Python-keskkond
 
-Selle nädala töö läheb **sinu enda avalikku repo**. Avalik on see kahel põhjusel: õpetaja näeb seda ilma kutseta, ja GitHub Free jõustab `main`-i luku (Osa 5) ainult avalikes repodes. Privaatses repos saab reegli küll teha, aga seda ei kontrollita ([GitHub: rulesetid](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets)).
+Võta Classroomis vastu ülesanne **Lab 07 - GitHub Actions CI** ([Classroom](https://classroom50.org/hkhk-automation/it24-automatiseerimine/assignments)). Selles repos on sul **admin-õigus**: Osa 5 lukk ja kodutöö Secret vajavad seda. Nädal 8 jätkab samas repos.
 
-GitHubis: **New repository** → nimi `ci-labor` → **Public** → linnuke **Add a README file** → **Create repository**. Klooni see ja too sinna oma N5 Flask:
+Klooni repo ja too sinna oma N5 Flask:
 
 ```bash
 cd ~
-git clone <sinu-repo-url> ci-labor && cd ci-labor
+git clone <sinu-repo-url> lab07 && cd lab07
 git switch -c n07-ci
 cp -r ~/lab05/flask .
+echo "# Lab 07 · CI" > README.md
 ls flask/
 ```
 
-!!! warning "Avalik repo = kogu maailm näeb"
-    Reposse ei lähe paroole, `.env` faile, tokeneid ega sinu täisnime või isikukoodi. GitHubi kasutajanimest piisab. Kui midagi lekib, siis ainult kustutamisest ei piisa — see jääb Git'i ajalukku (meenuta nädal 2 Märteni `.env`-i).
+!!! warning "Paroolid ei lähe reposse"
+    Ka privaatsesse repos ei lähe paroole, `.env` faile ega tokeneid. Kui midagi lekib, siis ainult kustutamisest ei piisa — see jääb Git'i ajalukku (meenuta nädal 2 Märteni `.env`-i).
 
 `flask/` all peavad olema `app.py`, `requirements.txt` ja `Dockerfile`. Kontrolli, et rakendus ikka töötab (N5 Osa 10):
 
@@ -558,7 +559,7 @@ Ava loengu [§7](lecture.md#7-sama-mote-teised-tooriistad) ja vaata kolme sakki:
 Lõpuks peab repo välja nägema nii:
 
 ```text
-ci-labor/                  # avalik repo
+lab07/                     # Classroomi repo
 ├── .github/workflows/
 │   └── ci.yml             # test + konteiner, needs, pull_request
 ├── .gitignore             # .venv/
@@ -582,7 +583,7 @@ ci-labor/                  # avalik repo
 git add . && git commit -m "N7 CI lab" && git push
 ```
 
-PR `n07-ci` → `main` on juba lahti (Osa 5). Ära seda veel mergi. Kontrolli, et PR-i Checks kastis on `test` ja `konteiner` rohelised. **Esita PR-i link** GitHub Projectis. Repo jääb avalikuks — nädal 8 jätkab samas repos.
+PR `n07-ci` → `main` on juba lahti (Osa 5). Kui PR-i Checks kastis on `test` ja `konteiner` rohelised, vajuta **Merge pull request**. Autograder hindab `main`-i nagu Lab 05–06: tulemus on repo **Releases** all ja Classroomis. Hinne tuleb kontrollidest 1–7 (100 punkti). Kodutöö kontroll „BOONUS 8“ annab lisapunkte.
 
 ---
 

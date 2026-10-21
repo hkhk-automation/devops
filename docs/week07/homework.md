@@ -88,7 +88,7 @@ Ava `stack` job'i logi. Keri `docker compose logs` väljundini. Sealt leiad rea,
 
 Runner vajab parooli, aga `.env` ei tohi GitHubi minna. Selleks on **GitHub Secrets**: krüpteeritud muutujad, mida workflow näeb, aga logis ja koodis neid pole. Miks see oluline on, vaata loengu [§7 „Konveier hoiab võtmeid"](lecture.md#konveier-hoiab-votmeid) ja koomiksit [Compromising CI/CD Pipelines](https://blog.gitguardian.com/security-zines-2-compromising-ci-cd-pipelines/).
 
-[**Settings → Secrets and variables → Actions → New repository secret**](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets), nimi `POSTGRES_PASSWORD`. Repo on sinu oma, seega saad selle ise lisada.
+[**Settings → Secrets and variables → Actions → New repository secret**](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets), nimi `POSTGRES_PASSWORD`. Lab 07 repos on sul admin-õigus, seega saad selle ise lisada.
 
 Workflow'is anna see `stack` job'i tasemel `env:` kaudu edasi (job'i all, `runs-on` kõrval), nii näevad seda kõik sammud (`${{ secrets.POSTGRES_PASSWORD }}`). Compose loeb muutujad shelli keskkonnast samamoodi nagu `.env`-ist; kui mõlemad on olemas, võidab shell ([Compose: muutujate järjekord](https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/)). `POSTGRES_DB` võib olla otse `env:` all, see pole saladus.
 
@@ -99,7 +99,7 @@ Push → kolm rohelist job'i.
 
 ## Esita
 
-PR `n07-kodu` → `main` (või `n07-ci`, kui see pole veel mergitud). **Esita PR-i link GitHub Projectis.** PR-i kirjeldusse:
+PR `n07-kodu` → `main`, oota rohelisi check'e ja merge. Autograderi kontroll „BOONUS 8“ näitab tulemust, lisapunktid paneb õpetaja. PR-i kirjeldusse:
 
 - link **punasele** `stack` run'ile (samm 4) ja **rohelisele** (samm 6);
 - 2–3 lauset: mis rida logis näitas põhjust ja mida nägid `echo $POSTGRES_PASSWORD` sammu logis.
