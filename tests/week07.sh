@@ -110,7 +110,7 @@ rm -rf "$T"
 docker build -q -t lab07-flask ./flask >/dev/null 2>&1
 check "Osa 6: image ehitub" docker image inspect lab07-flask
 docker run -d -p 5000:5000 --name flask7 lab07-flask >/dev/null 2>&1
-curl -fsS --retry 10 --retry-connrefused --retry-delay 1 localhost:5000/health >/dev/null 2>&1; rc=$?
+curl -fsS --retry 10 --retry-all-errors --retry-delay 1 localhost:5000/health >/dev/null 2>&1; rc=$?
 check "Osa 6: /health puudub -> curl exit 22 (404)" test "$rc" -eq 22
 check "Osa 6: docker logs näitab GET /health 404" sh -c 'docker logs flask7 2>&1 | grep -q "GET /health HTTP/1.1\" 404"'
 docker rm -f flask7 >/dev/null 2>&1
@@ -141,7 +141,7 @@ EOF
 check "Osa 7.3: 3 passed" sh -c "$PYTEST flask -v | grep -q '3 passed'"
 docker build -q -t lab07-flask ./flask >/dev/null 2>&1
 docker run -d -p 5000:5000 --name flask7 lab07-flask >/dev/null 2>&1
-check "Osa 7.2: konteineris /health vastab ok" sh -c 'curl -fsS --retry 10 --retry-connrefused --retry-delay 1 localhost:5000/health | grep -q "\"status\":\"ok\""'
+check "Osa 7.2: konteineris /health vastab ok" sh -c 'curl -fsS --retry 10 --retry-all-errors --retry-delay 1 localhost:5000/health | grep -q "\"status\":\"ok\""'
 docker rm -f flask7 >/dev/null 2>&1
 
 # --- Lõppseis: labi Osa 3 + 5 + 6 workflow koos
@@ -170,7 +170,7 @@ jobs:
       - uses: actions/checkout@v7
       - run: docker build -t flask-app ./flask
       - run: docker run -d -p 5000:5000 --name flask1 flask-app
-      - run: curl -fsS --retry 10 --retry-connrefused --retry-delay 1 localhost:5000/health
+      - run: curl -fsS --retry 10 --retry-all-errors --retry-delay 1 localhost:5000/health
       - if: failure()
         run: docker logs flask1
 EOF

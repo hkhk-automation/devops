@@ -175,7 +175,7 @@ cat >> $W <<'EOF'
       - uses: actions/checkout@v7
       - run: docker build -t flask-app ./flask
       - run: docker run -d -p 5000:5000 --name flask1 flask-app
-      - run: curl -fsS --retry 10 --retry-connrefused --retry-delay 1 localhost:5000/health
+      - run: curl -fsS --retry 10 --retry-all-errors --retry-delay 1 localhost:5000/health
 EOF
 samm "Osa 6: /health puudub" "konteiner=failure test=success" "error: 404"
 cat >> $W <<'EOF'

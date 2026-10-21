@@ -425,7 +425,7 @@ Lisa `jobs:` alla, **samal tasemel** kui `test`, mitte selle sisse:
       - uses: actions/checkout@v7
       - run: docker build -t flask-app ./flask
       - run: docker run -d -p 5000:5000 --name flask1 flask-app
-      - run: curl -fsS --retry 10 --retry-connrefused --retry-delay 1 localhost:5000/health
+      - run: curl -fsS --retry 10 --retry-all-errors --retry-delay 1 localhost:5000/health
 ```
 
 - [`needs: test`](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idneeds) — `konteiner` alustab alles siis, kui `test` on roheline. Katkist koodi pole mõtet pakkima hakata.
