@@ -1,0 +1,46 @@
+<svg viewBox="0 0 900 360" xmlns="http://www.w3.org/2000/svg" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="a7" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#7e57c2"/></marker>
+    <marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#e53935"/></marker>
+  </defs>
+  <text x="450" y="32" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Kodutöö — kolmas job kontrollib koostööd</text>
+
+  <g font-size="12" text-anchor="middle">
+    <rect x="20" y="70" width="150" height="70" rx="10" fill="#ede7f6" stroke="#7e57c2" stroke-width="2"/>
+    <text x="95" y="98" font-size="14" font-weight="700" fill="#311b92">test</text><text x="95" y="118" fill="#5e35b1">pytest · labor</text>
+
+    <rect x="210" y="70" width="150" height="70" rx="10" fill="#e3f2fd" stroke="#1e88e5" stroke-width="2"/>
+    <text x="285" y="98" font-size="14" font-weight="700" fill="#0d47a1">konteiner</text><text x="285" y="118" fill="#1565c0">üks konteiner · labor</text>
+
+    <rect x="400" y="56" width="300" height="200" rx="12" fill="#fff8e1" stroke="#fb8c00" stroke-width="2"/>
+    <text x="550" y="82" font-size="14" font-weight="700" fill="#e65100">stack — kodutöö</text>
+    <text x="550" y="100" font-size="11" fill="#ef6c00" font-family="ui-monospace, Menlo, monospace">docker compose up -d --build --wait</text>
+    <rect x="420" y="116" width="120" height="64" rx="8" fill="#fff" stroke="#ffa726"/>
+    <text x="480" y="142" font-weight="700" fill="#bf360c">web</text><text x="480" y="160" font-size="10" fill="#bf360c">Flask · /db-check</text>
+    <rect x="560" y="116" width="120" height="64" rx="8" fill="#fff" stroke="#ffa726"/>
+    <text x="620" y="142" font-weight="700" fill="#bf360c">db</text><text x="620" y="160" font-size="10" fill="#bf360c">Postgres · healthcheck</text>
+    <text x="550" y="210" font-size="11" fill="#e65100">parool: GitHub Secret → env:</text>
+    <text x="550" y="230" font-size="10" fill="#ef6c00">.env runnerisse ei jõua (gitignore)</text>
+
+    <rect x="740" y="96" width="140" height="70" rx="10" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+    <text x="810" y="124" font-size="13" font-weight="700" fill="#1b5e20">curl /db-check</text><text x="810" y="144" fill="#2e7d32">„DB OK"?</text>
+  </g>
+  <g stroke="#7e57c2" stroke-width="2.5" marker-end="url(#a7)">
+    <line x1="172" y1="105" x2="206" y2="105"/>
+    <line x1="362" y1="105" x2="396" y2="105"/>
+    <line x1="702" y1="131" x2="736" y2="131"/>
+  </g>
+  <line x1="542" y1="148" x2="556" y2="148" stroke="#ffa726" stroke-width="2"/>
+  <text x="191" y="96" text-anchor="middle" font-size="10" fill="#5e35b1">needs</text>
+  <text x="381" y="96" text-anchor="middle" font-size="10" fill="#5e35b1">needs</text>
+
+  <!-- first attempt -->
+  <rect x="400" y="276" width="480" height="60" rx="10" fill="#ffebee" stroke="#e53935" stroke-width="2"/>
+  <text x="640" y="300" text-anchor="middle" font-size="13" font-weight="700" fill="#b71c1c">1. katse: punane — db sureb ilma paroolita</text>
+  <text x="640" y="320" text-anchor="middle" font-size="11" fill="#c62828">sama viga mis N6 Osa 2-s · leia see docker compose logs väljundist</text>
+  <line x1="550" y1="258" x2="550" y2="272" stroke="#e53935" stroke-width="2.5" marker-end="url(#ar)"/>
+
+  <text x="200" y="210" text-anchor="middle" font-size="12" fill="#424242">Ühiktest: kas kood on õige?</text>
+  <text x="200" y="230" text-anchor="middle" font-size="12" fill="#424242">Suitsutest: kas konteiner käivitub?</text>
+  <text x="200" y="250" text-anchor="middle" font-size="12" font-weight="700" fill="#e65100">Integratsioon: kas teenused räägivad?</text>
+</svg>

@@ -1,0 +1,88 @@
+<svg viewBox="0 0 960 520" xmlns="http://www.w3.org/2000/svg" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="a7" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#7e57c2"/></marker>
+    <marker id="ag" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#43a047"/></marker>
+    <marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#e53935"/></marker>
+  </defs>
+  <text x="480" y="30" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Mida sa täna ehitad — tervikpilt</text>
+
+  <!-- VM -->
+  <rect x="20" y="60" width="270" height="400" rx="14" fill="#fff3e0" stroke="#ffa726" stroke-width="2"/>
+  <text x="155" y="88" text-anchor="middle" font-size="15" font-weight="700" fill="#e65100">Sinu VM · VS Code</text>
+  <g font-size="12" fill="#bf360c">
+    <rect x="38" y="104" width="234" height="92" rx="8" fill="#fff" stroke="#ffcc80"/>
+    <text x="52" y="124" font-weight="700">repo (avalik)</text>
+    <text x="52" y="144" font-family="ui-monospace, Menlo, monospace" font-size="11">flask/app.py  + /health</text>
+    <text x="52" y="161" font-family="ui-monospace, Menlo, monospace" font-size="11">flask/test_app.py</text>
+    <text x="52" y="178" font-family="ui-monospace, Menlo, monospace" font-size="11">.github/workflows/ci.yml</text>
+    <text x="258" y="124" text-anchor="end" font-size="10">Osa 0</text>
+
+    <rect x="38" y="208" width="234" height="62" rx="8" fill="#fff" stroke="#ffcc80"/>
+    <text x="52" y="230" font-weight="700">.venv · pytest flask -v</text>
+    <text x="52" y="250" font-size="11">testid enne push'i</text>
+    <text x="258" y="230" text-anchor="end" font-size="10">Osa 1, 7</text>
+
+    <rect x="38" y="282" width="234" height="62" rx="8" fill="#ffe0b2" stroke="#fb8c00"/>
+    <text x="52" y="304" font-weight="700">„töötab minu masinas"</text>
+    <text x="52" y="324" font-size="11">pip install requests ainult siin</text>
+    <text x="258" y="304" text-anchor="end" font-size="10">Osa 4</text>
+
+    <rect x="38" y="356" width="234" height="80" rx="8" fill="#fff" stroke="#ffcc80" stroke-dasharray="5 4"/>
+    <text x="52" y="378" font-weight="700">Sama konveier mujal</text>
+    <text x="52" y="398" font-size="11">.gitlab-ci.yml · Jenkinsfile</text>
+    <text x="52" y="416" font-size="11">võrdlustabel README-s</text>
+    <text x="258" y="378" text-anchor="end" font-size="10">Osa 8</text>
+  </g>
+
+  <!-- push arrow -->
+  <line x1="292" y1="150" x2="352" y2="150" stroke="#7e57c2" stroke-width="3" marker-end="url(#a7)"/>
+  <text x="322" y="140" text-anchor="middle" font-size="11" font-weight="700" fill="#5e35b1">git push</text>
+
+  <!-- GitHub -->
+  <rect x="356" y="60" width="584" height="400" rx="14" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2"/>
+  <text x="648" y="88" text-anchor="middle" font-size="15" font-weight="700" fill="#424242">GitHub</text>
+
+  <rect x="376" y="104" width="250" height="58" rx="8" fill="#fff" stroke="#7e57c2" stroke-width="2"/>
+  <text x="390" y="126" font-size="13" font-weight="700" fill="#311b92">PR n07-ci → main</text>
+  <text x="390" y="146" font-size="11" fill="#5e35b1">on: push, pull_request</text>
+  <text x="612" y="126" text-anchor="end" font-size="10" fill="#5e35b1">Osa 5</text>
+
+  <!-- Actions area -->
+  <rect x="376" y="178" width="544" height="168" rx="10" fill="#fff" stroke="#bdbdbd"/>
+  <text x="390" y="200" font-size="13" font-weight="700" fill="#424242">Actions · runner = värske Ubuntu</text>
+
+  <rect x="392" y="214" width="220" height="118" rx="8" fill="#ede7f6" stroke="#7e57c2" stroke-width="2"/>
+  <text x="404" y="236" font-size="13" font-weight="700" fill="#311b92">job: test</text>
+  <g font-size="10.5" fill="#5e35b1" font-family="ui-monospace, Menlo, monospace">
+    <text x="404" y="256">checkout</text><text x="404" y="272">setup-python</text><text x="404" y="288">pip install -r ...</text><text x="404" y="304">pytest flask -v</text>
+  </g>
+  <text x="598" y="236" text-anchor="end" font-size="10" fill="#5e35b1">Osa 2–4</text>
+  <text x="404" y="324" font-size="10" fill="#b71c1c">3 punast X-i järjest (Osa 3)</text>
+
+  <line x1="614" y1="272" x2="676" y2="272" stroke="#7e57c2" stroke-width="2.5" marker-end="url(#a7)"/>
+  <text x="645" y="262" text-anchor="middle" font-size="10" font-weight="700" fill="#5e35b1">needs</text>
+
+  <rect x="680" y="214" width="226" height="118" rx="8" fill="#e3f2fd" stroke="#1e88e5" stroke-width="2"/>
+  <text x="692" y="236" font-size="13" font-weight="700" fill="#0d47a1">job: konteiner</text>
+  <g font-size="10.5" fill="#1565c0" font-family="ui-monospace, Menlo, monospace">
+    <text x="692" y="256">docker build ./flask</text><text x="692" y="272">docker run -p 5000</text><text x="692" y="288">curl -f /health</text><text x="692" y="304">if: failure() → logs</text>
+  </g>
+  <text x="892" y="236" text-anchor="end" font-size="10" fill="#1565c0">Osa 6–7</text>
+  <text x="692" y="324" font-size="10" fill="#b71c1c">404 → test enne koodi</text>
+
+  <!-- result -->
+  <rect x="376" y="364" width="270" height="78" rx="10" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+  <text x="511" y="392" text-anchor="middle" font-size="14" font-weight="700" fill="#1b5e20">✓ ✓ merge lubatud</text>
+  <text x="511" y="414" text-anchor="middle" font-size="11" fill="#2e7d32">mõlemad job'id rohelised</text>
+  <text x="511" y="430" text-anchor="middle" font-size="10" fill="#2e7d32">esitad PR-i lingi · Osa 9</text>
+
+  <rect x="666" y="364" width="254" height="78" rx="10" fill="#ffebee" stroke="#e53935" stroke-width="2"/>
+  <text x="793" y="392" text-anchor="middle" font-size="14" font-weight="700" fill="#b71c1c">✗ merge blokeeritud</text>
+  <text x="793" y="414" text-anchor="middle" font-size="11" fill="#c62828">main ruleset: Require status checks</text>
+  <text x="793" y="430" text-anchor="middle" font-size="10" fill="#c62828">nädal 2 lukk + CI · Osa 5</text>
+
+  <line x1="560" y1="346" x2="530" y2="362" stroke="#43a047" stroke-width="2.5" marker-end="url(#ag)"/>
+  <line x1="740" y1="346" x2="770" y2="362" stroke="#e53935" stroke-width="2.5" marker-end="url(#ar)"/>
+
+  <text x="480" y="496" text-anchor="middle" font-size="13" fill="#4527a0">Kaotasid järje? Vaata, millise kasti juures sa oled.</text>
+</svg>

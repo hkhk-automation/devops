@@ -1,0 +1,40 @@
+<svg viewBox="0 0 900 340" xmlns="http://www.w3.org/2000/svg" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="a7" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#7e57c2"/></marker>
+    <marker id="ag" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#43a047"/></marker>
+    <marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#e53935"/></marker>
+  </defs>
+  <text x="450" y="32" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Iga push käivitab konveieri</text>
+
+  <g font-size="13" text-anchor="middle">
+    <rect x="20" y="90" width="140" height="80" rx="10" fill="#fff3e0" stroke="#ffa726" stroke-width="2"/>
+    <text x="90" y="122" font-weight="700" fill="#e65100">Arendaja</text>
+    <text x="90" y="142" font-size="11" fill="#bf360c">git push / PR</text>
+    <text x="90" y="158" font-size="11" fill="#bf360c">ükskõik kes</text>
+
+    <rect x="200" y="70" width="470" height="120" rx="12" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2"/>
+    <text x="435" y="94" font-weight="700" fill="#424242">värske VM (runner) — iga kord nullist</text>
+    <rect x="220" y="110" width="130" height="56" rx="8" fill="#ede7f6" stroke="#7e57c2"/>
+    <text x="285" y="134" font-weight="700" fill="#311b92">checkout</text><text x="285" y="152" font-size="10" fill="#5e35b1">too kood</text>
+    <rect x="370" y="110" width="130" height="56" rx="8" fill="#ede7f6" stroke="#7e57c2"/>
+    <text x="435" y="134" font-weight="700" fill="#311b92">setup</text><text x="435" y="152" font-size="10" fill="#5e35b1">Python + sõltuvused</text>
+    <rect x="520" y="110" width="130" height="56" rx="8" fill="#ede7f6" stroke="#7e57c2"/>
+    <text x="585" y="134" font-weight="700" fill="#311b92">testid</text><text x="585" y="152" font-size="10" fill="#5e35b1">kõik, iga kord</text>
+
+    <rect x="720" y="62" width="160" height="70" rx="10" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+    <text x="800" y="92" font-weight="700" fill="#1b5e20">✓ roheline</text><text x="800" y="112" font-size="11" fill="#2e7d32">merge lubatud</text>
+
+    <rect x="720" y="150" width="160" height="70" rx="10" fill="#ffebee" stroke="#e53935" stroke-width="2"/>
+    <text x="800" y="180" font-weight="700" fill="#b71c1c">✗ punane</text><text x="800" y="200" font-size="11" fill="#c62828">merge blokeeritud</text>
+  </g>
+  <g stroke-width="2.5">
+    <line x1="162" y1="130" x2="196" y2="130" stroke="#7e57c2" marker-end="url(#a7)"/>
+    <line x1="352" y1="138" x2="366" y2="138" stroke="#7e57c2" marker-end="url(#a7)"/>
+    <line x1="502" y1="138" x2="516" y2="138" stroke="#7e57c2" marker-end="url(#a7)"/>
+    <line x1="672" y1="120" x2="716" y2="100" stroke="#43a047" marker-end="url(#ag)"/>
+    <line x1="672" y1="156" x2="716" y2="182" stroke="#e53935" marker-end="url(#ar)"/>
+    <path d="M800,222 C800,300 90,300 90,176" fill="none" stroke="#e53935" stroke-dasharray="7 5" marker-end="url(#ar)"/>
+  </g>
+  <text x="445" y="296" text-anchor="middle" font-size="12" fill="#c62828">tagasiside minutitega: mis rida, mis viga — enne kui keegi teine selle peale ehitab</text>
+  <text x="450" y="326" text-anchor="middle" font-size="13" font-weight="700" fill="#4527a0">Keegi ei pea mäletama teste jooksutada ega seda, mis tal paigaldatud on.</text>
+</svg>

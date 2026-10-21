@@ -1,0 +1,76 @@
+<svg viewBox="0 0 960 520" xmlns="http://www.w3.org/2000/svg" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <marker id="a7" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#7e57c2"/></marker>
+  </defs>
+  <text x="480" y="30" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">GitHub Actions anatoomia — mis rida mida tähendab</text>
+
+  <!-- YAML -->
+  <rect x="20" y="52" width="400" height="448" rx="12" fill="#263238"/>
+  <text x="36" y="76" font-size="11" fill="#90a4ae" font-family="ui-monospace, Menlo, monospace">.github/workflows/ci.yml</text>
+  <g font-size="13" font-family="ui-monospace, Menlo, monospace">
+    <rect x="30" y="88" width="380" height="24" rx="4" fill="#ffa726" opacity="0.18"/>
+    <text x="40" y="105" fill="#ffcc80">name: CI</text>
+    <rect x="30" y="118" width="380" height="58" rx="4" fill="#ffa726" opacity="0.32"/>
+    <text x="40" y="136" fill="#ffcc80">on:</text>
+    <text x="56" y="153" fill="#ffcc80">push:</text>
+    <text x="56" y="170" fill="#ffcc80">pull_request:</text>
+    <text x="40" y="200" fill="#eceff1">jobs:</text>
+    <rect x="30" y="208" width="380" height="24" rx="4" fill="#7e57c2" opacity="0.40"/>
+    <text x="56" y="225" fill="#d1c4e9">test:</text>
+    <rect x="30" y="234" width="380" height="24" rx="4" fill="#1e88e5" opacity="0.35"/>
+    <text x="71" y="251" fill="#bbdefb">runs-on: ubuntu-latest</text>
+    <text x="71" y="279" fill="#eceff1">steps:</text>
+    <rect x="30" y="286" width="380" height="24" rx="4" fill="#43a047" opacity="0.35"/>
+    <text x="87" y="303" fill="#c8e6c9">- uses: actions/checkout@v7</text>
+    <rect x="30" y="312" width="380" height="42" rx="4" fill="#43a047" opacity="0.35"/>
+    <text x="87" y="329" fill="#c8e6c9">- uses: actions/setup-python@v7</text>
+    <text x="102" y="346" fill="#c8e6c9">with: { python-version: "3.12" }</text>
+    <rect x="30" y="358" width="380" height="24" rx="4" fill="#e53935" opacity="0.30"/>
+    <text x="87" y="375" fill="#ffcdd2">- run: pip install -r ... pytest</text>
+    <rect x="30" y="384" width="380" height="24" rx="4" fill="#e53935" opacity="0.30"/>
+    <text x="87" y="401" fill="#ffcdd2">- run: pytest flask -v</text>
+    <rect x="30" y="420" width="380" height="24" rx="4" fill="#7e57c2" opacity="0.40"/>
+    <text x="56" y="437" fill="#d1c4e9">konteiner:</text>
+    <text x="71" y="463" fill="#d1c4e9">needs: test</text>
+    <text x="71" y="487" fill="#90a4ae">...</text>
+  </g>
+
+  <!-- legend / meaning -->
+  <g font-size="13">
+    <rect x="450" y="88" width="490" height="76" rx="10" fill="#fff3e0" stroke="#ffa726" stroke-width="2"/>
+    <text x="466" y="112" font-weight="700" fill="#e65100">Event (trigger) — millal?</text>
+    <text x="466" y="132" font-size="12" fill="#bf360c">push, pull_request, ajastus (schedule), käsitsi (workflow_dispatch)</text>
+    <text x="466" y="150" font-size="12" fill="#bf360c">Üks repo võib sisaldada mitut workflow'd.</text>
+
+    <rect x="450" y="176" width="490" height="76" rx="10" fill="#ede7f6" stroke="#7e57c2" stroke-width="2"/>
+    <text x="466" y="200" font-weight="700" fill="#311b92">Job — sammude rühm ühel masinal</text>
+    <text x="466" y="220" font-size="12" fill="#5e35b1">Job'id jooksevad vaikimisi paralleelselt, igaüks oma masinas.</text>
+    <text x="466" y="238" font-size="12" fill="#5e35b1">needs: paneb need järjekorda.</text>
+
+    <rect x="450" y="264" width="490" height="60" rx="10" fill="#e3f2fd" stroke="#1e88e5" stroke-width="2"/>
+    <text x="466" y="288" font-weight="700" fill="#0d47a1">Runner — masin, kus job jookseb</text>
+    <text x="466" y="308" font-size="12" fill="#1565c0">GitHubi värske VM (Linux, Windows, macOS) või sinu enda server</text>
+
+    <rect x="450" y="336" width="236" height="104" rx="10" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+    <text x="466" y="360" font-weight="700" fill="#1b5e20">Step: uses</text>
+    <text x="466" y="380" font-size="12" fill="#2e7d32">valmis action</text>
+    <text x="466" y="398" font-size="12" fill="#2e7d32">kellegi teise kood,</text>
+    <text x="466" y="416" font-size="12" fill="#2e7d32">Marketplace'ist</text>
+
+    <rect x="704" y="336" width="236" height="104" rx="10" fill="#ffebee" stroke="#e53935" stroke-width="2"/>
+    <text x="720" y="360" font-weight="700" fill="#b71c1c">Step: run</text>
+    <text x="720" y="380" font-size="12" fill="#c62828">tavaline bash-käsk,</text>
+    <text x="720" y="398" font-size="12" fill="#c62828">sama mis sinu terminalis</text>
+    <text x="720" y="416" font-size="12" fill="#c62828">exit code ≠ 0 → punane</text>
+
+    <text x="695" y="486" text-anchor="middle" font-size="13" font-weight="700" fill="#4527a0">Event → Workflow → Job(id) → Runner → Step(id)</text>
+    <text x="695" y="506" text-anchor="middle" font-size="12" fill="#5e35b1">sammud ühes job'is jagavad sama masinat ja faile</text>
+  </g>
+  <g stroke="#7e57c2" stroke-width="1.5" stroke-dasharray="4 3" fill="none">
+    <path d="M412,147 L446,126"/>
+    <path d="M412,220 L446,214"/>
+    <path d="M412,246 L446,294"/>
+    <path d="M412,320 L446,380"/>
+    <path d="M412,396 L430,460 L820,460 L820,444"/>
+  </g>
+</svg>
