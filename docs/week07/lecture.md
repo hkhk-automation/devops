@@ -28,17 +28,6 @@ tags:
 
 ---
 
-!!! info "Lisalugemine: CI viie suure tegija sõnadega"
-    Sama mõiste, igaüks oma nurga alt. Loe vähemalt üks enne praktikumi:
-
-    - [GitHub: What is CI/CD?](https://github.com/resources/articles/ci-cd), lühike ülevaade CI, Delivery ja Deployment vahest ning headest tavadest
-    - [AWS: What is Continuous Integration?](https://aws.amazon.com/devops/continuous-integration/), kõige lühem; rõhutab, et CI on nii tööriist kui harjumus
-    - [GitLab: What is CI/CD?](https://about.gitlab.com/topics/ci-cd/), konveieri etapid samm-sammult
-    - [IBM: What is continuous integration?](https://www.ibm.com/think/topics/continuous-integration), CI reeglid ja tavad
-    - [Red Hat: What is CI/CD?](https://www.redhat.com/en/topics/devops/what-is-ci-cd), operatsioonide (ops) vaatenurk
-
----
-
 ## 1. "Töötab minu masinas" — meeskonna mõõtkavas
 
 Ühe inimese projektis on "töötab minu masinas" tüütu, aga elatav. Viie arendajaga see tapab.
