@@ -70,7 +70,7 @@ Need reeglid pani kirja [Martin Fowler](https://martinfowler.com/articles/contin
 
 Väike e-pood, kolm inimest: arendaja Kertu, sysadmin Rasmus ja praktikant Marko. Kõigil on GitHub Actions olemas. Aga tööriist üksi ei tee veel CI-d.
 
-| Mis meeskonnas päriselt toimub | CI? | Miks |
+| Mis meeskonnas toimub | CI? | Miks |
 |---|---|---|
 | Marko muudab ostukorvi koodi, teeb PR-i. Actions jooksutab 2 minutiga testid, üks kukub. Merge-nupp on hall. Marko parandab ja pushib, roheline, merge. | **Jah** | Iga muudatus testitakse automaatselt, punane peatab, parandatakse kohe. |
 | Rasmus muudab `nginx.conf`-i. CI teeb `nginx -t` ja leiab puuduva semikooloni enne, kui fail serverisse jõuab. | **Jah** | Sysadmini konfifail on samuti kood. Viga leiti enne tootmist. |
@@ -398,7 +398,7 @@ Meenuta N4 Vaulti ja Lab 04 Extra `no_log: true`: sama mõte, teine tööriist.
 
 Suurel makseteenusel jookseb tuhandeid automaatteste, mis katavad maksete loogikat ja valuutakonversioone. Iga pull request käivitab need **enne**, kui keegi muudatust üldse vaatama hakkab.
 
-Muudatuse autor saab tagasiside mõne minutiga — mitte pärast release'i, kui viga on juba tootmises ja puudutab päris kasutajate raha. See kiirus on põhjus, miks CI on tänapäeval tavapraktika, mitte lisavõimalus. Tööintervjuul küsitakse „kas oled CI-d seadistanud?" sama loomulikult kui „kas oskad Giti?".
+Muudatuse autor saab tagasiside mõne minutiga — mitte pärast release'i, kui viga on juba tootmises ja puudutab kasutajate raha. See kiirus on põhjus, miks CI on tänapäeval tavapraktika, mitte lisavõimalus. Tööintervjuul küsitakse „kas oled CI-d seadistanud?" sama loomulikult kui „kas oskad Giti?".
 
 ---
 

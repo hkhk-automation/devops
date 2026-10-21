@@ -178,7 +178,7 @@ git push -u origin n07-ci
 Ava repo GitHubis → **Actions**. Vasakul on „CI", paremal run sinu commit-sõnumiga. Kliki run'il → job'il `test` → sammul `Run echo "tere runnerist"`. Logis peab olema `tere runnerist`.
 
 !!! tip "Actions tab'is pole ühtegi „CI" run'i"
-    Kontrolli kausta teed: täpselt `.github/workflows/`, mitte `.github/workflow/` ega `github/workflows/`. Kontrolli GitHubi veebis, et fail on päriselt seal: kas push läks läbi?
+    Kontrolli kausta teed: täpselt `.github/workflows/`, mitte `.github/workflow/` ega `github/workflows/`. Kontrolli GitHubi veebis, et fail on seal: kas push läks läbi?
 
 !!! tip "Run on kohe punane, logi pole"
     YAML-i taane. Ainult tühikud, mitte tab'id; `steps` on `runs-on` all samal tasemel. VS Code näitab tab'e, kui all paremal on „Tab Size", mitte „Spaces".
@@ -624,7 +624,7 @@ PR `n07-ci` → `main` on juba lahti (Osa 5). Kui PR-i Checks kastis on `test` j
 
 4. **Ainult siis, kui vaja.** Muuda README-d ja push. Miks käivitus kogu konveier, kuigi kood ei muutunud? Uuri [`on.push.paths`](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#onpushpull_requestpull_request_targetpathspaths-ignore) — kuidas panna CI käivituma ainult siis, kui muutub `flask/` või `ci.yml`?
 
-5. **Päris Jenkins.** Käivita Jenkins oma VM-is konteinerina ([Jenkins Dockeris](https://www.jenkins.io/doc/book/installing/docker/)) (port 8080 on N6 nginx'i käes, seega 8081):
+5. **Jenkins.** Käivita Jenkins oma VM-is konteinerina ([Jenkins Dockeris](https://www.jenkins.io/doc/book/installing/docker/)) (port 8080 on N6 nginx'i käes, seega 8081):
 
     ```bash
     docker run -d -p 8081:8080 --name jenkins jenkins/jenkins:lts-jdk21

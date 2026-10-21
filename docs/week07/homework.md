@@ -12,7 +12,7 @@ tags:
 
 ## Ülesanne
 
-Laboris kontrollis CI üht konteinerit üksinda. Päris rakendus ei ela üksi: N6-s nägid, et Flask võib töötada ja andmebaas võib töötada, aga omavahel nad ikka ei räägi (vale host, puuduv parool). Neid vigu ei leia ühiktest ega üksiku konteineri suitsutest.
+Laboris kontrollis CI üht konteinerit üksinda. Rakendus ei ela üksi: N6-s nägid, et Flask võib töötada ja andmebaas võib töötada, aga omavahel nad ikka ei räägi (vale host, puuduv parool). Neid vigu ei leia ühiktest ega üksiku konteineri suitsutest.
 
 Lisa CI-sse kolmas job `stack`, mis käivitab **Compose'iga Flaski koos PostgreSQL-iga** ja kontrollib, et `/db-check` vastab `DB OK`.
 
@@ -43,7 +43,7 @@ pytest flask -v
 ```
 
 !!! question "Uus route vajab ka testi?"
-    `/db-check` vajab päris andmebaasi, seega `test_client()`-iga seda ilma baasita testida ei saa. Selle kontrollib `stack` job. Mõtle: mis vahe on testil, mis vajab ainult koodi, ja testil, mis vajab terve stacki?
+    `/db-check` vajab töötavat andmebaasi, seega `test_client()`-iga seda ilma baasita testida ei saa. Selle kontrollib `stack` job. Mõtle: mis vahe on testil, mis vajab ainult koodi, ja testil, mis vajab terve stacki?
 
 ### 3. `compose.yaml` repo juurde
 
