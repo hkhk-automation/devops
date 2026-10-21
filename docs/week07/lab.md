@@ -182,6 +182,9 @@ Ava repo GitHubis → **Actions**. Vasakul on „CI", paremal run sinu commit-s�
 !!! tip "Run on kohe punane, logi pole"
     YAML-i taane. Ainult tühikud, mitte tab'id; `steps` on `runs-on` all samal tasemel. VS Code näitab tab'e, kui all paremal on „Tab Size", mitte „Spaces".
 
+!!! tip "Iga punane run saadab sulle meili"
+    Selles labis tekitad punase X-i meelega mitu korda ja iga kord tuleb meil „CI workflow run failed“. See on normaalne, tööl tulevad CI teated just nii. Kui meilid segavad: GitHub → **Settings → Notifications → Actions** → eemalda **Email**.
+
 Ava job'i logis kõige esimene samm **Set up job**. Seal on kirjas, mis masin see oli: `Operating System Ubuntu 24.04`, `Runner Image`.
 
 ??? question "Mõtle"
