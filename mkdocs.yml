@@ -124,8 +124,9 @@ nav:
     - Praktikum: week08/lab.md
     - Kodutöö: week08/homework.md
 
-  - N9 · Infrastruktuur koodina — mõtteviis (ASYNC):
-    - Iseseisvtöö: week09/async_task.md
+  - "N9 · Infrastruktuur koodina: mõtteviis (iseseisev)":
+    - Loeng: week09/lecture.md
+    - Praktikum: week09/lab.md
 
   - N10 · Infrastruktuuri kirjeldamine koodina:
     - Loeng: week10/lecture.md
