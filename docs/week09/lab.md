@@ -9,47 +9,47 @@ tags:
 
 # N9 · Praktikum: infrastruktuur koodina (iseseisev)
 
-Täna töötad üksi, brauseris. Proxmoxi ja VPN-i pole vaja.
+Täna töötad üksi ja kõik tööd saab teha brauseris. Proxmoxi ega VPN-i sul täna vaja ei lähe.
 
 | Osa | Mida teed | Aeg |
 |---|---|---|
-| 0 | Loe [loeng](lecture.md) | 60 min |
-| 1 | KodeKloudi Docker'i kursus | 45 min |
-| 2 | Täida võrdlustabel | 30 min |
-| 3 | Docker Compose'i katse | 50 min |
-| 4 | Tekita triiv | 30 min |
-| 5 | Ennustus ja esitamine | 15 min |
+| 0 | Loed [loengu](lecture.md) läbi | 60 min |
+| 1 | Läbid KodeKloudi Docker'i kursuse | 45 min |
+| 2 | Täidad võrdlustabeli | 30 min |
+| 3 | Teed Docker Compose'iga katse | 50 min |
+| 4 | Tekitad triivi | 30 min |
+| 5 | Kirjutad ennustuse ja esitad töö | 15 min |
 
-*Tabel 9.9. Tänane töö*
+*Tabel 9.9. Tänase töö osad ja ajakulu*
 
-Vastused kirjutad oma Lab 09 repo faili `README.md`: asenda iga `_vastus_` oma tekstiga. Repo saad Classroom 50 lingiga, mis on kursuse teadetes.
+Vastused kirjutad oma Lab 09 repo faili `README.md`. Asenda seal iga `_vastus_` oma tekstiga. Lingi, millega repo saad, leiad kursuse teadetest.
 
 ??? abstract "Õpiväljundid"
 
-    1. Paigutad iga seni kasutatud tööriista imperatiivse ja deklaratiivse skaalale
-    2. Näed Docker Compose'i väljundist, kuidas tööriist ühtlustab tegeliku oleku soovitud olekuga
-    3. Näitad, miks lihtne bash-skript ei ole idempotentne, ja parandad selle
-    4. Tekitad triivi ja näed, mida Ansible ja Compose sellega teevad
+    1. Oskad paigutada iga seni kasutatud tööriista imperatiivse ja deklaratiivse lähenemise skaalale.
+    2. Näed Docker Compose'i väljundist, kuidas tööriist viib tegeliku oleku kooskõlla soovitud olekuga.
+    3. Oskad näidata, miks lihtne bash-skript ei ole idempotentne, ja oskad selle parandada.
+    4. Oskad tekitada triivi ja näed, mida Ansible ja Compose sellega teevad.
 
 ---
 
 ## Osa 1 · KodeKloudi kursus
 
-1. Ava [Docker for the Absolute Beginner: Crash Course](https://kodekloud.com/courses/crash-course-docker-for-absolute-beginner) ja vajuta **Enroll for Free**.
-2. Vaata videod ja tee kõik neli laborit.
-3. Laadi sertifikaat (või ekraanipilt, kus on 100% ja sinu nimi) oma repo kausta `kodekloud/`: **Add file → Upload files**, failinime ette kirjuta `kodekloud/`.
+1. Ava kursus [Docker for the Absolute Beginner: Crash Course](https://kodekloud.com/courses/crash-course-docker-for-absolute-beginner) ja vajuta nuppu **Enroll for Free**.
+2. Vaata videod läbi ja tee kõik neli laborit.
+3. Kui kursus on läbitud, laadi sertifikaat oma repo kausta `kodekloud/`. Vali **Add file → Upload files** ja kirjuta failinime ette `kodekloud/`. Kui sertifikaati ei anta, laadi üles ekraanipilt, millel on näha 100% ja sinu nimi.
 
-??? warning "Ei tööta?"
-    - **KodeKloud küsib raha:** logi sisse ja vajuta uuesti **Enroll for Free**. Kui ikka küsib, tee sellest ekraanipilt ja kirjuta õpetajale.
-    - **Sertifikaati ei anta:** tee ekraanipilt kursuse lehest, kus on näha 100%.
+??? warning "Mis teha, kui midagi ei tööta?"
+    - Kui KodeKloud küsib maksmist, logi sisse ja vajuta uuesti **Enroll for Free**. Kui see ei aita, tee lehest ekraanipilt ja kirjuta õpetajale.
+    - Kui tasuta kontoga sertifikaati ei anta, tee ekraanipilt kursuse lehest, millel on näha 100%.
 
 ---
 
 ## Osa 2 · Võrdlustabel
 
-Ava README-s **Osa 2**. Iga tööriista kohta kirjuta lühike vastus (`deklaratiivne`, `jah`, `ei`) ja viimasesse veergu **link oma labori failile** GitHubis.
+Ava README-s **Osa 2**. Kirjuta iga tööriista kohta lühike vastus (näiteks `deklaratiivne`, `jah` või `ei`). Viimasesse veergu pane link oma labori failile GitHubis.
 
-Lingi saad nii: ava fail oma Lab 02-07 repos ja kopeeri brauseri aadressiriba.
+Lingi saad nii: ava fail oma Lab 02-07 repos ja kopeeri brauseri aadressiribalt selle aadress.
 
 ??? tip "Millise faili lingin?"
 
@@ -62,17 +62,17 @@ Lingi saad nii: ava fail oma Lab 02-07 repos ja kopeeri brauseri aadressiriba.
     | Docker Compose | Lab 06 `docker-compose.yml` |
     | GitHub Actions | Lab 07 `.github/workflows/ci.yml` |
 
-Põhjendusi ei kirjuta. N10 alguses küsin igaühelt suuliselt ühe lahtri kohta: „miks just nii?“
+Põhjendusi README-sse kirjutama ei pea. N10 alguses küsin igaühelt suuliselt ühe lahtri kohta, miks ta nii vastas.
 
 ---
 
 ## Osa 3 · Docker Compose'i katse
 
-Kasuta KodeKloudi labori terminali (ava mõni Osa 1 labor). Iga käsu väljund läheb faili kausta `logid/`, hiljem kopeerid need GitHubi.
+Selle osa teed KodeKloudi labori terminalis. Ava selleks uuesti mõni Osa 1 labor. Iga käsu väljund salvestatakse kausta `logid/`, ja hiljem kopeerid need failid GitHubi.
 
-### 3.1 Valmista ette
+### 3.1 Valmista töökaust ette
 
-Kleebi terminali tervikuna:
+Kleebi terminali kogu allolev plokk korraga:
 
 ```bash
 mkdir -p ~/lab09/logid && cd ~/lab09
@@ -96,25 +96,25 @@ EOF
 docker compose version
 ```
 
-??? warning "Ei tööta? `'compose' is not a docker command`"
-    Terminalis on vana Compose. Kirjuta kõigis käskudes `docker-compose` (sidekriipsuga) `docker compose` asemel.
+??? warning "Mis teha, kui näed teadet `'compose' is not a docker command`?"
+    See tähendab, et terminalis on Compose'i vana versioon. Kirjuta siis kõigis käskudes `docker compose` asemel `docker-compose` (sidekriipsuga).
 
-### 3.2 Käivita kaks korda
+### 3.2 Käivita teenused kaks korda
 
 ```bash
 docker compose up -d 2>&1 | tee logid/01-up.txt
 docker compose up -d 2>&1 | tee logid/02-up-uuesti.txt
 ```
 
-Esimene kord loob konteinerid, teine kord ei tee midagi.
+Esimesel korral loob Compose konteinerid. Teisel korral ei tee ta midagi, sest kõik on juba olemas.
 
 ??? success "Oodatav tulemus"
-    Esimene: `Created` ja `Started`. Teine:
+    Esimese käsu väljundis on read `Created` ja `Started`. Teise käsu väljund on selline:
     ```text
      Container lab09-web-1  Running
      Container lab09-cache-1  Running
     ```
-    Compose võrdles faili ja jooksvaid konteinereid, need klappisid. See on Compose'i `changed=0`.
+    Compose võrdles faili jooksvate konteineritega ja nägi, et need klapivad. Ansible'is näitaks sama olukorda `changed=0`.
 
 ### 3.3 Kustuta üks konteiner
 
@@ -123,7 +123,7 @@ docker rm -f lab09-cache-1 2>&1 | tee logid/03-taastamine.txt
 docker compose up -d 2>&1 | tee -a logid/03-taastamine.txt
 ```
 
-Compose loob puuduva uuesti ja `web`-i ei puutu.
+Compose loob puuduva konteineri uuesti, aga konteinerit `web` ta ei puutu.
 
 ??? success "Oodatav tulemus"
     ```text
@@ -132,8 +132,8 @@ Compose loob puuduva uuesti ja `web`-i ei puutu.
      Container lab09-cache-1  Started
     ```
 
-??? warning "Ei tööta? `No such container`"
-    Konteineri nimi on teine (nt `lab09_cache_1`). Vaata `docker ps` ja kasuta seda nime.
+??? warning "Mis teha, kui näed teadet `No such container`?"
+    Sinu terminalis on konteineril teine nimi, näiteks `lab09_cache_1`. Vaata nime käsuga `docker ps` ja kasuta seda.
 
 ### 3.4 Muuda porti
 
@@ -142,7 +142,7 @@ sed -i 's/8080:80/8081:80/' compose.yaml
 docker compose up -d 2>&1 | tee logid/04-port.txt
 ```
 
-Compose viskab `web` konteineri ära ja teeb uue, `cache` jääb alles.
+Jooksva konteineri porti muuta ei saa. Seepärast eemaldab Compose konteineri `web` ja loob selle asemele uue. Konteiner `cache` jääb alles, sest selle kirjeldus ei muutunud.
 
 ??? success "Oodatav tulemus"
     ```text
@@ -151,16 +151,16 @@ Compose viskab `web` konteineri ära ja teeb uue, `cache` jääb alles.
      Container lab09-web-1  Started
     ```
 
-Muuda port ka oma GitHubi repo `compose.yaml`-is 8081 peale (pliiats ✏️).
+Muuda port 8081 peale ka oma GitHubi repo failis `compose.yaml` (pliiatsi ✏️ nupuga).
 
-### 3.5 Sama asi bash-skriptiga
+### 3.5 Tee sama bash-skriptiga
 
 ```bash
 bash run.sh 2>&1 | tee logid/05-run-kaks-korda.txt
 bash run.sh 2>&1 | tee -a logid/05-run-kaks-korda.txt
 ```
 
-Teine kord tuleb viga, aga skript ütleb ikka `valmis`.
+Teisel käivitamisel tuleb veateade, aga skript kirjutab lõpus ikkagi `valmis`.
 
 ??? success "Oodatav tulemus"
     ```text
@@ -170,7 +170,7 @@ Teine kord tuleb viga, aga skript ütleb ikka `valmis`.
 
 ### 3.6 Paranda skript
 
-Muuda oma GitHubi repos `run.sh` nii, et see kontrollib enne, kas konteiner on olemas.
+Muuda oma GitHubi repos faili `run.sh` nii, et skript kontrollib enne käivitamist, kas konteiner on juba olemas.
 
 ??? tip "Lahendus (proovi enne ise)"
     ```bash
@@ -183,7 +183,7 @@ Muuda oma GitHubi repos `run.sh` nii, et see kontrollib enne, kas konteiner on o
     fi
     ```
 
-Kopeeri parandatud skript terminali (`cat > run.sh <<'EOF'` ... `EOF`) ja käivita kaks korda:
+Kopeeri parandatud skript terminali samamoodi nagu sammus 3.1 (`cat > run.sh <<'EOF'` ... `EOF`). Seejärel kustuta vana konteiner ja käivita skript kaks korda:
 
 ```bash
 docker rm -f lab09-skript
@@ -191,22 +191,25 @@ bash run.sh 2>&1 | tee logid/06-run-parandatud.txt
 bash run.sh 2>&1 | tee -a logid/06-run-parandatud.txt
 ```
 
-Teine kord: `lab09-skript on juba olemas`, viga ei tule.
+Teisel korral kirjutab skript `lab09-skript on juba olemas` ja veateadet ei tule.
 
-### 3.7 Logid GitHubi
+### 3.7 Kopeeri logid GitHubi
 
-Iga faili kohta: terminalis `cat logid/01-up.txt`, kopeeri väljund, GitHubis **Add file → Create new file**, nimeks `logid/01-up.txt`, kleebi, **Commit changes**. Tee seda failidega `01` kuni `06`.
+Tee iga logifailiga järgmist:
 
-Siis vasta README-s küsimustele **3.1-3.4**: kopeeri logist üks rida ja kirjuta üks lause.
+1. Käivita terminalis `cat logid/01-up.txt` ja kopeeri väljund.
+2. Vali GitHubis **Add file → Create new file**, kirjuta failinimeks `logid/01-up.txt`, kleebi sisu ja vajuta **Commit changes**.
 
-!!! warning "Labori terminal kustub, kui aeg saab täis"
-    Kopeeri logid kohe GitHubi. Kui terminal kadus, ava labor uuesti ja korda sammu 3.1.
+Korda seda failidega `01` kuni `06`. Seejärel vasta README-s küsimustele 3.1-3.4. Igas vastuses kopeeri logist üks rida ja kirjuta selle juurde üks lause.
+
+!!! warning "Labori terminal kaob, kui aeg saab täis"
+    Kopeeri logid GitHubi kohe pärast iga osa. Kui terminal kadus, ava labor uuesti ja tee samm 3.1 uuesti.
 
 ---
 
 ## Osa 4 · Tekita triiv
 
-Jätka samas terminalis kaustas `~/lab09`.
+Jätka samas terminalis ja samas kaustas `~/lab09`.
 
 ### 4.1 Ansible
 
@@ -232,17 +235,18 @@ ansible-playbook triiv.yml 2>&1 | tee -a logid/07-triiv-ansible.txt
 cat /tmp/lab09-nginx.conf
 ```
 
-Sa muutsid faili käsitsi (`50m`). `--check --diff` näitab vahet ega muuda midagi. Tavaline jooks kirjutab faili tagasi `1m`-ks.
+Esmalt loob Ansible faili. Seejärel muudad faili käsitsi (`50m`), nagu Mati loengus. Käsk `--check --diff` näitab erinevust, aga ei muuda midagi. Tavaline käivitus kirjutab faili tagasi väärtusele `1m`.
 
 ??? success "Oodatav tulemus"
+    Väljundis on need kaks rida:
     ```text
     -client_max_body_size 50m;
     +client_max_body_size 1m;
     ```
-    ja lõpus `cat` näitab `1m`.
+    Viimane käsk `cat` näitab, et failis on jälle `1m`.
 
-??? warning "Ei tööta? `pip` ja `apt-get` puuduvad"
-    Tee see osa oma arvuti WSL Ubuntus: `sudo apt install ansible`, siis samad käsud.
+??? warning "Mis teha, kui `pip` ja `apt-get` ei tööta?"
+    Tee see osa oma arvuti WSL Ubuntus. Paigalda Ansible käsuga `sudo apt install ansible` ja käivita samad käsud.
 
 ### 4.2 Konteiner
 
@@ -255,57 +259,57 @@ docker compose up -d --force-recreate 2>&1 | tee -a logid/08-triiv-konteiner.txt
 curl -s localhost:8081 2>&1 | tee -a logid/08-triiv-konteiner.txt
 ```
 
-Tavaline `up -d` jätab käsitsi muudatuse alles. `--force-recreate` teeb uue konteineri ja muudatus kaob.
+Kõigepealt muudad konteineri sees avalehte. Tavaline `up -d` jätab selle muudatuse alles, sest konteineri kirjeldus ei muutunud. Võti `--force-recreate` loob uue konteineri ja käsitsi tehtud muudatus kaob.
 
 ??? success "Oodatav tulemus"
-    Kaks korda `MATI PARANDAS`, viimane kord `Welcome to nginx!`.
+    Kaks esimest `curl` käsku näitavad `MATI PARANDAS`. Viimane `curl` näitab nginx'i lehte `Welcome to nginx!`.
 
-Kopeeri `logid/07` ja `logid/08` GitHubi (nagu 3.7) ja vasta README-s **4.1-4.2**.
+Kopeeri failid `logid/07` ja `logid/08` GitHubi samamoodi nagu sammus 3.7 ja vasta README-s küsimustele 4.1 ja 4.2.
 
 ---
 
 ## Osa 5 · Ennustus ja esitamine
 
-README **Osa 5**: kirjuta 3-5 lauset, **mida teeb OpenTofu teisiti kui Ansible**. Oma sõnadega, vähemalt 40 sõna. N10 alguses loed selle ette.
+Kirjuta README osasse 5 vähemalt 40 sõna (3-5 lauset) selle kohta, mida teeb OpenTofu teisiti kui Ansible. Kirjuta oma sõnadega, sest N10 alguses loed ennustuse klassile ette.
 
-Lõpuks otsi README-st (Ctrl+F) `_vastus_`: Osades 2-5 ei tohi seda olla. Automaatkontrolli tulemus on repo **Actions** all.
+Lõpuks otsi README-st (Ctrl+F) sõna `_vastus_`. Osades 2-5 ei tohi seda enam olla. Automaatkontrolli tulemuse näed oma repo vahekaardil **Actions**.
 
 ??? note "Automaatkontroll (100 punkti)"
 
     | Kontroll | Punktid |
     |---|---|
-    | Failid olemas (`logid/01`-`08`) | 5 |
-    | Nimi ja vastused Osades 3-4 | 5 |
-    | KodeKloudi sertifikaat või ekraanipilt | 10 |
-    | Võrdlustabel ja 6 linki oma repodesse | 15 |
-    | `compose.yaml` korras | 10 |
-    | Teine `up`: `Running` | 10 |
-    | Taastamine: `Created`/`Started` | 10 |
-    | Skript kaks korda: `Conflict` sama konteineriga | 10 |
-    | Parandatud skript | 5 |
-    | Triiv Ansible'iga | 10 |
-    | Triiv konteineris | 5 |
-    | Ennustus | 5 |
+    | Failid `logid/01`-`08` on olemas | 5 |
+    | Nimi ja Osade 3-4 vastused on kirjas | 5 |
+    | KodeKloudi sertifikaat või ekraanipilt on üles laaditud | 10 |
+    | Võrdlustabel on täidetud ja seal on 6 linki sinu repodesse | 15 |
+    | `compose.yaml` on korrektne | 10 |
+    | Teise `up` käsu väljundis on `Running` | 10 |
+    | Taastamise väljundis on `Created` või `Started` | 10 |
+    | Skripti teisel käivitamisel tuli `Conflict` sama konteineriga | 10 |
+    | Skript on parandatud | 5 |
+    | Ansible'i triivi logi on olemas | 10 |
+    | Konteineri triivi logi on olemas | 5 |
+    | Ennustus on kirjutatud | 5 |
 
 ---
 
 ## Lisaülesanded
 
 ??? example "A · 12-Factor (kerge)"
-    Loe [12-Factor App](https://12factor.net/) peatükid **III Config**, **IV Backing services** ja **V Build, release, run**. Täida README tabel **Lisa A**: kas Compose, GitHub Actions ja Ansible aitavad seda põhimõtet järgida? Iga lahter: jah / osaliselt / ei + üks lause.
+    Loe [12-Factor App](https://12factor.net/) lehelt peatükid **III Config**, **IV Backing services** ja **V Build, release, run**. Täida README tabel **Lisa A**: kas Compose, GitHub Actions ja Ansible aitavad seda põhimõtet järgida? Igasse lahtrisse kirjuta „jah“, „osaliselt“ või „ei“ ja üks lause põhjenduseks.
 
-    Näide: Docker Compose, IV: **jah**, `cache` on eraldi teenus, mille saab teise vastu vahetada ilma rakenduse koodi muutmata.
+    Näide: Docker Compose ja IV Backing services: **jah**, sest `cache` on eraldi teenus, mille saab teise vastu vahetada ilma rakenduse koodi muutmata.
 
 ??? example "B · Öine triivikontroll (keskmine)"
-    Kirjuta skript `triivikontroll.sh`, mis jooksutab `ansible-playbook triiv.yml --check`. Kui väljundis on `changed=0`, trükib `triivi ei ole` ja väljub koodiga 0, muidu trükib `TRIIV!` ja väljub koodiga 1. Testi mõlemat olukorda.
+    Kirjuta skript `triivikontroll.sh`, mis käivitab käsu `ansible-playbook triiv.yml --check`. Kui väljundis on `changed=0`, kirjutab skript `triivi ei ole` ja lõpetab koodiga 0. Muul juhul kirjutab skript `TRIIV!` ja lõpetab koodiga 1. Proovi mõlemat olukorda.
 
-    Pane skript GitHubi `lisa/triivikontroll.sh` ja väljund `logid/lisa-b.txt`. README-sse: kuidas paneksid selle igal ööl jooksma? (Vihje: N7 `on: schedule`.)
+    Pane skript GitHubi faili `lisa/triivikontroll.sh` ja selle väljund faili `logid/lisa-b.txt`. Kirjuta README-sse, kuidas paneksid skripti igal ööl käima. Vihje: meenuta N7-st võtit `on: schedule`.
 
 ??? example "C · Kubernetes'e kontroller (raskem)"
-    Loe [Controllers](https://kubernetes.io/docs/concepts/architecture/controller/) (~10 min, algab termostaadi näitega). README-sse: kuidas on kontroller sarnane `docker compose up -d`-ga ja mis on vahe?
+    Loe Kubernetes'e dokumentatsioonist lehte [Controllers](https://kubernetes.io/docs/concepts/architecture/controller/). Lugemine võtab umbes 10 minutit ja leht algab sama termostaadi näitega nagu loeng. Kirjuta README-sse, mille poolest on kontroller sarnane käsuga `docker compose up -d` ja mille poolest erineb.
 
-    Vihje: Compose ühtlustab ainult siis, kui sina käivitad `up`. Kubernetes teeb seda pidevalt.
+    Vihje: Compose viib oleku kooskõlla ainult siis, kui sina käivitad `up`. Kubernetes teeb seda pidevalt.
 
 ---
 
-*N10-s paned OpenTofu'ga Proxmoxi masina püsti ja vaatame, kuidas su ennustus klappis.*
+*N10-s lood OpenTofu'ga Proxmoxi masina ja vaatame koos, kuidas sinu ennustus läks.*
