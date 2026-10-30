@@ -5,94 +5,94 @@ tags:
   - Sissejuhatus
 ---
 
-# Loeng - Miks automatiseerimine?
+# Loeng: miks automatiseerida?
 
-*Kuidas käsitsi tehtud IT-töö lakkas skaleerumast - ja mis selle asemele tuli*
+*Kuidas käsitsi tehtud IT-töö jäi suurenevale koormusele alla ja mis tuli selle asemele*
 
-**Kestus:** ~50 min. See on loengu **tuum**. Süvamaterjal (SRE, AIOps, DORA, Ops-perekond, ajalugu) on samas failis allpool jaotises **Taust ja edasijõudnutele** (loe pärast tundi).
-**Tase:** sissejuhatav. Tööriistu veel ei kasuta, aga hakkad mõtlema nagu insener.
+**Kestus:** umbes 50 min. Siin on loengu **põhiosa**. Süvendav materjal (SRE, AIOps, DORA, Ops-valdkonnad, ajalugu) on samas failis allpool jaotises **Taust ja edasijõudnutele**, mida on soovitatav lugeda pärast tundi.
+**Tase:** sissejuhatav. Tööriistu selles tunnis veel ei kasutata, eesmärk on mõista, miks neid vaja on.
 
 ---
 
 ## Õpiväljundid
 
-Tunni lõpuks oskad selgitada kuut asja:
+Tunni lõpuks oskad selgitada järgmist:
 
-1. mis on automatiseerimine (arvuti teeb korduvat, selgete reeglitega tööd ühtemoodi);
+1. mis on automatiseerimine (arvuti teeb korduvat ja selgete reeglitega tööd alati ühtemoodi);
 2. miks käsitsi tehtud töö ei skaleeru;
 3. millal automatiseerida ja millal mitte;
-4. mis vahe on käsitsi tööl ja koodiga tööl;
-5. mida tähendab **idempotentsus** ja **deklaratiivne vs imperatiivne**;
-6. kuidas Git, Ansible, Docker, CI/CD ja Terraform ühendavad ühe teenuse teekonna arendusest tootmiseni.
+4. mille poolest erineb käsitsi tehtud töö koodiga tehtud tööst;
+5. mida tähendavad **idempotentsus** ning **deklaratiivne ja imperatiivne** lähenemine;
+6. kuidas Git, Ansible, Docker, CI/CD ja Terraform viivad teenuse arendusest tootmiskeskkonda.
 
 !!! info "Kolm asja ilma slaidita"
-    Tunni lõpuks peavad **ilma slaidita** selged olema: miks käsitöö ei skaleeru; miks automatiseerimine ei ole lihtsalt "kiirem käsitöö"; kuidas kursuse tööriistad ühte ahelasse käivad.
+    Tunni lõpuks peaksid oskama **ilma slaidita** selgitada, miks käsitöö ei skaleeru, miks automatiseerimine ei ole lihtsalt „kiirem käsitöö“ ja kuidas kursuse tööriistad moodustavad ühe ahela.
 
 ---
 
 ## 1. Näidisstsenaarium
 
 !!! abstract "Miks see oluline on?"
-    Iga rakendus jõudis serverisse mingi protsessi kaudu. Kui see protsess on käsitsi ja kellegi mälu najal, siis mingil ööl see katkeb, ja keegi ärkab kell kolm üles.
+    Iga rakendus jõuab serverisse mingi protsessi kaudu. Kui protsess tehakse käsitsi ja see püsib ainult kellegi mälus, läheb see varem või hiljem katki ja kedagi kutsutakse öösel kell kolm appi.
 
 !!! example "Reede, 23:00"
-    Kati on arendaja. Ta kirjutas veebipoele uue makselehe ja see töötab tema sülearvutis suurepäraselt. Testid rohelised, kolleeg vaatas koodi üle.
+    Kati on arendaja. Ta kirjutas veebipoele uue makselehe, mis töötab tema sülearvutis veatult. Testid läbivad ja kolleeg on koodi üle vaadanud.
 
-    Kell 23:00 logib Mati - süsteemiadministraator - serverisse sisse ja kopeerib Kati failid käsitsi tootmisse. Ta teeb seda iga kord natuke isemoodi, sest juhend on tema peas. Sel korral, väsinuna, unustab ta ühe seadistuse.
+    Kell 23:00 logib süsteemiadministraator Mati serverisse sisse ja kopeerib Kati failid käsitsi tootmisserverisse. Ta teeb seda iga kord veidi erinevalt, sest juhend on ainult tema peas. Seekord unustab ta väsimuse tõttu ühe seadistuse.
 
-    Sait läheb maha. Kliendid ei saa maksta. Ainus, kes teab, mis valesti läks, on Mati - ja tema läks just magama.
+    Veebipood lakkab töötamast ja kliendid ei saa maksta. Ainus, kes teab, mis valesti läks, on Mati, kes läks just magama.
 
-Küsi kolm asja:
+Mõtle kolmele küsimusele.
 
-- **Mis läks valesti?** Mitte kood. Valesti läks **protsess** - see, kuidas kood serverisse jõuab.
-- **Mis sõltus mälust?** Failide kopeerimine, seadistus, taaskäivitus - kõik Mati peas.
-- **Mille arvuti võiks korrata?** Peaaegu kõik. Arvuti ei väsi kell 23:00 ega unusta sammu.
+- **Mis läks valesti?** Kood oli korras. Valesti läks **protsess**, ehk viis, kuidas kood serverisse jõuab.
+- **Mis sõltus mälust?** Failide kopeerimine, seadistamine ja taaskäivitus olid kõik ainult Mati peas.
+- **Mida võiks arvuti korrata?** Peaaegu kõike. Arvuti ei väsi kell 23:00 ega unusta ühtegi sammu.
 
-Ja tähtis: probleem ei ole "Mati oli hooletu". Probleem on **süsteem**, mis lubas kriitilise sammu olla ainult ühe väsinud inimese peas.
+Oluline on see, et probleem ei seisne Mati hooletuses. Probleem on **süsteemis**, mis lubas kriitilisel sammul sõltuda ainult ühe väsinud inimese mälust.
 
 !!! quote
-    Eesmärk ei ole leida Matit, keda süüdistada. Eesmärk on ehitada süsteem, kus üks unustatud samm ei saa vaikselt tootmist maha võtta.
+    Eesmärk ei ole leida Matit, keda süüdistada. Eesmärk on ehitada süsteem, kus üks unustatud samm ei saa märkamatult tootmiskeskkonda rivist välja viia.
 
-Lähtepunkt: **käsitsi tehtud töö on ebaühtlane ja aeglane; automatiseeritud, üle vaadatud protsess on korratav ja turvalisem.** Automatiseerimine ei võta vastutust ära - teeb selle nähtavaks ja korratavaks.
+Lähtepunkt on järgmine: **käsitsi tehtud töö on ebaühtlane ja aeglane, automatiseeritud ja üle vaadatud protsess on korratav ja turvalisem.** Vastutus jääb inimestele, aga automatiseerimise korral on näha, kes mida muutis.
 
 !!! question "Kontrolli ennast"
-    1. Kati kood töötas tema masinas. Miks siis sait maha läks?
+    1. Kati kood töötas tema arvutis. Miks veebipood siiski rivist välja läks?
     2. Nimeta üks samm, mis sõltus ainult Mati mälust.
-    3. Miks pole "Mati olgu hoolsam" hea lahendus?
+    3. Miks ei ole „Mati peab olema hoolikam“ hea lahendus?
 
 ---
 
-## 2. Mis käsitöös katki läheb
+## 2. Mis käsitsi tehtud töös valesti läheb
 
 !!! abstract "Miks see oluline on?"
-    Üks server ja üks muudatus on käsitsi hallatav. Probleem tekib skaalaga - ja see on kogu automatiseerimise põhjus.
+    Ühte serverit ja ühte muudatust saab hallata käsitsi. Probleemid tekivad mahu kasvades ja just see on automatiseerimise peamine põhjus.
 
-Üks server ja üks ühekordne muudatus võib olla käsitsi hallatav. Aga kui servereid, kasutajaid, muudatusi ja keskkondi tuleb rohkem, kasvab koos nendega:
+Ühte serverit ja ühekordset muudatust saab hallata käsitsi. Kui servereid, kasutajaid, muudatusi ja keskkondi lisandub, kasvavad koos nendega ka järgmised probleemid:
 
-- **kopeerimine** - sama töö ikka ja jälle;
-- **unustamine** - üks samm jääb tegemata;
-- **erinevused** - serverid triivivad eri seisunditesse;
-- **teadmise sõltuvus** - protsess on ühe inimese peas, mitte kirjas;
-- **väsimus** - inimene teeb kell 23:00 vigu.
+- **kordamine:** sama tööd tuleb teha ikka ja jälle;
+- **unustamine:** mõni samm jääb tegemata;
+- **erinevused:** serverite seadistus hakkab aja jooksul üksteisest erinema;
+- **sõltuvus ühest inimesest:** protsess on ühe inimese peas ja kirja panemata;
+- **väsimus:** kell 23:00 teeb inimene rohkem vigu.
 
-Käsitöö ei skaleeru mitte sellepärast, et inimesed on halvad, vaid sellepärast, et **inimene ei ole loodud sama asja sada korda täpselt kordama**. Arvuti on.
+Käsitöö ei skaleeru sellepärast, et **inimene ei suuda sama tegevust sada korda täpselt ühtemoodi korrata**. Arvuti suudab. Asi ei ole selles, et inimesed teeksid halba tööd.
 
 !!! question "Kontrolli ennast"
-    1. Miks on üks server käsitsi hallatav, aga sada ei ole?
-    2. Mida tähendab "serverid triivivad eri seisunditesse"?
-    3. Miks on teadmise sõltuvus ühest inimesest riskantne?
+    1. Miks saab ühte serverit hallata käsitsi, aga sadat serverit mitte?
+    2. Mida tähendab, et serverite seadistus hakkab üksteisest erinema?
+    3. Miks on riskantne, kui protsessi tunneb ainult üks inimene?
 
 ---
 
-## 3. Millal automatiseerida - ja millal mitte
+## 3. Millal automatiseerida ja millal mitte
 
 !!! abstract "Miks see oluline on?"
-    Algaja arvab, et kõik tuleb kohe automatiseerida. Insener teab, millal see tasub ja millal mitte.
+    Algaja arvab sageli, et kõik tuleb kohe automatiseerida. Kogenud insener oskab hinnata, millal see end ära tasub ja millal mitte.
 
-Hea automaatika kandidaat on töö, mis on:
+Automatiseerimiseks sobib hästi töö, mis on:
 
 - **korduv**;
-- **piisavalt sagedane või suure mõjuga**;
+- **piisavalt sage või suure mõjuga**;
 - **selgelt kirjeldatav**;
 - **stabiilse protsessiga**;
 - **kontrollitava tulemusega**.
@@ -100,9 +100,9 @@ Hea automaatika kandidaat on töö, mis on:
 Ühekordset, ebamäärast või pidevalt muutuvat ülesannet ei pruugi olla mõistlik automatiseerida.
 
 !!! warning "Kõige tähtsam reegel"
-    **Esmalt tee protsess õigeks; alles siis kirjuta see koodiks.** Muidu saad kiiresti tehtud vea, ainult suuremas skaalas.
+    **Kõigepealt tee protsess korda ja alles siis kirjuta see koodiks.** Vastasel juhul kordad sama viga kiiremini ja suuremas mahus.
 
-**Kolme korra reegel** on lihtne rusikareegel: esimest korda teed käsitsi, teist korda nurised, kolmandal korral automatiseerid. "Kolm" ei ole püha number - mõte on, et pärast paari kordust on selge, et toiming kordub ja tasub automatiseerida.
+**Kolme korra reegel** on lihtne rusikareegel: esimesel korral tee töö käsitsi, teisel korral pane tähele, et see kordub, ja kolmandal korral automatiseeri. Arv kolm ei ole range nõue. Mõte on selles, et paari korduse järel on selge, et toiming tuleb ette veel ja selle automatiseerimine tasub ära.
 
 <figure markdown="span">
 ```mermaid
@@ -116,48 +116,48 @@ flowchart TD
   <figcaption>Joonis 3.1. Millal tasub automatiseerida (Talvik, 2025).</figcaption>
 </figure>
 
-Ettevaatust: **kiiresti tehtud vale on ikka vale, lihtsalt kiiremini ja sajas serveris korraga.** Automatiseerimine võimendab seda, mis sul juba on - nii head kui halba.
+Ole ettevaatlik: **vigane protsess jääb vigaseks ka siis, kui see on automatiseeritud. Viga lihtsalt jõuab kiiremini ja korraga sajasse serverisse.** Automatiseerimine võimendab olemasolevat protsessi nii heas kui ka halvas.
 
 !!! question "Kontrolli ennast"
-    1. Nimeta kolm hea automaatika-kandidaadi tunnust.
-    2. Miks tuleb protsess enne õigeks teha?
+    1. Nimeta kolm tunnust, mille järgi töö sobib automatiseerimiseks.
+    2. Miks tuleb protsess enne automatiseerimist korda teha?
     3. Millal EI tasu automatiseerida?
 
 ---
 
-## 4. Automatiseerimise lühike ajajoon
+## 4. Automatiseerimise lühike ajalugu
 
 !!! abstract "Miks see oluline on?"
-    Automatiseerimine ei alanud DevOpsist ega AI-st. Iga uus laine tekkis, sest eelmine ei skaleerunud enam.
+    Automatiseerimine ei alanud DevOpsi ega tehisintellektiga. Iga uus lähenemine tekkis siis, kui eelmine ei tulnud kasvava mahuga enam toime.
 
-| Samm | Milline probleem tekkis? | Mis vastus tekkis? |
+| Samm | Milline probleem tekkis? | Milline lahendus tekkis? |
 |---|---|---|
-| Käsitsi administreerimine | Inimene teeb serveris samu käske | SSH, runbook'id, käsitsi seadistus |
-| Skriptimine | Sama käsk tuleb käivitada kümnetes kohtades | Bash, PowerShell, cron |
-| Konfiguratsioonihaldus | Serverid triivivad eri seisunditesse | Puppet, Chef, Ansible |
-| DevOps ja CI/CD | Arenduse ja ops'i vahel aeglane, riskantne üleandmine | Git, automaattestid, pipeline'id, automaatne deploy |
-| IaC ja pilv | Taristut luuakse pilvekonsoolis käsitsi, keegi ei tea, mis muudeti | Terraform, CloudFormation, versioonihaldus |
-| GitOps ja platvormid | Paljud tiimid kordavad sama taristu- ja juurutustööd | Git kui soovitud seisu allikas, "golden path" |
-| AIOps | Logisid ja häireid on inimesele liiga palju | Anomaaliatuvastus, korrelatsioon, automaatne esmane analüüs |
+| Käsitsi administreerimine | Inimene käivitab serveris samu käske | SSH, runbook'id, käsitsi seadistus |
+| Skriptimine | Sama käsku tuleb käivitada kümnetes kohtades | Bash, PowerShell, cron |
+| Konfiguratsioonihaldus | Serverite seadistus hakkab üksteisest erinema | Puppet, Chef, Ansible |
+| DevOps ja CI/CD | Töö üleandmine arendusest käitusse on aeglane ja riskantne | Git, automaattestid, pipeline'id, automaatne juurutus |
+| IaC ja pilv | Taristu luuakse pilvekonsoolis käsitsi ja keegi ei tea, mida muudeti | Terraform, CloudFormation, versioonihaldus |
+| GitOps ja platvormid | Paljud tiimid teevad sama taristu- ja juurutustööd korduvalt | Git kui soovitud seisu allikas, „golden path“ |
+| AIOps | Logisid ja häireid on inimese jaoks liiga palju | Anomaaliate tuvastus, sündmuste seostamine, automaatne esmane analüüs |
 
-*Tabel 4.1. Automatiseerimise arengujoon.*
+*Tabel 4.1. Automatiseerimise areng.*
 
 !!! quote
-    Uus tehnoloogia ei kustuta vana. Ansible ei kaota SSH-d; Terraform ei kaota võrke; CI/CD ei kaota testimise vastutust. Automatiseerimine ehitab põhitõdede peale ja viib need suuremasse skaalasse.
+    Uus tehnoloogia ei kaota vana. Ansible ei asenda SSH-d, Terraform ei kaota vajadust võrke tunda ja CI/CD ei võta ära vastutust testimise eest. Automatiseerimine tugineb põhiteadmistele ja võimaldab neid rakendada suuremas mahus.
 
 !!! question "Kontrolli ennast"
-    1. Miks tekkis iga uus automatiseerimise laine?
-    2. Kas Ansible tühistab SSH? Selgita.
-    3. Mille probleemi lahendas konfiguratsioonihaldus?
+    1. Miks tekkis iga uus automatiseerimise lähenemine?
+    2. Kas Ansible asendab SSH? Selgita.
+    3. Millise probleemi lahendas konfiguratsioonihaldus?
 
 ---
 
-## 5. Sama töö: käsitsi vs Ansible
+## 5. Sama töö käsitsi ja Ansible'iga
 
 !!! abstract "Miks see oluline on?"
-    See on loengu tehniline keskpunkt. Kõige selgemini näed vahet, kui vaatad sama ülesannet kahel viisil.
+    See on loengu tehniline keskpunkt. Erinevus on kõige selgemini näha, kui sama ülesannet tehakse kahel viisil.
 
-Ülesanne: paigalda kolmele serverile nginx ja käivita.
+Ülesanne: paigalda kolmele serverile nginx ja käivita see.
 
 **Käsitsi (imperatiivne, ei skaleeru):**
 
@@ -170,7 +170,7 @@ exit
 # server3 - sama uuesti
 ```
 
-Probleemid: kordad sama, teed kuskil vea, unustad serveri, ei tea hiljem iga masina seisu.
+Selle lähenemise probleemid: sama tööd tuleb korrata, kuskil võib tekkida viga, mõni server võib meelest minna ja hiljem ei tea keegi, millises seisus iga masin on.
 
 **Koodiga (deklaratiivne, skaleerub):**
 
@@ -193,102 +193,102 @@ Probleemid: kordad sama, teed kuskil vea, unustad serveri, ei tea hiljem iga mas
 
 | Käsitsi | Koodiga |
 |---|---|
-| Inimene teeb samme iga serveri jaoks eraldi | Üks kirjeldus rakendub kõigile |
-| Tulemus võib serveriti erineda | Soovitud seis on kõigil sama |
-| Teadmine inimese peas | Teadmine failis ja Giti ajaloos |
+| Inimene teeb samme iga serveri jaoks eraldi | Üks kirjeldus rakendub kõigile serveritele |
+| Tulemus võib serveriti erineda | Soovitud seis on kõigis serverites sama |
+| Teadmine on inimese peas | Teadmine on failis ja Giti ajaloos |
 | Vea leidmine sõltub mälust | Muudatusi saab üle vaadata ja võrrelda |
-| Kordamisel rohkem käsitööd | Sama konfiguratsiooni saab uuesti käivitada |
+| Kordamine tähendab uut käsitööd | Sama konfiguratsiooni saab uuesti käivitada |
 
-*Tabel 5.1. Käsitsi vs koodiga.*
+*Tabel 5.1. Käsitsi ja koodiga tehtud töö võrdlus.*
 
-Sama fail töötab kolme või kolmesaja serveri jaoks - muudad ainult inventari. See paneb paika, miks kursusel tulevad Git, Ansible, Docker, CI/CD ja Terraform.
+Sama fail sobib nii kolme kui ka kolmesaja serveri jaoks, muuta tuleb ainult inventari. Sellepärast õpitakse kursusel Giti, Ansible'it, Dockerit, CI/CD-d ja Terraformi.
 
 !!! question "Kontrolli ennast"
-    1. Mis on käsitsi-versiooni kolm probleemi?
-    2. Mis muutub, kui serverite arv kasvab 3-lt 300-le?
-    3. Kus elab teadmine koodiga-versioonis?
+    1. Nimeta käsitsi tehtud versiooni kolm probleemi.
+    2. Mis muutub, kui serverite arv kasvab 3-lt 300-ni?
+    3. Kus asub teadmine koodiga tehtud versioonis?
 
 ---
 
 ## 6. Idempotentsus
 
 !!! abstract "Miks see oluline on?"
-    Idempotentsus on automaatika keskne mõiste: kui käivitan automaatika uuesti, ei tohiks ta süsteemi iga kord rohkem muuta ega katki teha.
+    Idempotentsus on automatiseerimise keskne mõiste. Kui automaatika käivitatakse uuesti, ei tohi see süsteemi iga korraga üha rohkem muuta ega seda rikkuda.
 
 ```bash
 echo "x" >> fail    # EI ole idempotentne: iga käivitus lisab rea
 echo "x" > fail     # ON idempotentne: iga käivitus annab sama tulemuse
 ```
 
-Esimene lisab iga korraga rea; teine kirjutab üle. Hea automatiseerimine on idempotentne: käivitad 10 korda, seis sama, midagi ei lähe katki.
+Esimene käsk lisab igal käivitusel faili uue rea, teine kirjutab faili sisu üle. Hea automaatika on idempotentne: kui käivitad seda kümme korda, on süsteemi seis ikka sama ja midagi ei lähe katki.
 
-Ansible on sellele ehitatud - näiteks "teenus **peab olema** käivitatud": kui teenus juba töötab, ei tee Ansible midagi; kui ei, käivitab. See seob idempotentsuse otse **soovitud seisundi** ideega.
+Ansible on üles ehitatud just sellele põhimõttele. Näiteks kirjeldatakse, et teenus **peab olema** käivitatud: kui teenus juba töötab, ei tee Ansible midagi, ja kui ei tööta, käivitab Ansible selle. Nii on idempotentsus otseselt seotud **soovitud seisundi** ideega.
 
 !!! question "Kontrolli ennast"
     1. Mida tähendab idempotentne?
-    2. Miks `echo >>` ei ole, aga `echo >` on idempotentne?
-    3. Miks saad Ansible-playbook'i julgelt uuesti käivitada?
+    2. Miks `echo >>` ei ole idempotentne, aga `echo >` on?
+    3. Miks võib Ansible'i playbook'i julgelt uuesti käivitada?
 
 ---
 
-## 7. Deklaratiivne vs imperatiivne
+## 7. Deklaratiivne ja imperatiivne lähenemine
 
 !!! abstract "Miks see oluline on?"
-    See selgitab, miks konfiguratsioonihaldus ja IaC ei ole lihtsalt "palju käske ühes failis". Otsene sild Bashilt Ansible'ini.
+    See selgitab, miks konfiguratsioonihaldus ja IaC ei ole lihtsalt „palju käske ühes failis“. See on otsene üleminek Bashilt Ansible'ile.
 
-- **Imperatiivne:** "tee need sammud selles järjekorras." (Bash-skript.)
-- **Deklaratiivne:** "süsteem peab olema sellises lõppseisus." (Ansible, Terraform, Compose.)
+- **Imperatiivne:** „tee need sammud selles järjekorras“ (näiteks Bashi skript).
+- **Deklaratiivne:** „süsteem peab olema sellises lõppseisus“ (näiteks Ansible, Terraform, Docker Compose).
 
-Deklaratiivne ütleb *mis peab olema*, mitte *kuidas seda teha* - tööriist otsustab sammud ise ja jätab tegemata selle, mis juba õige.
+Deklaratiivne kirjeldus ütleb, *mis peab olema*, ja ei ütle, *kuidas seda teha*. Tööriist otsustab sammud ise ning jätab vahele selle, mis on juba õiges seisus.
 
-!!! note "Nüanss hilisemaks"
-    Ansible-playbook on üldiselt deklaratiivne ja enamik mooduleid idempotentsed, aga `command`/`shell` võivad olla imperatiivsed - seega "Ansible = alati deklaratiivne" on lihtsustus.
+!!! note "Täpsustus edaspidiseks"
+    Ansible'i playbook on üldiselt deklaratiivne ja enamik mooduleid on idempotentsed, kuid moodulid `command` ja `shell` käivitavad lihtsalt antud käsu ning võivad olla imperatiivsed. Seega on väide „Ansible on alati deklaratiivne“ lihtsustus.
 
 !!! question "Kontrolli ennast"
-    1. Mis vahe on imperatiivsel ja deklaratiivsel?
-    2. Miks on deklaratiivne turvalisem korduval käivitamisel?
-    3. Nimeta üks deklaratiivne tööriist kursuselt.
+    1. Mille poolest erinevad imperatiivne ja deklaratiivne lähenemine?
+    2. Miks on deklaratiivne lähenemine korduval käivitamisel turvalisem?
+    3. Nimeta üks deklaratiivne tööriist, mida kursusel kasutatakse.
 
 ---
 
-## 8. DevOps ühe põhimõttena
+## 8. DevOps kui põhimõte
 
 !!! abstract "Miks see oluline on?"
-    Automatiseerimine ei lahenda ainult tehnilist probleemi. Kui arendaja kirjutab koodi ja ops käitab teenust, peab tarneahel olema ühine, nähtav ja tagasisidega.
+    Automatiseerimine ei lahenda ainult tehnilist probleemi. Kui arendaja kirjutab koodi ja käitusmeeskond haldab teenust, peab tarneahel olema ühine, nähtav ja tagasisidega.
 
 Lühidalt:
 
-- enne DevOpsi olid **Dev** ja **Ops** sageli eraldi silodes;
-- Dev tahtis kiiresti muudatusi, Ops stabiilsust;
-- "üle müüri viskamine" tekitas aeglaseid, riskantseid ja süüdistavaid väljalaskeid;
-- DevOps ühendab koostöö, jagatud vastutuse, automatiseerimise, mõõtmise ja teadmise jagamise;
-- DevOps **ei ole** üks tööriist, üks tiim ega ametinimetus.
+- enne DevOpsi töötasid arendus (**Dev**) ja käitus (**Ops**) sageli teineteisest eraldi;
+- arendus soovis muudatusi kiiresti välja anda, käitus soovis stabiilsust;
+- kui arendus andis valmis koodi lihtsalt käitusele üle („viskas üle müüri“), olid väljalasked aeglased ja riskantsed ning vigade korral otsiti süüdlast;
+- DevOps ühendab koostöö, jagatud vastutuse, automatiseerimise, mõõtmise ja teadmiste jagamise;
+- DevOps **ei ole** üks tööriist, eraldi tiim ega ametinimetus.
 
 !!! quote
-    Hea automatiseerimine vajab inimesi, toimivat koostööd, mõõtmist ja jagatud teadmist - mitte ainult uut tööriista.
+    Hea automatiseerimine vajab lisaks uuele tööriistale ka inimesi, toimivat koostööd, mõõtmist ja jagatud teadmisi.
 
-*Kust DevOps täpsemalt tuli, mis on CAMS, SRE, platvormi-inseneeria ja Ops-perekond - vt allpool **Taust ja edasijõudnutele**.*
+*DevOpsi päritolu, CAMS-mudelit, SRE-d, platvormi-inseneeriat ja teisi Ops-valdkondi käsitleb allpool olev jaotis **Taust ja edasijõudnutele**.*
 
 !!! question "Kontrolli ennast"
-    1. Mis oli "üle müüri viskamise" probleem?
-    2. Mida DevOps selle asemel pakub?
-    3. Miks pole DevOps üks tööriist?
+    1. Mis oli probleem, kui arendus „viskas koodi üle müüri“?
+    2. Mida pakub DevOps selle asemel?
+    3. Miks ei ole DevOps üks tööriist?
 
 ---
 
 ## 9. Infrastruktuur koodina ja kursuse tööriistaahel
 
 !!! abstract "Miks see oluline on?"
-    IaC on kursuse kesksemaid ideid, ja tööriistaahel näitab, kuidas kõik kokku käib.
+    IaC on kursuse üks kesksemaid ideid ja tööriistaahel näitab, kuidas eri tööriistad omavahel seotud on.
 
-**Infrastruktuur koodina (IaC):** kirjelda serverid, võrgud ja õigused failides, mida saab versioonihaldusesse panna, üle vaadata ja automaatselt rakendada.
+**Infrastruktuur koodina (IaC)** tähendab, et serverid, võrgud ja õigused kirjeldatakse failides, mida saab hoida versioonihalduses, üle vaadata ja automaatselt rakendada.
 
 !!! quote
-    Selle asemel et "klõpsa kümmet pilve-nuppu, et teha server", ütled "hoia server, võrk ja õigused koodina; lase üle vaadata; las automaatika loob ühtemoodi".
+    Selle asemel et teha server pilvekonsoolis kümne nupuvajutusega, kirjeldatakse server, võrk ja õigused koodina. Kood vaadatakse üle ja automaatika loob taristu iga kord ühtemoodi.
 
-IaC ja automatiseeritud, üle vaadatud juurutus oleksid Kati ja Mati vea tõenäosust oluliselt vähendanud. Ka automaatika võib olla vigane - aga siis on viga nähtav ja korratav, mitte peidus ühe inimese peas.
+IaC ning automatiseeritud ja üle vaadatud juurutus oleksid Kati ja Mati vea tõenäosust tunduvalt vähendanud. Ka automaatikas võib olla vigu, kuid siis on viga nähtav ja korratav ega ole peidus ühe inimese mälus.
 
-Kursuse tööriistad on ühe tarneahela lülid:
+Kursuse tööriistad moodustavad ühe tarneahela:
 
 <figure markdown="span">
 ```mermaid
@@ -300,23 +300,23 @@ graph LR
     D -->|GitHub Actions| E[Testid + juurutus]
     E -->|Terraform| F[Infra koodis]
 ```
-  <figcaption>Joonis 9.1. Kursuse tööriistad ühe konveieri lülidena (Talvik, 2025).</figcaption>
+  <figcaption>Joonis 9.1. Kursuse tööriistad ühe tarneahela osadena (Talvik, 2025).</figcaption>
 </figure>
 
-| Tööriist | Millist käsitöö-probleemi lahendab | Kursuses |
+| Tööriist | Millist käsitöö probleemi lahendab | Kursuses |
 |---|---|---|
-| Git | Kes muutis, mida, millal | Nädal 2 |
+| Git | Kes muutis, mida ja millal | Nädal 2 |
 | Ansible | Sama seadistus paljudes masinates | Nädal 3-4 |
-| Docker | Rakendus ühtemoodi käivitatav ("aga minu masinas töötas") | Nädal 5-6 |
-| GitHub Actions | Test ja juurutus ei sõltu kellegi õhtusest käsitööst | Nädal 7-8 |
-| Terraform | Ka infrastruktuur kirjeldatud, üle vaadatud, korratav | Nädal 10-11 |
+| Docker | Rakendus käivitub igal pool ühtemoodi („minu arvutis töötas“) | Nädal 5-6 |
+| GitHub Actions | Testimine ja juurutus ei sõltu kellegi õhtusest käsitööst | Nädal 7-8 |
+| Terraform | Ka infrastruktuur on kirjeldatud, üle vaadatud ja korratav | Nädal 10-11 |
 
-*Tabel 9.1. Kursuse tööriistad.* Nädal 13: ehitad terve ahela ise.
+*Tabel 9.1. Kursuse tööriistad.* 13. nädalal ehitad kogu ahela ise.
 
 !!! question "Kontrolli ennast"
-    1. Mida tähendab IaC ühe lausega?
-    2. Millist probleemi lahendab Git ja millal seda õpid?
-    3. Miks on tööriistad ühe ahela lülid, mitte eraldi asjad?
+    1. Mida tähendab IaC? Selgita ühe lausega.
+    2. Millise probleemi lahendab Git ja millal seda kursusel õpitakse?
+    3. Miks moodustavad tööriistad ühe ahela ega ole üksteisest sõltumatud?
 
 ---
 
@@ -324,55 +324,55 @@ graph LR
 
 | Mõiste | Selgitus |
 |---|---|
-| **Automatiseerimine** | Arvuti teeb korduvat tööd reeglite järgi, ühtemoodi |
-| **Miks käsitöö ei skaleeru** | Kopeerimine, unustamine, erinevused, teadmine ühe peas, väsimus |
-| **Kolme korra reegel** | Pärast paari kordust tasub automatiseerida |
-| **"Automatiseeritud vale"** | Kiire viga suuremas skaalas - korrasta protsess enne |
-| **Idempotentsus** | Sama toiming mitu korda → sama tulemus |
-| **Deklaratiivne** | Kirjelda lõppseisund, mitte samme |
-| **DevOps** | Ühine, nähtav, tagasisidega tarneahel - kultuur, mitte tööriist |
+| **Automatiseerimine** | Arvuti teeb korduvat tööd reeglite järgi ja alati ühtemoodi |
+| **Miks käsitöö ei skaleeru** | Kordamine, unustamine, erinevused, sõltuvus ühest inimesest, väsimus |
+| **Kolme korra reegel** | Kui toiming on paar korda kordunud, tasub see automatiseerida |
+| **Automatiseeritud viga** | Viga levib kiiremini ja suuremas mahus, seega tuleb protsess enne korda teha |
+| **Idempotentsus** | Sama toiming mitu korda järjest annab sama tulemuse |
+| **Deklaratiivne** | Kirjeldatakse lõppseisundit, mitte samme |
+| **DevOps** | Ühine, nähtav ja tagasisidega tarneahel; pigem töökultuur kui tööriist |
 | **IaC** | Infrastruktuur koodina |
 
-!!! success "Lõplik kontroll - kolm tuumaküsimust"
+!!! success "Lõplik kontroll: kolm põhiküsimust"
     1. Miks käsitsi tehtud IT-töö ei skaleeru?
-    2. Miks automatiseerimine ei ole lihtsalt "kiirem käsitöö"?
-    3. Kuidas ühendavad Git, Ansible, Docker ja CI/CD ühe teenuse teekonna arendusest tootmiseni?
+    2. Miks automatiseerimine ei ole lihtsalt „kiirem käsitöö“?
+    3. Kuidas viivad Git, Ansible, Docker ja CI/CD teenuse arendusest tootmiskeskkonda?
 
 ---
 
-## 11. Enne laborit
+## 11. Enne praktikumi
 
-Loeng andis "miks". Praktikum annab "kuidas". Täna paned töökeskkonna korda - ahela **esimese lüli**: SSH-võti, `~/.ssh/config` nimega hostid, VS Code Remote-SSH, Git, Ansible-kontroller.
+Loeng selgitas, miks automatiseerida. Praktikumis õpid, kuidas seda teha. Täna seadistad töökeskkonna, mis on ahela **esimene osa**: SSH-võti, nimega hostid failis `~/.ssh/config`, VS Code Remote-SSH, Git ja Ansible'i kontroller.
 
-See võib näida väikese tehnilise detailina, aga see on eeltingimus, et sama tegevust saaks hiljem korrata kümnetel serveritel. Kui täna keskkond ei tööta, ei tööta ka ülejäänud kursus.
+See võib tunduda väikese tehnilise detailina, kuid see on eeldus, et sama tegevust saaks hiljem korrata kümnetes serverites. Kui töökeskkond täna ei tööta, ei saa ka ülejäänud kursuse töid teha.
 
 ---
 
-*Nüüd oled valmis laboriks! See on ahela esimene lüli - kõik ülejäänud nädalad ehitavad selle peale.*
+*Nüüd võid alustada praktikumiga. Töökeskkond on ahela esimene osa ja kõik järgmised nädalad tuginevad sellele.*
 
 ---
 
 # Taust ja edasijõudnutele
 
 !!! note "Loe pärast tundi"
-    Alljärgnev süvendab loengut. See ei ole esimese tunni tuum - need teemad tulevad paremini mõjule, kui juba tead, mida tähendab deploy, pipeline, konfiguratsioon, infrastruktuur ja monitooring.
+    See osa süvendab loengu teemasid ega kuulu esimese tunni põhiosa juurde. Neist teemadest on lihtsam aru saada, kui juba tead, mida tähendavad juurutus, pipeline, konfiguratsioon, infrastruktuur ja monitooring.
 
-## Kust DevOps tuli (detailne ajalugu)
+## DevOpsi päritolu
 
-See valdkond on noorem kui sina. Enne 2008: sein. Ühel pool **Dev**, kes tahtis uusi asju kiiresti; teisel **Ops**, kes tahtis stabiilsust. Arendaja viskas koodi "üle müüri"; rike, süüdistus.
+DevOps on suhteliselt noor valdkond. Enne 2008. aastat olid arendus ja käitus selgelt teineteisest eraldatud. Arendus (**Dev**) soovis uusi funktsioone kiiresti välja anda, käitus (**Ops**) soovis stabiilsust. Arendaja andis koodi käitusele üle („viskas üle müüri“) ja rikke korral otsiti süüdlast.
 
 | Aasta | Mis juhtus |
 |---|---|
-| 2008 | Agile-konverentsil Torontos kutsub Andrew Shafer kokku "Agile Infrastructure" sessiooni; kohale tuleb üks inimene - Patrick Debois |
-| 2009 | Velocity-konverentsil Allspaw & Hammond: "10+ deploys a day" Flickris |
-| 2009 okt | Debois korraldab Ghentis esimese DevOpsDays; Twitteris tekib #DevOps |
-| 2010- | DevOpsDays levib; Jez Humble "Continuous Delivery"; suurettevõtted võtavad kasutusele |
+| 2008 | Andrew Shafer kutsub Toronto Agile-konverentsil kokku „Agile Infrastructure“ sessiooni; kohale tuleb ainult üks inimene, Patrick Debois |
+| 2009 | Allspaw ja Hammond esinevad Velocity konverentsil ettekandega „10+ deploys a day“ Flickri kogemusest |
+| 2009 okt | Debois korraldab Gentis esimese DevOpsDays konverentsi; Twitteris tekib silt #DevOps |
+| 2010- | DevOpsDays konverentsid levivad, ilmub Jez Humble'i raamat „Continuous Delivery“, suurettevõtted võtavad DevOpsi põhimõtted kasutusele |
 
-*Tabel. DevOpsi sünd (Devopedia, 2022).*
+*Tabel. DevOpsi algus (Devopedia, 2022).*
 
-Google'i sõna korduvale käsitööle on **toil** (rüsitöö): käsitsi, korduv, automatiseeritav, väärtust mitte-lisav, teenuse kasvades kasvav töö.
+Google'is nimetatakse korduvat käsitööd sõnaga **toil** (rutiinitöö). See on käsitsi tehtav, korduv ja automatiseeritav töö, mis ei loo püsivat väärtust ja mille hulk kasvab koos teenusega.
 
-!!! tip "Vaata - kust see kõik algas"
+!!! tip "Vaata, kust DevOps alguse sai"
     - [History of DevOps (Damon Edwards)](https://www.youtube.com/watch?v=o7-IuYS0iSE)
     - [The Origins of DevOps (Cisco)](https://www.youtube.com/watch?v=4ROs_A6Vj9o)
     - [History and Evolution of DevOps](https://www.youtube.com/watch?v=fNgXG7oTS7k)
@@ -382,178 +382,178 @@ Google'i sõna korduvale käsitööle on **toil** (rüsitöö): käsitsi, korduv
 
 ## Kaks vaadet veale (blameless)
 
-**Vana vaade (blame):** inimene tegi vea, leia süüdlane. **Uus vaade (blameless):** viga on sümptom; süsteem lubas sel juhtuda. Küsi "miks tundus see tegu mõistlik ja mis süsteemis lubas veal kasvada?", mitte "kes?". Hoolsus ei skaleeru. See ongi DevOpsi vaimne nihe (Davis & Daniels, 2016).
+**Vana vaate (blame)** järgi tegi vea inimene ja tuleb leida süüdlane. **Uue vaate (blameless)** järgi on viga sümptom: süsteem lubas sellel juhtuda. Küsimuse „kes?“ asemel küsitakse: „Miks tundus see tegevus tol hetkel mõistlik ja mis süsteemis lasi veal suureks kasvada?“ Inimeste hoolikus ei skaleeru. Selline mõtteviisi muutus on DevOpsi üks alustalasid (Davis & Daniels, 2016).
 
 ---
 
 ## Mis DevOps EI ole (müüdid)
 
-| Müüt | Miks vale |
+| Müüt | Miks see ei pea paika |
 |---|---|
-| **ametinimetus** ("DevOps engineer") | Nimetus tähistab liikumist; "arendaja + sysadmin ühe palga eest" ei skaleeru |
-| **eraldi tiim** | Uus "DevOps-tiim" lisab kolmanda silo |
-| **tööriistad** | Tööriistad on võimaldajad, mitte definitsioon |
-| **automatiseerimine** | Automatiseerimine on tulemus; kultuuritult teed vigu kiiremini |
-| **üks õige viis** | Teise firma pime kopeerimine loob silosid |
-| **pool inimesi, sama töö** | Ei säästa palka; tõstab kvaliteeti ja kiirust |
+| **ametinimetus** („DevOps engineer“) | Nimetus tähistab liikumist; „arendaja ja süsteemiadministraator ühe palga eest“ ei skaleeru |
+| **eraldi tiim** | Uus „DevOpsi tiim“ tekitab kahe eraldatud tiimi kõrvale kolmanda |
+| **tööriistad** | Tööriistad aitavad põhimõtteid rakendada, kuid ei defineeri DevOpsi |
+| **automatiseerimine** | Automatiseerimine on tulemus; ilma koostöökultuurita tehakse vigu lihtsalt kiiremini |
+| **üks õige viis** | Teise ettevõtte praktikate pime kopeerimine tekitab taas eraldatud tiime |
+| **poole vähem inimesi sama töö jaoks** | DevOpsi eesmärk on kvaliteet ja kiirus. Palgakulu see ei vähenda |
 
 *Tabel. DevOpsi müüdid (Davis & Daniels, 2016).*
 
 ---
 
-## Mis DevOps siis ON (CAMS ja kompakt)
+## Mis DevOps siis on (CAMS ja kokkulepe)
 
-**CAMS:** Culture, Automation, Measurement, Sharing. Kultuur enne tööriistu.
+**CAMS** tähendab Culture, Automation, Measurement, Sharing (kultuur, automatiseerimine, mõõtmine, jagamine). Kultuur on tööriistadest tähtsam.
 
-Tuum on **kompakt**: ühine eesmärk, pidev suhtlus, jooksev parandamine. Analoogia kaljuronimine: ronija ronib, julgestaja hoiab köit; enne algust kontrollivad mõlemad sõlmed; märguanded "on belay?", "belay on".
+DevOpsi aluseks on meeskondadevaheline **kokkulepe** (compact): ühine eesmärk, pidev suhtlus ja jooksev parendamine. Davis ja Daniels kasutavad selle selgitamiseks kaljuronimise näidet. Ronija ronib ja julgestaja hoiab köit. Enne ronimist kontrollivad mõlemad sõlmi ja nad kasutavad kokkulepitud märguandeid („on belay?“, „belay on“).
 
 !!! note "Folk model"
-    DevOps on mõiste, mida eri inimesed kasutavad eri tähenduses; inimesed vaidlevad definitsiooni üle rohkem kui ideede üle. Küsi "mis probleemi me lahendame?".
+    DevOps on mõiste, mida eri inimesed kasutavad eri tähenduses, ja definitsiooni üle vaieldakse sageli rohkem kui ideede üle. Seetõttu tasub küsida: „Millist probleemi me lahendame?“
 
 ---
 
-## DevOpsi silmus
+## DevOpsi tsükkel
 
-plan → code → build → test → release → deploy → operate → monitor → (tagasi). Kõige tähtsam osa on **tagasiside**: rikke info läheb tagasi planeerimisse. See teeb sellest silmuse, mitte joone.
+Tsükkel koosneb etappidest plan → code → build → test → release → deploy → operate → monitor, misjärel algab see uuesti. Kõige tähtsam osa on **tagasiside**: info rikete kohta jõuab tagasi planeerimisse. Seetõttu on tegemist tsükliga ja protsess ei lõpe juurutamisega.
 
 ---
 
-## Ops-perekond
+## Ops-valdkonnad
 
-DevOpsi ideed levisid teistesse valdkondadesse. LiveActioni jaotus:
+DevOpsi ideed on levinud ka teistesse valdkondadesse. LiveActioni jaotus:
 
 | Rühm | Nimi | Fookus |
 |---|---|---|
-| Algne | ITOps | Infra, monitooring, deploy |
-| Algne | DevOps | Arendus + ops CI/CD-silmuses |
-| Algne | NetOps | Võrgu tervis, automatiseerimine |
-| Algne | SecOps | Riski vähendamine üleselt |
-| Uus | CloudOps | Pilve provisioning, optimeerimine |
-| Uus | EdgeOps | Servavõrgud, kaugharud |
-| Uus | AIOps | Big data + ML ops'ile |
-| Uus | NoOps | Arendaja "üle müüri" (pole juurdunud) |
-| Hübriid | DevSecOps | Turve arendusse algusest |
+| Algne | ITOps | Taristu, monitooring, juurutus |
+| Algne | DevOps | Arendus ja käitus CI/CD tsüklis |
+| Algne | NetOps | Võrgu seisund, automatiseerimine |
+| Algne | SecOps | Riskide vähendamine kogu organisatsioonis |
+| Uus | CloudOps | Pilveressursside loomine ja optimeerimine |
+| Uus | EdgeOps | Servavõrgud, kaugharukontorid |
+| Uus | AIOps | Suurandmed ja masinõpe käituse jaoks |
+| Uus | NoOps | Arendaja haldab ise kõike, eraldi käitust pole (ei ole laialt levinud) |
+| Hübriid | DevSecOps | Turvalisus arenduses algusest peale |
 | Hübriid | NetSecOps | Võrguturbe automaatne testimine |
-| Hübriid | NetDevOps | Automaatika, observability võrgule |
+| Hübriid | NetDevOps | Automatiseerimine ja jälgitavus (observability) võrgus |
 
 *Tabel (LiveAction, 2022).*
 
-!!! warning "Iga uus Ops ei tohi saada uueks siloks"
-    Sufiks `-Ops` ei tähenda automaatselt uut ametit, tiimi ega tööriista. Tavaliselt tähendab see, et sama loogikat - koostöö, automatiseerimine, mõõtmine, tagasiside - rakendatakse teises valdkonnas.
+!!! warning "Iga uus Ops ei tohi muutuda eraldi tiimiks"
+    Liide `-Ops` ei tähenda automaatselt uut ametit, tiimi ega tööriista. Tavaliselt tähendab see, et samu põhimõtteid (koostöö, automatiseerimine, mõõtmine, tagasiside) rakendatakse teises valdkonnas.
 
-**DevSecOps ei ole DevOpsi järgmine versioon** - see on DevOpsi põhimõtete rakendamine turbele: turve osa tarneahelast algusest peale, mitte värav lõpus (nt sõltuvuste ja secret'ite skannimine pipeline'is).
+**DevSecOps ei ole DevOpsi järgmine versioon.** See tähendab DevOpsi põhimõtete rakendamist turvalisusele: turvalisus on tarneahela osa algusest peale ega ole ainult kontroll lõpus. Näiteks skannitakse pipeline'is sõltuvusi ja otsitakse koodi sattunud salasõnu (secret'eid).
 
 ---
 
 ## DevOps, SRE ja platvormi-inseneeria
 
-| Distsipliin | Mis see on | Võtmemõisted |
+| Distsipliin | Mis see on | Põhimõisted |
 |---|---|---|
-| DevOps | Kultuur ja filosoofia | CAMS, CI/CD |
-| SRE | Google'ist lähtuv mõõdetav teostus | SLI/SLO, veaeelarve, toil |
-| Platvormi-inseneeria | Skaleerimismuster | Iseteenindusplatvorm, kuldsed teed |
+| DevOps | Kultuur ja põhimõtted | CAMS, CI/CD |
+| SRE | Google'ist alguse saanud mõõdetav rakendusviis | SLI/SLO, veaeelarve, toil |
+| Platvormi-inseneeria | Viis põhimõtteid suures organisatsioonis rakendada | Iseteenindusplatvorm, kuldsed teed |
 
-**SRE** on üks mõjukas, Google'ist lähtuv viis DevOpsi usaldusväärsust praktiliselt rakendada (mitte ainus).
+**SRE** on üks mõjukas Google'ist alguse saanud viis, kuidas DevOpsi põhimõtteid töökindluse tagamisel praktikas rakendada. See ei ole ainus viis.
 
-**Platvormi-inseneeria** ehitab iseteenindusplatvormi kuldsete teedega, et vähendada tootetiimi kognitiivset koormat (Team Topologies, 2019). Analoogia raudtee: platvorm hoiab rööpaid, tiimid valivad sihtkoha.
+**Platvormi-inseneeria** puhul ehitab platvormitiim iseteenindusplatvormi koos kuldsete teedega (golden path), et vähendada tootetiimide kognitiivset koormust (Team Topologies, 2019). Platvormitiim hoolitseb ühise taristu eest ja tootetiimid kasutavad seda oma teenuste arendamiseks ja juurutamiseks.
 
 ---
 
-## SRE detail: SLI, SLO ja veaeelarve
+## SRE täpsemalt: SLI, SLO ja veaeelarve
 
-- **SLI** - mõõdik (nt "kui suur osa päringutest õnnestus").
-- **SLO** - eesmärk (nt "99,9% õnnestub").
-- **Veaeelarve** - vahe 100% ja SLO vahel; lubatud ebausaldusväärsus.
+- **SLI** on mõõdik, näiteks kui suur osa päringutest õnnestus.
+- **SLO** on eesmärk, näiteks 99,9% päringutest õnnestub.
+- **Veaeelarve** on 100% ja SLO vahe ehk lubatud ebaõnnestumiste osa.
 
-!!! example "Worked-example"
-    SLO 99,9% kuus. Kui kaua tohib teenus maas olla?
-    Kuus ~30 päeva = 43 200 minutit. Veaeelarve = 0,1% × 43 200 = **~43 minutit/kuus**.
-    Kui eelarve otsas, **peatuvad uued funktsioonid**, tiim tegeleb stabiilsusega. Võrdle: 99% → ~7,2 h/kuus; 99,99% → ~4,3 min. Iga lisa-üheksa on kümme korda rangem ja kallim.
+!!! example "Näidisarvutus"
+    SLO on 99,9% kuus. Kui kaua tohib teenus kuu jooksul maas olla?
+    Kuus on umbes 30 päeva ehk 43 200 minutit. Veaeelarve = 0,1% × 43 200 = **umbes 43 minutit kuus**.
+    Kui veaeelarve on ära kasutatud, **peatatakse uute funktsioonide väljalase** ja tiim tegeleb stabiilsusega. Võrdluseks: 99% korral on veaeelarve umbes 7,2 tundi kuus, 99,99% korral umbes 4,3 minutit. Iga lisanduv üheksa muudab nõude kümme korda rangemaks ja kallimaks.
 
 ---
 
 ## AIOps, MLOps ja agentne AIOps
 
-**AIOps** (AI for IT Operations): ML operatsiooniandmetele. Probleem - **häireväsimus** (liiga palju häireid → tähtsaim jääb müra sisse → suurem MTTR). Kolm etappi: kogumine+puhastamine → ML/analüütika (anomaaliad, RCA) → automaatne reageerimine (Red Hat, 2026).
+**AIOps** (AI for IT Operations) tähendab masinõppe rakendamist käituse andmetele. Lahendatav probleem on **häireväsimus**: kui häireid on liiga palju, jääb kõige olulisem neist teiste vahele ja rikke lahendamine võtab kauem aega (MTTR kasvab). AIOpsil on kolm etappi: andmete kogumine ja puhastamine, masinõpe ja analüüs (anomaaliad, algpõhjuse analüüs ehk RCA) ning automaatne reageerimine (Red Hat, 2026).
 
-**MLOps ei ole sama:** MLOps hooldab ML-mudelite elutsüklit (andmeteadlased). Eristus: MLOps hooldab mudelit; AIOps kasutab mudelit ops'i jaoks.
+**MLOps on midagi muud.** MLOps tegeleb masinõppemudelite elutsükli haldamisega ja selle kasutajad on andmeteadlased. Lühidalt: MLOps hooldab mudelit, AIOps kasutab mudelit käituse jaoks.
 
-**Agentne AIOps:** agent tegutseb ise valvepiirete sees; inimene jääb kalli/pöördumatu otsuse juurde (LogicMonitor, 2026).
+**Agentne AIOps** tähendab, et tarkvaraagent tegutseb iseseisvalt kindlaksmääratud piirides. Kallid või tagasipööramatud otsused jäävad inimese teha (LogicMonitor, 2026).
 
-!!! note "Korrektuur"
-    Need ei ole küpsusastmed, vaid paralleelsed lähenemised.
+!!! note "Täpsustus"
+    Need ei ole järjestikused küpsusastmed. Tegemist on paralleelsete lähenemistega.
 
 ---
 
-## Automatiseerimine ei ole võluvits
+## Automatiseerimine ei lahenda kõike
 
-**Automatiseerimine ilma arusaamiseta loob suuremat riski.** Käsitsi vale mõjutab ühte serverit; automaatne vale mõjutab kõiki korraga.
+**Automatiseerimine ilma protsessi mõistmata suurendab riski.** Käsitsi tehtud viga mõjutab ühte serverit, automatiseeritud viga mõjutab kõiki servereid korraga.
 
 !!! warning "Õppetund lennundusest"
-    2013: Asiana 214 lendas San Franciscos vastu merevalli, osalt sest piloodid usaldasid automaatikat, mida ei mõistnud. James Reason: automaatika loojad lõid tahtmatult uued, tõsisemad veatüübid. Automatiseeri alles siis, kui mõistad protsessi. Vt [XKCD 1205](https://xkcd.com/1205).
+    2013. aastal tabas Asiana Airlinesi lend 214 San Francisco lennujaamas maandumisel kaldakindlustust. Üks põhjus oli see, et piloodid usaldasid automaatikat, mille tööd nad täielikult ei mõistnud. James Reason on kirjeldanud, et automaatika loojad tekitasid tahtmatult uusi ja tõsisemaid veatüüpe. Automatiseeri alles siis, kui mõistad protsessi. Vaata ka [XKCD 1205](https://xkcd.com/1205).
 
 ---
 
-## Rike kui õppetund: postmortem
+## Rike kui õppimise võimalus: postmortem
 
-Blameless-kultuuris pole RCA jaht süüdlasele. "Inimlik viga" on uurimise **algus**, mitte lõpp.
+Blameless-kultuuris ei ole algpõhjuse analüüsi (RCA) eesmärk süüdlase leidmine. „Inimlik viga“ on uurimise **algus**, mitte lõpp.
 
-- **5 Whys:** *Sait läks maha. Miks? Vale konf. Miks? Mati unustas sammu. Miks? Samm oli peas, mitte kirjas. Miks? Juurutus oli käsitsi. Miks? Polnud automaatset juurutust.* Vastus ei ole "Mati", vaid "polnud automaatset juurutust".
-- **Ishikawa (kalaluu):** põhjuste rühmitamine (inimesed, protsess, tööriistad, keskkond).
+- **5 korda miks (5 Whys):** *Veebipood lakkas töötamast. Miks? Seadistus oli vale. Miks? Mati unustas ühe sammu. Miks? Samm oli ainult tema peas ja kirja panemata. Miks? Juurutus tehti käsitsi. Miks? Automaatset juurutust ei olnud.* Seega on vastus „automaatset juurutust ei olnud“ ja Mati ei ole algpõhjus.
+- **Ishikawa diagramm (kalaluu):** põhjused rühmitatakse kategooriatesse (inimesed, protsess, tööriistad, keskkond).
 
 ---
 
 ## DORA
 
-Neli mõõdikut: juurutamise sagedus, muudatuse tarneaeg, muudatuse tõrkemäär, taastumisaeg. Automatiseerinud meeskonnad on kõigis paremad.
+DORA mõõdikuid on neli: juurutamise sagedus, muudatuse tarneaeg, muudatuste tõrkemäär ja taastumisaeg. Meeskonnad, kes on oma töö automatiseerinud, saavutavad üldjuhul kõigis neljas paremaid tulemusi.
 
 !!! warning "Tähtis"
-    DORA mõõdikud on vestluse ja süsteemi parandamise tööriist, **mitte töötajate hindamisvahend**. Nad näitavad, kus protsess takerdub, mitte kes on "halb".
+    DORA mõõdikud on mõeldud arutelu toetamiseks ja süsteemi parandamiseks ning **neid ei kasutata töötajate hindamiseks**. Mõõdikud näitavad, kus protsess takerdub, ja ei näita, kes on „halb“ töötaja.
 
 ---
 
 ## Sõnastik
 
-- **Agentne AIOps** - AIOps, kus agent tegutseb ise valvepiirete sees.
-- **AIOps** - ML operatsiooniandmetele; anomaaliad, automaatne reageerimine.
-- **Ansible** - deklaratiivne konfiguratsiooni-tööriist üle SSH.
-- **Blameless** - kultuur, kus rikke järel uuritakse süsteemi, mitte süüdlast.
-- **CAMS** - Culture, Automation, Measurement, Sharing.
-- **CI/CD** - koodi automaatne testimine (CI) ja juurutamine (CD).
-- **Deklaratiivne** - kirjeldad soovitud lõppseisundit.
-- **Deploy** - koodi viimine serverisse.
-- **DevOps** - kultuuriline hoiak, mis ühendab arenduse ja operatsioonid.
-- **DevSecOps** - turbe integreerimine tarneahelasse algusest peale.
-- **DORA** - neli mõõdikut tarne tervise hindamiseks.
-- **Docker** - rakenduse pakendamine konteinerisse.
-- **Git** - versioonihaldus; hoiab muudatuste ajalugu.
-- **Idempotentsus** - toiming mitu korda, tulemus sama.
-- **Imperatiivne** - kirjeldad samme (kuidas).
-- **IaC** - infrastruktuur koodina.
-- **Kompakt** - tiimide kokkulepe eesmärgi, suhtluse ja parandamise kohta.
-- **MLOps** - ML-mudelite elutsükli haldamine.
-- **MTTR** - keskmine rikke lahendusaeg.
-- **NetOps** - DevOps-põhimõtted võrgule.
-- **Platvormi-inseneeria** - iseteenindusplatvorm koormuse vähendamiseks.
-- **Postmortem** - rikke järelanalüüs õppimiseks.
-- **SecOps** - turbe integreerimine ops'i ja arendusse.
-- **SLI / SLO** - mõõdik ja eesmärk.
-- **SRE** - Google'ist lähtuv usaldusväärsuse inseneeria.
-- **Terraform** - deklaratiivne IaC-tööriist.
-- **Toil** - korduv käsitsi väärtust mitte-lisav töö.
-- **Veaeelarve** - lubatud ebausaldusväärsus, vahe 100% ja SLO vahel.
+- **Agentne AIOps:** AIOps, kus tarkvaraagent tegutseb iseseisvalt kindlaksmääratud piirides.
+- **AIOps:** masinõppe rakendamine käituse andmetele; anomaaliate tuvastus, automaatne reageerimine.
+- **Ansible:** deklaratiivne konfiguratsioonihalduse tööriist, mis töötab üle SSH.
+- **Blameless:** töökultuur, kus rikke järel uuritakse süsteemi ega otsita süüdlast.
+- **CAMS:** Culture, Automation, Measurement, Sharing.
+- **CI/CD:** koodi automaatne testimine (CI) ja juurutamine (CD).
+- **Deklaratiivne:** kirjeldatakse soovitud lõppseisundit.
+- **Deploy (juurutus):** koodi viimine serverisse.
+- **DevOps:** töökultuur ja põhimõtted, mis ühendavad arenduse ja käituse.
+- **DevSecOps:** turvalisuse lõimimine tarneahelasse algusest peale.
+- **DORA:** neli mõõdikut tarneprotsessi seisundi hindamiseks.
+- **Docker:** tööriist rakenduse pakendamiseks konteinerisse.
+- **Git:** versioonihaldussüsteem, mis hoiab muudatuste ajalugu.
+- **Idempotentsus:** toimingu korduval käivitamisel on tulemus sama.
+- **Imperatiivne:** kirjeldatakse samme ehk seda, kuidas tulemuseni jõuda.
+- **IaC:** infrastruktuur koodina.
+- **Kokkulepe (compact):** tiimide kokkulepe ühise eesmärgi, suhtluse ja parendamise kohta.
+- **MLOps:** masinõppemudelite elutsükli haldamine.
+- **MTTR:** keskmine aeg rikke lahendamiseks.
+- **NetOps:** DevOpsi põhimõtete rakendamine võrguhalduses.
+- **Platvormi-inseneeria:** iseteenindusplatvormi loomine tootetiimide koormuse vähendamiseks.
+- **Postmortem:** rikke järelanalüüs, mille eesmärk on õppimine.
+- **SecOps:** turvalisuse lõimimine käitusse ja arendusse.
+- **SLI / SLO:** mõõdik ja eesmärk.
+- **SRE:** Google'ist alguse saanud töökindluse inseneeria.
+- **Terraform:** deklaratiivne IaC tööriist.
+- **Toil:** korduv käsitsi tehtav töö, mis ei loo püsivat väärtust.
+- **Veaeelarve:** lubatud ebaõnnestumiste osa, 100% ja SLO vahe.
 
 ---
 
 ## Allikad
 
-| Allikas | Miks |
+| Allikas | Mida see käsitleb |
 |---|---|
-| Davis & Daniels, *Effective DevOps* (2016) | Kultuur, müüdid, kompakt, blameless |
-| LiveAction (2022) | Ops-perekond: <https://www.liveaction.com/resources/solution-briefs/netops-devops-secops-aiopswho-does-what-and-why/> |
-| Skelton & Pais, *Team Topologies* (2019) | Kognitiivne koorem, platvormitiim |
+| Davis & Daniels, *Effective DevOps* (2016) | Kultuur, müüdid, kokkulepe, blameless |
+| LiveAction (2022) | Ops-valdkonnad: <https://www.liveaction.com/resources/solution-briefs/netops-devops-secops-aiopswho-does-what-and-why/> |
+| Skelton & Pais, *Team Topologies* (2019) | Kognitiivne koormus, platvormitiim |
 | Google, *Site Reliability Engineering* (2016) | SLO, veaeelarve, toil: <https://sre.google/books/> |
 | Red Hat, *What is AIOps* (2026) | <https://www.redhat.com/en/topics/ai/what-is-aiops> |
-| LogicMonitor (2026) | MLOps, agentne: <https://www.logicmonitor.com/blog/aiops-devops-mlops-and-agentic-aiops> |
-| DORA, *State of DevOps* | Miks automatiseerimine tasub |
+| LogicMonitor (2026) | MLOps, agentne AIOps: <https://www.logicmonitor.com/blog/aiops-devops-mlops-and-agentic-aiops> |
+| DORA, *State of DevOps* | Miks automatiseerimine tasub ära |
 | Devopedia · XKCD 1205 | <https://devopedia.org/devops> · <https://xkcd.com/1205> |

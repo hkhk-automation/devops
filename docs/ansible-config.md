@@ -4,15 +4,15 @@ tags:
   - Konfiguratsioon
 ---
 
-# Ansible seaded — `ansible.cfg`
+# Ansible'i seaded: `ansible.cfg`
 
-See on **reference-leht**, mitte loeng — vaata siia, kui vaja, mitte tuubi peast. N3 laboris piisab paarist reast `ansible.cfg`-s; siin on kogu pilt, kuidas Ansible oma seaded leiab ja kuidas neid ümber määrata.
+See leht on **viiteleht**. Seda ei pea pähe õppima, siia saab vajaduse korral tagasi tulla. 3. nädala praktikumis piisab paarist reast failis `ansible.cfg`. Siin on kirjeldatud, kuidas Ansible oma seaded leiab ja kuidas neid ümber määrata.
 
 ---
 
 ## Mis on `ansible.cfg`
 
-Kui paigaldad Ansible'i, salvestab see — nagu iga tarkvara — vaikimisi konfiguratsioonifaili juhtmasinasse: `/etc/ansible/ansible.cfg`. See fail määrab parameetrite abil, kuidas Ansible vaikimisi töötab. Kui muudad siin väärtust, mõjutad **kõiki** playbooke, mida sellel masinal käivitad.
+Ansible'i paigaldamisel luuakse juhtmasinasse vaikimisi konfiguratsioonifail `/etc/ansible/ansible.cfg`. Selle faili parameetrid määravad, kuidas Ansible vaikimisi töötab. Kui muudad siin mõnda väärtust, mõjutab see **kõiki** playbooke, mida sellel masinal käivitatakse.
 
 Fail on jagatud sektsioonideks:
 
@@ -28,21 +28,21 @@ become = True
 timeout = 20
 ```
 
-Ülal on `[defaults]` (vaikeseaded), all `[privilege_escalation]`, `[ssh_connection]`, ja on veel `[inventory]` ning `[colors]`. Igas sektsioonis määrad parameetreid ja nende väärtusi: kus asub inventory, kuhu logid ja rollid lähevad, kas Ansible kogub fakte automaatselt, kui kaua SSH-ühendust oodata, mitut hosti korraga töödelda. Kõiki valikuid ei pea teadma — piisab mõttest, et fail koosneb sektsioonidest, mis on täis kohandatavaid seadeid.
+Näites on sektsioonid `[defaults]` (vaikeseaded), `[privilege_escalation]` ja `[ssh_connection]`. Lisaks on olemas näiteks `[inventory]` ja `[colors]`. Igas sektsioonis määratakse parameetrid ja nende väärtused: kus asub inventar, kuhu salvestatakse logid ja rollid, kas Ansible kogub fakte automaatselt, kui kaua SSH-ühendust oodatakse ja mitut hosti korraga töödeldakse. Kõiki valikuid ei pea teadma. Piisab, kui tead, et fail koosneb sektsioonidest ja igas sektsioonis on muudetavad seaded.
 
 ---
 
 ## Kolm viisi seadete ümbermääramiseks
 
-Oletame, et hoiad eri kohtades eri playbook-kogumeid: üks veebi, teine andmebaaside, kolmas võrguseadmete jaoks, ja igaüks vajab veidi eri käitumist. Veebi puhul ei taha fakte koguda; andmebaaside puhul tahad fakte, aga mitte värvilist väljundit; võrgu puhul on vaja SSH ooteaeg 20 sekundini pikendada. Seadeid saab ümber määrata kolmel viisil.
+Oletame, et eri kaustades on eri playbookide kogumid: üks veebiserverite, teine andmebaaside ja kolmas võrguseadmete jaoks. Igaüks vajab veidi erinevaid seadeid. Veebiserverite puhul ei ole vaja fakte koguda. Andmebaaside puhul on faktid vajalikud, kuid värvilist väljundit ei soovita. Võrguseadmete puhul tuleb SSH ooteaeg pikendada 20 sekundini. Seadeid saab ümber määrata kolmel viisil.
 
 ### 1. Kohalik `ansible.cfg` playbooki kaustas
 
-Lihtsaim: kopeeri `ansible.cfg` playbooki kausta ja muuda ainult seda, mida vaja. Kui käivitad playbooki sellest kaustast, loeb Ansible seaded kohe sealt. **See on meie kursusel eelistatud viis** — fail läheb koos playbookidega Giti, nii et seaded on versioonihallatud ja jagatud kõigi masinate ja kasutajate vahel.
+See on kõige lihtsam viis. Kopeeri `ansible.cfg` playbooki kausta ja muuda seal ainult vajalikke seadeid. Kui käivitad playbooki sellest kaustast, loeb Ansible seaded sealsest failist. **Sellel kursusel kasutame seda viisi.** Fail lisatakse koos playbookidega Giti, nii et seadete muudatused on versioonihalduses ja kõigil masinatel ning kasutajatel on samad seaded.
 
 ### 2. `ANSIBLE_CONFIG` keskkonnamuutuja
 
-Kui konfiguratsioonifail peab asuma mujal (nt `/opt/ansible-web.cfg`, et seda mitmes playbookis korduvalt kasutada), määra enne käivitamist keskkonnamuutuja, mis osutab faili asukohale:
+Kui konfiguratsioonifail peab asuma mujal (nt `/opt/ansible-web.cfg`, et kasutada seda mitme playbookiga), määra enne käivitamist keskkonnamuutuja, mis osutab faili asukohale:
 
 ```bash
 export ANSIBLE_CONFIG=/opt/ansible-web.cfg
@@ -52,24 +52,24 @@ Nüüd kasutab Ansible seda faili vaikimisi asukoha asemel.
 
 ### 3. Üksik parameeter keskkonnamuutujana
 
-Mõnikord tahad muuta ainult üht seadet ega taha kogu faili kopeerida. Siis asenda just see parameeter keskkonnamuutujaga. Nime saad enamasti nii: võta parameeter, tee suurtähtedeks ja lisa ette `ANSIBLE_`. Nii saab `gathering`-ist `ANSIBLE_GATHERING`:
+Kui on vaja muuta ainult üht seadet, ei pea kogu faili kopeerima. Sel juhul määra see parameeter keskkonnamuutujaga. Muutuja nime saad enamasti nii: kirjuta parameetri nimi suurtähtedega ja lisa selle ette `ANSIBLE_`. Näiteks parameetrist `gathering` saab `ANSIBLE_GATHERING`:
 
 ```bash
 export ANSIBLE_GATHERING=explicit
 ```
 
-Muutuja edastamiseks on mitu võimalust: pane see otse käsu ette (kehtib ainult selle ühe käivituse puhul), kasuta `export`-i (kehtib kogu shelli-seansi vältel), või — kõige kindlam — pane parameeter kohalikku `ansible.cfg`-sse (läheb koodihoidlasse).
+Muutuja saab edastada mitmel viisil. Kui kirjutad selle otse käsu ette, kehtib see ainult selle ühe käivituse ajal. Käsuga `export` määratud muutuja kehtib kogu shelli seansi jooksul. Kõige kindlam on lisada parameeter kohalikku faili `ansible.cfg`, sest see fail salvestatakse repositooriumisse.
 
 ---
 
 ## Prioriteedijärjekord
 
-Mis juhtub, kui mitu neist eksisteerib korraga eri väärtustega — milline võidab? Ansible järgib ranget järjekorda, kõrgeimast madalaimani:
+Kui mitu konfiguratsioonifaili on korraga olemas ja neis on erinevad väärtused, kasutab Ansible kindlat järjekorda. Allolevas loendis on kõige kõrgema prioriteediga allikas esimesena:
 
 1. **`ANSIBLE_CONFIG`** keskkonnamuutujaga määratud fail
 2. **`ansible.cfg`** praeguses kataloogis
 3. **`.ansible.cfg`** kodukataloogis (`~/.ansible.cfg`)
-4. **`/etc/ansible/ansible.cfg`** — süsteemi vaikeseadistus
+4. **`/etc/ansible/ansible.cfg`**: süsteemi vaikeseadistus
 
 <figure markdown="span">
 ```mermaid
@@ -79,16 +79,16 @@ graph TB
     B --> C["~/.ansible.cfg<br/>(kodukataloog)"]
     C --> D["/etc/ansible/ansible.cfg<br/>(süsteemne vaikeseade)"]
 ```
-  <figcaption>Joonis. Ansible otsib seadeid ülalt alla; esimene leitud võidab. Üksik keskkonnamuutuja (nt ANSIBLE_GATHERING) kaalub kõik need üle (Talvik, 2025).</figcaption>
+  <figcaption>Joonis. Ansible otsib konfiguratsioonifaili ülalt alla ja kasutab esimest leitud faili. Üksik keskkonnamuutuja (nt ANSIBLE_GATHERING) kaalub üle kõigi nende failide väärtused (Talvik, 2025).</figcaption>
 </figure>
 
-Failis ei pea olema kõiki väärtusi — määra ainult need, mida tahad ümber kirjutada, ülejäänud pärinevad järgmisest failist ahelas. Üksik keskkonnamuutuja (viis 3) on kõigist kõrgeima prioriteediga.
+Failis ei pea olema kõiki väärtusi. Määra ainult need, mida soovid muuta. Ansible loeb ainult ühte konfiguratsioonifaili ega liida faile kokku: väärtused, mida leitud failis pole, võetakse Ansible'i sisseehitatud vaikeväärtustest. Üksiku parameetri keskkonnamuutuja (viis 3) on kõrgema prioriteediga kui ükskõik milline konfiguratsioonifail.
 
 ---
 
 ## Kuidas kontrollida, mis kehtib
 
-Kolm käsku näitavad, mida Ansible tegelikult loeb:
+Järgmised kolm käsku näitavad, milliseid seadeid Ansible kasutab:
 
 ```bash
 ansible-config list    # kõik valikud, vaikeväärtused ja võimalikud seadistused
@@ -96,7 +96,7 @@ ansible-config view    # milline konfiguratsioonifail on hetkel aktiivne
 ansible-config dump    # kõik praegused väärtused ja nende päritolu
 ```
 
-Kõige kasulikum on **`ansible-config dump`**: see näitab iga väärtust ja seda, kust see tuli. Näiteks kui määrad `ANSIBLE_GATHERING=explicit`, käivitad `ansible-config dump` ja otsid rida `GATHERING`, näed selgelt, et väärtus pärineb keskkonnamuutujast. Kui konfiguratsioon ei tööta nii nagu peaks, on see käsk, mis näitab täpselt, mida Ansible tuvastas ja miks.
+Kõige kasulikum on **`ansible-config dump`**, sest see näitab iga väärtust koos selle päritoluga. Näiteks kui määrad `ANSIBLE_GATHERING=explicit`, käivitad `ansible-config dump` ja otsid väljundist rida `GATHERING`, on näha, et väärtus pärineb keskkonnamuutujast. Kui seaded ei toimi ootuspäraselt, näitab see käsk, milliseid väärtusi Ansible kasutab ja kust need pärinevad.
 
 ---
 

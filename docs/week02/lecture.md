@@ -5,12 +5,12 @@ tags:
   - Git
 ---
 
-# Loeng - Versioonihaldus: Git ja GitHub
+# Loeng: versioonihaldus Giti ja GitHubiga
 
-*Kuidas terve meeskond muudab sama koodi, ilma et keegi kellegi tööd üle kirjutaks*
+*Kuidas meeskond muudab sama koodi nii, et keegi ei kirjuta teise tööd üle*
 
-**Kestus:** ~50 min. See on loengu **tuum**. Süvamaterjal (rebase, tagasivõtmine, mõistete võrdlus) on samas failis allpool jaotises **Taust ja edasijõudnutele** (loe pärast tundi).
-**Tase:** kolmas kursus. Linuxi käsurida ja tekstiredaktor on eeldatud; Git ise on uus tööriist, mille üles ehitame.
+**Kestus:** umbes 50 min. Siin on loengu **põhiosa**. Lisamaterjal (rebase, muudatuste tagasivõtmine, mõistete võrdlus) on samas failis allpool jaotises **Taust ja edasijõudnutele**. Loe see läbi pärast tundi.
+**Tase:** kolmas kursus. Eeldame, et oskad kasutada Linuxi käsurida ja tekstiredaktorit. Git on uus tööriist, mida õpime algusest peale.
 
 ---
 
@@ -25,27 +25,27 @@ Tunni lõpuks oskad selgitada:
 5. mis vahe on lokaalsel Gitil ja kaugrepol, mis on `clone` ja `fork`;
 6. mis on pull request / merge request ja koodiülevaatus.
 
-!!! info "Kaks asja ilma slaidita"
-    Tunni lõpuks peavad selged olema: miks kaks inimest ei saa ilma versioonihalduseta sama faili turvaliselt muuta; ja kuidas haru + pull request lasevad neil seda teha.
+!!! info "Kaks peamist asja"
+    Tunni lõpuks pead oskama selgitada, miks kaks inimest ei saa ilma versioonihalduseta sama faili turvaliselt muuta ja kuidas haru ja pull request võimaldavad neil seda teha.
 
 ---
 
 ## 1. Näidisstsenaarium
 
 !!! abstract "Miks see oluline on?"
-    Kogu ülejäänud kursus - Ansible, Docker, CI/CD - on tekstifailid, mida tiim koos muudab. Kui kaks inimest muudavad sama faili ilma versioonihalduseta, kaob ühe töö vaikselt ära. Git on tööriist, mis selle ära hoiab.
+    Ka kursuse järgmiste teemade (Ansible, Docker, CI/CD) failid on tekstifailid, mida meeskond koos muudab. Kui kaks inimest muudavad sama faili ilma versioonihalduseta, võib ühe inimese töö märkamatult kaduma minna. Git hoiab selle ära.
 
 !!! example "Esmaspäev, rühmatöö"
-    Kati ja Mati parandavad koos sama deploy-skripti. Kati saadab Matile faili, Mati muudab, saadab tagasi. Vahepeal on Kati juba oma koopiat muutnud.
+    Kati ja Mati parandavad koos sama deploy-skripti. Kati saadab faili Matile, Mati muudab seda ja saadab tagasi. Vahepeal on Kati oma koopiat juba muutnud.
 
-    Kaustas on `deploy.sh`, `deploy_v2.sh`, `deploy_MATI.sh`, `deploy_LOPP.sh`. Keegi ei tea, milline on uusim. Kati salvestab oma paranduse vana faili peale - Mati eilne töö on läinud. Failinimi ei ütle, mis muutus ega miks.
+    Kaustas on failid `deploy.sh`, `deploy_v2.sh`, `deploy_MATI.sh` ja `deploy_LOPP.sh`. Keegi ei tea, milline neist on uusim. Kati salvestab oma paranduse vana faili peale ja Mati eilne töö kaob. Failinimest ei selgu, mis muutus ega miks.
 
-Küsi kaks asja:
+Mõtle kahele küsimusele:
 
-- **Mis läks kaotsi?** Mati töö - keegi kirjutas selle kogemata üle.
-- **Mis puudus?** Ühine, usaldusväärne versioon ja jälg sellest, kes mida muutis.
+- **Mis läks kaotsi?** Mati töö, sest keegi kirjutas selle kogemata üle.
+- **Mis puudus?** Ühine usaldusväärne versioon ja ülevaade sellest, kes mida muutis.
 
-Git lahendab selle: salvestab iga versiooni muudatusena (diff - mis read lisandusid, mis kadusid), näitab kahe seisu vahet ja laseb mitmel inimesel paralleelselt töötada. Boltis või Wise'is muudavad sadu inseneride sama koodibaasi iga päev - see toimib ainult versioonihalduse peal.
+Git lahendab selle probleemi. Ta salvestab iga commitiga projekti seisu, näitab kahe seisu vahet (diff: millised read lisandusid ja millised kadusid) ning võimaldab mitmel inimesel korraga töötada. Näiteks Boltis või Wise'is muudavad sajad insenerid sama koodibaasi iga päev ja see on võimalik ainult versioonihalduse abil.
 
 !!! question "Kontrolli ennast"
     1. Miks ei aita failide ümbernimetamine (`deploy_LOPP.sh`) probleemi lahendada?
@@ -56,7 +56,7 @@ Git lahendab selle: salvestab iga versiooni muudatusena (diff - mis read lisandu
 ## 2. Giti kolm ala ja commit
 
 !!! abstract "Miks see oluline on?"
-    Git ei salvesta muudatust kohe faili muutmisel. Fail liigub läbi kolme ala, ja see mudel on põhjus, miks algul tekib segadus - aga ka põhjus, miks saad ühe töösessiooni jagada puhasteks commitideks.
+    Git ei salvesta muudatust kohe, kui faili muudad. Muudatus liigub läbi kolme ala. Alguses tekitab see segadust, aga just tänu sellele saad ühe töösessiooni jagada mitmeks selgeks commitiks.
 
 <figure markdown="span">
 ```mermaid
@@ -68,7 +68,7 @@ flowchart LR
   <figcaption>Joonis 2.1. Faili teekond: tööpuu → staging → .git → GitHub (Talvik, 2026).</figcaption>
 </figure>
 
-**Staging** (index) on mustand: sinna paned täpselt need muudatused, mis lähevad järgmisse commiti. See laseb tükeldada ühe töösessiooni loogilisteks commitideks - bugiparandus ühte, uus funktsioon teise.
+**Staging** (index) on järgmise commiti mustand: sinna lisad täpselt need muudatused, mis lähevad järgmisse commiti. Nii saad ühe töösessiooni jagada loogilisteks commitideks, näiteks veaparanduse ühte ja uue funktsiooni teise.
 
 ```bash
 git status                                  # mis muutus, mis on staging'us
@@ -77,7 +77,7 @@ git commit -m "Lisa restardi kontroll deploy skripti"
 git log --oneline --graph                   # ajalugu
 ```
 
-Commit-sõnum on **kohustuslik** - Git keeldub tühja sõnumiga commitist. `git log` on esimene koht, kuhu vaatad vea otsimisel, ja sõnum on selle ainus inimloetav sisu. `paranda asjad` ei aita kuu aja pärast; `Lisa restardi kontroll` ütleb, mis muutus.
+Commit-sõnum on **kohustuslik**: Git keeldub tühja sõnumiga commitist. `git log` on esimene koht, kuhu vea otsimisel vaatad, ja sõnum on selle ainus inimloetav sisu. Sõnum `paranda asjad` ei aita kuu aja pärast kedagi, sõnumist `Lisa restardi kontroll` on aga kohe näha, mis muutus.
 
 !!! question "Kontrolli ennast"
     1. Mis vahe on `git add` ja `git commit` vahel?
@@ -88,29 +88,29 @@ Commit-sõnum on **kohustuslik** - Git keeldub tühja sõnumiga commitist. `git 
 ## 3. Git-failid ja `.gitignore`
 
 !!! abstract "Miks see oluline on?"
-    Kõike ei taha versioonihaldusse - saladused ja logid sinna ei kuulu. Ja saladus, mis kord commiti sattus, jääb ajalukku ka pärast kustutamist.
+    Kõik failid ei kuulu versioonihaldusse: saladused ja logid tuleb sealt välja jätta. Saladus, mis on kord commiti sattunud, jääb ajalukku ka pärast faili kustutamist.
 
-Repo juures on peidetud kaust `.git` - seal on kogu ajalugu, commitid ja harud. Kustutad `.git`, jäävad failid alles, aga ajalugu kaob. Seda kausta käsitsi ei redigeeri. Ainus git-fail, mille ise kirjutad, on `.gitignore` - loend mustritest, mida Git ignoreerib.
+Repo juurkaustas on peidetud kaust `.git`. Selles on kogu ajalugu, commitid ja harud. Kui `.git` kustutada, jäävad failid alles, aga ajalugu kaob. Seda kausta käsitsi ei muudeta. Ainus Giti fail, mille ise kirjutad, on `.gitignore`: loend mustritest, mida Git ignoreerib.
 
 | Pane `.gitignore`-sse | Ära pane sinna |
 |-----------------------|----------------|
 | Saladused: `.env`, võtmed, paroolid | Lähtekood ja skriptid |
-| Logid: `*.log` | Jagatud konfid (`config.example`) |
-| Genereeritud: `build/`, `__pycache__/` | `.gitignore` ise (seda jälgitakse) |
-| Sõltuvused: `node_modules/`, `venv/` | README, Ansible/Docker/CI-failid |
-| Masina prügi: `.DS_Store`, `.idea/` | |
+| Logid: `*.log` | Jagatud konfiguratsioonifailid (`config.example`) |
+| Genereeritud failid: `build/`, `__pycache__/` | `.gitignore` ise (seda jälgitakse) |
+| Sõltuvused: `node_modules/`, `venv/` | README, Ansible'i, Dockeri ja CI-failid |
+| Operatsioonisüsteemi ja redaktori abifailid: `.DS_Store`, `.idea/` | |
 
 !!! warning "Saladus ajaloos"
-    Lisa `.env` `.gitignore`-sse **enne** esimest commiti. Kord commiti sattununa on saladus vanast commitist kättesaadav ka pärast kustutamist. Saladuste juurde tuleme Ansible Vault'i moodulis.
+    Lisa `.env` `.gitignore`-sse **enne** esimest commiti. Kui saladus on kord commiti sattunud, saab selle vanast commitist kätte ka pärast faili kustutamist. Saladuste haldamisest räägime Ansible Vaulti moodulis.
 
 ---
 
 ## 4. Harud
 
 !!! abstract "Miks see oluline on?"
-    Kui kõik redigeeriksid otse `main`-i, segaks igaühe pooleliolev töö teisi. Haru laseb sul ja paarilisel töötada kahe eri asja kallal korraga, teineteist segamata.
+    Kui kõik muudaksid otse `main`-i, segaks igaühe pooleli olev töö teisi. Harude abil saate paarilisega töötada korraga kahe eri asja kallal teineteist segamata.
 
-Haru (branch) on eraldi tööliin - tehniliselt liikuv osuti ühele commitile. `main` on ametlik, töötav versioon. Töötad oma harus, kuni valmis, siis liidad tagasi; `main` jääb vahepeal terveks.
+Haru (branch) on eraldi tööliin, tehniliselt liikuv viit ühele commitile. `main` on ametlik töötav versioon. Töötad oma harus, kuni töö on valmis, ja siis liidad selle tagasi. Vahepeal jääb `main` töökorda.
 
 <figure markdown="span">
 ```mermaid
@@ -124,7 +124,7 @@ gitGraph
    checkout main
    merge uus-endpoint id: "liidetud"
 ```
-  <figcaption>Joonis 4.1. Haru kasvab main'ist eraldi ja liidetakse valmides tagasi (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 4.1. Haru areneb main'ist eraldi ja liidetakse valmimisel tagasi (Talvik, 2026).</figcaption>
 </figure>
 
 ```bash
@@ -133,21 +133,21 @@ git switch main                 # vaheta haru
 git branch                      # loend, tärn = kus oled
 ```
 
-Harusid on kaht liiki: lokaalne (`uus-endpoint`, sinu masinas) ja kaugharu-peegeldus (`origin/main`, GitHubi seis). `git status` võrdleb neid: "ahead of origin/main by 2 commits" tähendab, et sul on 2 push'imata commiti.
+Harusid on kahte liiki: lokaalne haru (`uus-endpoint` sinu masinas) ja kaugharu koopia (`origin/main`, mis näitab GitHubi seisu). `git status` võrdleb neid. Teade "ahead of origin/main by 2 commits" tähendab, et sul on kaks commiti, mida pole veel GitHubi saadetud.
 
 ---
 
 ## 5. Liitmine ja konfliktid
 
 !!! abstract "Miks see oluline on?"
-    Enamasti liidab Git harud kokku ise. Aga kui kaks inimest muutsid sama rida, ei saa Git otsustada, kumb õige on - ja jätab valiku sulle. Konflikti lahendamine on igapäevane meeskonnaoskus.
+    Enamasti liidab Git harud ise kokku. Kui aga kaks inimest muutsid sama rida, ei saa Git otsustada, kumb versioon on õige, ja jätab valiku inimesele. Konflikti lahendamine on meeskonnatöös igapäevane oskus.
 
 ```bash
 git switch main
 git merge uus-endpoint
 ```
 
-Kui `main` pole vahepeal muutunud, teeb Git *fast-forward*. Kui on, tekib *merge-commit*, mis ühendab kaks liini. Konflikt tekib ainult siis, kui kaks inimest muutsid **sama rida**. Git märgistab failis mõlemad versioonid:
+Kui `main` pole vahepeal muutunud, teeb Git *fast-forward*'i. Kui on muutunud, tekib *merge-commit*, mis ühendab kaks liini. Konflikt tekib siis, kui kaks inimest muutsid **sama rida** (või kõrvuti asuvaid ridu). Git märgib failis mõlemad versioonid:
 
 ```
 <<<<<<< HEAD
@@ -157,7 +157,7 @@ port = 3000
 >>>>>>> uus-endpoint
 ```
 
-`HEAD` on su praeguse haru versioon, alumine on liidetava oma. Valid õige, kustutad markerid (`<<<`, `===`, `>>>`), lõpetad:
+`HEAD` on praeguse haru versioon, alumine osa on liidetava haru versioon. Vali õige variant, kustuta markerid (`<<<`, `===`, `>>>`) ja lõpeta liitmine:
 
 ```bash
 git add config.py
@@ -170,13 +170,13 @@ git commit
 
 ---
 
-## 6. Lokaalne ja kaug: clone, push, pull, fetch
+## 6. Lokaalne ja kaugrepo: clone, push, pull, fetch
 
 !!! abstract "Miks see oluline on?"
-    Kaugrepo on tiimi ühine tõehetk. Sinu lokaalne koopia võib olla ajast maas - seepärast alustad tööpäeva `git pull`-iga, mitte kohe kirjutamisega.
+    Kaugrepo on meeskonna ühine kokkulepitud versioon. Lokaalne koopia võib olla vananenud, seepärast alusta tööpäeva käsuga `git pull` ja alles siis tee muudatusi.
 
-- **Lokaalne Git** - sinu masinas. Terve repo koos ajalooga on su kettal; commit, haru, log töötavad ilma internetita. Git on hajus: igal inimesel on täielik koopia.
-- **Kaugrepo (remote)** - GitHubis, tiimi ühine koopia. Põhilise kaugrepo tavanimi on **`origin`**.
+- **Lokaalne Git** asub sinu masinas. Kogu repo koos ajalooga on sinu kettal ning commit, haru ja log töötavad ka ilma internetita. Git on hajus versioonihaldus: igal inimesel on täielik koopia.
+- **Kaugrepo (remote)** asub GitHubis ja on meeskonna ühine koopia. Põhilise kaugrepo tavapärane nimi on **`origin`**.
 
 <figure markdown="span">
 ```mermaid
@@ -185,10 +185,10 @@ flowchart LR
     REMOTE -->|git fetch / pull| LOCAL
     REMOTE -.->|git clone| OTHER["paarilise masin"]
 ```
-  <figcaption>Joonis 6.1. clone tõmbab koopia, push viib commitid GitHubi, fetch/pull toob teiste omad (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 6.1. clone teeb koopia, push saadab commitid GitHubi, fetch/pull toob teiste commitid (Talvik, 2026).</figcaption>
 </figure>
 
-`clone` teeb kaugrepost täieliku koopia su masinasse (failid, ajalugu, seos `origin`-iga) - üks kord repo alguses.
+`clone` teeb kaugrepost täieliku koopia sinu masinasse (failid, ajalugu ja seos `origin`-iga). Seda tehakse repoga töö alguses üks kord.
 
 ```bash
 git clone https://github.com/hkhk-automation/tiimi-repo.git
@@ -197,16 +197,16 @@ git fetch                         # too muudatused, ära liida
 git pull                          # fetch + merge
 ```
 
-`fetch` toob muudatused, aga ei puuduta su tööd - saad enne vaadata. `pull` toob ja liidab kohe. Töörütm jagatud repos: **pull → töö → commit → push**.
+`fetch` toob muudatused, kuid ei muuda sinu tööfaile, nii et saad need enne üle vaadata. `pull` toob muudatused ja liidab need kohe. Jagatud repos on töörütm järgmine: **pull → töö → commit → push**.
 
 ---
 
 ## 7. GitHub: pull request, fork, koodiülevaatus
 
 !!! abstract "Miks see oluline on?"
-    Valmis haru ei liideta vaikselt main'i - keegi vaatab selle enne üle. Nii püütakse vead kinni, enne kui need kõiki mõjutavad. CI/CD moodulis käivitab iga pull request lisaks automaattestid.
+    Valmis haru ei liideta main'i ilma kontrollita: keegi vaatab selle enne üle. Nii leitakse vead enne, kui need kõiki mõjutavad. CI/CD moodulis käivitab iga pull request lisaks automaattestid.
 
-Valmis haru puhul avad **pull request'i** (PR): "vaadake üle ja liitke". Nimi sõltub platvormist - **GitHub**: pull request; **GitLab** ja **Bitbucket**: merge request (MR). Sama mõiste.
+Kui haru on valmis, avad **pull request'i** (PR), millega palud muudatused üle vaadata ja liita. Nimetus sõltub platvormist: **GitHubis** on see pull request, **GitLabis** ja **Bitbucketis** merge request (MR). Mõiste on sama.
 
 <figure markdown="span">
 ```mermaid
@@ -217,45 +217,45 @@ flowchart LR
     D --> C
     C -->|kinnitatud| E["merge main-i"] --> F["kustuta haru"]
 ```
-  <figcaption>Joonis 7.1. Pull request on värav main'i ette: ülevaatus enne liitmist (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 7.1. Pull request on kontrollpunkt enne main'i: ülevaatus toimub enne liitmist (Talvik, 2026).</figcaption>
 </figure>
 
-PR-is näeb tiim, mis read muutusid (roheline lisatud, punane eemaldatud), kommenteerib ja palub parandust. See on **koodiülevaatus** (code review) - teine silmapaar enne main'i. Lisad harule commiti, PR uueneb ise. **Issue'd** jälgivad ülesandeid ja vigu; PR viitab tavaliselt issue'le, mille lahendab.
+PR-is näeb meeskond, millised read muutusid (rohelisega lisatud, punasega eemaldatud), saab kommenteerida ja parandusi paluda. Seda nimetatakse **koodiülevaatuseks** (code review): enne main'i jõudmist vaatab muudatuse üle veel üks inimene. Kui lisad harule uue commiti, uueneb PR automaatselt. **Issue'd** on ülesannete ja vigade jälgimiseks. PR viitab tavaliselt issue'le, mille see lahendab.
 
-**Fork** on koopia repost **sinu GitHubi kontole** - kasutad, kui sul pole originaali kirjutusõigust (avatud lähtekood). Voog: forkid → kloonid oma forki → haru + muudatused → push oma forki → PR originaali poole.
+**Fork** on repo koopia **sinu GitHubi kontol**. Seda kasutatakse siis, kui sul pole originaalrepos kirjutusõigust, näiteks avatud lähtekoodiga projektides. Töövoog on järgmine: teed forki, kloonid oma forki, lood haru ja teed muudatused, saadad need push'iga oma forki ning avad PR-i originaalrepo poole.
 
-!!! note "Clone, fork, branch - mis vahe on?"
-    **clone** = koopia su masinasse; **fork** = eraldi koopia su GitHubi kontole; **branch** = tööliin ühe repo sees.
+!!! note "Clone, fork, branch: mis vahe on?"
+    **clone** on koopia sinu masinas, **fork** on eraldi koopia sinu GitHubi kontol ja **branch** on tööliin ühe repo sees.
 
 !!! question "Kontrolli ennast"
     1. GitHub nimetab seda pull request'iks, GitLab merge request'iks. Kas need on eri asjad?
-    2. Tahad panustada projekti, kus sul pole kirjutusõigust. Mis on esimene samm - `clone` või `fork`?
+    2. Tahad panustada projekti, kus sul pole kirjutusõigust. Mis on esimene samm: `clone` või `fork`?
 
 ---
 
 ## 8. Kokkuvõte
 
-- Git hoiab muudatusi (diff), mitte täiskoopiaid; kogu ajalugu elab `.git` kaustas.
-- Kolm ala: tööpuu → staging (`git add`) → repo (`git commit`). Sõnum on kohustuslik.
-- `.gitignore`: jälgi lähtekoodi ja jagatud konfe; ignoreeri saladusi, logisid, genereeritud faile.
-- Harud on odavad; iga funktsioon oma harus, `main` alati töökorras.
-- Konflikt tekib ainult samal real; sina valid, Git ei arva.
-- Lokaalne vs kaug: `origin` on tiimi ühine repo; rütm `pull → töö → commit → push`.
-- Pull request (= merge request) on värav main'i ette: koodiülevaatus enne liitmist.
+- Git salvestab iga commitiga projekti seisu ja kogu ajalugu asub kaustas `.git`.
+- Kolm ala: tööpuu → staging (`git add`) → repo (`git commit`). Commit-sõnum on kohustuslik.
+- `.gitignore`: jälgi lähtekoodi ja jagatud konfiguratsioonifaile, ignoreeri saladusi, logisid ja genereeritud faile.
+- Harud on odavad: iga funktsioon on oma harus ja `main` on alati töökorras.
+- Konflikt tekib ainult siis, kui mõlemas harus on muudetud sama kohta. Valiku teeb inimene, Git ise ei otsusta.
+- Lokaalne ja kaugrepo: `origin` on meeskonna ühine repo, töörütm on `pull → töö → commit → push`.
+- Pull request (= merge request) on kontrollpunkt enne main'i: koodiülevaatus toimub enne liitmist.
 
-## 9. Enne laborit
+## 9. Enne praktikumi
 
-Praktikumis teed paarilisega läbi terve voo: haru → push → pull request → koodiülevaatus → liitmine, ning lahendad ühe päris liitmiskonflikti. Veendu, et Git teab su nime (`git config --global user.name`) ja et sul on GitHubi konto.
+Praktikumis teete paarilisega läbi kogu töövoo: haru → push → pull request → koodiülevaatus → liitmine. Lisaks lahendate ühe liitmiskonflikti. Kontrolli, et Git teab sinu nime (`git config --global user.name`) ja et sul on GitHubi konto.
 
 ---
 
 # Taust ja edasijõudnutele
 
-*Loe pärast tundi. Reegel kõigele siin: muuda ainult oma haru, mida keegi teine pole veel tõmmanud.*
+*Loe pärast tundi. Kõigi siinsete käskude kohta kehtib reegel: muuda ainult oma haru, mida keegi teine pole veel alla tõmmanud.*
 
-## Merge vs rebase
+## Merge ja rebase
 
-Mõlemad toovad haru kokku, aga jätavad eri ajaloo. `merge` säilitab ühenduspunkti; `rebase` tõstab su commitid värske main'i otsa, ajalugu jääb sirge.
+Mõlemad liidavad harud kokku, kuid tulemuseks on erinev ajalugu. `merge` säilitab ühenduspunkti, `rebase` tõstab sinu commitid värske main'i otsa ja ajalugu jääb sirgeks.
 
 ```
 merge:                          rebase:
@@ -269,9 +269,9 @@ git switch uus-endpoint
 git rebase main
 ```
 
-Rebase annab commitidele uued SHA-d, seega ainult isiklikku harusse enne PR-i - mitte jagatud main'i.
+Rebase annab commitidele uued SHA-d, seega kasuta seda ainult isiklikus harus enne PR-i avamist. Jagatud main'is rebase'i ei kasutata.
 
-## Tagasivõtmine - kolm tasandit
+## Muudatuste tagasivõtmine kolmel tasandil
 
 ```bash
 git restore fail.py          # enne commiti: viska muudatus ära
@@ -279,25 +279,25 @@ git reset --soft HEAD~1      # oma harus: võta commit tagasi, jäta muudatus st
 git revert <sha>             # jagatud harus: uus commit, mis tühistab vana
 ```
 
-`reset` kustutab ajaloo (ainult jagamata töö). `revert` säilitab ajaloo, lisades tühistava commiti (ohutu ka main'is). `HEAD` = su praegune positsioon, `HEAD~1` üks samm tagasi.
+`reset` eemaldab commitid ajaloost, seega sobib see ainult jagamata töö jaoks. `revert` säilitab ajaloo ja lisab tühistava commiti, seega on see ohutu ka main'is. `HEAD` on sinu praegune asukoht, `HEAD~1` on üks samm tagasi.
 
-## Sarnased mõisted - mis vahe on?
+## Sarnased mõisted: mis vahe on?
 
 | | | Vahe |
 |--------|--------|------|
 | **lokaalne** | **remote** | sinu masin vs GitHub (`origin`) |
-| **clone** | **fork** | koopia su masinasse vs su GitHubi kontole |
-| **branch** | **fork** | tööliin repo sees vs eraldi repo su kontol |
+| **clone** | **fork** | koopia sinu masinas vs sinu GitHubi kontol |
+| **branch** | **fork** | tööliin repo sees vs eraldi repo sinu kontol |
 | **pull request** | **merge request** | sama asi; GitHub vs GitLab/Bitbucket |
 | **fetch** | **pull** | too vs too **ja** liida |
 | **merge** | **rebase** | säilita ajalugu vs kirjuta sirgeks |
-| **reset** | **revert** | kustuta ajalugu (jagamata) vs tühista commitiga (jagatud) |
+| **reset** | **revert** | eemalda ajaloost (jagamata töö) vs tühista uue commitiga (jagatud töö) |
 
 ## Allikad
 
 - Pro Git (tasuta raamat): <https://git-scm.com/book/en/v2>
-- Git käsureferents: <https://git-scm.com/docs>
-- GitHub - Getting started with Git: <https://docs.github.com/en/get-started/learning-to-code/getting-started-with-git>
-- GitHub - GitHub flow: <https://docs.github.com/en/get-started/using-github/github-flow>
-- GitHub - Fork a repo: <https://docs.github.com/en/get-started/quickstart/fork-a-repo>
-- Coursera - Introduction to Git and GitHub: <https://www.coursera.org/learn/introduction-git-github>
+- Giti käskude dokumentatsioon: <https://git-scm.com/docs>
+- GitHub, Getting started with Git: <https://docs.github.com/en/get-started/learning-to-code/getting-started-with-git>
+- GitHub, GitHub flow: <https://docs.github.com/en/get-started/using-github/github-flow>
+- GitHub, Fork a repo: <https://docs.github.com/en/get-started/quickstart/fork-a-repo>
+- Coursera, Introduction to Git and GitHub: <https://www.coursera.org/learn/introduction-git-github>

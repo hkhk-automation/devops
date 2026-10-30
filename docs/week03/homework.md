@@ -5,29 +5,29 @@ tags:
   - Kodutöö
 ---
 
-# Kodutöö: Ansible playbook laiendamine
+# Kodutöö: Ansible'i playbooki laiendamine
 
-**Eeldused:** Labor "Esimene Ansible playbook" tehtud: `nginx.yml` töötab, paigaldab nginx + kohandatud index.html.
+**Eeldused:** praktikum „Esimene Ansible playbook“ on tehtud: `nginx.yml` töötab ning paigaldab nginx'i ja kohandatud lehe `index.html`.
 
 ---
 
 ## Ülesanne
 
-Lähtu oma labori `nginx.yml` failist ja laienda seda.
+Võta aluseks praktikumis loodud fail `nginx.yml` ja laienda seda.
 
 ### 1. Lisa teine pakett
 
-Lisa playbooki uus task, mis paigaldab lisaks nginx'ile veel ühe paketi, nt `curl` või `git` (vali üks). Kasuta sama `apt` moodulit mis laboris.
+Lisa playbooki uus task, mis paigaldab lisaks nginx'ile veel ühe paketi, näiteks `curl` või `git` (vali üks). Kasuta sama `apt` moodulit mis praktikumis.
 
 ### 2. Kohanda index.html
 
-Muuda `index.html` nii, et see sisaldab su enda nime:
+Muuda faili `index.html` nii, et see sisaldaks sinu nime:
 
 ```html
 <h1>Ansible töötab: [sinu nimi]</h1>
 ```
 
-Käivita playbook uuesti ja kontrolli brauseris.
+Käivita playbook uuesti ja kontrolli tulemust brauseris.
 
 ### 3. Testi idempotentsust kolm korda
 
@@ -37,23 +37,23 @@ ansible-playbook -i inventory.ini nginx.yml
 ansible-playbook -i inventory.ini nginx.yml
 ```
 
-Esimesel käivitusel on uus task tõenäoliselt **changed**. Teisel ja kolmandal peavad **kõik** task'id olema **ok**, see tõestab idempotentsust. Kopeeri kolmanda käivituse `PLAY RECAP` oma PR-i kirjeldusse tõestuseks.
+Esimesel käivitusel on uus task tõenäoliselt **changed**. Teisel ja kolmandal käivitusel peavad **kõik** task'id olema **ok**: see tõendab idempotentsust. Kopeeri kolmanda käivituse `PLAY RECAP` tõendiks oma PR-i kirjeldusse.
 
 !!! tip
-    Kui mõni task näitab `changed` ka kolmandal käivitusel, vaata labori Osa 5 ja veaotsingu tabelit. Tavaliselt on põhjus parameetris, mis muutub iga kord (nt ajatempel).
+    Kui mõni task on ka kolmandal käivitusel `changed`, vaata üle praktikumi Osa 5 ja veaotsingu tabel. Tavaliselt on põhjuseks `shell:` või `command:` moodul ilma `creates` tingimuseta või parameeter, mis muutub igal käivitusel (nt ajatempel).
 
 ---
 
 ## Esitamine: GitHub PR
 
-1. Branch `n03-lab`
-2. Lisa muudetud `nginx.yml` + `index.html`, commit
-3. Push ja ava **Pull Request** `main` vastu
-4. PR kirjeldusse kolmanda käivituse `PLAY RECAP` (tekstina, mitte pilt)
-5. Pärast review'd merge. Esita **PR-i link GitHub Projectis**.
+1. Loo haru `n03-lab`.
+2. Lisa muudetud failid `nginx.yml` ja `index.html` ning tee commit.
+3. Tee push ja ava **Pull Request** haru `main` vastu.
+4. Lisa PR-i kirjeldusse kolmanda käivituse `PLAY RECAP` tekstina (ekraanipilt ei sobi).
+5. Pärast ülevaatust tee merge. Esita **PR-i link GitHub Projectis**.
 
 !!! tip
-    Kasuta oma kursuse repot. Kui pole veel, loo `ansible-nginx-<eesnimi>` `hkhk-automation` alla, kaitse `main` (nagu nädal 2), tee kõik läbi PR-i.
+    Kasuta oma kursuse repositooriumi. Kui see puudub, loo organisatsiooni `hkhk-automation` alla repositoorium `ansible-nginx-<eesnimi>`, kaitse haru `main` (nagu 2. nädalal) ja tee kõik muudatused PR-i kaudu.
 
 ---
 
@@ -64,8 +64,8 @@ Esimesel käivitusel on uus task tõenäoliselt **changed**. Teisel ja kolmandal
 | Teine pakett | `nginx.yml` sisaldab täiendavat `apt` task'i (curl või git) |
 | Kohandatud index.html | Leht sisaldab õpilase nime, `copy` task korrektne |
 | Idempotentsus tõestatud | PR-is kolmanda käivituse väljund, kõik **ok** |
-| Playbook jookseb veata | `ansible-playbook` käivitub veata |
-| PR protsess | Branch → PR → merge, mitte otse `main` |
+| Playbook töötab veata | `ansible-playbook` käivitub veata |
+| PR-i protsess | Haru → PR → merge; otse `main` harusse muudatusi ei tehta |
 
 *Tabel 3.1. Kodutöö hindamiskriteeriumid.*
 

@@ -6,43 +6,43 @@ tags:
   - GitHub
 ---
 
-# Tühjast repost meeskonnani — Labor
+# Praktikum: tühjast repost meeskonnatööni
 
 **Kestus:** 4 tundi
-**Eeldused:** Loeng antud (commit, branch, remote, PR mudel). Nädal 1 tehtud — SSH võti GitHubis, sihtmärk töötab. Tead mis on `git clone`, `git add`, `git commit`, `git push`.
-**Kontroll-node:** sinu arvuti, kogu töö **VS Code'is**. Repo elab sinu masinas.
-**Sihtmärk:** sinu valik (vt [Töökeskkond](../kodulabor.md)) — Märteni skripti jooksutame **seal**, sest monitooriskript, mida testitakse ainult peas, ongi Märteni meetod.
+**Eeldused:** loeng on läbitud (commit, haru, kaugrepo, pull request). 1. nädala töö on tehtud: SSH-võti on GitHubis ja sihtmärk töötab. Tead, mida teevad `git clone`, `git add`, `git commit` ja `git push`.
+**Kontrollsõlm:** sinu arvuti, kogu töö käib **VS Code'is**. Repo asub sinu masinas.
+**Sihtmärk:** sinu valik (vt [Töökeskkond](../kodulabor.md)). Märteni skripti käivitame **sihtmärgil**, sest monitooringuskripti, mida on kontrollitud ainult lugedes, ei saa pidada testituks.
 
 ---
 
 !!! abstract "Õpiväljundid"
 
-    Selle labi lõpuks sa:
+    Praktikumi lõpuks oskad:
 
-    1. Lood repo nullist ja selgitad miks `.git/` kaust **on** repo, mitte GitHub
-    2. Peatad saladuse `.gitignore`-iga **enne** esimest pushi
-    3. Lukustad `main`-i ja jooksed ise oma reeglile vastu
-    4. **Diagnoosid** neli skriptiviga jooksutades — igaüks annab eri tüüpi signaali (veateade, vaikne tõrge, õiguste viga, valetav kontroll)
-    5. Lahendad merge-konflikti ja tead miks Git sinu eest ei vali
-
----
-
-Labi loogika: **baas → kaitse → viga → paranda → viga → diagnoos → paranda → konflikt → lahenda.** Vead ei ole nimekirjas — need tulevad välja jooksutades, ükshaaval, ja igaüks räägib erinevat keelt. Sinu töö on keelt lugema õppida.
+    1. luua repo algusest peale ja selgitada, miks repo on kaust `.git/` sinu masinas ja GitHub on selle koopia;
+    2. peatada saladuse `.gitignore`-i abil **enne** esimest push'i;
+    3. kaitsta `main`-haru ja kontrollida, et reegel kehtib ka sinu enda kohta;
+    4. **diagnoosida** skripti käivitades neli viga, millest igaüks annab eri tüüpi signaali (veateade, vaikne tõrge, õiguste viga, eksitav kontroll);
+    5. lahendada liitmiskonflikti ja selgitada, miks Git ei vali versiooni sinu eest.
 
 ---
 
-!!! example "Näidisstsenaarium — Märten"
-    Märten oli suvepraktikant. Märten oli entusiastlik. Märten pushis otse `main`-i, sest branchid tundusid tüütud, ja tegi commite sõnumiga `asjad` ja `veelkord` ja `nüüd päriselt`.
-
-    Märten lahkus augustis. Maha jäi kaust `marten-kraam`: paar skripti, üks `.env` fail andmebaasi parooliga, ja null Git-ajalugu. Tema lahkumiskingitus oli `monitor.sh`, mis "peaks töötama". (Kommentaarides on kirjas, et peaks.)
-
-    Nüüd pärid selle sina ja su paariline. Töö: teha Märteni jamast päris projekt — ajalukku, kaitse alla, reeglite sisse — **enne** kui järgmine Märten reedel kell 16:55 sama loo uuesti alustab.
+Praktikumi ülesehitus: **baas → kaitse → viga → parandus → viga → diagnoos → parandus → konflikt → lahendus.** Vigu ei ole ette loetletud. Need tulevad välja skripti käivitades ükshaaval ja igaüks annab märku erineval viisil. Sinu ülesanne on õppida neid signaale lugema.
 
 ---
 
-## Osa 1 · Päästa Märteni pärand
+!!! example "Näidisstsenaarium: Märten"
+    Märten oli suvepraktikant. Ta tegi push'i otse `main`-i, sest harude kasutamine tundus talle tülikas, ja kirjutas commit-sõnumiteks `asjad`, `veelkord` ja `nüüd lõpuks`.
 
-Märteni failid on su masinas (õpetaja jagatud `marten-kraam` kaust). Versioonihalduses ei ole neid kunagi olnud. Esimene töö: tee neist repo.
+    Märten lahkus augustis. Temast jäi maha kaust `marten-kraam`: paar skripti, `.env` fail andmebaasi parooliga ja Giti ajalugu puudus täielikult. Tema viimane töö oli `monitor.sh`, mis kommentaari järgi "peaks töötama".
+
+    Nüüd võtate selle paarilisega üle. Teie ülesanne on teha Märteni failidest korralik projekt: viia need versioonihaldusse, kaitsta `main`-haru ja kehtestada reeglid, et sama olukord ei korduks.
+
+---
+
+## Osa 1 · Märteni failid versioonihaldusse
+
+Märteni failid on sinu masinas (õpetaja jagatud kaust `marten-kraam`). Need ei ole kunagi olnud versioonihalduses. Esimene ülesanne on teha neist repo.
 
 <figure markdown="span">
 ```mermaid
@@ -53,29 +53,29 @@ graph LR
     C -->|branch protection| D[main lukus]
     D -->|collaborator + PR| E[Meeskonnatöö]
 ```
-  <figcaption>Joonis 2.1. Tänase labi kaar: Märteni kaustast kaitstud meeskonnaprojektini (Talvik, 2025).</figcaption>
+  <figcaption>Joonis 2.1. Praktikumi käik: Märteni kaustast kaitstud meeskonnaprojektini (Talvik, 2025).</figcaption>
 </figure>
 
-### 1.1 Loo tühi repo GitHubis
+### 1.1 Loo GitHubis tühi repo
 
-Mine `github.com/hkhk-automation` → **New repository**.
+Ava `github.com/hkhk-automation` → **New repository**.
 
 - Nimi: `marten-monitor-<sinu-eesnimi>`
 - **Private**
-- **Ära** lisa README, `.gitignore` ega litsentsi. GitHub pakub neid ühe klõpsuga — aga siis teeb GitHub esimese commiti sinu eest, ja sa jääd ilma sellest, kuidas repo päriselt sünnib. Tühi tähendab tühi.
+- **Ära** lisa README-faili, `.gitignore`-i ega litsentsi. Kui need lisada, teeb GitHub esimese commiti sinu eest ja sa ei näe, kuidas repo algusest peale luuakse. Repo peab jääma täiesti tühjaks.
 
-GitHub näitab nüüd juhiseid. Ära kopeeri neid pimesi — teeme sammud teadlikult, sest just neid sa hiljem sada korda kordad.
+GitHub näitab nüüd juhiseid. Ära kopeeri neid mõtlemata. Teeme sammud läbi ükshaaval, sest neid samme kordad hiljem väga palju kordi.
 
 ### 1.2 Seo Märteni kaust repoga
 
-Ava kaust VS Code'is (`code marten-kraam`), terminal lahti:
+Ava kaust VS Code'is (`code marten-kraam`) ja ava terminal:
 
 ```bash
 git init
 git branch -M main
 ```
 
-`git init` tekitas `.git/` kausta. **See** on repo — mitte GitHub, mitte pilv, vaid see peidetud kaust su ketta peal. GitHub on koopia, mis elab mujal. Seo need kaks:
+`git init` lõi kausta `.git/`. **See** kaust ongi repo. GitHub on selle koopia, mis asub teises kohas. Seo need kaks omavahel:
 
 ```bash
 git remote add origin git@github.com:hkhk-automation/marten-monitor-<sinu-eesnimi>.git
@@ -83,26 +83,26 @@ git remote -v
 ```
 
 ??? question "Mõtle"
-    Kui kustutaksid `.git/` (`rm -rf .git/`), mis kaob ja mis jääb? Failid jäävad. Kõik muu — ajalugu, harud, see et Git üldse teab sellest kaustast — kaob. Inimesed on seda teinud. Kogemata. Backupita.
+    Kui kustutaksid kausta `.git/` (`rm -rf .git/`), mis kaob ja mis jääb alles? Failid jäävad. Kõik muu kaob: ajalugu, harud ja ka see, et Git üldse seda kausta jälgib. Seda juhtub ka kogemata ja ilma varukoopiata.
 
 ---
 
-## Osa 2 · `.gitignore` enne kui `.env` lekib
+## Osa 2 · `.gitignore` enne, kui `.env` lekib
 
-Märten jättis maha `.env` faili. Sees andmebaasi parool. Sinu esimene kiusatus on lihtsalt kõik commitida ja edasi minna. Ära.
+Märten jättis maha `.env` faili, milles on andmebaasi parool. Kõige lihtsam tundub kõik failid commitida ja edasi minna. Ära tee seda.
 
-Avalikku reposse pushitud parool ei ela minuteid, vaid sekundeid — botid skannivad uusi committe ööpäevaringselt, mitte sellepärast et keegi sind jälitab, vaid sellepärast et see on tasuta raha. Parooli Git-ajaloost tagantjärele eemaldamine on omaette õudusfilm. Lihtsam on teda sinna mitte lasta.
+Avalikku reposse saadetud parool leitakse väga kiiresti, sest botid skannivad uusi commite ööpäev läbi ja otsivad just selliseid andmeid. Parooli eemaldamine Giti ajaloost tagantjärele on keeruline. Lihtsam on hoida see reposse jõudmast.
 
-Vaata mida Git praegu näeks:
+Vaata, mida Git praegu näeb:
 
 ```bash
 git status
 ```
 
-`.env` on nimekirjas. Peata ta enne kui ta liigub — loo `.gitignore`:
+`.env` on nimekirjas. Peata see enne commiti ja loo `.gitignore`:
 
 ```
-# Saladused — Märteni pärand
+# Saladused: Märteni pärand
 .env
 *.key
 
@@ -117,21 +117,21 @@ git status
 git status
 ```
 
-`.env` on nimekirjast kadunud. Fail on kaustas alles, aga Git teeb näo et teda pole.
+`.env` on nimekirjast kadunud. Fail on kaustas alles, kuid Git ei jälgi seda enam.
 
 !!! warning
-    `.gitignore` ei kustuta juba pushitud faili — ta hoiab ainult ära uued. Kui parool on korra üleval käinud, on ta lekkinud, punkt. Vaheta ta ära. Ignore pärast on nagu turvavöö pärast avariid.
+    `.gitignore` ei eemalda faili, mis on juba GitHubi saadetud: see takistab ainult jälgimata failide lisamist. Kui parool on korra GitHubis olnud, loe see lekkinuks ja vaheta parool välja. Hiljem lisatud `.gitignore` lekkinud parooli enam ei kaitse.
 
 ??? question "Mõtle"
-    Miks peab `.gitignore` ise olema Git'is (commititud), aga `.env` mitte? Mõlemad on ju failid samas kaustas — mis neid põhimõtteliselt eristab?
+    Miks peab `.gitignore` ise olema Gitis (commititud), aga `.env` mitte? Mõlemad on samas kaustas asuvad failid. Mis neid põhimõtteliselt eristab?
 
 ---
 
-## Osa 3 · Esimene commit — repo elab
+## Osa 3 · Esimene commit
 
-Lisa `README.md`, et keegi (sh sina kolme kuu pärast) teaks mis see on: paar rida — mis projekt, kes autor, mida `monitor.sh` teeks kui töötaks.
+Lisa fail `README.md`, et iga lugeja (ka sina ise kolme kuu pärast) teaks, mis projektiga on tegu. Piisab paarist reast: mis projekt see on, kes on autor ja mida `monitor.sh` peaks tegema.
 
-Päästa Märteni pärand ajalukku:
+Vii Märteni failid versioonihaldusse:
 
 ```bash
 git add .
@@ -140,33 +140,33 @@ git commit -m "init: päästa Märteni kraam versioonihaldusesse"
 git push -u origin main
 ```
 
-Commit-sõnum on terve lause, mitte `asjad`. Märten kirjutas `asjad`. Ära ole Märten.
+Commit-sõnum on terve lause, mis kirjeldab muudatust. Märteni sõnum `asjad` ei ütle midagi.
 
-Mine GitHubi — failid on seal, `.env` ei ole (kontrolli üle). Vaata ka ajalugu terminalist:
+Ava GitHub ja kontrolli, et failid on seal ja `.env` faili ei ole. Vaata ajalugu ka terminalis:
 
 ```bash
 git log --oneline
 ```
 
-Üks rida, üks korralik commit. Selle rea kõrvale tuleb täna veel mitu — ja labi lõpus loed sellest reast välja terve tänase loo.
+Ajaloos on üks rida ja üks korralik commit. Praktikumi jooksul lisandub mitu commiti ja lõpus saad ajaloost lugeda kogu päeva töö.
 
 ??? question "Mõtle"
-    Miks pidi olema vähemalt üks commit **enne** kui saame `main`-i kaitsta? Mida GitHub kaitseks, kui `main`-i veel polegi?
+    Miks pidi enne `main`-haru kaitsmist olema vähemalt üks commit? Mida GitHub kaitseks, kui `main`-haru veel ei olegi?
 
 ---
 
-## Osa 4 · Kaitse `main` — ja jookse ise vastu
+## Osa 4 · Kaitse `main`-haru ja kontrolli reeglit
 
-Praegu saab igaüks — sina väsinuna kell 16:55 kaasa arvatud — otse `main`-i pushida. Nii sünnivad Märtenid. Lukusta `main` ära.
+Praegu saab igaüks, ka sina ise reede pärastlõunal väsinuna, teha push'i otse `main`-i. Just nii tekkis Märteni olukord. Kaitse `main`-haru.
 
 GitHubis: **Settings → Branches → Add branch ruleset** (või *Add rule*).
 
 - Branch name pattern: `main`
-- **Require a pull request before merging** — sisse
-- **Require approvals: 1** — sisse
-- **Do not allow bypassing the above settings** — praegu jäta **välja** (nii pääseb õpetaja hädakorral ligi)
+- **Require a pull request before merging**: sisse
+- **Require approvals: 1**: sisse
+- **Do not allow bypassing the above settings**: jäta praegu **välja** (nii pääseb õpetaja vajaduse korral ligi)
 
-Salvesta. Nüüd tee Märtenit — proovi **meelega** otse `main`-i pushida:
+Salvesta. Nüüd korda Märteni viga ja proovi **teadlikult** teha push otse `main`-i:
 
 ```bash
 echo "test" >> README.md
@@ -177,51 +177,51 @@ git push origin main
 
 **Viga:** `remote: error: GH006: Protected branch update failed` / `protected branch hook declined`.
 
-??? question "Diagnoosi enne kui parandad"
-    Loe veateade: `remote:` prefiks ütleb, **kes** keeldus. Sinu masin lasi commiti teha, lokaalne ajalugu on olemas — miks lokaalne Git ei takistanud? Kus reegel päriselt elab?
+??? question "Diagnoosi enne parandamist"
+    Loe veateadet: eesliide `remote:` näitab, **kes** keeldus. Sinu masin lubas commiti teha ja lokaalne ajalugu on olemas. Miks lokaalne Git seda ei takistanud? Kus reegel tegelikult kehtib?
 
-Sa jooksid oma enda reeglile vastu — ja see pidas. Commit on aga lokaalselt olemas ja vajab koristamist:
+Sinu enda reegel peatas sinu push'i. Lokaalne commit on aga alles ja tuleb eemaldada:
 
 ```bash
 git reset --hard origin/main
 git log --oneline
 ```
 
-Test-commit on kadunud, ajalugu klapib jälle GitHubiga.
+Testcommit on kadunud ja ajalugu ühtib jälle GitHubiga.
 
 !!! tip
-    Branch protection ei ole bürokraatia. Kui `main` on lukus, on ainus tee sisse PR — see on põhjus, miks feature-branch üldse olemas on. Reegel, mille sa ise peale panid, on ainus reegel, mida sa päriselt usaldad.
+    Haru kaitse (branch protection) ei ole bürokraatia. Kui `main` on lukus, saab muudatusi teha ainult pull request'i kaudu ja seepärast on funktsiooniharud üldse olemas. Reeglit, mille oled ise seadistanud ja kontrollinud, saad usaldada.
 
 ---
 
 ## Osa 5 · Rollid ja õigused
 
-### 5.1 Lisa paariline collaboratoriks
+### 5.1 Lisa paariline kaastöötajaks
 
 **Settings → Collaborators → Add people** → paarilise GitHubi kasutajanimi.
 
-| Tase | Mida saab |
+| Tase | Õigused |
 |---|---|
 | Read | Näeb ja kloonib |
-| Write | Pushib branchidesse, avab PR-e |
-| Admin | Kõik + seaded, protection, repo kustutamine |
+| Write | Teeb push'i harudesse, avab PR-e |
+| Admin | Kõik eelnev ning lisaks seaded, haru kaitse ja repo kustutamine |
 
 *Tabel 2.1. GitHubi õigustasemed.*
 
-Anna paarilisele **Write**. Ta saab teha branche ja PR-e, aga ei saa su reegleid ära keerata ega repot kustutada. Õigus on usalduse mõõt, mitte sõbralikkuse.
+Anna paarilisele **Write**-õigus. Ta saab luua harusid ja PR-e, kuid ei saa sinu reegleid välja lülitada ega repot kustutada. Õiguse taseme määrab see, mida inimene oma töös vajab.
 
 ### 5.2 Lisa õpetaja
 
-Samas kohas õpetaja kasutajanimi **Admin**-õigusega — hindamiseks ja hädakorral päästmiseks.
+Lisa samas kohas õpetaja kasutajanimi **Admin**-õigusega. Seda on vaja hindamiseks ja hädaolukorras abistamiseks.
 
 ??? question "Mõtle"
-    Märtenil oli admin. Vaata mis juhtus. Miks ei anna sa igale collaboratorile admin-taset "igaks juhuks"?
+    Märtenil oli Admin-õigus. Vaata, mis juhtus. Miks ei anta igale kaastöötajale Admin-õigust "igaks juhuks"?
 
-### 5.3 Rollid risti
+### 5.3 Vahetatud rollid
 
-Sina oled **oma** repos admin, paariline collaborator. Tema repos vastupidi. Nii tunned mõlemat poolt, enne kui päris töökohal keegi sulle `Read` annab ja sa imestad, miks merge-nupp on hall.
+Oma repos oled sina admin ja paariline kaastöötaja, tema repos vastupidi. Nii näed mõlemat poolt ja töökohal ei tule üllatusena, miks `Read`-õigusega on liitmisnupp hall.
 
-Klooni paarilise repo — seda läheb Osa 7-s vaja:
+Klooni paarilise repo, seda on vaja osas 7:
 
 ```bash
 git clone git@github.com:hkhk-automation/marten-monitor-<paarilise-nimi>.git
@@ -229,9 +229,9 @@ git clone git@github.com:hkhk-automation/marten-monitor-<paarilise-nimi>.git
 
 ---
 
-## Osa 6 · Märteni skript — neli viga, neli keelt
+## Osa 6 · Märteni skript: neli viga, neli signaali
 
-`main` on lukus, seega parandused käivad õiget teed: branch → PR → review → merge. Aga kõigepealt tuleb vead **leida** — ja mitte lugedes, vaid jooksutades. Märten testis lugemisega. Tulemus on teada.
+`main` on lukus, seega käivad parandused õiget teed: haru → PR → ülevaatus → liitmine. Kõigepealt tuleb vead **leida** ja selleks tuleb skript käivitada. Märten kontrollis skripti ainult lugedes ja tulemus on teada.
 
 ### 6.1 Oma haru
 
@@ -239,9 +239,9 @@ git clone git@github.com:hkhk-automation/marten-monitor-<paarilise-nimi>.git
 git switch -c fix/monitor-parandused
 ```
 
-### 6.2 Vii skript sihtmärgile ja käivita
+### 6.2 Kopeeri skript sihtmärgile ja käivita
 
-Skript on monitooriskript — tema koht on serveris, mitte su süles. Kopeeri sihtmärgile ja jooksuta seal:
+Monitooringuskript peab töötama serveris, seepärast kopeeri see sihtmärgile ja käivita seal:
 
 ```bash
 scp monitor.sh <kasutaja>@<sihtmärk>:~/
@@ -249,7 +249,7 @@ ssh <kasutaja>@<sihtmärk>
 bash monitor.sh
 ```
 
-Sisu, millega sõidad (loe läbi, aga ära veel paranda):
+Skripti sisu (loe läbi, kuid ära veel paranda):
 
 ```bash
 #!/bin/bash
@@ -272,32 +272,32 @@ else
 fi
 ```
 
-Iga rida, kus Märten ennast kommentaaris õigustab, on koht kus midagi on katki. "Google ütles nii" ei ole testimine.
+Kommentaarid, milles Märten oma lahendust põhjendab, viitavad kohtadele, kus midagi on katki. Otsingutulemuse järgi kirjutatud rida ei ole testitud rida.
 
-### 6.3 Viga 1 — command not found
+### 6.3 Viga 1: command not found
 
-Esimene käivitus annab:
+Esimene käivitus annab tulemuseks:
 
 ```
 monitor.sh: line 12: servis: command not found
 ```
 
-??? question "Diagnoosi enne kui parandad"
-    Veateade annab kolm asja: faili, rea numbri ja süüdlase. `servis` ei ole ühegi Linuxi käsk — Märten kirjutas mälu järgi. Mis on **õige** käsk teenuse oleku kontrolliks? (Nädal 1 kasutasid `systemctl` juba — meenuta.)
+??? question "Diagnoosi enne parandamist"
+    Veateade annab kolm asja: faili, rea numbri ja käsu, mis ebaõnnestus. Käsku `servis` Linuxis ei ole, Märten kirjutas selle mälu järgi. Mis on **õige** käsk teenuse oleku kontrollimiseks? (1. nädalal kasutasid `systemctl`-i juba.)
 
-**Paranda** oma masinas (VS Code'is, mitte sihtmärgil — repo on sinu masinas ja parandus peab jõudma ajalukku):
+**Paranda** viga oma masinas VS Code'is, mitte sihtmärgil, sest repo asub sinu masinas ja parandus peab jõudma ajalukku:
 
 ```bash
 systemctl status $SERVIIS
 ```
 
-Kopeeri parandatud fail uuesti üles ja jooksuta:
+Kopeeri parandatud fail uuesti sihtmärgile ja käivita:
 
 ```bash
 scp monitor.sh <kasutaja>@<sihtmärk>:~/ && ssh <kasutaja>@<sihtmärk> bash monitor.sh
 ```
 
-Nüüd jookseb `systemctl` — ja ütleb, et `nginx.service could not be found`. See on **õige** vastus: nginx pole veel installitud (tuleb nädal 3). Teenus on maas, skript peaks selle logisse kirjutama. Kontrolli:
+Nüüd käivitub `systemctl` ja teatab `nginx.service could not be found`. See on **õige** vastus, sest nginx ei ole veel paigaldatud (seda teeme 3. nädalal). Teenus ei tööta ja skript peaks selle logisse kirjutama. Kontrolli:
 
 ```bash
 ssh <kasutaja>@<sihtmärk> cat /var/log/monitor.log
@@ -307,33 +307,33 @@ ssh <kasutaja>@<sihtmärk> cat /var/log/monitor.log
 cat: /var/log/monitor.log: No such file or directory
 ```
 
-Skript jooksis läbi, viga ei andnud, logi ei tekkinud. Tere tulemast järgmisesse vea-keelde.
+Skript lõpetas töö, kuid logifaili ei tekkinud. See on järgmist tüüpi viga.
 
-### 6.4 Viga 2 — vaikne tõrge
+### 6.4 Viga 2: vaikne tõrge
 
-??? question "Diagnoosi enne kui parandad"
-    Vaata `else` haru tähelepanelikult. `$LOQ` — Q, mitte G. Bash ei kaeba defineerimata muutuja peale sõnagi: `$LOQ` on lihtsalt tühi string, ja `>> ` tühja nime taha kirjutamine läheb... kuhu? Miks on see viga hullem kui Viga 1 — kumba märkad kiiremini?
+??? question "Diagnoosi enne parandamist"
+    Vaata `else`-haru tähelepanelikult. `$LOQ`: Q, mitte G. Bash ei anna defineerimata muutuja kohta hoiatust: `$LOQ` on lihtsalt tühi string. Kuhu läheb väljund, kui `>> ` järel on tühi nimi? Miks on see viga ohtlikum kui viga 1 ja kumba neist märkad kiiremini?
 
-See on **vaikne tõrge**: skript raporteerib edu, tulemust pole. Ja ta lööb täpselt siis, kui teenus on maas — ehk täpselt siis, kui logi kõige rohkem vaja oleks. Märten ehitas monitori, mis vaikib hädas.
+See on **vaikne tõrge**: skript ei anna märku probleemist, kuid tulemust ei ole. See viga tekib just siis, kui teenus ei tööta, ehk olukorras, kus logi on kõige rohkem vaja. Märteni monitooringuskript ei salvestanud teenuse tõrget.
 
-**Paranda** `$LOQ` → `$LOG`, `scp` üles, jooksuta uuesti. Ja nüüd kolmas keel:
+**Paranda** `$LOQ` → `$LOG`, kopeeri fail `scp`-ga uuesti ja käivita. Nüüd ilmub kolmas veateade:
 
 ```
 monitor.sh: line 18: /var/log/monitor.log: Permission denied
 ```
 
-### 6.5 Viga 3 — Permission denied
+### 6.5 Viga 3: Permission denied
 
-??? question "Diagnoosi enne kui parandad"
-    Tuttav sõnapaar nädalast 1 — aga teine olukord. `/var/log/` kuulub root'ile; sina jooksed tavakasutajana. Kaks võimalikku parandust: (a) jooksuta skripti sudo'ga, (b) kirjuta logi kohta, kuhu sul õigus on. Kumb on parem monitooriskriptile, mis peaks jooksma iga minut, ja miks on "anna lihtsalt sudo" Märteni-stiilis vastus?
+??? question "Diagnoosi enne parandamist"
+    See veateade on tuttav 1. nädalast, kuid olukord on teine. Kaust `/var/log/` kuulub root'ile, sina käivitad skripti tavakasutajana. Võimalikke parandusi on kaks: (a) käivita skript sudo'ga, (b) kirjuta logi kohta, kuhu sul on kirjutusõigus. Kumb sobib paremini monitooringuskriptile, mis peaks käivituma iga minut? Miks on "anna lihtsalt sudo" Märteni stiilis lahendus?
 
-**Paranda** — skript ei vaja root'i, kui ta ei pea:
+**Paranda** viga. Skript ei vaja root-õigusi, kui need pole tööks vajalikud:
 
 ```bash
 LOG=$HOME/monitor.log
 ```
 
-`scp`, jooksuta, kontrolli:
+Kopeeri fail `scp`-ga, käivita ja kontrolli:
 
 ```bash
 ssh <kasutaja>@<sihtmärk> "bash monitor.sh && cat ~/monitor.log"
@@ -343,23 +343,23 @@ ssh <kasutaja>@<sihtmärk> "bash monitor.sh && cat ~/monitor.log"
 ... - nginx EI tööta
 ```
 
-Esimest korda teeb skript seda, mida lubas. Aga üks viga on veel sees — see, mis "töötab vahel".
+Nüüd teeb skript esimest korda seda, mida peab. Siiski on selles veel üks viga, mis avaldub ainult teatud olukorras.
 
-### 6.6 Viga 4 — kontroll, mis valetab
+### 6.6 Viga 4: eksitav kontroll
 
-`[ $? = 0 ]` — `=` võrdleb **stringe**, arvudele on `-eq`. Enamasti annab sama tulemuse, aga mitte alati — ja "töötab vahel" on halvim vea tüüp, sest sa ei tea, millal ei tööta. Kolm eelmist viga ütlesid end ise välja (kaks häälekalt, üks vaikides); see ei ütle end **kunagi** ise välja. Sellised püütakse kinni ainult teadmise või linteriga.
+`[ $? = 0 ]`: `=` võrdleb **stringe**, arvude võrdlemiseks on `-eq`. Enamasti on tulemus sama, kuid mitte alati. Viga, mis avaldub ainult mõnikord, on kõige raskem leida, sest pole teada, millal see esineb. Kolm eelmist viga andsid endast ise märku (kaks veateatega, üks puuduva tulemusega). See viga ei anna endast **kunagi** ise märku. Selliseid vigu leiab ainult teadmiste või linteri abil.
 
 **Paranda** kaks asja korraga:
 
 1. `[ $? = 0 ]` → `[ $? -eq 0 ]`
-2. Lisa `set -e` kohe `#!/bin/bash` järele — skript peatub esimese vea peal, mitte ei jookse rõõmsalt edasi
+2. Lisa `set -e` kohe rea `#!/bin/bash` järele. Siis peatub skript esimese vea korral ega jätka tööd.
 
 ??? question "Mõtle"
-    Kui `set -e` oleks olnud sees algusest peale — millised neljast veast oleks skripti peatanud kohe esimesel real, kus asi valesti läks? Ja kumb vigadest oleks ellu jäänud ka `set -e`-ga?
+    Kui `set -e` oleks olnud skriptis algusest peale, millised neljast veast oleks skripti peatanud kohe sellel real, kus viga tekkis? Milline viga oleks jäänud märkamata ka `set -e`-ga?
 
-### 6.7 Commit — neli viga, üks lugu
+### 6.7 Commit: neli parandust ühes commitis
 
-Vaata muudatust enne commiti. `git diff` on su viimane võimalus näha, mida sa tegelikult saatmas oled:
+Vaata muudatus enne commiti üle. `git diff` on viimane võimalus näha, mida tegelikult saadad:
 
 ```bash
 git diff
@@ -370,23 +370,23 @@ git push -u origin fix/monitor-parandused
 
 ---
 
-## Osa 7 · PR, review ja konflikt
+## Osa 7 · Pull request, ülevaatus ja konflikt
 
-### 7.1 PR ja review
+### 7.1 Pull request ja ülevaatus
 
 GitHubis: **Compare & pull request**.
 
 - Title: `Fix: Märteni monitor.sh parandused`
-- Description (osa hindest — `fixed stuff` ei lähe arvesse, Märten kirjutas ka `fixed stuff`):
-    - Neli viga — mis **tüüpi** igaüks oli (häälekas / vaikne / õigused / valetav)?
-    - Milline oli kõige ohtlikum tootmises ja miks?
-    - Mis järjekorras nad välja tulid ja miks just selles?
+- Description on osa hindest. Kirjeldus `fixed stuff` ei lähe arvesse. Vasta kirjelduses järgmistele küsimustele:
+    - Mis **tüüpi** oli iga neljast veast (veateade / vaikne / õigused / eksitav)?
+    - Milline viga oli tootmiskeskkonnas kõige ohtlikum ja miks?
+    - Mis järjekorras vead välja tulid ja miks just selles järjekorras?
 
-Määra reviewer'iks paariline. Tema avab **sinu** PR-i, vaatab **Files changed**, jätab ühe sisulise kommentaari ja **Approve**. Alles siis saad merge'ida — sest sa ise nõudsid 1 approval. Review ei ole solvang. See on teine paar silmi enne kui asi läheb `main`-i ja sealt tootmisse.
+Määra ülevaatajaks (reviewer) paariline. Ta avab **sinu** PR-i, vaatab vahekaarti **Files changed**, jätab ühe sisulise kommentaari ja vajutab **Approve**. Alles siis saad PR-i liita, sest seadistasid ise nõude, et vaja on ühte kinnitust. Ülevaatus ei ole kriitika isiku kohta: see on teine kontroll enne, kui muudatus jõuab `main`-i ja sealt tootmisse.
 
-### 7.2 Merge-konflikt — kontrollitud katse
+### 7.2 Liitmiskonflikt: kontrollitud katse
 
-Teie mõlema PR muudab sama rida. Üks merge'ib esimesena. Teine näeb: *"This branch has conflicts."* Konflikt ei ole viga ega süüdistus — Git lihtsalt ei julge sinu eest valida.
+Teie mõlema PR muudab sama rida. Üks teist liidab oma PR-i esimesena. Teine näeb teadet *"This branch has conflicts."* Konflikt ei ole viga ega kellegi süü: Git ei vali versiooni sinu eest.
 
 ```bash
 git switch main
@@ -405,10 +405,10 @@ service $SERVIIS status
 >>>>>>> main
 ```
 
-??? question "Diagnoosi enne kui parandad"
-    `<<<`, `===`, `>>>` on Git'i markerid, mitte kood. `HEAD` on sinu versioon, teisel pool see, mis vahepeal `main`-i jõudis. Kumb rida on õige — ja kust sa seda **tead**, mitte ei arva? (Sa just jooksutasid ühte neist sihtmärgil.)
+??? question "Diagnoosi enne parandamist"
+    `<<<`, `===` ja `>>>` on Giti markerid, mitte kood. `HEAD` on sinu versioon, teisel pool on see, mis vahepeal `main`-i jõudis. Kumb rida on õige ja kuidas sa seda **tead**, ilma oletamata? (Üht neist käivitasid just sihtmärgil.)
 
-Vali õige rida, kustuta markerid, kontrolli `git diff` (jah, jälle), siis:
+Vali õige rida, kustuta markerid, kontrolli uuesti `git diff`-iga ja seejärel käivita:
 
 ```bash
 git add monitor.sh
@@ -416,36 +416,36 @@ git commit -m "resolve: merge konflikt monitor.sh"
 git push
 ```
 
-PR uueneb, merge läheb läbi. Vaata lõpuks tervet lugu:
+PR uueneb ja liitmine õnnestub. Lõpuks vaata kogu ajalugu:
 
 ```bash
 git switch main && git pull
 git log --oneline --graph
 ```
 
-Init, kaitsetest, neli parandust, konflikt, merge — kogu tänane päev on ajaloos loetav. Märteni versioonis oli sama loo asemel kaust nimega `marten-kraam` ja mitte midagi.
+Esimene commit, kaitse test, neli parandust, konflikt ja liitmine: kogu päeva töö on ajaloost loetav. Märtenist jäi sama töö kohta maha ainult kaust `marten-kraam`.
 
 ---
 
-## Lõppkontroll — oskad ilma juhendita
+## Lõppkontroll: oskad ilma juhendita
 
-- [ ] Repo `hkhk-automation` all, `git log --oneline` loeb tänase loo välja
-- [ ] `.env` **ei ole** GitHubis, `.gitignore` blokeerib ta
-- [ ] `main` on protected — otse-push lükatakse tagasi ja tead, **kes** keeldub
-- [ ] Paariline Write, õpetaja Admin — ja oskad põhjendada kumbki taset
-- [ ] Nimetad neli vea-tüüpi (häälekas / vaikne / õigused / valetav) ja näite igast
-- [ ] `monitor.sh` jookseb sihtmärgil ja kirjutab logi
-- [ ] Merge-konflikt lahendatud lokaalselt, valik põhjendatud
-- [ ] Ükski su commit-sõnum ei ole `asjad`
+- [ ] Repo on organisatsioonis `hkhk-automation` ja `git log --oneline` näitab kogu päeva tööd
+- [ ] `.env` **ei ole** GitHubis, `.gitignore` takistab selle lisamist
+- [ ] `main` on kaitstud: otse tehtud push lükatakse tagasi ja tead, **kes** selle tagasi lükkab
+- [ ] Paarilisel on Write-õigus, õpetajal Admin-õigus ja oskad põhjendada mõlemat taset
+- [ ] Oskad nimetada neli veatüüpi (veateade / vaikne / õigused / eksitav) ja tuua igaühe kohta näite
+- [ ] `monitor.sh` töötab sihtmärgil ja kirjutab logi
+- [ ] Liitmiskonflikt on lokaalselt lahendatud ja valik on põhjendatud
+- [ ] Ükski sinu commit-sõnum ei ole `asjad`
 
 ---
 
-## Lisaülesanded (kui jõuad ette)
+## Lisaülesanded
 
-1. **Päästmine:** tee katki commit (Märteni klassika). `git restore`, `git reset --soft`, `git revert` — millal kumbki? Proovi kõiki kolme, üks lause vahe kohta. Vihje: üks neist on ainus, mis on ohutu **pärast** pushi.
-2. **shellcheck:** installi [shellcheck](https://www.shellcheck.net/) (või kasuta veebiversiooni) ja anna talle Märteni **algne** skript. Mitu neljast veast leiab ta ilma jooksutamata? Milline jääb kahe silma vahele?
-3. **CODEOWNERS:** lisa `.github/CODEOWNERS`, mis nõuab et `monitor.sh` muudatused vaatab üle kindel inimene. Testi.
-4. **`git stash`:** pooleliolev muudatus, siis `git stash`. Kuhu ta kadus? `git stash pop` toob tagasi. Millal kasulik?
+1. **Muudatuste tagasivõtmine:** tee vigane commit (nagu Märten). Millal kasutada käsku `git restore`, `git reset --soft` või `git revert`? Proovi kõiki kolme ja kirjuta igaühe erinevuse kohta üks lause. Vihje: ainult üks neist on ohutu **pärast** push'i.
+2. **shellcheck:** paigalda [shellcheck](https://www.shellcheck.net/) (või kasuta veebiversiooni) ja kontrolli sellega Märteni **algset** skripti. Mitu neljast veast leiab see ilma käivitamata? Milline jääb leidmata?
+3. **CODEOWNERS:** lisa fail `.github/CODEOWNERS`, mis nõuab, et `monitor.sh` muudatused vaatab üle kindel inimene. Testi seda.
+4. **`git stash`:** tee pooleli olev muudatus ja käivita `git stash`. Kuhu muudatus kadus? `git stash pop` toob selle tagasi. Millal on see kasulik?
 
 ---
 
@@ -453,17 +453,17 @@ Init, kaitsetest, neli parandust, konflikt, merge — kogu tänane päev on ajal
 
 | Probleem | Lahendus |
 |---|---|
-| `git push` annab `Permission denied` | `ssh -T git@github.com` — kas nädal 1 võti töötab? |
-| `protected branch hook declined` | Töötab õigesti — `main` on lukus, tee branch + PR |
-| Merge-nupp on hall | Puudub approval — paariline peab Approve'ima |
-| `.env` on juba GitHubis | Vaheta parool, siis `git rm --cached .env` + commit |
-| `scp: command not found` / ei jõua sihtmärgile | Nädal 1 SSH ühendus — kontrolli `ssh <kasutaja>@<sihtmärk>` enne |
-| Skript "töötab", logi ei teki | Vaikne tõrge — kontrolli muutujanimed tähthaaval (Osa 6.4 muster) |
-| `Permission denied` failile kirjutamisel | Kirjutad root'i omandisse — vii logi koju (Osa 6.5) |
-| PR näitab konflikti | Osa 7.2 — lahenda lokaalselt, push uuesti |
-| Markerid `<<<<<<<` jäid faili | Kustuta kõik `<<<`, `===`, `>>>` read, `git diff` üle |
+| `git push` annab `Permission denied` | Käivita `ssh -T git@github.com` ja kontrolli, kas 1. nädala SSH-võti töötab |
+| `protected branch hook declined` | Kaitse töötab õigesti: `main` on lukus, loo haru ja PR |
+| Liitmisnupp on hall | Kinnitus puudub: paariline peab vajutama Approve |
+| `.env` on juba GitHubis | Vaheta parool, seejärel `git rm --cached .env` ja commit |
+| `scp: command not found` / sihtmärgiga ei saa ühendust | Kontrolli 1. nädala SSH-ühendust käsuga `ssh <kasutaja>@<sihtmärk>` |
+| Skript "töötab", kuid logi ei teki | Vaikne tõrge: kontrolli muutujanimed täht-tähelt üle (osa 6.4) |
+| `Permission denied` faili kirjutamisel | Fail kuulub root'ile: kirjuta logi kodukausta (osa 6.5) |
+| PR näitab konflikti | Vt osa 7.2: lahenda konflikt lokaalselt ja tee uuesti push |
+| Markerid `<<<<<<<` jäid faili | Kustuta kõik `<<<`, `===`, `>>>` read ja kontrolli `git diff`-iga |
 
-*Tabel 2.2. Iga rida on viga, mille sa selles labis ise tekitasid või kohtad.*
+*Tabel 2.2. Iga rida kirjeldab viga, mille selles praktikumis ise tekitad või millega kokku puutud.*
 
 ---
 
@@ -471,13 +471,13 @@ Init, kaitsetest, neli parandust, konflikt, merge — kogu tänane päev on ajal
 
 | Allikas | URL | Miks oluline |
 |---|---|---|
-| GitHub Flow | <https://docs.github.com/en/get-started/using-github/github-flow> | See flow mida kasutame |
-| Branch protection | <https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches> | Reeglid `main`-ile |
+| GitHub Flow | <https://docs.github.com/en/get-started/using-github/github-flow> | Töövoog, mida praktikumis kasutame |
+| Branch protection | <https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches> | `main`-haru kaitsereeglid |
 | Repo õigustasemed | <https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-access-to-your-personal-repositories> | Read / Write / Admin |
-| gitignore mustrid | <https://git-scm.com/docs/gitignore> | Formaadi ametlik dok |
+| gitignore mustrid | <https://git-scm.com/docs/gitignore> | Vormingu ametlik dokumentatsioon |
 | Bash `set -e` | <https://www.gnu.org/software/bash/manual/bash.html#The-Set-Builtin> | Miks `set -e` on hea tava |
-| ShellCheck | <https://www.shellcheck.net/> | Linter, mis leiab Märteni vead lugedes |
+| ShellCheck | <https://www.shellcheck.net/> | Linter, mis leiab Märteni vead ilma skripti käivitamata |
 
 ---
 
-*Järgmine: Nädal 3 — Ansible, ehk kuidas Märteni tööd automaatselt teha, et järgmine praktikant ei peaks midagi mälu järgi kirjutama.*
+*Järgmine: 3. nädal, Ansible. Õpime Märteni käsitsi tehtud tööd automatiseerima, et järgmine praktikant ei peaks midagi mälu järgi kirjutama.*

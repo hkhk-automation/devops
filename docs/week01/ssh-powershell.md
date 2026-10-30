@@ -1,10 +1,11 @@
 # SSH-võti PowerShellist Linuxi serveritesse
 
-> Kui võti on tehtud Windowsi PowerShellis, siis Linuxi juhendi käsud (`ssh-copy-id`)
-> ei tööta ja avaliku võtme faili kopeerimisel tekib **encoding-probleem**:
-> PowerShell salvestab UTF-16 + BOM ja lisab rea lõppu CRLF (`\r`), mille peale
-> server võtme vaikselt tagasi lükkab (näed ainult "Permission denied").
-> Seepärast EI kirjutata võtit faili — see torutatakse otse `ssh` kaudu serverisse.
+> Kui võti on loodud Windowsi PowerShellis, siis Linuxi juhendi käsud (`ssh-copy-id`)
+> ei tööta ja avaliku võtme faili kopeerimisel tekib **kodeeringu probleem**.
+> Windows PowerShell 5.1 salvestab ümbersuunamisel (`>`) faili kodeeringus UTF-16 koos BOM-iga
+> ja lisab rea lõppu CRLF-i (`\r`). Sellise võtme lükkab server tagasi ilma selgituseta
+> ja kasutaja näeb ainult teadet „Permission denied“.
+> Seepärast suunatakse võti toru kaudu otse `ssh` abil serverisse ja vahepeal faili ei kirjutata.
 
 ## 1. Genereeri võti (PowerShell)
 
@@ -20,13 +21,13 @@ ssh-keygen -t ed25519 -C "opilane@windows"
 ## 2. Lisa avalik võti serverisse (ÕIGE käsk)
 
 ```powershell
-# Torutab avaliku võtme otse serverisse — ei kirjuta faili, seega EI riku encodingut.
+# Torutab avaliku võtme otse serverisse. Faili ei kirjutata, seega kodeering ei rikne.
 # Korda iga serveri kohta (server1, server2, server3).
 type $env:USERPROFILE\.ssh\id_ed25519.pub | ssh kasutaja@server "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
 ```
 
-> `ssh-copy-id` Windowsis PUUDUB — ära seda käsku kasuta.
-> Ära kasuta ka `>` ümbersuunamist (`... > authorized_keys`) — just see rikub kodeeringu.
+> Käsku `ssh-copy-id` Windowsis ei ole, seega ära seda kasuta.
+> Ära kasuta ka ümbersuunamist `>` (`... > authorized_keys`), sest just see rikub kodeeringu.
 
 ## 3. Logi sisse
 
@@ -48,8 +49,9 @@ chmod 750 ~                           # (või 700)
 sed -i 's/\r$//' ~/.ssh/authorized_keys
 ```
 
-> SSH on õiguste suhtes range: kui `~/.ssh` või `authorized_keys` on liiga avatud,
-> ignoreeritakse võtit ilma veateateta.
+> SSH on failiõiguste suhtes range. Kui kausta `~/.ssh` või faili `authorized_keys` õigused
+> on liiga laiad, jätab server võtme kasutamata ja klient ei näe selle kohta veateadet.
+> Põhjus on kirjas serveri logis.
 
 ## 5. Õigused Windowsis (privaatvõti)
 
@@ -71,6 +73,7 @@ ssh-add $env:USERPROFILE\.ssh\id_ed25519
 
 ---
 
-**Kokkuvõte, miks Linuxi juhend ei töötanud:**
-`ssh-copy-id` puudub Windowsis, ja faili kirjutamisel läheb võti UTF-16/CRLF tõttu katki.
-Lahendus: toruta võti otse `ssh` kaudu (punkt 2) ja kontrolli õigusi (punktid 4–5).
+**Kokkuvõte: miks Linuxi juhend Windowsis ei töötanud**
+
+Käsku `ssh-copy-id` Windowsis ei ole ja faili kirjutamisel läheb võti UTF-16 kodeeringu ja CRLF-reavahetuste tõttu katki.
+Lahendus on suunata võti toru kaudu otse `ssh` abil serverisse (punkt 2) ja kontrollida õigusi (punktid 4 ja 5).
