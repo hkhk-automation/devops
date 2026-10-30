@@ -85,10 +85,10 @@ Põhjendusi README-sse ei kirjuta. N10 alguses küsin igaühelt suuliselt ühe l
 
 Osad 3 ja 4 tee KodeKloudi labori terminalis. Ava selleks uuesti mõni Osa 1 labor.
 
-Käskude väljund salvestatakse kausta `logid/`. Sammus 3.7 kopeerid failid GitHubi.
+Käskude väljund salvestatakse terminalis kausta `logid/`. Sammus 4.3 paned kõik logid ühte faili ja kopeerid selle GitHubi.
 
 !!! warning "Labori terminal suletakse, kui aeg saab täis"
-    Kopeeri logifailid GitHubi pärast iga osa. Kui terminal suleti, ava labor uuesti ja tee samm 3.1 uuesti.
+    Kui laboriaeg hakkab lõppema, tee kohe samm 4.3. Kui terminal suleti, ava labor uuesti ja tee samm 3.1 uuesti.
 
 ### 3.1 Töökaust
 
@@ -273,16 +273,7 @@ Teisel käivitusel ei ole väljundis teadet `Conflict`.
 ??? success "Mida see näitab"
     Konteiner võib olla peatatud, teise image'i või teise pordiga. Skript kontrollib olemasolu, mitte olekut. Compose võrdleb konteineri konfiguratsiooni failiga ja loob konteineri vajaduse korral uuesti, nagu nägid sammus 3.4.
 
-### 3.7 Logifailid GitHubi
-
-**Ülesanne**
-
-Iga logifaili kohta:
-
-1. Käivita terminalis `cat logid/01-up.txt` ja kopeeri väljund.
-2. Vali GitHubis **Add file → Create new file**, kirjuta failinimeks `logid/01-up.txt`, kleebi sisu ja vajuta **Commit changes**.
-
-Tee sama failidega `02` kuni `06`. Seejärel vasta README-s küsimustele 3.1-3.5. Igas vastuses kopeeri logist üks rida ja kirjuta selle juurde üks lause.
+Vasta README-s küsimustele 3.1-3.5. Igas vastuses kopeeri logist üks rida ja kirjuta selle juurde üks lause.
 
 ---
 
@@ -374,7 +365,28 @@ curl -s localhost:8081 2>&1 | tee -a logid/08-triiv-konteiner.txt
 
     Ansible ja Compose on mõlemad deklaratiivsed, aga nad haldavad eri olekut: Ansible faili sisu serveris, Compose konteinerite olemasolu ja konfiguratsiooni.
 
-Kopeeri failid `logid/07-triiv-ansible.txt` ja `logid/08-triiv-konteiner.txt` GitHubi samamoodi nagu sammus 3.7.
+### 4.3 Logid GitHubi
+
+**Ülesanne**
+
+Pane kõik logid ühte faili. Käsk jätab välja image'ite allalaadimise read:
+
+```bash
+for f in logid/0*.txt; do
+  echo "===== $(basename $f) ====="
+  grep -v -E 'Pull|Waiting|Download|Extract|Verifying|Already exists' "$f"
+done > koik.txt
+cat koik.txt
+```
+
+Kopeeri väljund terminalist. Vali GitHubis **Add file → Create new file**, kirjuta failinimeks `logid/koik.txt`, kleebi sisu ja vajuta **Commit changes**.
+
+**Kontrolli**
+
+GitHubis on fail `logid/koik.txt` ja selles on kaheksa rida, mis algavad märkidega `=====`.
+
+??? warning "Kui labor suleti poole töö pealt"
+    Kopeeri GitHubi see, mis sul juba on, nimega `logid/koik.txt`. Kui teed hiljem ülejäänud sammud uues terminalis, pane teine fail nimega `logid/koik2.txt`. Automaatkontroll loeb mõlemat.
 
 ---
 
@@ -397,7 +409,7 @@ Otsi README-st (Ctrl+F) sõna `_vastus_`. Osades 2-5 ei tohi seda enam olla. Aut
 
     | Kontroll | Punktid |
     |---|---|
-    | Failid `logid/01`-`08` on olemas | 5 |
+    | `logid/koik.txt` sisaldab kõiki kaheksat logi | 5 |
     | Nimi ja Osade 3-4 vastused on kirjas | 5 |
     | KodeKloudi sertifikaat või ekraanipilt | 10 |
     | Võrdlustabel ja 6 linki oma repositooriumidesse | 15 |
