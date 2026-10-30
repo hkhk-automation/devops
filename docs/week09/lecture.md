@@ -389,7 +389,7 @@ Git on kõigi all. Ilma Gitita on iga ülaltoodud fail lihtsalt fail sinu kettal
 ## 9. Sild N10-le: OpenTofu
 
 !!! abstract "Miks see oluline on?"
-    Järgmisel kontaktkohtumisel lood OpenTofu'ga Proxmoxi masina. Kui tead juba, mis on plan, apply ja olekufail, jääb kohtumisel aega katsetamiseks.
+    Järgmisel kontaktkohtumisel lood OpenTofuga Proxmoxi masina. Kui tead juba, mis on plan, apply ja olekufail, jääb kohtumisel aega katsetamiseks.
 
 OpenTofu kood näeb välja nii (lihtsustatud):
 
@@ -460,7 +460,7 @@ Infrastruktuur koodina tähendab, et kõik, mis serveris ja selle ümber peab ol
 1. Selgita retsepti ja tellimuse abil imperatiivse ja deklaratiivse vahet. Too näide oma laboritest.
 2. Joonista vihikusse ühtlustamise tsükkel ja kirjuta iga kasti juurde, mis see Docker Compose'i puhul on.
 3. Mis juhtub Mati käsitsi parandusega järgmisel Ansible'i jooksul ja kuidas seda vältida?
-4. Kustutad koodist ühe ressursi. Mis juhtub Ansible'iga ja mis OpenTofu'ga?
+4. Kustutad koodist ühe ressursi. Mis juhtub Ansible'iga ja mis OpenTofuga?
 5. Kas su N7 `ci.yml` on idempotentne? Põhjenda.
 6. Kati firma tahab, et ühegi serveri kaotus ei võtaks rohkem kui tund. Mida sa neile soovitad?
 
