@@ -601,17 +601,19 @@ Muudatuse autor saab tagasiside mõne minutiga. Viga leitakse enne väljalaset, 
 
 ## Kokkuvõte
 
-- Testimine peab meeskonnas olema automaatne. See ei tohi sõltuda inimese mälust ega tema arvutist.
-- Automaattest on koodina kirjutatud kontroll. `assert` ütleb, kas tulemus on õige.
-- Ühiktest kontrollib koodi. Suitsutest kontrollib, kas konteiner käivitub ja vastab.
-- Töövoog on YAML-fail kaustas `.github/workflows/`. Selles on sündmus (`on:`), tööd (`jobs:`) ja sammud (`steps:`).
-- `uses:` käivitab valmis action'i, `run:` käivitab Bashi käsu ja `needs:` paneb tööd järjekorda.
-- Runner on tühi masin. Kõik, mida see vajab, peab olema kirjas repositooriumis.
-- Võtmete süntaksi leiad dokumentatsiooni osast Reference, juhendid osast How-tos ja action'ite parameetrid Marketplace'ist.
-- Konveier katkeb, kui väljumiskood ei ole `0`. Kood näitab, kas viga on rakenduses või töövoos.
-- CI koos haru `main` kaitsega tähendab, et punase testiga koodi ei saa liita.
-- GitHub Actionsil, GitLab CI-l ja Jenkinsil on erinev süntaks, aga sama mudel.
-- Konveier hoiab võtmeid. Saladused on tööriista saladuste hoidlas, mitte repositooriumis ega logis.
+??? abstract "Kokkuvõte"
+
+    - Testimine peab meeskonnas olema automaatne. See ei tohi sõltuda inimese mälust ega tema arvutist.
+    - Automaattest on koodina kirjutatud kontroll. `assert` ütleb, kas tulemus on õige.
+    - Ühiktest kontrollib koodi. Suitsutest kontrollib, kas konteiner käivitub ja vastab.
+    - Töövoog on YAML-fail kaustas `.github/workflows/`. Selles on sündmus (`on:`), tööd (`jobs:`) ja sammud (`steps:`).
+    - `uses:` käivitab valmis action'i, `run:` käivitab Bashi käsu ja `needs:` paneb tööd järjekorda.
+    - Runner on tühi masin. Kõik, mida see vajab, peab olema kirjas repositooriumis.
+    - Võtmete süntaksi leiad dokumentatsiooni osast Reference, juhendid osast How-tos ja action'ite parameetrid Marketplace'ist.
+    - Konveier katkeb, kui väljumiskood ei ole `0`. Kood näitab, kas viga on rakenduses või töövoos.
+    - CI koos haru `main` kaitsega tähendab, et punase testiga koodi ei saa liita.
+    - GitHub Actionsil, GitLab CI-l ja Jenkinsil on erinev süntaks, aga sama mudel.
+    - Konveier hoiab võtmeid. Saladused on tööriista saladuste hoidlas, mitte repositooriumis ega logis.
 
 ---
 

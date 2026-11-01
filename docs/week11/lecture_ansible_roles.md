@@ -7,26 +7,23 @@ tags:
 
 # Loeng: Ansible rollid
 
+Nädalatel 3–4 kirjutasid playbook'i, mis seadistas ühe teenuse. Selles loengus jagad sama töö rollideks, et playbook jääks loetavaks ka siis, kui teenuseid on mitu.
 
----
-
-!!! abstract "Õpiväljundid"
+??? abstract "Õpiväljundid"
     Pärast loengut oskad:
 
-    - selgitada mis on roll ja miks see playbook'ist parem struktuur on
-    - kirjeldada rolli standardset kataloogistruktuuri
-    - selgitada kuidas rolli playbook'ist välja kutsutakse (`roles:` / `include_role`)
-    - põhjendada millal kasutada rolli ja millal piisab playbook'ist
-
----
+    - selgitada, mis on roll ja miks see on suurest playbook'ist parem ülesehitus;
+    - kirjeldada rolli standardset kaustastruktuuri;
+    - selgitada, kuidas rolli playbook'ist käivitatakse (`roles:` ja `include_role`);
+    - põhjendada, millal kasutada rolli ja millal piisab playbook'ist.
 
 ## 1. Playbook, mis kasvas suureks
 
-Nädalatel 3–4 olid tasks, vars ja templates ühes failis kõrvuti. Ühe nginx-serveri jaoks loetav. Aga kui sama fail peab seadistama nginx'i, PostgreSQL'i, firewall'i ja monitooringu, kasvab sada rida viiesajaks, ja keegi, kes tuleb kuu aja pärast lugema, ei leia enam kus PostgreSQL lõppeb ja firewall algab.
+Nädalatel 3–4 olid ülesanded, muutujad ja mallid ühes failis kõrvuti. Ühe nginx-serveri jaoks on selline fail loetav. Kui sama fail peab seadistama nginx'i, PostgreSQL'i, tulemüüri ja monitooringu, kasvab saja reaga fail viiesajaliseks. Kuu aja pärast ei leia lugeja enam, kus PostgreSQL'i osa lõpeb ja tulemüüri osa algab.
 
-Rollid lahendavad selle. Roll grupeerib seotud tasks, vars, templates, files ja handlers kindla kataloogistruktuuri alla, mille Ansible automaatselt ära tunneb. Üks roll paigaldab nginx'i, teine PostgreSQL'i, kolmas firewall'i. Iga roll on iseseisev üksus, mida saab taaskasutada ja jagada.
+Rollid lahendavad selle probleemi. Roll koondab seotud ülesanded, muutujad, mallid, failid ja handlerid kindla kaustastruktuuri alla, mille Ansible ise ära tunneb. Üks roll paigaldab nginx'i, teine PostgreSQL'i, kolmas tulemüüri. Iga roll on eraldi üksus, mida saab taaskasutada ja jagada.
 
-Suured meeskonnad, kelle serveripark koosneb kümnetest teenustest (rakendusserverid, andmebaasid, cache, load balancer'id), ei kirjuta iga serveritüübi jaoks playbook'i nullist, nad ehitavad rollide kogumi, kus iga roll vastutab ühe teenuse eest, ja playbook paneb need sobivas järjekorras kokku.
+Kui serveripargis on kümneid teenuseid (rakendusserverid, andmebaasid, vahemälu, koormusjaoturid), ei kirjutata iga serveritüübi jaoks playbook'i nullist. Meeskond koostab rollide kogumi, kus iga roll vastutab ühe teenuse eest, ja playbook paneb rollid sobivas järjekorras kokku.
 
 <figure markdown="span">
 ```mermaid
@@ -39,23 +36,21 @@ graph TD
     N --> H[handlers/]
     N --> J[templates/]
 ```
-  <figcaption>Joonis 11.1. site.yml orkestreerib rolle; iga roll on oma kataloogistruktuur (Talvik, 2025).</figcaption>
+  <figcaption>Joonis 11.1. site.yml käivitab rollid; igal rollil on oma kaustastruktuur (Talvik, 2025).</figcaption>
 </figure>
-
----
 
 ## 2. Rolli struktuur
 
-Roll ei ole midagi maagilist, kindla nimega kataloogide kogum. Ansible otsib igast kataloogist `main.yml` ja teab kataloogi nime järgi mida sellega teha.
+Roll on kindlate nimedega kaustade kogum. Ansible otsib igast kaustast faili `main.yml` ja teab kausta nime järgi, mida sellega teha. Kaustade täielik loetelu on Ansible'i dokumentatsioonis [Roles](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_reuse_roles.html).
 
-- `tasks/main.yml`: tegevuste nimekiri (sama süntaks mis playbook'is).
-- `defaults/main.yml`: vaikeväärtused, madalaim prioriteet, kergesti üle kirjutatavad.
-- `handlers/main.yml`: handlerid (nt `restart nginx` pärast konfi muutmist).
+- `tasks/main.yml`: ülesannete loend (sama süntaks mis playbook'is).
+- `defaults/main.yml`: vaikeväärtused, mida kõik muud muutujad üle kirjutavad.
+- `handlers/main.yml`: handlerid (näiteks `restart nginx` pärast konfiguratsioonifaili muutmist).
 - `templates/`: Jinja2 mallid (`.j2`).
-- `files/`: staatilised failid, kopeeritakse muutmata.
-- `vars/main.yml`: kõrge prioriteediga muutujad; `meta/main.yml`: metaandmed (autor, litsents, sõltuvused).
+- `files/`: staatilised failid, mis kopeeritakse muutmata.
+- `vars/main.yml`: muutujad, mis kirjutavad üle peaaegu kõik teised väärtused; `meta/main.yml`: metaandmed (autor, litsents, sõltuvused).
 
-Roll ei pea sisaldama kõiki katalooge, piisab neist, mida vaja. Näide nginx-rollile:
+Roll ei pea sisaldama kõiki kaustu, piisab neist, mida on vaja. Näide nginx'i rollist:
 
 ```
 roles/nginx/
@@ -66,32 +61,28 @@ roles/nginx/
 └── files/robots.txt
 ```
 
-Ansible teab ise, et `templates/nginx.conf.j2` kuulub rolli juurde ja `tasks/main.yml` tuleb käivitada. Sulle jääb sisu.
-
----
+Ansible teab ise, et `templates/nginx.conf.j2` kuulub rolli juurde ja et `tasks/main.yml` tuleb käivitada. Rolli kirjutaja ülesanne on failide sisu.
 
 ## 3. `ansible-galaxy init`: skelett ühe käsuga
 
-Kataloogide käsitsi loomine on tüütu ja veaohtlik. `ansible-galaxy init` genereerib kogu skeleti:
+Kaustade käsitsi loomine on tüütu ja selles tekib kergesti viga. Käsk `ansible-galaxy init` loob kogu skeleti ([Galaxy Developer Guide](https://docs.ansible.com/projects/ansible/latest/galaxy/dev_guide.html)):
 
 ```bash
 ansible-galaxy init nginx
 ```
 
-Loob `nginx/` kõigi standardsete alamkataloogidega. Iga `main.yml` on peaaegu tühi (päis + kommentaar). Otse projekti `roles/`-i:
+Käsk loob kausta `nginx/` kõigi standardsete alamkaustadega. Iga `main.yml` on peaaegu tühi (päis ja kommentaar). Rolli saab luua otse projekti kausta `roles/`:
 
 ```bash
 ansible-galaxy init --init-path roles/ nginx
 ```
 
 !!! warning
-    Kui sama nimega kataloog juba on, `init` keeldub üle kirjutamast. `--force` asendab, aga sellega **kaob kõik**, mis kaustas oli. Ära `--force`-i harjumusest.
+    Kui sama nimega kaust on juba olemas, keeldub `init` seda üle kirjutamast. Võti `--force` asendab kausta, aga siis kaob kõik, mis kaustas oli. Ära kasuta `--force` harjumusest.
 
----
+## 4. Rolli käivitamine: site.yml
 
-## 4. Rolli väljakutsumine: site.yml
-
-Rollist ei ole kasu, kui seda ei käivitata. Tavamuster: üks keskne `site.yml`, mis ütleb millised rollid millistele gruppidele rakenduvad:
+Roll hakkab tööle alles siis, kui playbook selle käivitab. Tavaliselt on projektis üks keskne `site.yml`, mis määrab, millised rollid millistele gruppidele rakenduvad:
 
 ```yaml
 # site.yml
@@ -107,7 +98,7 @@ Rollist ei ole kasu, kui seda ei käivitata. Tavamuster: üks keskne `site.yml`,
     - postgresql
 ```
 
-Ansible otsib rolle vaikimisi `roles/` kataloogist playbook'i kõrval, piisab rolli nimest, teed ei pea täpsustama. Muutuja saab anda playbook'i tasandil, mis kirjutab üle rolli `defaults/`:
+Ansible otsib rolle vaikimisi kaustast `roles/` playbook'i kõrval, seega piisab rolli nimest ja teed ei pea kirjutama. Playbook'i tasandil antud muutuja kirjutab üle rolli `defaults/` väärtuse. Milline väärtus võidab, kui sama muutuja on mitmes kohas, on kirjas tabelis [Variable precedence](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable).
 
 ```yaml
   roles:
@@ -116,7 +107,7 @@ Ansible otsib rolle vaikimisi `roles/` kataloogist playbook'i kõrval, piisab ro
         nginx_port: 8080
 ```
 
-Alternatiiv on `include_role`/`import_role` `tasks:` sees, kasulik kui roll tuleb käivitada tingimuslikult:
+Teine võimalus on `include_role` või `import_role` ploki `tasks:` sees. See on kasulik siis, kui roll tuleb käivitada tingimusel:
 
 ```yaml
 tasks:
@@ -125,17 +116,15 @@ tasks:
     when: env == "production"
 ```
 
----
-
 ## 5. Galaxy: kogukonna rollid
 
-Suur osa ülesandeid on standardne (nginx, Docker, PostgreSQL), keegi on need juba rolliks vorminud. Ansible Galaxy on avalik hoidla:
+Suur osa ülesandeid on standardsed (nginx, Docker, PostgreSQL) ja keegi on need juba rolliks kirjutanud. Ansible Galaxy on avalik rollide hoidla ([Galaxy User Guide](https://docs.ansible.com/projects/ansible/latest/galaxy/user_guide.html)):
 
 ```bash
 ansible-galaxy role install geerlingguy.nginx
 ```
 
-Mitu rolli korraga `requirements.yml`-iga (versioneeritud, korratav, sama mõte mis Compose `requirements.txt`):
+Mitu rolli korraga paigaldatakse failiga `requirements.yml`. Versioonid on failis kirjas ja paigaldust saab korrata, sama mõttega nagu Pythoni `requirements.txt`:
 
 ```yaml
 - name: geerlingguy.nginx
@@ -147,35 +136,21 @@ Mitu rolli korraga `requirements.yml`-iga (versioneeritud, korratav, sama mõte 
 ansible-galaxy install -r requirements.yml
 ```
 
-Enne kogukonna rolli kasutamist vaata millal viimati uuendati, kui palju allalaadimisi ja star'e. Vanem roll võib eeldada aegunud Ansible't või kasutada deprecated moodulit. Rangete turvanõuetega keskkonnas vaadatakse kolmanda osapoole rolli lähtekood **alati** üle enne tootmist, Galaxy roll ei ole automaatselt usaldusväärne lihtsalt sellepärast, et see on avalik. (Sama loogika mis suvalise `docker pull`-i puhul.)
+Enne kogukonna rolli kasutamist vaata, millal seda viimati uuendati ja kui palju on allalaadimisi. Vana roll võib eeldada aegunud Ansible'i versiooni või kasutada moodulit, mis on kasutusest kõrvaldatud. Rangete turvanõuetega keskkonnas vaadatakse kolmanda osapoole rolli lähtekood enne tootmisse viimist alati üle. Roll ei ole usaldusväärne ainult sellepärast, et see on avalik, sama kehtib suvalise `docker pull` käsu kohta.
 
-Millal ise, millal Galaxy: standardsete teenuste jaoks alusta Galaxy rollist ja kohanda `vars`-iga. Ettevõttespetsiifilise loogika (oma rakenduse deploy) jaoks kirjutad ise.
+Standardsete teenuste jaoks alusta Galaxy rollist ja kohanda seda muutujatega. Ettevõttele omase loogika (näiteks oma rakenduse paigalduse) jaoks kirjuta roll ise.
 
----
+Lehe käsud on kontrollitud Ansible core 2.17 versiooniga.
 
 ## Kokkuvõte
 
-- **Roll grupeerib tasks, vars, templates, handlers** struktureeritud kujul, lahendab loetamatu suure playbook'i
-- **Standardkataloogid:** `tasks/`, `defaults/`, `handlers/`, `templates/`, `files/`, `vars/`, `meta/`: piisab vajalikest
-- **`ansible-galaxy init`** genereerib skeleti; sina täidad sisu
-- **Rollid kutsutakse `roles:` loendiga** või `include_role`/`import_role`-ga; Ansible otsib `roles/`-ist
-- **Muutuja `vars:`-iga playbook'i tasandil** kirjutab üle rolli `defaults/`
-- **Galaxy pakub valmis rolle**: aga kolmanda osapoole roll vaadatakse enne tootmist üle
-- **Ise ettevõttespetsiifika jaoks, Galaxy'st standardteenuste jaoks**
+??? abstract "Kokkuvõte"
 
----
+    - Roll koondab ülesanded, muutujad, mallid ja handlerid kindlasse struktuuri ning teeb suure playbook'i loetavaks.
+    - Standardkaustad on `tasks/`, `defaults/`, `handlers/`, `templates/`, `files/`, `vars/` ja `meta/`; piisab neist, mida on vaja.
+    - `ansible-galaxy init` loob skeleti, sisu kirjutad ise.
+    - Roll käivitatakse loendiga `roles:` või `include_role`/`import_role` abil; Ansible otsib rolle kaustast `roles/`.
+    - Playbook'i tasandil `vars:` kirjutab üle rolli `defaults/`.
+    - Galaxy pakub valmis rolle, aga kolmanda osapoole roll vaadatakse enne tootmist üle.
 
-## Allikad
-
-| Allikas | URL |
-|---|---|
-| Ansible Roles | <https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html> |
-| ansible-galaxy init | <https://docs.ansible.com/projects/ansible/latest/galaxy/dev_guide.html> |
-| Galaxy User Guide | <https://docs.ansible.com/projects/ansible/latest/galaxy/user_guide.html> |
-| Variable precedence | <https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable> |
-
-**Versioonid (testitud, juuli 2026):** Ansible core 2.17.x.
-
----
-
-*Järgmine: labor, lood oma rolli nullist.*
+*Edasi: [praktikum](lab_ansible_roles.md), kus lood oma rolli nullist.*

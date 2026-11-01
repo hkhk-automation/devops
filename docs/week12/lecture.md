@@ -7,32 +7,30 @@ tags:
 
 # Loeng: terve serveripark koodina
 
+Nädalal 11 jagasid playbook'i rollideks. Selles loengus rakendad sama koodi mitmele serverile ja mitmele keskkonnale ning vaatad, kuidas Ansible ja Terraform koos töötavad.
 
----
-
-!!! abstract "Õpiväljundid"
+??? abstract "Õpiväljundid"
     Pärast loengut oskad:
 
-    - selgitada mis vahe on "playbook mis paigaldab nginx'i" ja "infrastruktuur koodina"
-    - kirjeldada kuidas üks playbook haldab mitut serverit korraga (inventory grupid)
-    - eristada `group_vars` ja `host_vars`: sama kood, erinev keskkond
-    - selgitada millal Ansible ja millal Terraform (ja miks mitte kumbki üksi)
+    - selgitada, mis vahe on playbook'il, mis paigaldab nginx'i, ja infrastruktuuril koodina;
+    - kirjeldada, kuidas üks playbook haldab inventory gruppide abil mitut serverit korraga;
+    - eristada `group_vars` ja `host_vars`: sama kood, erinev keskkond;
+    - selgitada, millal kasutada Ansible'it ja millal Terraformi ning miks kumbki üksi ei piisa.
 
----
+## 1. Mis on uut võrreldes nädalatega 3–4
 
-## 1. Nädalatel 3–4 tegid juba Ansible't. Mis siis uut?
+Nädalatel 3–4 kirjutasid playbook'i, mis paigaldas nginx'i ühte serverisse. See oli automatiseerimine, aga veel mitte infrastruktuur koodina (IaC).
 
-Nädalatel 3–4 kirjutasid playbook'i, mis paigaldas nginx'i **ühele** serverile. See oli automatiseerimine, aga veel mitte "infrastruktuur koodina".
+Vahe on ulatuses ja töökorralduses. Ühe serveri seadistamine on skript.
 
-Vahe on skaalas ja hoiakus. Üks server on skript. Kakskümmend serverit, kolmes keskkonnas (arendus, test, tootmine), kus iga keskkond on **koodis kirjeldatud** ja igaüks saab selle nullist üles ehitada sama failikomplektiga, see on IaC. Server ei ole enam "lemmikloom", keda käsitsi hooldad ja kelle kadumine on katastroof. Ta on "kariloom": kui üks katki, kustutad ja playbook ehitab identse asemele.
+IaC on see, kui kakskümmend serverit kolmes keskkonnas (arendus, test, tootmine) on koodis kirjeldatud ja igaüks saab need sama failikomplektiga nullist üles seada. Kogu teadmine serverite seadistusest on failides ja Gitis, seda saab lugeda ja korrata. Kui üks server läheb katki, kustutatakse see ja playbook seadistab identse asemele.
 
-Märten hooldas lemmikloomi. Igal serveril oli oma käsitsi tehtud eripära, mida ainult Märten teadis (ja pooli neist ka tema ei mäletanud). Kui server suri, suri temaga Märteni pähe salvestatud "kuidas see üles seati". IaC tähendab: kogu see teadmine on failides, Git-is, loetav ja korratav.
-
----
+??? info "Taust: *pets vs cattle*"
+    Inglise keeles kirjeldatakse sama vahet väljendiga *pets vs cattle*. Käsitsi hooldatud server on nagu lemmikloom: tal on eripärad, mida teab ainult üks inimene, ja tema kadumine on suur probleem. Koodiga kirjeldatud server on asendatav: kui see läheb katki, luuakse koodi järgi uus.
 
 ## 2. Üks playbook, mitu serverit
 
-Seni oli `inventory.ini`-s üks host. Töökohas on neid mitu, gruppidena:
+Seni oli failis `inventory.ini` üks host. Töökohas on hoste mitu ja need on jagatud gruppidesse ([How to build your inventory](https://docs.ansible.com/projects/ansible/latest/inventory_guide/intro_inventory.html)):
 
 ```ini
 [web]
@@ -47,7 +45,7 @@ web
 db
 ```
 
-`[web]` ja `[db]` on grupid. `[production:children]` on **grupp gruppidest**. Playbook ütleb `hosts: web` ja jookseb korraga **kõigil** web-serveritel (sama task, kakskümmend masinat, üks käsk. Nädalal 1 küsisid "aga mis siis kui masinaid on 50?") see ongi vastus.
+`[web]` ja `[db]` on grupid. `[production:children]` on **grupp gruppidest**. Kui playbook'is on `hosts: web`, käivitub see korraga kõigis veebiserverites: sama ülesanne, kakskümmend masinat, üks käsk. See on vastus nädala 1 küsimusele, mis saab siis, kui masinaid on 50.
 
 <figure markdown="span">
 ```mermaid
@@ -61,84 +59,65 @@ graph TD
   <figcaption>Joonis 12.1. Üks playbook rakendub kõigile grupi hostidele; group_vars annab neile ühised muutujad (Talvik, 2025).</figcaption>
 </figure>
 
----
-
 ## 3. group_vars ja host_vars: sama kood, erinev keskkond
 
-Kood on kõigil serveritel sama. Aga arendusserver ei tohi kasutada tootmise parooli, ega testserver tootmise domeeni. Kuidas hoida **üks** playbook, aga anda igale keskkonnale **omad väärtused**?
+Kood on kõigis serverites sama. Arendusserver ei tohi aga kasutada tootmise parooli ja testserver ei tohi kasutada tootmise domeeni. Üks playbook peab andma igale keskkonnale omad väärtused.
 
-Ansible loeb muutujad automaatselt failinime järgi:
+Ansible loeb muutujad failinime järgi automaatselt ([Organizing host and group variables](https://docs.ansible.com/projects/ansible/latest/inventory_guide/intro_inventory.html#organizing-host-and-group-variables)):
 
-- `group_vars/web.yml`: rakendub kõigile `[web]` grupi hostidele
-- `group_vars/all.yml`: rakendub kõigile (nägid nädalal 4)
-- `host_vars/web1.example.com.yml`: rakendub **ainult** sellele ühele hostile
+- `group_vars/web.yml` rakendub kõigile grupi `[web]` hostidele;
+- `group_vars/all.yml` rakendub kõigile hostidele (nägid seda nädalal 4);
+- `host_vars/web1.example.com.yml` rakendub ainult sellele ühele hostile.
 
-Nii et sama `site.yml` + `roles:` annab arenduses ühe pordi ja tootmises teise, ilma et koodis midagi muudaks. Muutub ainult see, milline `group_vars` fail kehtib. Meenuta nädal 4: siis panid muutujad `group_vars/all.yml`-i ühele masinale. Sama mehaanika, nüüd mitmele.
+Seega annab sama `site.yml` koos rollidega arenduses ühe pordi ja tootmises teise, ilma et koodis midagi muutuks. Muutub ainult see, milline `group_vars` fail kehtib. Nädalal 4 panid muutujad faili `group_vars/all.yml` ühe masina jaoks. Mehhanism on sama, nüüd mitme masina jaoks.
 
-See on IaC tuum: **kood kirjeldab struktuuri, muutujad kirjeldavad keskkonda.** Vaheta `group_vars`, saad teise keskkonna, kood puutumata.
+IaC põhimõte on see, et kood kirjeldab struktuuri ja muutujad kirjeldavad keskkonda. Kui vahetad `group_vars` faili, saad teise keskkonna ja kood jääb puutumata.
 
----
+## 4. Idempotentsus infrastruktuuri tasemel
 
-## 4. Idempotentsus infra tasemel
+Nädalal 3 nägid [idempotentsust](https://docs.ansible.com/projects/ansible/latest/reference_appendices/glossary.html#term-Idempotency) ühe ülesande tasemel: `changed` või `ok`. Infrastruktuuri tasemel on sama põhimõte veel kasulikum.
 
-Nädalal 3 nägid idempotentsust ühe task'i tasemel: `changed` vs `ok`. Infra tasemel on sama põhimõte võimsam.
+Kui kogu serveripargi soovitud olek on kirjeldatud playbook'is, on playbook'i käivitamine ühtlasi kontroll. `changed=0` kõigis hostides tähendab, et kõik serverid on täpselt sellises olekus, nagu kood kirjeldab. Kui ühes hostis on `changed=3`, on keegi või miski seda serverit käsitsi muutnud ja Ansible taastas koodis kirjeldatud oleku.
 
-Kui kogu su serveripargi seis on kirjeldatud playbook'is, siis playbook'i jooksutamine on **tervisekontroll**. `changed=0` kõigil hostidel tähendab: kõik serverid on täpselt sellises seisus nagu kood ütleb. Kui üks host näitab `changed=3`, tähendab keegi (või miski) muutis seda käsitsi, ja Ansible **parandas selle tagasi** koodis kirjeldatud seisu.
+Nii leitakse ja parandatakse **triiv** (*configuration drift*). Triiv tähendab, et serveri tegelik olek on aja jooksul soovitud olekust erinema hakanud. Käsitsi hooldatud pargis lähevad serverid aeglaselt üksteisest lahku: üks sai turvapaiga, teine mitte, kolmandas muudeti konfiguratsioonifaili käsitsi. Keegi ei märka seda enne, kui midagi läheb katki.
 
-See on "configuration drift" avastamine ja parandamine ühe käsuga. Käsitsi hooldatud pargis triivivad serverid aeglaselt lahku (üks sai turvapaiga, teine mitte, kolmandal keegi näppis konfi öösel), ja keegi ei tea, enne kui midagi katki. IaC-ga jooksutad playbook'i cron'is ja drift parandub ise.
+IaC-ga saab playbook'i käivitada näiteks cron'iga ja triiv parandatakse automaatselt.
 
----
+## 5. Ansible ja Terraform: millal kumbki
 
-## 5. Ansible vs Terraform: millal kumbki?
+Nädalatel 10–11 kasutasid Terraformi. Nüüd kasutad Ansible'it samuti infrastruktuuri kirjeldamiseks.
 
-Nädalatel 10–11 nägid Terraformi. Nüüd Ansible sama "infra koodina" lipu all. Millal kumb?
+Tööriistad teevad eri asju ja töökohtades kasutatakse neid sageli koos. Võrdlust saab lugeda ka HashiCorpi lehelt [Terraform vs. Chef, Puppet, etc.](https://developer.hashicorp.com/terraform/intro/vs/chef-puppet).
 
-Lühivastus: nad teevad **eri asju** ja meeskonnad töökohtades kasutavad **mõlemat koos**.
+??? note "Terraform ja Ansible kõrvuti"
 
-| | Terraform | Ansible |
-|---|---|---|
-| Mida teeb | **Loob** infra (VM, võrk, ketas) | **Seadistab** olemasolevat (paketid, konfid, teenused) |
-| Küsimus | "Mis serverid **eksisteerivad**?" | "Mis on serverite **sees**?" |
-| Mudel | Deklaratiivne, hoiab state-faili | Deklaratiivne, state'i ei hoia |
-| Näide | Loo 3 VM-i pilve | Paigalda neile nginx |
+    | | Terraform | Ansible |
+    |---|---|---|
+    | Mida teeb | Loob infrastruktuuri (VM, võrk, ketas) | Seadistab olemasolevat (paketid, konfiguratsioonifailid, teenused) |
+    | Küsimus | „Millised serverid on olemas?“ | „Mis on serverite sees?“ |
+    | Mudel | Deklaratiivne, hoiab olekufaili | Deklaratiivne, olekufaili ei hoia |
+    | Näide | Loo pilve 3 VM-i | Paigalda neisse nginx |
 
-Terraform ehitab tühjad masinad (provisioning). Ansible paneb neisse sisu (configuration). Tüüpiline voog: Terraform loob 3 VM-i → väljastab nende IP-d → Ansible võtab need IP-d inventory'sse ja seadistab. Kumbki üksi jätab poole tööst tegemata: Terraform annab tühja serveri, Ansible eeldab et server juba on.
+Terraform loob tühjad masinad (*provisioning*), Ansible seadistab need (*configuration*). Tavaline töövoog: Terraform loob 3 VM-i ja väljastab nende IP-aadressid, Ansible kasutab neid IP-aadresse inventory's ja seadistab masinad. Kumbki üksi jätab poole tööst tegemata: Terraform annab tühja serveri ja Ansible eeldab, et server on juba olemas.
 
-!!! example "Näidisstsenaarium"
-    Märten kuulis, et "Terraform on parem" ja kirjutas Terraformiga ka nginx-i konfi (`local-exec` provisioner'itega, mis jooksutavad bash-i). See töötas, nagu kruvikeeraja töötab haamrina, kui väga tahad. Kuus kuud hiljem ei saanud keegi aru, miks pool konfist on Terraformis ja pool käsitsi. Tööriist tuleb valida töö järgi, mitte kuulujutu järgi.
+Terraformiga saab ka serveri sisu seadistada (`local-exec` provisioner'id, mis käivitavad Bashi käske), aga siis on konfiguratsioon jagatud kahe tööriista vahel ja seda on raske hallata. Tööriist tuleb valida töö järgi.
 
----
+## 6. Miks see töökohas oluline on
 
-## 6. Miks see tööl oluline
+DevOpsi meeskonnas ei logita 20 serverisse käsitsi sisse. Server on koodis kirjeldatud, muudatus tehakse pull request'iga (nädal 2), CI kontrollib seda (nädal 7) ja playbook rakendab muudatuse. Uus töötaja saab serveri seadistuse teada failist `site.yml`. Kui server läheb katki, seadistab playbook uue.
 
-DevOps-meeskonnas ei logi keegi 20 serverisse käsitsi. Server on koodis kirjeldatud, muudatus käib PR-ina (nädal 2!), CI kontrollib (nädal 7), ja playbook rakendab. Kui uus inimene tuleb, ei küsi ta "kuidas see server üles seati" (ta loeb `site.yml`-i. Kui server sureb, ei paanika keegi) playbook ehitab uue.
+See ühendab kogu kursuse: käsitsi tehtud ja dokumenteerimata teadmine on asendatud koodiga, mida terve meeskond näeb, versioonib ja üle vaatab.
 
-See on kogu kursuse mõte ühes kohas: Märteni pähe salvestatud, käsitsi tehtud, dokumenteerimata teadmine on asendatud koodiga, mida terve meeskond näeb, versioonib ja usaldab.
-
----
+Lehe käsud on kontrollitud Ansible core 2.17 versiooniga.
 
 ## Kokkuvõte
 
-- **IaC ≠ üks playbook**: see on kogu serverpargi seisu kirjeldamine koodis, korratav ja versioneeritud
-- **Üks playbook, mitu hosti**: inventory grupid, `hosts: web` jookseb kõigil
-- **group_vars / host_vars**: sama kood, erinev keskkond; muutub ainult muutujafail
-- **Idempotentsus infra tasemel**: `changed=0` on tervisekontroll, drift parandub ise
-- **Ansible seadistab, Terraform loob**: töökohas mõlemad koos, tööriist töö järgi
-- Server on kariloom, mitte lemmikloom: surm ei ole katastroof, kui seis on koodis
+??? abstract "Kokkuvõte"
 
----
+    - IaC ei ole üks playbook, vaid kogu serveripargi oleku kirjeldus koodis, mida saab korrata ja versioonida.
+    - Üks playbook, mitu hosti: inventory grupid, `hosts: web` käivitub kõigis grupi hostides.
+    - `group_vars` ja `host_vars`: sama kood, erinev keskkond; muutub ainult muutujafail.
+    - Idempotentsus infrastruktuuri tasemel: `changed=0` näitab, et triivi ei ole, ja triiv parandatakse automaatselt.
+    - Ansible seadistab, Terraform loob; töökohas kasutatakse mõlemat koos.
 
-## Allikad
-
-| Allikas | URL |
-|---|---|
-| Ansible inventory | <https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html> |
-| group_vars / host_vars | <https://docs.ansible.com/ansible/latest/playbook_guide/intro_inventory.html#organizing-host-and-group-variables> |
-| Ansible vs Terraform | <https://developer.hashicorp.com/terraform/intro/vs/chef-puppet> |
-| Idempotency (glossary) | <https://docs.ansible.com/ansible/latest/reference_appendices/glossary.html> |
-
-**Versioonid (testitud, juuli 2026):** Ansible core 2.17.x.
-
----
-
-*Järgmine: laboris laiendad ühe serveri playbook'i mitmele hostile, eraldad keskkonnad group_vars'iga ja võrdled Ansible't Terraformiga.*
+*Edasi: [praktikum](lab.md), kus laiendad ühe serveri playbook'i mitmele hostile, eraldad keskkonnad `group_vars` abil ja võrdled Ansible'it Terraformiga.*

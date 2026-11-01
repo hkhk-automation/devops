@@ -8,47 +8,38 @@ tags:
 
 # Praktikum: terve serveripark koodina
 
-**Eeldused:** Loeng antud (inventory grupid, group_vars/host_vars, idempotentsus infra tasemel, Ansible vs Terraform). Nädalad 3–4 (playbook, muutujad, Vault), nädal 11 (rollid, `site.yml`). Kui udu, [tagasi loengusse](lecture.md). Siit edasi **ainult käed külge**.
+Loengus nägid inventory gruppe, faile `group_vars` ja `host_vars`, idempotentsust infrastruktuuri tasemel ning Ansible'i ja Terraformi võrdlust. Selles praktikumis võtad nädala 11 faili `site.yml` ja nginx'i rolli ning laiendad need ühelt serverilt serveripargile. Vahepeal tekitad kolm tahtlikku viga: host ei kuulu gruppi, muutuja on vales failis ja server on käsitsi muudetud. Kui loengu teemad on veel segased, loe uuesti [loengut](lecture.md).
 
-**Kontroll-node:** sinu arvuti, **VS Code**. `site.yml` ja `roles/` nädalast 11.
-**Sihtmärk:** sinu valik (vt [Töökeskkond](../kodulabor.md)), täna vajad **kahte** hosti. Kodus: kaks VM-i / kaks WSL-i / üks masin kahe kasutajaga. Koolis: kaks Proxmox VM-i. Vahe kooli/kodu vahel on ikka üks asi: `inventory.ini` read.
+Juhtmasin on sinu arvuti ja töötad VS Code'is. `site.yml` ja `roles/` on nädalast 11. Sihtmasina vali [töökeskkonna](../kodulabor.md) juhendi järgi.
 
----
+Täna on vaja kahte hosti: kodus kaks VM-i, kaks WSL-i või üks masin kahe kasutajaga, koolis kaks Proxmoxi VM-i. Kodu ja kooli vahel erinevad ainult faili `inventory.ini` read.
 
-!!! abstract "Õpiväljundid"
+??? abstract "Õpiväljundid"
 
-    Selle labi lõpuks sa:
+    Selle praktikumi lõpuks oskad:
 
-    1. Laiendad ühe hosti playbook'i mitmele hostile inventory gruppidega
-    2. Eraldad kaks keskkonda `group_vars`-iga: **sama kood**, erinevad väärtused
-    3. **Leiad** kolme vea põhjuse: host ei kuulu gruppi, muutuja vales failis, drift
-    4. Tekitad käsitsi drifti ja lased Ansible'il selle parandada (`changed` räägib)
-    5. Võrdled Ansible't ja Terraformi konkreetse töö peal, mitte definitsioonist
+    1. laiendada ühe hosti playbook'i inventory gruppide abil mitmele hostile;
+    2. eraldada kaks keskkonda `group_vars` abil: sama kood, erinevad väärtused;
+    3. leida kolme vea põhjuse: host ei kuulu gruppi, muutuja on vales failis, server on triivinud;
+    4. tekitada käsitsi triivi ja lasta Ansible'il see parandada (`changed` näitab muudatust);
+    5. võrrelda Ansible'it ja Terraformi tehtud töö põhjal.
 
----
+## Osa 1 · Lähtepunkt: üks host töötab
 
-Labi loogika: **baas (üks host) → laienda (mitu hosti) → viga → paranda → laienda (group_vars) → viga → drift → taasta.** Sa ei alusta nullist, võtad nädal 11 `site.yml` + nginx-rolli ja kasvatad selle ühe serveri asjast serveripargi asjaks. Fragmendid, mitte terve fail.
-
----
-
-## Osa 1 · Baas: üks host töötab (kordus nädalast 11)
-
-Ava nädal 11 töökaust (`~/ansible-lab`) VS Code'is. Kontrolli et eelmine töö jookseb:
+Ava nädala 11 töökaust (`~/ansible-lab`) VS Code'is. Kontrolli, et eelmine töö käivitub:
 
 ```bash
 cd ~/ansible-lab
 ansible-playbook -i inventory.ini site.yml
 ```
 
-Läbib, `curl http://<host>` näitab su nginx-lehte? Edasi. Ei? Paranda enne, see labi ehitab otse selle peale.
+Kui playbook lõpeb vigadeta ja `curl http://<host>` näitab sinu nginx'i lehte, liigu edasi. Kui ei, paranda see enne, sest kogu praktikum põhineb sellel.
 
-Vaata praegust `inventory.ini`-t, üks host, üks rida. Täna teeme sellest pargi.
+Praegu on failis `inventory.ini` üks host ja üks rida. Täna teed sellest serveripargi.
 
----
+## Osa 2 · Teine host gruppi
 
-## Osa 2 · Laienda: teine host gruppi
-
-Lisa `inventory.ini`-sse **grupp** ja **teine host**:
+Lisa faili `inventory.ini` grupp ja teine host. Inventory süntaks on kirjas lehel [How to build your inventory](https://docs.ansible.com/projects/ansible/latest/inventory_guide/intro_inventory.html).
 
 ```ini
 [web]
@@ -56,7 +47,7 @@ Lisa `inventory.ini`-sse **grupp** ja **teine host**:
 <host2> ansible_user=<kasutaja>
 ```
 
-Muuda `site.yml` sihtima gruppi (mitte `all`):
+Muuda faili `site.yml` nii, et see sihib gruppi (mitte `all`):
 
 ```yaml
 - hosts: web
@@ -65,19 +56,22 @@ Muuda `site.yml` sihtima gruppi (mitte `all`):
     - nginx
 ```
 
-Testi ühendust **mõlemaga** enne playbook'i:
+Enne playbook'i käivitamist kontrolli ühendust mõlema hostiga:
 
 ```bash
 ansible web -i inventory.ini -m ping
 ```
 
-Kaks `SUCCESS` + `pong`. Nüüd jooksuta:
+Mõlemad hostid peavad vastama `SUCCESS` ja `pong`. Seejärel käivita playbook:
 
 ```bash
 ansible-playbook -i inventory.ini site.yml
 ```
 
-Vaata `PLAY RECAP`: **kaks hosti**, mõlemal task'id. Üks käsk, kaks serverit. Kontrolli mõlemat:
+??? warning "Kui ühes hostis on `UNREACHABLE`"
+    Teine host ei tööta või SSH-ühendus ei toimi. Kontrolli käsuga `ansible <grupp> -m ping` ja paranda selle hosti rida failis `inventory.ini`.
+
+Kokkuvõttes `PLAY RECAP` on kaks hosti ja mõlemas käivitusid ülesanded. Üks käsk seadistas kaks serverit. Kontrolli mõlemat:
 
 ```bash
 curl http://<host1>
@@ -85,13 +79,11 @@ curl http://<host2>
 ```
 
 ??? question "Mõtle"
-    Sa ei muutnud rolli ega task'e, ainult inventory't ja `hosts:` rida. Miks piisas sellest, et kaks serverit saaks identse seadistuse? Kui hoste oleks 50, mitu rida sa muudaksid?
-
----
+    Sa ei muutnud rolli ega ülesandeid, ainult inventory't ja rida `hosts:`. Miks piisas sellest, et kaks serverit said identse seadistuse? Mitu rida muudaksid, kui hoste oleks 50?
 
 ## Osa 3 · Viga: host ei kuulu gruppi
 
-Lisa `inventory.ini`-sse kolmas host, aga **meelega grupi plokist väljapoole** (faili algusesse, enne `[web]` rida):
+Lisa faili `inventory.ini` kolmas host, aga tahtlikult grupi plokist välja (faili algusesse, enne rida `[web]`):
 
 ```ini
 <host3> ansible_user=<kasutaja>
@@ -101,35 +93,33 @@ Lisa `inventory.ini`-sse kolmas host, aga **meelega grupi plokist väljapoole** 
 <host2> ansible_user=<kasutaja>
 ```
 
-Jooksuta:
+Käivita playbook:
 
 ```bash
 ansible-playbook -i inventory.ini site.yml
 ```
 
-`PLAY RECAP` näitab ikka **kahte** hosti. `<host3>` jäi vahele, nginx sinna ei paigaldatud, aga viga ka ei antud. Vaikne möödaminek.
+`PLAY RECAP` näitab endiselt kahte hosti. `<host3>` jäi vahele ja nginx'i sinna ei paigaldatud, aga Ansible ei andnud ka viga.
 
 ??? question "Leia põhjus enne parandamist"
-    `site.yml` ütleb `hosts: web`. Host, mis on kirjas **enne** esimest `[grupp]` rida, kuulub Ansible's erigruppi `ungrouped`: mitte `web`-i. Miks on see vaikne (ei anna viga) ohtlikum kui vali viga? Kus töökohas tähendaks "üks server jäi seadistamata, aga keegi ei märganud"?
+    `site.yml` sihib gruppi `web`. Host, mis on kirjas enne esimest rida `[grupp]`, kuulub Ansible'is erigruppi `ungrouped`, mitte gruppi `web`. Miks on selline vaikne vahelejätmine ohtlikum kui veateade? Mida tähendaks töökohas, et üks server jäi seadistamata ja keegi ei märganud?
 
-Kontrolli kellele playbook rakendub:
+Kontrolli, millistele hostidele playbook rakendub:
 
 ```bash
 ansible web -i inventory.ini --list-hosts
 ```
 
-`<host3>` ei ole loendis. **Paranda**: vii `<host3>` rida `[web]` ploki **sisse**. Jooksuta, `PLAY RECAP` = kolm hosti.
+`<host3>` ei ole loendis. Paranda viga: vii `<host3>` rida ploki `[web]` sisse. Käivita playbook uuesti, nüüd on `PLAY RECAP` kokkuvõttes kolm hosti.
 
 !!! tip
-    `ansible <grupp> --list-hosts` on su sõber iga kord kui kahtled, kellele playbook mõjub. Kontrolli **enne** jooksutamist, mitte pärast, kui tootmises 50 serverit said valesid muudatusi.
+    Käsk `ansible <grupp> --list-hosts` näitab, millistele hostidele playbook rakendub. Kontrolli seda enne käivitamist, mitte pärast seda, kui 50 tootmisserverit said vale muudatuse.
 
----
+## Osa 4 · Kaks keskkonda `group_vars` abil
 
-## Osa 4 · Laienda: kaks keskkonda group_vars'iga
+Praegu on kõik hostid ühesugused. Töökohas on tavaliselt eraldi tootmise grupp ja testimise grupp (`staging`) erinevate väärtustega. Teed kaks keskkonda sama koodiga.
 
-Praegu on kõik hostid ühesugused. Töökohas on `web` grupp tootmine ja sul on eraldi `staging` grupp teiste väärtustega. Teeme kaks keskkonda, **sama koodiga**.
-
-Muuda `inventory.ini` kaheks grupiks:
+Muuda fail `inventory.ini` kaheks grupiks:
 
 ```ini
 [production]
@@ -139,7 +129,7 @@ Muuda `inventory.ini` kaheks grupiks:
 <host2> ansible_user=<kasutaja>
 ```
 
-Loo muutujafailid (Ansible loeb nimede järgi automaatselt, meenuta nädal 4):
+Loo muutujafailid. Ansible loeb need nime järgi automaatselt nagu nädalal 4 ([Organizing host and group variables](https://docs.ansible.com/projects/ansible/latest/inventory_guide/intro_inventory.html#organizing-host-and-group-variables)).
 
 `group_vars/production.yml`:
 
@@ -155,13 +145,13 @@ keskkond: "STAGING"
 nginx_port: 80
 ```
 
-Kasuta muutujat rolli mallis. Ava `roles/nginx/templates/index.html.j2`, lisa rida:
+Kasuta muutujat rolli mallis. Ava `roles/nginx/templates/index.html.j2` ja lisa rida:
 
 ```jinja2
 <p>Keskkond: {{ keskkond }}</p>
 ```
 
-Sihi `site.yml` mõlemale grupile:
+Muuda faili `site.yml` nii, et see sihib mõlemat gruppi:
 
 ```yaml
 - hosts: production, staging
@@ -170,7 +160,7 @@ Sihi `site.yml` mõlemale grupile:
     - nginx
 ```
 
-Jooksuta, kontrolli mõlemat:
+Käivita playbook ja kontrolli mõlemat hosti:
 
 ```bash
 ansible-playbook -i inventory.ini site.yml
@@ -178,16 +168,17 @@ curl http://<host1>
 curl http://<host2>
 ```
 
-`<host1>` ütleb "TOOTMINE", `<host2>` "STAGING", **sama roll, sama mall, sama playbook**, erineb ainult see, mis `group_vars` fail hostile kehtib.
+`<host1>` näitab „TOOTMINE“ ja `<host2>` näitab „STAGING“. Roll, mall ja playbook on samad, erineb ainult see, milline `group_vars` fail hostile kehtib.
+
+??? warning "Kui tuleb viga `'keskkond' is undefined`"
+    `group_vars` kaust on vales kohas või faili nimi ei ole sama mis grupi nimi. Kaust `group_vars` peab olema faili `inventory.ini` kõrval ja faili nimi täpselt sama mis grupp.
 
 ??? question "Mõtle"
-    Sa ei teinud rollist kaht koopiat. Kood on üks. Kui tahaksid kolmandat keskkonda (`dev`), mitu **koodifaili** peaksid muutma vs mitu **muutujafaili** looma? Selles vahes ongi IaC mõte.
-
----
+    Sa ei teinud rollist kahte koopiat, kood on üks. Kui tahaksid kolmandat keskkonda (`dev`), mitu koodifaili peaksid muutma ja mitu muutujafaili looma? Selles vahes ongi IaC mõte.
 
 ## Osa 5 · Viga: muutuja vales failis
 
-Tahad, et **ainult** tootmises oleks eraldi hoiatustekst. Lisa see **meelega valesse kohta**: `group_vars/all.yml`-i (mis rakendub kõigile), mitte `production.yml`-i:
+Hoiatustekst peab olema ainult tootmises. Lisa see tahtlikult valesse kohta: faili `group_vars/all.yml`, mis rakendub kõigile hostidele, mitte faili `production.yml`.
 
 Loo `group_vars/all.yml`:
 
@@ -195,13 +186,13 @@ Loo `group_vars/all.yml`:
 hoiatus: "PISUT ETTEVAATLIK - TOOTMISKESKKOND"
 ```
 
-Lisa mallile:
+Lisa mallile rida:
 
 ```jinja2
 <p>{{ hoiatus }}</p>
 ```
 
-Jooksuta, vaata mõlemat:
+Käivita playbook ja vaata mõlemat hosti:
 
 ```bash
 ansible-playbook -i inventory.ini site.yml
@@ -209,21 +200,19 @@ curl http://<host1>
 curl http://<host2>
 ```
 
-Hoiatus ilmub **mõlemale**: ka stagingule, kuhu see ei kuulu.
+Hoiatus on mõlemas hostis, ka testkeskkonnas, kuhu see ei kuulu.
 
 ??? question "Leia põhjus enne parandamist"
-    `group_vars/all.yml` rakendub **kõigile** hostidele, sõltumata grupist. Sa tahtsid ainult tootmist. Mis failinimi paneks muutuja kehtima ainult `[production]` grupile? (Vihje: sama loogika mis `web.yml` → `[web]`.)
+    `group_vars/all.yml` rakendub kõigile hostidele, sõltumata grupist. Milline failinimi paneks muutuja kehtima ainult grupile `[production]`? (Vihje: sama loogika nagu `web.yml` → `[web]`.)
 
-**Paranda**: vii `hoiatus` rida `all.yml`-ist `production.yml`-i. Kustuta `all.yml` (või jäta tühjaks). Jooksuta, kontrolli, hoiatus ainult `<host1>`-l.
+Paranda viga: vii rida `hoiatus` failist `all.yml` faili `production.yml`. Kustuta `all.yml` või jäta see tühjaks. Käivita playbook ja kontrolli, et hoiatus on ainult hostis `<host1>`.
 
 !!! tip
-    Muutuja "ilmub kohta, kus ei peaks" = kontrolli **millises** `group_vars` failis ta on. `all.yml` = kõik, `<grupp>.yml` = ainult see grupp, `host_vars/<host>.yml` = ainult see host. Kolm taset, kolm ulatust.
+    Kui muutuja on seal, kus seda ei peaks olema, kontrolli, millises `group_vars` failis see on. `all.yml` kehtib kõigile, `<grupp>.yml` ainult sellele grupile ja `host_vars/<host>.yml` ainult sellele hostile.
 
----
+## Osa 6 · Triiv: Ansible parandab käsitsi tehtud muudatuse
 
-## Osa 6 · Drift: Ansible parandab käsitsi rikutu
-
-Nüüd IaC võimsaim hetk. Su serverid on koodis kirjeldatud seisus. Mängi Märtenit, mine käsitsi ühte serverisse ja **riku** midagi:
+Serverid on praegu koodis kirjeldatud olekus. Logi käsitsi ühte serverisse ja riku seal midagi:
 
 ```bash
 ssh <kasutaja>@<host1>
@@ -232,49 +221,50 @@ sudo systemctl stop nginx
 exit
 ```
 
-Server on nüüd "triivinud", keegi (sina) muutis teda käsitsi, ta ei vasta enam koodis kirjeldatud seisule:
+Server on nüüd triivinud: seda muudeti käsitsi ja see ei vasta enam koodis kirjeldatud olekule.
 
 ```bash
 curl http://<host1>
 ```
 
-Ei vasta. Nüüd **ära paranda käsitsi**. Jooksuta lihtsalt playbook:
+Server ei vasta. Ära paranda seda käsitsi, käivita ainult playbook:
 
 ```bash
 ansible-playbook -i inventory.ini site.yml
 ```
 
-Vaata `PLAY RECAP`: `<host1>` näitab **changed** (Ansible märkas, et fail puudu ja teenus maas, ja parandas), `<host2>` näitab **ok** (tema oli korras, teda ei puututud).
+Vaata kokkuvõtet `PLAY RECAP`: `<host1>` näitab `changed` (Ansible leidis, et fail puudub ja teenus ei tööta, ning parandas need) ja `<host2>` näitab `ok` (see oli korras ja seda ei muudetud).
 
 ```bash
 curl http://<host1>
 ```
 
-Vastab jälle. Sa ei öelnud Ansible'ile "pane fail tagasi, käivita teenus", ta **võrdles** tegelikku seisu koodiga ja parandas vahe ise.
+Server vastab jälle. Sa ei andnud Ansible'ile käsku faili tagasi panna ega teenust käivitada. Ansible võrdles tegelikku olekut koodiga ja parandas erinevuse.
+
+??? warning "Kui triiv ei parane"
+    Playbook'is puudub `become: true` või roll ei halda seda faili. Kontrolli rolli ülesandeid ja `become` rida.
 
 ??? question "Mõtle"
-    Kujuta et see playbook jookseb cron'is iga tund. Mida tähendaks, kui hommikul näed `changed=5` ühel serveril, kuigi keegi ei tohtinud midagi muuta? Ja mida tähendaks, kui kõik on alati `changed=0`? Kumb number on turvasignaal?
+    Playbook käivitub cron'iga iga tund. Mida tähendab, kui hommikul on ühes serveris `changed=5`, kuigi keegi ei tohtinud midagi muuta? Mida tähendab, kui kõik on alati `changed=0`? Kumb number on turvasignaal?
 
----
+## Osa 7 · `host_vars`: ühe hosti erisus
 
-## Osa 7 · host_vars: üks host, oma erisus
+Mõnikord vajab üks server erisust (näiteks teist porti), ilma et terve grupp muutuks. Selleks on `host_vars`.
 
-Vahel vajab **üks konkreetne** server erisust (nt teine port), ilma et terve grupp muutuks. Selleks on `host_vars`.
-
-Loo `host_vars/<host2>.yml` (failinimi = hosti nimi täpselt nagu inventory's):
+Loo `host_vars/<host2>.yml` (failinimi on täpselt sama mis hosti nimi inventory's):
 
 ```yaml
 nginx_port: 80
 erimärkus: "See host on ainuke, millel on eriseade"
 ```
 
-Lisa mallile:
+Lisa mallile rida:
 
 ```jinja2
 {% if erimärkus is defined %}<p>{{ erimärkus }}</p>{% endif %}
 ```
 
-Jooksuta, kontrolli:
+Käivita playbook ja kontrolli:
 
 ```bash
 ansible-playbook -i inventory.ini site.yml
@@ -282,72 +272,41 @@ curl http://<host1>
 curl http://<host2>
 ```
 
-Erimärkus ainult `<host2>`-l, `host_vars` on kitsam kui `group_vars`. `{% if ... is defined %}` hoiab ära vea seal, kus muutujat pole (meenuta Jinja2 nädalast 4).
+Erimärkus on ainult hostis `<host2>`, sest `host_vars` on kitsam kui `group_vars`. Tingimus `{% if ... is defined %}` hoiab ära vea hostis, kus muutujat ei ole (Jinja2, nädal 4).
+
+??? warning "Kui `host_vars` ei rakendu"
+    Failinimi ei ole sama mis hosti nimi inventory's. Nimi peab klappima täht-tähelt.
 
 ??? question "Mõtle"
-    Kolm ulatust: `all.yml` (kõik) → `<grupp>.yml` (grupp) → `host_vars/<host>.yml` (üks). Kui sama muutuja on kõigis kolmes eri väärtusega, kumb võidab? Miks on selline "kitsam võidab" loogika mõistlik?
+    Ulatusi on kolm: `all.yml` (kõik), `<grupp>.yml` (grupp) ja `host_vars/<host>.yml` (üks host). Kui sama muutuja on kõigis kolmes erineva väärtusega, milline võidab? Kontrolli vastust tabelist [Variable precedence](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable). Miks on mõistlik, et kitsam ulatus võidab?
 
----
+## Osa 8 · Ansible ja Terraform: võrdlus tehtud töö põhjal
 
-## Osa 8 · Ansible vs Terraform: võrdlus töö peal
+Nädalatel 10–11 kasutasid Terraformi, nüüd Ansible'it. Selles osas võrdled tööriistu oma tehtud töö põhjal. Taustaks sobib HashiCorpi leht [Terraform vs. Chef, Puppet, etc.](https://developer.hashicorp.com/terraform/intro/vs/chef-puppet).
 
-Nädalatel 10–11 tegid Terraformi. Nüüd Ansible. Aeg mõista, **millal kumb**: mitte definitsioonist, vaid oma käega tehtu põhjal.
+Loo repositooriumisse fail `docs/week12/vordlus.md` (mitte sihtmasinasse) ja vasta küsimustele.
 
-Loo repo-sse fail `docs/week12/vordlus.md` (mitte sihtmärgile) ja vasta:
+**Küsimus 1:** Sa just paigaldasid Ansible'iga nginx'i kahte serverisse. Kust need serverid **tulid**: kas Ansible lõi need või olid need juba olemas ja Ansible seadistas nende **sisu**? Milline tööriist oleks serverid ise **loonud**?
 
-**Küsimus 1:** Sa just paigaldasid nginx'i kahele serverile Ansible'iga. Kust need serverid **tulid**: kas Ansible lõi need, või olid nad juba olemas ja Ansible läks nende **sisse**? Mis tööriist oleks serverid ise **loonud**?
+**Küsimus 2:** Terraform hoiab olekufaili (mäletab, mida ta lõi). Ansible ei hoia. Miks ei vaja Ansible idempotentsuseks olekufaili ja mida ta selle asemel iga kord teeb? (Vihje: osa 6, triiv.)
 
-**Küsimus 2:** Terraform hoiab "state-faili" (mäletab, mida ta lõi). Ansible ei hoia. Miks Ansible ei vaja state-faili, et olla idempotentne, mida ta selle asemel iga kord teeb? (Vihje: Osa 6 drift.)
+**Küsimus 3:** Kirjelda **üks** konkreetne töövoog, kus kasutaksid **mõlemat**: mida teeb Terraform, mida Ansible, mis järjekorras ja milline info liigub ühelt tööriistalt teisele.
 
-**Küsimus 3:** Kirjelda **üks** konkreetne töövoog, kus kasutaksid **mõlemat**: mida teeb Terraform, mida Ansible, mis järjekorras, ja mis info liigub ühelt teisele.
+Saada fail GitHubi. Nädala 7 konveier käivitub ka selle muudatuse peal.
 
-Push'i see repo-sse, las nädal 7 pipeline jookseb ka selle peal.
+??? note "Kontrollnimekiri"
 
----
-
-## Lõppkontroll: oskad ilma juhendita
-
-- [ ] `inventory.ini` mitme grupiga, `ansible <grupp> --list-hosts` näitab õigeid
-- [ ] Üks `site.yml` seadistab kaks keskkonda, mõlemal oma `keskkond` väärtus
-- [ ] "Muutuja vales kohas" nägemisel tead: `all.yml` vs `<grupp>.yml` vs `host_vars`
-- [ ] Tekitad drifti käsitsi, playbook parandab, `<host1>` **changed** ja `<host2>` **ok**
-- [ ] Selgitad `changed=0` tähendust tervisekontrollina
-- [ ] `vordlus.md` repos: Ansible loob vs seadistab, state, kombineeritud voog
-- [ ] `host_vars` annab ühele hostile erisuse ilma gruppi muutmata
-
----
+    - Failis `inventory.ini` on mitu gruppi ja `ansible <grupp> --list-hosts` näitab õigeid hoste.
+    - Üks `site.yml` seadistab kaks keskkonda, mõlemal on oma `keskkond` väärtus.
+    - Kui muutuja on vales kohas, tead, mis vahe on failidel `all.yml`, `<grupp>.yml` ja `host_vars`.
+    - Käsitsi tekitatud triivi parandab playbook: `<host1>` näitab `changed` ja `<host2>` näitab `ok`.
+    - Oskad selgitada, miks `changed=0` tähendab, et triivi ei ole.
+    - `vordlus.md` on repositooriumis: Ansible loob või seadistab, olekufail, kombineeritud töövoog.
+    - `host_vars` annab ühele hostile erisuse ilma gruppi muutmata.
 
 ## Lisaülesanded
 
-1. **`--limit`:** jooksuta `site.yml` ainult ühel hostil (`--limit <host1>`). Millal tootmises kasulik?
-2. **`--check` + `--diff`:** `ansible-playbook site.yml --check --diff`: näitab mida **muudaks**, ilma tegemata. Riku üks host käsitsi, jooksuta `--check --diff`, vaata kuidas drift on näha ilma parandamata. Miks on see enne tootmist kullaväärt?
-3. **`[production:children]`:** tee grupp `all_web`, mis sisaldab nii `production` kui `staging`. Sihi `site.yml` sellele. Millal grupp-gruppidest kasulik?
-4. **Vault mitmele keskkonnale:** anna `production` ja `staging` grupile **erinevad** Vault-krüpteeritud paroolid (`group_vars/production/vault.yml`). Kuidas hoida kaks eri saladust sama koodiga? (Nädal 4 Vault + selle nädala group_vars.)
-
----
-
-## Veaotsing
-
-| Veateade / sümptom | Põhjus | Lahendus |
-|---|---|---|
-| `PLAY RECAP` näitab vähem hoste kui inventory's | Host enne esimest `[grupp]` rida (`ungrouped`) | Vii host grupi ploki sisse |
-| Muutuja ilmub valesse keskkonda | `all.yml`-is, mitte `<grupp>.yml`-is | Õige ulatusega fail |
-| `'muutuja' is undefined` | `group_vars` fail vales kohas või nimi ei kattu | Fail `inventory.ini` kõrval, nimi = grupp/host täpselt |
-| `host_vars` ei rakendu | Failinimi ≠ hosti nimi inventory's | Nimi tähthaaval sama |
-| Drift ei parane | `become: true` puudub, või roll ei kata seda faili | Kontrolli rolli task'e; `become` |
-| `UNREACHABLE` ühel hostil | Teine host maas / SSH katki | `ansible <grupp> -m ping`, paranda inventory rida |
-| Sama muutuja mitmes failis, vale võidab | Precedence: host_vars > group_vars > all | Kitsam ulatus võidab |
-
-*Tabel 12.1. Iga rida on viga, mille sa selles labis ise tekitasid või kohtad.*
-
----
-
-## Allikad
-
-| Allikas | URL | Miks |
-|---|---|---|
-| Ansible inventory | <https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html> | Grupid, children |
-| group_vars / host_vars | <https://docs.ansible.com/ansible/latest/playbook_guide/intro_inventory.html#organizing-host-and-group-variables> | Muutujate ulatus |
-| Variable precedence | <https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable> | Kitsam võidab |
-| `--check` mode | <https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_checkmode.html> | Drift ilma parandamata |
-| Ansible vs Terraform | <https://developer.hashicorp.com/terraform/intro/vs/chef-puppet> | Millal kumb |
+1. **`--limit`:** käivita `site.yml` ainult ühes hostis (`--limit <host1>`). Millal on see tootmises kasulik?
+2. **`--check` ja `--diff`:** `ansible-playbook site.yml --check --diff` näitab, mida playbook **muudaks**, ilma muudatusi tegemata ([Check mode](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_checkmode.html)). Riku üks host käsitsi, käivita `--check --diff` ja vaata, kuidas triiv on näha ilma parandamata. Miks on see enne tootmist väga kasulik?
+3. **`[production:children]`:** tee grupp `all_web`, mis sisaldab nii gruppi `production` kui ka `staging`. Siht faili `site.yml` sellele grupile. Millal on grupp gruppidest kasulik?
+4. **Vault mitmele keskkonnale:** anna gruppidele `production` ja `staging` erinevad Vaultiga krüpteeritud paroolid (`group_vars/production/vault.yml`). Kuidas hoida kahte eri saladust sama koodiga? (Nädala 4 Vault ja selle nädala `group_vars`.)
