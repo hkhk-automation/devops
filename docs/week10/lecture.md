@@ -7,7 +7,7 @@ tags:
 
 # Loeng: infrastruktuuri kirjeldamine koodina (OpenTofu)
 
-**Kestus:** umbes 35 minutit tunni alguses, siis [praktikum](lab.md).
+**Kestus:** umbes 45 minutit tunni alguses, siis [praktikum](lab.md).
 **Eeldus:** N9 loeng ja praktikum: soovitud olek, ühtlustamine, triiv, olekufail. N9 README Osa 5 ennustused on kirjas.
 
 N9-s võrdlesid Bashi, Ansible'it ja Docker Compose'i ning kirjutasid kaks ennustust tööriista kohta, mida sa veel ei kasutanud. Täna kirjeldad OpenTofuga kooli Proxmoxis ühe virtuaalmasina ja kontrollid mõlemat ennustust oma masinaga.
@@ -34,30 +34,93 @@ Tunni alguses loeb igaüks oma vastused ette. Me ei arutle, kellel on õigus. Pr
 
 ---
 
-## 2. OpenTofu ja Terraform
+## 2. Infrastruktuur koodina: pilv ja Proxmox
 
-**OpenTofu** on tööriist, millega kirjeldatakse infrastruktuuri (virtuaalmasinad, võrgud, kettad, DNS-kirjed, pilveteenused) tekstifailides. Käsk on `tofu`.
+**Infrastruktuur koodina** (Infrastructure as Code, IaC) tähendab, et serverid, võrgud, kettad ja muud ressursid kirjeldatakse tekstifailides ning tööriist loob need ise. Töökohas kasutatakse seda kõige sagedamini pilves. Firma loob OpenTofu või Terraformiga AWS-is, Azure'is või Google Cloudis virtuaalmasinad (AWS-is EC2), võrgud (VPC), andmebaasid, DNS-kirjed ja kasutajaõigused. Uue keskkonna (näiteks testkeskkonna) loomine on siis üks käsk ja sama kood loob identse keskkonna ka teises regioonis.
 
-OpenTofu sündis Terraformist. HashiCorp muutis 2023. aasta augustis Terraformi litsentsi: uus litsents (BSL) lubab koodi lugeda ja kasutada, aga mitte HashiCorpiga konkureerivas tootes. Firmad, kelle töö põhines Terraformil, avaldasid [OpenTofu manifesti](https://opentofu.org/manifesto/) ja jätkasid viimase avatud versiooniga eraldi projektina. Projekti haldab Linux Foundation ja see kuulub [CNCF-i projektide](https://www.cncf.io/projects/opentofu/) hulka. Ametlik dokumentatsioon on aadressil [opentofu.org/docs](https://opentofu.org/docs/intro/). Keel (HCL), failide laiend `.tf` ja töövoog on samad. Kui tööpakkumises on kirjas Terraform, kehtib kõik, mida täna teed: `terraform plan` asemel kirjutad `tofu plan`.
+Kooli laboril pilvekontot ei ole, seega teeme sama kooli Proxmoxis. OpenTofu jaoks on Proxmox samasugune platvorm nagu AWS: mõlemal on API, millega saab masinaid luua ja kustutada. Kood ja töövoog on samad, vahetub ainult provider.
 
-OpenTofu ise ei tea Proxmoxist ega AWS-ist midagi. Iga süsteemi jaoks on eraldi **provider**: programm, mis tõlgib `.tf` faili kirjelduse selle süsteemi API päringuteks. Providerid on [OpenTofu registris](https://search.opentofu.org/), kus on iga provideri ressursid, näited ja argumentide kirjeldused. Meie kasutame providerit [`bpg/proxmox`](https://search.opentofu.org/provider/bpg/proxmox/latest), sama, millega õpetaja loob monitooringu kursuse masinad.
+**OpenTofu** on tööriist, millega infrastruktuur kirjeldatakse ja luuakse. Käsk on `tofu`. OpenTofu sündis Terraformist. HashiCorp muutis 2023. aasta augustis Terraformi litsentsi: uus litsents (BSL) lubab koodi lugeda ja kasutada, aga mitte HashiCorpiga konkureerivas tootes. Firmad, kelle töö põhines Terraformil, avaldasid [OpenTofu manifesti](https://opentofu.org/manifesto/) ja jätkasid viimase avatud versiooniga eraldi projektina. Projekti haldab Linux Foundation ja see kuulub [CNCF-i projektide](https://www.cncf.io/projects/opentofu/) hulka. Ametlik dokumentatsioon on aadressil [opentofu.org/docs](https://opentofu.org/docs/intro/).
+
+Keel (HCL), failide laiend `.tf`, providerid ja töövoog on samad. Kui tööpakkumises on kirjas Terraform, kehtib kõik, mida täna teed: `terraform plan` asemel kirjutad `tofu plan`.
+
+OpenTofu ise ei tea Proxmoxist ega AWS-ist midagi. Iga platvormi jaoks on eraldi **provider**: programm, mis tõlgib `.tf` faili kirjelduse selle platvormi API päringuteks. Providerid on [OpenTofu registris](https://search.opentofu.org/), kus on iga provideri ressursid, näited ja argumentide kirjeldused. Meie kasutame providerit [`bpg/proxmox`](https://search.opentofu.org/provider/bpg/proxmox/latest), sama, millega õpetaja loob monitooringu kursuse masinad.
+
+<figure markdown="span">
+  ![Vasakul .tf failid Gitis, keskel käsk tofu. Sealt neli noolt nelja providerini: hashicorp/aws loob AWS-is EC2, VPC, S3 ja RDS ressursse, hashicorp/azurerm Azure'is VM-e ja võrke, hashicorp/google Google Cloudis Compute Engine'i masinaid, bpg/proxmox kooli Proxmoxis masina sinu pool'is](../images/n10_providerid.svg)
+  <figcaption>Joonis 10.1. Sama tööriist ja sama töövoog, provider valib platvormi (Talvik, 2026).</figcaption>
+</figure>
+
+Sama masin kahel platvormil näeb välja nii. Ploki struktuur on sama, erinevad ressursi tüüp ja argumendid, mille annab provider:
+
+=== "Proxmox (praktikum)"
+
+    ```hcl
+    resource "proxmox_virtual_environment_vm" "veeb" {
+      name      = "tofu-${var.kasutaja}"
+      node_name = var.node_name
+
+      clone {
+        vm_id = var.template_id      # AlmaLinuxi mall
+      }
+
+      memory {
+        dedicated = 1024
+      }
+    }
+    ```
+
+=== "AWS"
+
+    ```hcl
+    resource "aws_instance" "veeb" {
+      ami           = var.ami_id     # AlmaLinuxi image
+      instance_type = "t3.micro"     # 2 vCPU, 1 GB mälu
+
+      tags = {
+        Name = "tofu-${var.kasutaja}"
+      }
+    }
+    ```
+
+AWS-i ressursse kirjeldab provider [`hashicorp/aws`](https://search.opentofu.org/provider/hashicorp/aws/latest) ja Azure'i omi [`hashicorp/azurerm`](https://search.opentofu.org/provider/hashicorp/azurerm/latest). Kui oskad lugeda ühe provideri dokumentatsiooni, oskad lugeda ka teisi.
+
+??? question "Kontrolli ennast"
+    1. Firma kolib Proxmoxist AWS-i. Mis muutub `.tf` failides ja mis jääb samaks?
+    2. Miks saab OpenTofu luua masina platvormis, mille kohta OpenTofu ise midagi ei tea?
+
+---
+
+## 3. OpenTofu ja Ansible
+
+N3–N8 kasutasid Ansible'it. Mõlemad tööriistad on deklaratiivsed: kirjeldad soovitud olekut ja tööriist teeb ainult vajalikud muudatused. Erinevus on selles, mida nad haldavad. Ansible eeldab, et masin on juba olemas ja sellesse saab SSH-ga sisse logida. OpenTofu loob masina ise platvormi API kaudu ega logi masinasse kunagi sisse.
 
 | | Ansible | OpenTofu |
 |---|---|---|
-| Mida haldab | masina sisu: paketid, failid, teenused, kasutajad | masinat ennast: kas see on olemas, mitu tuuma, kui palju mälu |
-| Kuidas ühendub | SSH kaudu masinasse | Proxmoxi (või pilve) API kaudu, masinasse ei logi |
+| Mida haldab | masina sisu: paketid, failid, teenused, kasutajad | masinat ennast: kas see on olemas, mitu tuuma, kui palju mälu, mis võrgus |
+| Kuidas ühendub | SSH kaudu masinasse | platvormi API kaudu (Proxmox, AWS, Azure) |
+| Mida vajab masinas | SSH-d, Pythonit ja kasutajat | mitte midagi, masinat ei pruugi veel olla |
+| Järjekord | ülesanded käivad playbook'is kirjutatud järjekorras | OpenTofu arvutab järjekorra viidete järgi (võrk enne masinat) |
 | Mälu | ei mäleta eelmist käivitust | olekufail `terraform.tfstate` |
 | Tüüpiline järjekord | teine samm: seadistab masina | esimene samm: loob masina |
 
 *Tabel 10.1. Ansible ja OpenTofu haldavad eri kihti. Tavaliselt kasutatakse neid koos.*
 
+<figure markdown="span">
+  ![Vasakul ülal OpenTofu, mis loob API kaudu virtuaalmasina: tuumad, mälu, ketas, võrgukaart, mall. OpenTofu output annab IP-aadressi, mis läheb Ansible'i inventory'sse. Vasakul all Ansible, mis logib SSH-ga masinasse ja seadistab selle sisu: paketid, konfiguratsioonifailid, teenused, kasutajad](../images/n10_tofu_ansible.svg)
+  <figcaption>Joonis 10.2. OpenTofu väljund (masina IP) on Ansible'i sisend (Talvik, 2026).</figcaption>
+</figure>
+
+Töökohas on tavaline järjekord selline: OpenTofu loob masinad ja trükib nende IP-aadressid välja (`output`), need lähevad Ansible'i inventory'sse ning Ansible paigaldab ja seadistab tarkvara. OpenTofu võib masinas teha ka esimese seadistuse (näiteks cloud-init lisab SSH võtme), aga paketid ja teenused jäävad Ansible'i hallata. Kui OpenTofu haldab ka masina sisu, ei tea ta pärast `apply` käsku, kas fail masinas on muutunud, sest ta ei logi masinasse.
+
 ??? question "Kontrolli ennast"
     1. Firma vajab uut veebiserverit, millel töötab nginx. Milline osa on OpenTofu töö ja milline Ansible'i oma?
     2. Miks ei pea OpenTofu masinasse SSH-ga sisse logima?
+    3. Kumb tööriist saab töötada enne, kui masinal on IP-aadress?
 
 ---
 
-## 3. Fail, mis kirjeldab masinat
+## 4. Fail, mis kirjeldab masinat
 
 Praktikumis kirjutad faili `vm.tf`. Selle sisu on:
 
@@ -120,7 +183,7 @@ Muutujate väärtused on failis `terraform.tfvars`. OpenTofu loeb selle faili au
 
 ---
 
-## 4. Töövoog: init, plan, apply, destroy
+## 5. Töövoog: init, plan, apply, destroy
 
 <figure markdown="span">
 ```mermaid
@@ -132,7 +195,7 @@ graph LR
     S -.-> P
     A -.-> D["tofu destroy<br/>kustutab kõik"]
 ```
-  <figcaption>Joonis 10.1. OpenTofu töövoog. Iga `plan` loeb olekufaili ja võrdleb seda koodi ja Proxmoxiga (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 10.3. OpenTofu töövoog. Iga `plan` loeb olekufaili ja võrdleb seda koodi ja Proxmoxiga (Talvik, 2026).</figcaption>
 </figure>
 
 **`tofu init`** laeb alla providerid, mida `terraform` plokk nõuab, kausta `.terraform/`. Valitud versioonid ja nende kontrollsummad kirjutab ta faili `.terraform.lock.hcl`. Võrku on vaja ainult esimesel korral.
@@ -163,7 +226,7 @@ Plaani viimane rida võtab kokku: `Plan: 1 to add, 0 to change, 0 to destroy.` K
 
 ---
 
-## 5. Olekufail ja lukufail
+## 6. Olekufail ja lukufail
 
 OpenTofu kirjutab [olekufaili](https://opentofu.org/docs/language/state/) `terraform.tfstate` iga ressursi, mille ta lõi: Proxmoxi VMID, sõlme, IP-aadressid ja kõik atribuudid. Fail on JSON. Selle järgi teab OpenTofu järgmisel käivitusel, et masin `tofu-<kasutaja>` on tema loodud ja tema hallata. Proxmoxi teisi masinaid olekufailis ei ole ja OpenTofu ei muuda neid.
 
@@ -187,13 +250,38 @@ Lukufail `.terraform.lock.hcl` läheb Giti. Selles on provideri versioon ja kont
 
 ---
 
-## 6. API token ja õigused
+## 7. API token ja õigused
 
 OpenTofu ühendub Proxmoxiga **API tokeniga**. Token kuulub sinu Proxmoxi kasutajale ja sellel on sinu õigused. Praktikumis lood tokeni ise Proxmoxi veebiliideses.
 
 Õpetaja on andnud igale õppijale õiguse luua masinaid ainult oma pool'i (`tofu-<kasutaja>`) ja kloonida ühte AlmaLinuxi malli. Teiste masinaid ei saa sinu token muuta ega kustutada. Seda nimetatakse **vähimate õiguste põhimõtteks**: automaatika saab täpselt need õigused, mida ta vajab. Kui token lekib, piirdub kahju sinu pool'iga.
 
 Token on saladus nagu parool. Ta on ainult failis `terraform.tfvars` (`.gitignore`-is) ja muutuja on märgitud `sensitive = true`, et OpenTofu ei trükiks seda välja. `sensitive` peidab väärtuse ainult ekraanilt: olekufailis on see endiselt lihttekstina ([saladused olekufailis](https://opentofu.org/docs/language/state/sensitive-data/)). Terraformist erinevalt oskab OpenTofu olekufaili [krüpteerida](https://opentofu.org/docs/language/state/encryption/), meeskonnas kasutatakse seda koos ühise backend'iga.
+
+---
+
+## 8. OpenTofu meeskonnas: Spacelift
+
+Praktikumis käivitad `tofu` oma virtuaalmasinas ja olekufail on sinu kaustas. Meeskonnas nii ei tehta. Kui iga insener käivitab `apply` käsku oma arvutist, on igaühel oma olekufail ja oma API võti ning kellegi logist ei näe, kes mida muutis. Seepärast käivitab OpenTofu tsentraalne platvorm, samamoodi nagu N7-s käivitas testid GitHub Actions.
+
+Üks levinud platvorm on [Spacelift](https://spacelift.io/). Spacelift oli ka üks firmadest, kes 2023. aastal OpenTofu projekti algatasid. Spacelift seob Giti repositooriumi kausta ja haru ühe **stack**'iga ([stack'i kirjeldus](https://docs.spacelift.io/concepts/stack)) ja töötab nii:
+
+1. Insener muudab `.tf` faili ja teeb pull request'i. Spacelift käivitab `tofu plan` ja paneb plaani PR-i juurde.
+2. **Reeglid** ([policy](https://docs.spacelift.io/concepts/policy)) kontrollivad plaani automaatselt. Reegel võib näiteks keelata andmebaasi kustutamise või nõuda, et iga kustutamise kinnitab teine inimene.
+3. Kolleeg vaatab plaani üle. Pärast merge'i käivitab Spacelift `tofu apply`.
+4. Olekufaili ja API võtmeid hoiab Spacelift, inseneride arvutites neid ei ole.
+5. **Triivi tuvastus** ([drift detection](https://docs.spacelift.io/concepts/stack/drift-detection)) käivitab `tofu plan` regulaarselt ja annab teada, kui keegi on infrastruktuuri käsitsi muutnud. Triivi mõistet kasutasid N9-s.
+
+<figure markdown="span">
+  ![Ülemises reas viis kasti: pull request, tofu plan plaaniga PR-i juures, reeglid kontrollivad kustutamist, kolleegi kinnitus, tofu apply pärast merge'i. All kaks kasti: olekufail ja saladused on platvormis ühised, lukustatud ja krüpteeritud; triivi tuvastus käivitab plan'i iga paari tunni järel](../images/n10_spacelift.svg)
+  <figcaption>Joonis 10.4. OpenTofu meeskonnas: muudatus läbib plaani, reeglid ja ülevaatuse nagu kood N7 CI-s (Talvik, 2026).</figcaption>
+</figure>
+
+Spacelift oskab käivitada ka Terraformi, Ansible'it, Pulumit ja Kubernetese manifeste. Sama tüüpi platvormid on HashiCorpi HCP Terraform, env0 ja Scalr ning avatud lähtekoodiga Atlantis. Väiksemas meeskonnas piisab sageli GitHub Actionsi workflow'st, mis käivitab PR-is `tofu plan` ja pärast merge'i `tofu apply`, olekufail on siis ühises backend'is.
+
+??? question "Kontrolli ennast"
+    1. Mis probleemi lahendab Spacelift võrreldes sellega, et iga insener käivitab `tofu apply` oma arvutist?
+    2. Kuidas on Spacelifti töövoog sarnane N7 CI töövooga?
 
 ---
 
