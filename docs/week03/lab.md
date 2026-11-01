@@ -7,25 +7,25 @@ tags:
 
 # Praktikum: esimene Ansible'i playbook
 
-Täna kirjutad task'i kaupa playbooki, mis paigaldab sõlme `proxmox1` nginx'i, käivitab selle ja kopeerib sinna sinu veebilehe. Ansible töötab sinu arvutis (kontroll-node) ja ühendub sõlmega 1. nädalal seadistatud SSH-võtmega `kursus_ed25519`. Mõisted inventory, playbook ja idempotentsus on [loengus](lecture.md), ametlik sissejuhatus on [Getting started with Ansible](https://docs.ansible.com/ansible/latest/getting_started/index.html).
+Täna kirjutad ülesande (task) kaupa playbook'i, mis paigaldab sõlme `proxmox1` nginx'i, käivitab selle ja kopeerib sinna sinu veebilehe. Ansible töötab sinu arvutis, mis on juhtsõlm (control node), ja ühendub sõlmega 1. nädalal seadistatud SSH-võtmega `kursus_ed25519`. Mõisted inventory, playbook ja idempotentsus on [loengus](lecture.md), ametlik sissejuhatus on [Getting started with Ansible](https://docs.ansible.com/ansible/latest/getting_started/index.html).
 
 **Edenemine:** laboritahvel <http://192.168.125.187:8091/> (VPN-iga).
 
 ??? abstract "Õpiväljundid"
     Praktikumi lõpuks oskad:
 
-    1. ehitada playbooki task'i kaupa ja testida seda igal sammul;
-    2. leida veateate järgi kolme tüüpilise vea põhjuse (permission denied, katkine idempotentsus, sisu ja olemasolu erinevus);
-    3. selgitada idempotentsust näite põhjal: millal on tulemus `changed` ja millal `ok` ning miks `shell:` idempotentsuse lõhub;
-    4. paigaldada playbookiga nginx'i nii, et monitooringu skript `monitor.sh` näitab teenust töötavana.
+    1. koostada playbook'i task'i kaupa ja testida seda igal sammul;
+    2. leida veateate järgi kahe tüüpilise vea põhjused (permission denied ja `shell`, mis näitab iga kord `changed`);
+    3. selgitada idempotentsust näite põhjal: millal on tulemus `changed` ja millal `ok` ning miks `shell:` näitab vaikimisi iga kord `changed`;
+    4. paigaldada playbook'iga nginx'i nii, et monitooringuskript `monitor.sh` näitab teenust töötavana.
 
-2. nädala monitooringu skript `monitor.sh` teatas „nginx EI tööta“, sest nginx'i polnud sõlme paigaldatud. Käsitsi paigaldades on lihtne jätta teenus lubamata (`enable`) ja tehtud sammud kirja panemata. Playbook teeb sama töö korratavalt ja on ise sammude kirjeldus. Mõnes kohas lõhud playbooki meelega, et näha, milline viga sellest tekib.
+2. nädala monitooringuskript `monitor.sh` teatas „nginx EI tööta“, sest nginx'i polnud sõlme paigaldatud. Käsitsi paigaldades on lihtne jätta teenuse automaatne käivitumine sisse lülitamata (`enable`) ja tehtud sammud kirja panemata. Playbook teeb sama töö korratavalt ja on ise sammude kirjeldus. Mõnes kohas lõhud playbook'i meelega, et näha, milline viga sellest tekib.
 
 <figure markdown="span">
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'primaryColor':'#ede7f6','primaryBorderColor':'#5e35b1','primaryTextColor':'#212121','lineColor':'#7e57c2'}}}%%
 graph LR
-    subgraph SA["Sinu arvuti = kontroll-node"]
+    subgraph SA["Sinu arvuti = juhtsõlm"]
         INV["inventory.ini<br/>(web: proxmox1)"]
         PB["nginx.yml<br/>(playbook)"]
         ANS(["ansible-playbook"])
@@ -36,19 +36,22 @@ graph LR
     ANS -. "lisaülesanne" .-> N2[proxmox2]
     ANS -. "lisaülesanne" .-> N3[proxmox3]
 ```
-  <figcaption>Joonis 3.1. Sinu arvuti loeb inventory ja playbooki ning saadab muudatuse SSH kaudu (1. nädala võtmega) sõlme. Sõlme Ansible'it ei paigaldata, seal on vaja ainult SSH-d ja Pythonit (Talvik, 2025).</figcaption>
+  <figcaption>Joonis 3.1. Sinu arvuti loeb inventory ja playbook'i ning saadab muudatuse SSH kaudu (1. nädala võtmega) sõlme. Sõlme Ansible'it ei paigaldata, seal on vaja ainult SSH-d ja Pythonit (Talvik, 2025).</figcaption>
 </figure>
 
 ## Osa 1 · Seadistus: kontrolli ühendust
 
 !!! warning "Ansible ei tööta Windowsi käsurealt"
-    Ansible vajab *NIX-käsurida: Mac, Linux või WSL2. Windowsi cmd ega PowerShell ei sobi kontroll-node'iks. Võimalused on järgmised:
+    Ansible vajab *NIX-käsurida: macOS, Linux või WSL2. Windowsi cmd ega PowerShell ei sobi juhtsõlmeks. Juhend eeldab, et käivitad Ansible'i oma arvutis ja ühendud sõlmega `proxmox1` SSH kaudu. Kui see pole võimalik, küsi õpetajalt teist töökorraldust.
 
-    - Kui sul on WSL2, Mac või Linux, käivita Ansible oma arvutist sõlme vastu. Nii tehakse seda ka töökeskkonnas.
-    - Kui *NIX-käsurida pole käepärast, käivita Ansible sõlmes endas sõlme enda vastu (`localhost`). See pole tavapärane kasutus, kuid õppimiseks sobib.
-    - Kahtluse korral küsi õpetajalt, kumb võimalus sinu arvutis sobib.
+Võta Classroom 50-s ülesanne vastu, klooni repositoorium ja loo kohe tööharu. Kõik järgmised käsud käivitad repositooriumi juurkaustas:
 
-Ansible paigaldati sinu arvutisse 1. nädala praktikumis. Ava projektikaust VS Code'is (`code .`) ja terminal klahvidega `` Ctrl+` ``. Failis `inventory.ini` peab olema sõlm `proxmox1` grupis `web`:
+```bash
+git switch -c n03-nginx
+mkdir -p logid
+```
+
+Ansible paigaldati sinu arvutisse 1. nädala praktikumis. Ava projektikaust VS Code'is (`code .`) ja terminal klahvidega `` Ctrl+` ``. Failis `inventory.ini` peab olema sõlm `proxmox1` rühmas `web`:
 
 ```ini
 [web]
@@ -80,7 +83,7 @@ ansible -i inventory.ini web -m ping
 
 ## Osa 2 · Baas: esimene task
 
-Playbook algab ühest task'ist, mis paigaldab nginx'i paketi. Loo fail `nginx.yml`, edaspidi lisad sellele task'e:
+Playbook algab ühest task'ist, mis paigaldab nginx'i paketi. Loo fail `nginx.yml`. Järgmistes osades lisad sellesse uusi task'e:
 
 ```yaml
 ---
@@ -89,7 +92,7 @@ Playbook algab ühest task'ist, mis paigaldab nginx'i paketi. Loo fail `nginx.ym
   become: true                        # root-õigused (sudo)
 
   tasks:
-    - name: Paigalda nginx pakett
+    - name: Paigalda nginx'i pakett
       ansible.builtin.package:         # valib ise dnf (Alma) või apt (Ubuntu)
         name: nginx
         state: present                 # "peab olemas olema"
@@ -97,7 +100,7 @@ Playbook algab ühest task'ist, mis paigaldab nginx'i paketi. Loo fail `nginx.ym
 
 Selles failis:
 
-- `hosts: web` on grupp failist `inventory.ini`;
+- `hosts: web` on rühm failist `inventory.ini`;
 - `become: true` on vajalik, sest paketi paigaldamiseks on vaja root-õigusi;
 - [`ansible.builtin.package`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/package_module.html) on universaalne paketimoodul. Koolisõlmes on Alma (`dnf`), kuid sama task töötab ka Ubuntus (`apt`), seega pole eri distributsioonide jaoks vaja eraldi task'e kirjutada.
 
@@ -162,7 +165,7 @@ ansible-playbook -i inventory.ini nginx.yml
 
 `enabled: true` on seadistus, mis käsitsi paigaldades kergesti ununeb. Nüüd on see failis kirjas.
 
-## Osa 5 · Katkine idempotentsus: shell on alati changed
+## Osa 5 · Korduv käivitamine: miks `shell` näitab iga kord `changed`
 
 Ülesanne on kirjutada nginx'i versioon faili. Kõigepealt tee see moodulit `shell:` kasutades, et näha, mis juhtub idempotentsusega:
 
@@ -197,7 +200,7 @@ Kui käsku on vaja käivitada ainult üks kord, lisa `creates`. Siis jätab Ansi
 Käivita playbook kaks korda.
 
 ??? success "Oodatav tulemus"
-    Teisel korral on task `ok` ja idempotentsus on taastatud.
+    Teisel korral on task `ok`, sest fail on juba olemas ja käsku ei käivitata. `creates` kontrollib ainult faili olemasolu. See ei kontrolli, kas failis olev versioon vastab praegu paigaldatud nginx'ile.
 
 Enne kui kirjutad `shell:`, kontrolli, kas mõni moodul teeb sama asja. Mooduli [`shell`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/shell_module.html) dokumentatsioonis on kirjas, millal kasutada hoopis moodulit `command`. Kõige sagedamini läheb idempotentsus katki just `shell:` task'ides.
 
@@ -232,7 +235,7 @@ ssh proxmox1 "curl -s localhost"
 ??? warning "Kui `curl` annab `Connection refused`"
     Teenus ei tööta. Kontrolli osa 4 task'i ja teenuse olekut käsuga `ssh proxmox1 systemctl status nginx`.
 
-## Osa 7 · Lõpp-test ja monitooringu skript
+## Osa 7 · Lõppkontroll ja monitooringuskript
 
 Viimane idempotentsuse test: käivita playbook ilma midagi muutmata.
 
@@ -243,7 +246,7 @@ ansible-playbook -i inventory.ini nginx.yml
 ??? success "Oodatav tulemus"
     `PLAY RECAP` näitab: kõik `ok`, `changed=0`.
 
-Käivita sõlmes 2. nädala monitooringu skript, mis siis teatas „EI tööta“. Kui sõlmes skripti `monitor.sh` ei ole, kontrolli teenust käsuga `ssh proxmox1 systemctl is-active nginx`.
+Käivita sõlmes 2. nädala monitooringuskript, mis siis teatas „EI tööta“. Kui sõlmes skripti `monitor.sh` ei ole, kontrolli teenust käsuga `ssh proxmox1 systemctl is-active nginx`.
 
 ```bash
 ssh proxmox1 "bash ~/monitor.sh && cat ~/monitor.log"
@@ -254,10 +257,10 @@ ssh proxmox1 "bash ~/monitor.sh && cat ~/monitor.log"
     ... - nginx töötab
     ```
 
-Nginx'i paigaldus on nüüd playbookis kirjas: seda saab korrata ja see on Gitis.
+Nginx'i paigaldus on nüüd playbook'is kirjas: seda saab korrata ja see on Gitis.
 
 ??? question "Mõtle"
-    Sul on 50 sõlme ja see playbook käib cron'is iga tund. Mida ütleks monitooringule `changed=0` ja mida `changed=5`? Kumb tulemus viitaks sellele, et keegi on sõlme käsitsi muutnud?
+    Sul on 50 sõlme ja see playbook käivitatakse cron'iga iga tund. Järgmine käivitus näitab ootamatult `changed=5`. Milliseid task'e ja nende väljundit uuriksid, et selgitada, miks muudatusi vaja oli? Kas ainult sellest arvust piisab põhjuse järeldamiseks?
 
 ??? note "Kontrollnimekiri"
     - [ ] `ansible -m ping` annab sinu sõlmest vastuseks `pong`
@@ -270,11 +273,10 @@ Nginx'i paigaldus on nüüd playbookis kirjas: seda saab korrata ja see on Gitis
 
 ## Töö esitamine
 
-Esita repositooriumis playbook, leht, inventar ja viimase muutmata käivituse logi, milles on `changed=0`. Repositooriumi loob Classroom 50 kutselink. Töö läheb harusse `n03-nginx` ja sealt pull request'iga `main`-i, PR-i link läheb GitHub Projecti.
+Esita repositooriumis playbook, leht, inventar ja viimase käivituse logi, mis näitab `changed=0`. Töö läheb harusse `n03-nginx` ja sealt pull request'iga `main`-i. Lisa pull request'i link GitHub Projecti.
 
 ```bash
 ansible-playbook -i inventory.ini nginx.yml | tee logid/play_recap.txt
-git switch -c n03-nginx
 git add nginx.yml index.html inventory.ini logid/play_recap.txt
 git commit -m "N3: nginx playbook"
 git push -u origin n03-nginx
