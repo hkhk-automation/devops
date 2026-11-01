@@ -131,6 +131,7 @@ nav:
   - N10 · Infrastruktuuri kirjeldamine koodina:
     - Loeng: week10/lecture.md
     - Praktikum: week10/lab.md
+    - Kodutöö: week10/homework.md
 
   - N11 · Korduvkasutatav infrastruktuur:
     - Valik 1 — Terraform moodulid: week11/lab_terraform_modules.md
