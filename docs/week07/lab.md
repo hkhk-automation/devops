@@ -195,7 +195,11 @@ Ava job'i logis kõige esimene samm **Set up job**. Seal on kirjas, mis masin se
 
 ## Osa 3 · Tühi masin — kolm viga järjest
 
-Runner on **värske ja tühi** masin. Sinu VM-is on olemas kõik, mis sa N5-st peale paigaldasid. Runneris pole mitte midagi. Selles osas leiad ise, mida tal on vaja, ühe vea kaupa.
+GitHub käivitab iga töö jaoks uue virtuaalmasina, mida nimetatakse **runneriks**. Selles on ainult operatsioonisüsteem ja mõned põhitööriistad. Sinu koodi, õiget Pythoni versiooni ja pakette (pytest, Flask) seal ei ole.
+
+Sinu VM-is on need olemas, sest paigaldasid need ise (N5 ja selle praktikumi osa 0). Seepärast töötab `pytest` sinu VM-is, aga runneris annab vea. Pärast töö lõppu runner kustutatakse ja järgmine töö saab jälle tühja masina.
+
+Selles osas lisad töövoogu ükshaaval kõik, mida runner vajab. Iga puuduv asi annab ühe vea. Loe veateadet ja lisa puuduv samm.
 
 <figure markdown="span">
   ![Vasakul sinu VM, kus on kood, Python, Flask, pytest ja kunagi paigaldatud requests. Keskel ci.yml read, mis toovad igaühe runnerisse. Paremal runner, kus requests puudub](../images/n07_tyhi_masin.svg)
