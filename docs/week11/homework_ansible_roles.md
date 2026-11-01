@@ -7,17 +7,15 @@ tags:
 
 # Kodutöö: Ansible rollid
 
-Praktikumi lõpuks on sul töötav nginx'i roll. Kodutöös laiendad seda rolli.
+Praktikumi lõpuks on sul töötav nginx'i roll ja kodutöös lisad sellele handleri ja teise muutuja. Kodutöö on boonus.
 
-Töö esitatakse GitHubi repositooriumi lingiga ja pull request peab olema liidetud (*Merged*). Tähtaja näed Classroom 50-s.
+Tee kõik muudatused eraldi harus, sest töö esitatakse pull request'iga.
 
-## Ülesanne
+## Osa 1 · Handler
 
-### 1. Lisa handler
+Handler käivitub ainult siis, kui ülesanne midagi muutis. Nii taaskäivitatakse nginx ainult siis, kui konfiguratsioonifail muutus.
 
-Praegu taaskäivitatakse nginx'i teenus iga kord, kui playbook käivitatakse. Handler käivitub ainult siis, kui konfiguratsioon muutus.
-
-Lisa failis `tasks/main.yml` ülesandele rida `notify`:
+Lisa failis `tasks/main.yml` malli ülesandele rida `notify`:
 
 ```yaml
 - name: kopeeri nginx konfiguratsioon
@@ -27,7 +25,7 @@ Lisa failis `tasks/main.yml` ülesandele rida `notify`:
   notify: restart nginx
 ```
 
-`handlers/main.yml`:
+Kirjuta handler faili `handlers/main.yml`:
 
 ```yaml
 - name: restart nginx
@@ -36,25 +34,21 @@ Lisa failis `tasks/main.yml` ülesandele rida `notify`:
     state: restarted
 ```
 
-Testi tulemust: käivita playbook kaks korda järjest. Kui konfiguratsioon ei muutunud, ei tohi teisel korral handler `restart nginx` käivituda. Handlerite kirjeldus on lehel [Handlers](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_handlers.html).
+Käivita playbook kaks korda järjest. Handlerite kirjeldus on lehel [Handlers](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_handlers.html).
 
-### 2. Lisa teine muutuja
+??? success "Oodatav tulemus"
+    Esimesel käivitusel, kui fail muutus, käivitub handler `restart nginx`. Teisel käivitusel fail ei muutu ja handlerit ei käivitata.
+
+## Osa 2 · Teine muutuja
 
 Failis `defaults/main.yml` on praegu `nginx_port`. Lisa sinna muutuja `nginx_server_name` (vaikimisi `localhost`) ja kasuta seda oma Jinja2 mallis.
 
-### 3. Kirjalik küsimus
+## Osa 3 · Küsimus
 
-Kirjuta faili `vastus.md` 3–5 lauset:
+Kirjuta faili `vastus.md` 3–5 lauset: kuidas sarnaneb Ansible'i roll programmeerimise funktsioonile? Too üks konkreetne näide, kus roll on parem kui tavaline playbook.
 
-> Kuidas sarnaneb Ansible roll programmeerimise funktsioonile? Too üks konkreetne näide kus roll annab eelise võrreldes tavalise playbookiga.
+## Töö esitamine
 
-## Esitamine
+Harus on handler, uus muutuja mallis ja fail `vastus.md`. Ava pull request haru `main` vastu, kirjuta kirjeldusse, mida muutsid ja miks, ning liida pull request (*Merged*).
 
-Tee kõik muudatused eraldi harus ja ava pull request haru `main` vastu. Kirjuta pull request'i kirjeldusse, mida muutsid ja miks.
-
-## Mida hinnatakse
-
-- Handler töötab: teine käivitus ei taaskäivita nginx'i tarbetult.
-- `nginx_server_name` on mallis kasutusel.
-- `vastus.md` vastab küsimusele konkreetselt, mitte üldiselt.
-- Pull request on korrektselt esitatud eraldi harust.
+Tulemuse näed Classroom 50-s.

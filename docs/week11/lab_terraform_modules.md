@@ -7,9 +7,7 @@ tags:
 
 # Praktikum: Terraformi moodulid
 
-Nädalal 10 nägid tsüklit `init`, `plan`, `apply`, `destroy` valmis konfiguratsiooniga. Selles praktikumis kirjutad HCL-i ise rida realt, lisad muutujad ja väljundid ning teed koodist mooduli, mida kutsud kaks korda. Kui tsükkel on veel segane, loe uuesti [nädala 10 loengut](../week10/lecture.md).
-
-Töötad oma arvutis VS Code'is ja Terraform peab olema paigaldatud (`terraform -version`). Provider `local` loob faile ainult sinu kettale, serverit ega kontot ei ole vaja.
+Täna kirjutad HCL-i ise rida realt, lisad muutujad ja väljundid ning teed koodist mooduli, mida kutsud kaks korda. Töötsükkel `init`, `plan`, `apply`, `destroy` on seletatud [N10 loengus](../week10/lecture.md). Töötad oma arvutis VS Code'is, Terraform peab olema paigaldatud (`terraform -version`) ja provider `local` loob faile ainult sinu kettale, seega serverit ega kontot ei ole vaja.
 
 ??? abstract "Õpiväljundid"
 
@@ -22,7 +20,7 @@ Töötad oma arvutis VS Code'is ja Terraform peab olema paigaldatud (`terraform 
 
 ## Osa 1 · Esimene HCL nullist
 
-Nädalal 10 nägid valmis `.tf` faili, mille kirjutas keegi teine. Täna kirjutad faili rida realt ise, nii jääb süntaks paremini meelde. HCL-i süntaks on kirjas dokumentatsioonis [Terraform Language](https://developer.hashicorp.com/terraform/language). Loo uus tühi kaust ja ava see VS Code'is:
+Kirjuta fail rida realt ise, nii jääb süntaks paremini meelde. HCL-i süntaks on kirjas dokumentatsioonis [Terraform Language](https://developer.hashicorp.com/terraform/language). Loo uus tühi kaust ja ava see VS Code'is:
 
 ```bash
 mkdir ~/terraform-lab11
@@ -53,24 +51,25 @@ resource "local_file" "tervitus" {
 }
 ```
 
-Failis on ainult üks ressurss, muutujad ja väljundid tulevad hiljem. Ressursi `local_file` parameetrid on kirjas [provideri `local` dokumentatsioonis](https://registry.terraform.io/providers/hashicorp/local/latest/docs).
+Failis on ainult üks ressurss, muutujad ja väljundid tulevad hiljem. Ressursi `local_file` parameetrid on kirjas [provideri `local` dokumentatsioonis](https://registry.terraform.io/providers/hashicorp/local/latest/docs). Käsk `init` laadib provideri alla:
 
 ```bash
 terraform init
 ls -la
 ```
 
-Väljundis on `Terraform has been successfully initialized!` ning kaustas on uued `.terraform/` ja `.terraform.lock.hcl`.
+??? success "Oodatav tulemus"
+    Väljundis on `Terraform has been successfully initialized!` ning kaustas on uued `.terraform/` ja `.terraform.lock.hcl`.
 
 ??? warning "Kui tuleb `Failed to install provider`"
-    Kontrolli internetiühendust. `init` laadib plugina alla ainult esimesel korral. Kui viga jääb, kustuta `.terraform/` ja käivita `terraform init` uuesti.
+    Kontrolli internetiühendust. `init` laadib provideri alla ainult esimesel korral. Kui viga jääb, kustuta `.terraform/` ja käivita `terraform init` uuesti.
 
-??? question "Mõtle"
+??? question "Küsimus"
     Mis on `.terraform/` ja `.terraform.lock.hcl` ning miks Terraform vajab neid enne `plan` käsku?
 
 ### 1.2 Plan ja apply
 
-Kõigi käskude kirjeldus on lehel [CLI Commands](https://developer.hashicorp.com/terraform/cli/commands).
+Käsk `plan` näitab, mida Terraform teeks, ja `apply` teeb muudatused. Kõigi käskude kirjeldus on lehel [CLI Commands](https://developer.hashicorp.com/terraform/cli/commands).
 
 ```bash
 terraform plan
@@ -85,19 +84,21 @@ cat tervitus.txt
 
 Fail tekib alles siis, kui kinnitad käsu sõnaga `yes`.
 
-!!! tip
-    Korduval testimisel jätab `terraform apply -auto-approve` kinnituse vahele. Tavatöös on kinnituse lugemine turvavõrk, seega ära harju `-auto-approve` kasutama.
+??? tip "Kinnituse vahelejätmine"
+    Korduval testimisel jätab `terraform apply -auto-approve` kinnituse vahele. Töös loetakse plaan enne kinnitamist alati läbi, sest kinnitus on viimane koht, kus vea saab kinni püüda.
 
-??? question "Mõtle"
+??? question "Küsimus"
     Mille poolest erineb ressurss `local_file` käsust `echo "tekst" > fail.txt`? Miks kasutada selleks Terraformi?
 
 ### 1.3 Olekufail ja lahknevus
+
+Terraform salvestab olekufaili, mida ta on loonud. Vaata selle sisu:
 
 ```bash
 cat terraform.tfstate
 ```
 
-Olekufail on JSON, kus Terraform peab arvet selle üle, mida ta on loonud. Olek ütleb, mis peaks olemas olema, ja `plan` võrdleb seda tegelikkusega. Tekita lahknevus:
+Olekufail on JSON. Olek ütleb, mis peaks olemas olema, ja `plan` võrdleb seda tegelikkusega. Tekita lahknevus:
 
 ```bash
 rm tervitus.txt
@@ -108,6 +109,8 @@ Terraform tahab faili taastada, sest olekufaili järgi peaks fail olemas olema. 
 
 ### 1.4 Destroy
 
+Käsk `destroy` kustutab kõik, mis on olekufailis:
+
 ```bash
 terraform destroy
 ```
@@ -117,8 +120,8 @@ Kinnita sõnaga `yes` ja kontrolli, et fail kadus.
 ??? warning "Kui `destroy` ei kustuta midagi"
     Oled tõenäoliselt vales kaustas. `terraform.tfstate` peab olema samas kaustas, kus käsku käivitad.
 
-??? question "Mõtle"
-    Mis tundub tsükli `init → plan → apply → destroy` juures teisiti, kui kirjutasid iga rea ise, võrreldes nädalaga 10, kui vaatasid õpetaja ekraani?
+??? question "Küsimus"
+    Kaustas on fail, mida Terraform ei loonud. Kas `terraform destroy` kustutab selle? Miks?
 
 ## Osa 2 · Muutujad
 
@@ -149,18 +152,20 @@ resource "local_file" "tervitus" {
 terraform init && terraform plan
 ```
 
-Vaikeväärtus `default` on sama mis enne, seega tulemus ei muutu. See on esimene kontroll enne edasi liikumist.
+Vaikeväärtus `default` on sama mis enne, seega plaan ei näita muudatusi. Nii näed, et muutuja töötab.
 
-!!! tip
+??? tip "Muutuja peab olema kasutusel"
     Kui kirjutad ploki `variable`, aga ei kasuta failis `main.tf` viidet `var.faili_nimi`, jääb muutuja kasutuks. Kontrolli, et iga uus muutuja on kasutusel.
 
 ### 2.2 Ülekirjutamine käsurealt
+
+Muutuja väärtuse saab anda ka käsurealt ja see kirjutab vaikeväärtuse üle:
 
 ```bash
 terraform plan -var="faili_nimi=proov.txt"
 ```
 
-??? question "Mõtle"
+??? question "Küsimus"
     Miks on `default` arenduses mugav, aga tootmises võib meeskond nõuda, et väärtus antakse alati eraldi?
 
 ### 2.3 Teine muutuja: sisu
@@ -175,7 +180,7 @@ variable "faili_sisu" {
 }
 ```
 
-Muuda faili `main.tf`:
+Muuda faili `main.tf` ja rakenda muudatus:
 
 ```hcl
 resource "local_file" "tervitus" {
@@ -214,12 +219,12 @@ terraform apply
 terraform output loodud_faili_nimi
 ```
 
-??? question "Mõtle"
+??? question "Küsimus"
     Mida tähendavad viite `local_file.tervitus.filename` kolm osa? Kust need nimed tulevad, kui vaatad faili `main.tf`?
 
 ### 3.2 Teine väljund: räsi
 
-Ressurss `local_file` arvutab ise atribuudi `content_md5`:
+Ressurss `local_file` arvutab ise atribuudi `content_md5`. Lisa faili `outputs.tf`:
 
 ```hcl
 output "sisu_rasi" {
@@ -243,6 +248,8 @@ Praegu loob konfiguratsioon ühe tekstifaili. Kümne faili jaoks peaksid koodi k
 
 ### 4.1 Mooduli kaust
 
+Moodul on eraldi kaustas:
+
 ```bash
 mkdir -p modules/tekstifail
 ```
@@ -260,7 +267,7 @@ resource "local_file" "see" {
 }
 ```
 
-`modules/tekstifail/variables.tf`:
+Mooduli sisendid on failis `modules/tekstifail/variables.tf`:
 
 ```hcl
 variable "faili_nimi" {
@@ -275,7 +282,7 @@ variable "faili_sisu" {
 
 Muutujal `faili_nimi` ei ole vaikeväärtust, seega peab iga mooduli kutse failinime andma. Muidu kirjutaksid mitu kutset sama faili.
 
-`modules/tekstifail/outputs.tf`:
+Mooduli väljundid on failis `modules/tekstifail/outputs.tf`:
 
 ```hcl
 output "faili_nimi" {
@@ -322,6 +329,8 @@ output "sisu_rasi" {
 
 ### 4.4 Testi
 
+Moodul tuleb `init` käsuga paigaldada enne plaani:
+
 ```bash
 terraform init
 terraform plan
@@ -329,9 +338,9 @@ terraform apply
 ```
 
 ??? warning "Kui tuleb `Module not installed`"
-    Iga kord, kui lisad või muudad plokki `module`, käivita `terraform init` uuesti. `init` ei ole vajalik ainult provider'ite jaoks.
+    Iga kord, kui lisad või muudad plokki `module`, käivita `terraform init` uuesti. `init` on vajalik ka moodulite jaoks.
 
-??? question "Mõtle"
+??? question "Küsimus"
     Ava `terraform.tfstate`. Kuidas erineb ressursi nimi olekufailis (`module.tervitus.local_file.see`) varasemast (`local_file.tervitus`)?
 
 ## Osa 5 · Moodul kaks korda
@@ -361,6 +370,8 @@ module "logi" {
 
 ### 5.2 Väljundid
 
+Kirjuta juurkausta faili `outputs.tf` väljund mõlema kutse jaoks:
+
 ```hcl
 output "tervituse_fail" {
   value = module.tervitus.faili_nimi
@@ -373,6 +384,8 @@ output "logi_fail" {
 
 ### 5.3 Kogu tsükkel
 
+Käivita kogu tsükkel ja vaata, et failid tekivad ja kaovad:
+
 ```bash
 terraform init
 terraform plan
@@ -382,9 +395,10 @@ cat tervitus.txt logi.txt
 terraform destroy
 ```
 
-Kontrolli, et mõlemad failid tekkisid ja seejärel kadusid.
+??? success "Oodatav tulemus"
+    `ls *.txt` näitab faile `tervitus.txt` ja `logi.txt`. Pärast `destroy` käsku on mõlemad failid kadunud.
 
-??? question "Mõtle"
+??? question "Küsimus"
     Kui homme tuleks luua kümme faili erinevate sisenditega, mis muutub failis `main.tf` ja mis jääb kaustas `modules/tekstifail/` samaks?
 
 ??? note "Kontrollnimekiri"
@@ -400,10 +414,10 @@ Kontrolli, et mõlemad failid tekkisid ja seejärel kadusid.
 ## Lisaülesanded
 
 ??? example "1 · Tsükkel"
-    uuri `for_each` ja `count` võimalusi ning loo viis faili ühe plokiga `module`.
+    Uuri `for_each` ja `count` võimalusi ning loo viis faili ühe plokiga `module`.
 
 ??? example "2 · Uus ressurss"
-    uuri, milliseid ressursse provider `hashicorp/local` veel pakub, ja lisa moodulisse kausta loomine.
+    Uuri, milliseid ressursse provider `hashicorp/local` veel pakub, ja lisa moodulisse kausta loomine.
 
 ??? example "3 · Aheldamine"
-    lisa kolmas kutse, mille `faili_sisu` sõltub teise mooduli väljundist (`module.logi.sisu_rasi`).
+    Lisa kolmas kutse, mille `faili_sisu` sõltub teise mooduli väljundist (`module.logi.sisu_rasi`).

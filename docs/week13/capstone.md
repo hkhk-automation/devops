@@ -1,61 +1,53 @@
+---
+tags:
+  - Lõpuprojekt
+---
+
 # Lõpuprojekt: täielik tarnekonveier
 
-**Grupid:** 2–3 inimest
-**Eeldused:** Kõik eelnevad nädalad läbitud.
+Lõpuprojektis ehitate 2–3-liikmelise grupiga töötava automatiseerimislahenduse otsast lõpuni ja esitlete seda. Lahendus kasutab kursusel õpitud tööriistu: Git, Ansible, Docker, Docker Compose, GitHub Actions ja vajaduse korral OpenTofu.
 
----
+## Osa 1 · Stsenaarium
 
-## Ülesanne
+Valige üks stsenaarium. Minimaalne kombinatsioon on see, mis peab esitlusel töötama.
 
-Ehitage töötav automatiseerimislahendus otsast lõpuni ja esitlege seda.
+??? note "Tabel 13.1. Stsenaariumid"
+    | Tase | Stsenaarium | Minimaalne kombinatsioon |
+    |---|---|---|
+    | Lihtne | Staatiline veebileht | Git ja Ansible, mis paigaldab lehe serverisse |
+    | Keskmine | Flaski rakendus | Git, Docker, Docker Compose ja CI konveier |
+    | Keeruline | Täisautomaatne tarne | Git, Docker, CI/CD, GHCR ja Ansible, mis paigaldab rakenduse |
+    | Edasijõudnud | Kõik ja infrastruktuur koodina | Eelmine rida, lisaks OpenTofu (masinate loomine) ja Ansible mitmele hostile |
 
-Valige üks stsenaarium:
+## Osa 2 · Nõuded
 
-| Tase | Stsenaarium | Minimaalne kombinatsioon |
-|---|---|---|
-| Lihtne | Staatiline veebileht | Git + Ansible deploy sihtmärgile |
-| Keskmine | Flask app | Git + Docker + Compose + CI pipeline |
-| Keeruline | Täisautomaatne | Git + Docker + CI/CD + GHCR + Ansible deploy |
-| Edasijõudnud | Kõik + IaC | Eelnev + Terraform (nädal 10–11) + Ansible IaC mitmele hostile (nädal 12) |
+Lahenduses peab töötama:
 
----
+- versioonihaldus harude ja pull request'idega;
+- serveri konfiguratsioon Ansible'iga või infrastruktuur koodina (OpenTofu ja Ansible);
+- vähemalt üks järgmistest: CI konveier, Docker või Docker Compose.
 
-## Nõuded
+Esitluses peab olema tööriistade võrdlustabel: iga kasutatud tööriista kohta, kas fail kirjeldab samme või tulemust, millist olekut tööriist haldab ja kas korduv käivitamine on ohutu. Sama tabeli näide on [N9 praktikumi](../week09/lab.md) lisaülesannetes.
 
-Minimaalne kombinatsioon mis peab töötama:
+## Osa 3 · Esitlus
 
-- Versioonihalduse töövoog: branching + PR (nädal 2)
-- Serveri konfiguratsioon: Ansible (nädal 3–4) VÕI infrastruktuur koodina (nädal 10–12)
-- Üks järgnevatest: CI pipeline / Docker / Compose (nädalad 5–8)
+Esitlus kestab 7 minutit: 5 minutit töötavat demot koos arhitektuuri joonisega ja 2 minutit küsimusi kaasõppijatelt ja õpetajalt.
 
-**Nädal 9 võrdlustabel peab esitluses nähtav olema.**
+Esitluses peate oskama vastata järgmistele küsimustele:
 
----
+- Miks valisite selle tööriista ja ei valinud teist?
+- Mis läheb esimesena katki, kui üks komponent ei tööta?
+- Näidake konveieri ebaõnnestunud käivitust ja selle parandust.
 
-## Esitlus: 7 minutit
+??? note "Tabel 13.2. Hindamiskriteeriumid"
+    | Kriteerium | Osakaal |
+    |---|---|
+    | Lahendus töötab demo ajal | 50% |
+    | Arhitektuuri joonis on selge ja täpne | 20% |
+    | Tööriistade valik on põhjendatud | 20% |
+    | Võrdlustabel on esitluses | 10% |
 
-- **5 min:** live demo + arhitektuuridiagramm
-- **2 min:** küsimused kaasõpilastelt ja õpetajalt
+## Lisaülesanded
 
-Esitluses peate suutma vastata:
-
-- Miks see tööriist siin ja mitte teine?
-- Mis läheks katki esimesena kui üks komponent kukub?
-- Näita pipeline ebaõnnestumist ja selle parandust
-
----
-
-## Hindamine
-
-| Kriteerium | Osakaal |
-|---|---|
-| Lahendus töötab live demo ajal | 50% |
-| Arhitektuuridiagramm on selge ja täpne | 20% |
-| Tööriistade valik on põhjendatud | 20% |
-| Nädal 9 tabel on esitluses | 10% |
-
----
-
-## Lisaülesanne
-
-Laienda Ansible IaC osa (nädal 12): halda **kahte** keskkonda (production + staging) group_vars'iga, tekita ühele hostile käsitsi drift ja näita esitluses, kuidas playbook selle parandab. Selgita: mida tähendaks `changed=0` vs `changed=5` tootmise serveripargis?
+??? example "1 · Kaks keskkonda ja triiv"
+    Hallake Ansible'iga kahte keskkonda (`production` ja `staging`) `group_vars` failidega. Muutke ühes hostis midagi käsitsi, nii et server erineb koodis kirjeldatust (triiv), ja näidake esitluses, kuidas playbook selle parandab. Selgitage, mida tähendab tootmise serveripargis `changed=0` ja mida `changed=5`.

@@ -9,9 +9,9 @@ tags:
 
 # Praktikum: infrastruktuur koodina
 
-See nädal on iseseisev e-õpe ja kogu töö käib brauseris, Proxmoxi ja VPN-i ei ole vaja. Kohustuslik on läbida KodeKloudi Dockeri kursus ja kirjutada oma nimi Lab 09 repositooriumi README-sse. Boonusülesanded ja [loeng](lecture.md) näitavad, mille poolest Bash, Ansible ja Docker Compose erinevad.
+See nädal on iseseisev e-õpe ja kogu töö käib brauseris, Proxmoxi ja VPN-i ei ole vaja. Kohustuslik on läbida KodeKloudi Dockeri kursus ja kirjutada oma nimi N9 praktikumi repositooriumi README-sse. Lisaülesannetes katsetad [loengu](lecture.md) mõtteid: mille poolest Bash, Ansible ja Docker Compose erinevad.
 
-Lab 09 repositooriumi lingi leiad kursuse teadetest.
+Repositooriumi lingi leiad kursuse teadetest.
 
 ??? abstract "Õpiväljundid"
 
@@ -22,62 +22,49 @@ Lab 09 repositooriumi lingi leiad kursuse teadetest.
 
 ## Osa 1 · KodeKloudi kursus
 
-**Ülesanne**
-
 1. Ava kursus [Docker for the Absolute Beginner: Crash Course](https://kodekloud.com/courses/crash-course-docker-for-absolute-beginner) ja vajuta **Enroll for Free**.
-2. Vaata videod ja tee läbi neli laborit.
+2. Vaata videod ja tee läbi kursuse neli harjutust KodeKloudi laboris.
 3. Laadi sertifikaat oma repositooriumi kausta `kodekloud/`: **Add file → Upload files**, failinime ette kirjuta `kodekloud/`.
 4. Ava GitHubis fail `README.md` (pliiatsi nupp) ja kirjuta rea `**Sinu nimi:**` järele `_vastus_` asemele oma nimi.
 
-**Kontrolli**
-
-Repositooriumis on kaust `kodekloud/` ja selles `.pdf`, `.png` või `.jpg` fail. README-s real **Sinu nimi:** on sinu nimi.
-
 ??? warning "Kui midagi ei tööta"
-    - KodeKloud küsib maksmist: logi sisse ja vajuta uuesti **Enroll for Free**. Kui see ei aita, tee lehest ekraanipilt ja kirjuta õpetajale.
+    - KodeKloud küsib maksmist: logi sisse ja vajuta uuesti **Enroll for Free**. Kui see ei aita, tee lehest ekraanipilt ja küsi õpetajalt abi.
     - Tasuta kontoga ei anta sertifikaati: laadi üles ekraanipilt kursuse lehest, millel on näha 100% ja sinu nimi.
 
-### Esitamine
+## Töö esitamine
 
-Tähtaja ja automaatkontrolli tulemuse näed Classroom 50-s.
+Repositooriumis on kaustas `kodekloud/` sertifikaat või ekraanipilt ja README-s sinu nimi. Tulemuse ja tähtaja näed Classroom 50-s.
 
-??? note "Tabel 9.9. Automaatkontroll"
-    | Kontroll | Punktid |
-    |---|---|
-    | KodeKloudi sertifikaat või ekraanipilt kaustas `kodekloud/` | 90 |
-    | Nimi README-s | 10 |
-    | Boonusülesanded | 0 |
+## Lisaülesanded
 
-## Boonusülesanded
-
-Vastused kirjuta faili `BOONUS.md`.
+Lisaülesanded on boonus ja vastused kirjuta faili `BOONUS.md`. Rida **Ennusta** tähendab, et enne käsku mõtled läbi, mis juhtub. Vastus on kokkuvolditud plokis.
 
 ### Võrdlustabel (`BOONUS.md` Osa 2)
 
 Täida `BOONUS.md` Osa 2 tabel. Iga tööriista kohta vasta neljale küsimusele: kas fail kirjeldab samme või tulemust, millist olekut tööriist haldab, kas korduv käivitamine on ohutu ja kas tööriist võrdleb olemasolevat olekut soovitud olekuga. Vastused leiad [loengu](lecture.md) osadest 2-4.
 
-Viimasesse veergu pane link oma Lab 02-06 failile GitHubis. Ava fail oma repositooriumis ja kopeeri aadress brauseri aadressiribalt.
+Viimasesse veergu pane link oma N2 kuni N6 praktikumi failile GitHubis. Ava fail oma repositooriumis ja kopeeri aadress brauseri aadressiribalt.
 
 ??? tip "Millist faili linkida"
 
     | Tööriist | Fail |
     |---|---|
-    | Bash | Lab 02 `monitor.sh` |
-    | Git | Lab 02 commit'ide leht (**Commits**) |
-    | Ansible | Lab 03 `nginx.yml` või `logid/play_recap.txt` |
-    | Dockerfile | Lab 05 `nginx/Dockerfile` |
-    | Docker Compose | Lab 06 `docker-compose.yml` |
+    | Bash | N2 `monitor.sh` |
+    | Git | N2 commit'ide leht (**Commits**) |
+    | Ansible | N3 `nginx.yml` või `logid/play_recap.txt` |
+    | Dockerfile | N5 `nginx/Dockerfile` |
+    | Docker Compose | N6 `docker-compose.yml` |
 
 ### Docker Compose'i ja Bashi katse (`BOONUS.md` Osa 3)
 
-Selle ja järgmise boonusülesande teed KodeKloudi labori terminalis. Ava selleks uuesti mõni Osa 1 labor. Käskude väljund salvestatakse kausta `logid/` ja lõpus paned kõik logid ühte faili GitHubis.
+Selle ja järgmise lisaülesande teed KodeKloudi labori terminalis, kus Docker on olemas. Ava selleks uuesti mõni Osa 1 harjutus. Käskude väljund salvestatakse kausta `logid/` ja lõpus paned kõik logid GitHubis ühte faili.
 
 !!! warning "Labori terminal suletakse, kui aeg saab täis"
-    Kui laboriaeg hakkab lõppema, tee kohe samm [Logid GitHubi](#logid-githubi). Kui terminal suleti, ava labor uuesti ja loo töökaust uuesti.
+    Kui laboriaeg hakkab lõppema, tee kohe samm [Logid GitHubi](#logid-githubi). Kui terminal suleti, ava harjutus uuesti ja loo töökaust uuesti.
 
 #### Töökaust
 
-Kleebi terminali kogu plokk korraga:
+Töökausta tulevad Compose'i fail kahe teenusega ja Bashi skript, mis käivitab konteineri käsuga `docker run`. Kleebi terminali kogu plokk korraga:
 
 ```bash
 mkdir -p ~/lab09/logid && cd ~/lab09
@@ -103,7 +90,7 @@ Käsk `docker compose version` näitab Compose'i versiooni. Kui näed teadet `'c
 
 #### Kaks käivitust järjest
 
-**Ennusta.** Mis juhtub, kui käivitad sama käsu kaks korda järjest?
+**Ennusta:** Mis juhtub, kui käivitad sama käsu kaks korda järjest?
 
 ```bash
 docker compose up -d 2>&1 | tee logid/01-up.txt
@@ -121,7 +108,7 @@ docker compose up -d 2>&1 | tee logid/02-up-uuesti.txt
 
 #### Konteiner kustutatakse käsitsi
 
-**Ennusta.** Kustutad konteineri `cache` käsitsi. Mida teeb Compose järgmisel käivitusel?
+**Ennusta:** Kustutad konteineri `cache` käsitsi. Mida teeb Compose järgmisel käivitusel?
 
 ```bash
 docker rm -f lab09-cache-1 2>&1 | tee logid/03-taastamine.txt
@@ -141,7 +128,7 @@ docker compose ps
 
 #### Konfiguratsiooni muudatus
 
-**Ennusta.** Muudad failis `compose.yaml` konteineri `web` porti. Millise konteineri Compose uuesti loob?
+**Ennusta:** Muudad failis `compose.yaml` konteineri `web` porti. Millise konteineri Compose uuesti loob?
 
 ```bash
 sed -i 's/8080:80/8081:80/' compose.yaml
@@ -161,7 +148,7 @@ curl -s localhost:8081 | head -4
 
 #### Sama Bashi skriptiga
 
-**Ennusta.** Skript `run.sh` käivitab konteineri käsuga `docker run`. Mis juhtub teisel käivitusel?
+**Ennusta:** Skript `run.sh` käivitab konteineri käsuga `docker run`. Mis juhtub teisel käivitusel?
 
 ```bash
 bash run.sh 2>&1 | tee logid/05-run-kaks-korda.txt
@@ -203,7 +190,7 @@ bash run.sh 2>&1 | tee -a logid/06-run-parandatud.txt
 `BOONUS.md` 3.5: skript kontrollib ainult, kas sellise nimega konteiner on olemas. Too olukord, kus skript kirjutab „juba olemas“, kuigi konteiner ei vasta skriptis kirjeldatule.
 
 ??? success "Mida see näitab"
-    Konteiner võib olla peatatud, teise image'i või teise pordiga. Skript kontrollib olemasolu, mitte olekut. Compose võrdleb konteineri konfiguratsiooni failiga ja loob konteineri vajaduse korral uuesti.
+    Konteiner võib olla peatatud, teise image'i või teise pordiga. Skript kontrollib ainult seda, kas konteiner on olemas. Compose võrdleb konteineri konfiguratsiooni failiga ja loob konteineri vajaduse korral uuesti.
 
 `BOONUS.md` Osa 3 igas vastuses kopeeri logist üks rida ja kirjuta selle juurde üks lause.
 
@@ -213,7 +200,7 @@ Jätka samas terminalis ja kaustas `~/lab09`.
 
 #### Ansible
 
-Paigalda Ansible ja loo playbook, mis hoiab failis `/tmp/lab09-nginx.conf` väärtust `1m`. Seejärel muuda faili käsitsi, nagu tegi loengus Mati:
+Paigalda Ansible ja loo playbook, mis hoiab failis `/tmp/lab09-nginx.conf` väärtust `1m`. Seejärel muuda faili käsitsi nagu loengu triivi näites:
 
 ```bash
 python3 -m pip install ansible-core || apt-get install -y ansible
@@ -236,7 +223,7 @@ sed -i 's/1m/50m/' /tmp/lab09-nginx.conf
 
 Kui `pip` ja `apt-get` ei tööta, tee see osa oma arvuti WSL Ubuntus (`sudo apt install ansible`).
 
-**Ennusta.** Mida näitab `--check --diff` ja kas see muudab faili?
+**Ennusta:** Mida näitab `--check --diff` ja kas see muudab faili?
 
 ```bash
 ansible-playbook triiv.yml --check --diff 2>&1 | tee logid/07-triiv-ansible.txt
@@ -255,11 +242,11 @@ cat /tmp/lab09-nginx.conf
 Muuda töötava konteineri `web` avalehte otse konteineri sees:
 
 ```bash
-docker compose exec web sh -c 'echo "MATI PARANDAS" > /usr/share/nginx/html/index.html'
+docker compose exec web sh -c 'echo "KÄSITSI MUUDETUD" > /usr/share/nginx/html/index.html'
 curl -s localhost:8081 2>&1 | tee logid/08-triiv-konteiner.txt
 ```
 
-**Ennusta.** Ansible taastas faili sisu. Kas `docker compose up -d` taastab nginx'i avalehe? Kirjuta ennustus faili `BOONUS.md` (4.2 Ennustus) enne järgmisi käske.
+**Ennusta:** Ansible taastas faili sisu. Kas `docker compose up -d` taastab nginx'i avalehe? Kirjuta ennustus faili `BOONUS.md` (4.2 Ennustus) enne järgmisi käske.
 
 ```bash
 docker compose up -d 2>&1 | tee -a logid/08-triiv-konteiner.txt
@@ -271,7 +258,7 @@ curl -s localhost:8081 2>&1 | tee -a logid/08-triiv-konteiner.txt
 `BOONUS.md` 4.2 Tulemus: mida näitas `curl` pärast tavalist `up -d` ja mida pärast `--force-recreate`? Millist olekut Compose haldab ja millist mitte?
 
 ??? success "Mida see näitab"
-    Pärast `up -d` on avalehel endiselt `MATI PARANDAS`. Compose võrdleb konteineri konfiguratsiooni (image, pordid, keskkonnamuutujad) failiga `compose.yaml`. Faile konteineri sees ta ei võrdle. `--force-recreate` loob konteineri image'ist uuesti ja käsitsi tehtud muudatus kaob.
+    Pärast `up -d` on avalehel endiselt `KÄSITSI MUUDETUD`. Compose võrdleb konteineri konfiguratsiooni (image, pordid, keskkonnamuutujad) failiga `compose.yaml`. Faile konteineri sees ta ei võrdle. `--force-recreate` loob konteineri image'ist uuesti ja käsitsi tehtud muudatus kaob.
 
     Ansible ja Compose on mõlemad deklaratiivsed, aga nad haldavad eri olekut: Ansible faili sisu serveris, Compose konteinerite olemasolu ja konfiguratsiooni.
 
@@ -289,7 +276,7 @@ cat koik.txt
 
 Kopeeri väljund terminalist. Vali GitHubis **Add file → Create new file**, kirjuta failinimeks `logid/koik.txt`, kleebi sisu ja vajuta **Commit changes**. Failis peab olema kaheksa rida, mis algavad märkidega `=====`.
 
-Kui labor suleti poole töö pealt, kopeeri GitHubi see, mis sul juba on, nimega `logid/koik.txt`. Kui teed ülejäänud sammud uues terminalis, pane teine fail nimega `logid/koik2.txt`. Automaatkontroll loeb mõlemat.
+Kui terminal suleti poole töö pealt, kopeeri GitHubi see, mis sul juba on, nimega `logid/koik.txt`. Kui teed ülejäänud sammud uues terminalis, pane teine fail nimega `logid/koik2.txt`. Automaatkontroll loeb mõlemat.
 
 ### 12-Factor (`BOONUS.md` Lisa A)
 

@@ -7,7 +7,7 @@ tags:
 
 # Loeng: Ansible rollid
 
-Nädalatel 3–4 kirjutasid playbook'i, mis seadistas ühe teenuse. Selles loengus jagad sama töö rollideks, et playbook jääks loetavaks ka siis, kui teenuseid on mitu.
+Ühe teenuse seadistamiseks piisab ühest playbook'ist. Kui teenuseid on mitu, jagatakse töö rollideks ja playbook jääb loetavaks.
 
 ??? abstract "Õpiväljundid"
     Pärast loengut oskad:
@@ -19,11 +19,11 @@ Nädalatel 3–4 kirjutasid playbook'i, mis seadistas ühe teenuse. Selles loeng
 
 ## 1. Playbook, mis kasvas suureks
 
-Nädalatel 3–4 olid ülesanded, muutujad ja mallid ühes failis kõrvuti. Ühe nginx-serveri jaoks on selline fail loetav. Kui sama fail peab seadistama nginx'i, PostgreSQL'i, tulemüüri ja monitooringu, kasvab saja reaga fail viiesajaliseks. Kuu aja pärast ei leia lugeja enam, kus PostgreSQL'i osa lõpeb ja tulemüüri osa algab.
+Lihtsas playbook'is on ülesanded, muutujad ja mallid ühes failis kõrvuti. Ühe nginx-serveri jaoks on selline fail loetav. Kui sama fail peab seadistama nginx'i, PostgreSQL'i, tulemüüri ja monitooringu, kasvab saja reaga fail viiesajaliseks. Kuu aja pärast ei leia lugeja enam, kus PostgreSQL'i osa lõpeb ja tulemüüri osa algab.
 
 Rollid lahendavad selle probleemi. Roll koondab seotud ülesanded, muutujad, mallid, failid ja handlerid kindla kaustastruktuuri alla, mille Ansible ise ära tunneb. Üks roll paigaldab nginx'i, teine PostgreSQL'i, kolmas tulemüüri. Iga roll on eraldi üksus, mida saab taaskasutada ja jagada.
 
-Kui serveripargis on kümneid teenuseid (rakendusserverid, andmebaasid, vahemälu, koormusjaoturid), ei kirjutata iga serveritüübi jaoks playbook'i nullist. Meeskond koostab rollide kogumi, kus iga roll vastutab ühe teenuse eest, ja playbook paneb rollid sobivas järjekorras kokku.
+Kui serveripargis on kümneid teenuseid (rakendusserverid, andmebaasid, vahemälu, koormusjaoturid), ei kirjutata iga serveritüübi jaoks playbook'i nullist. Meeskond koostab rollide kogumi, kus iga roll seadistab ühe teenuse, ja playbook käivitab rollid sobivas järjekorras.
 
 <figure markdown="span">
 ```mermaid
@@ -36,12 +36,12 @@ graph TD
     N --> H[handlers/]
     N --> J[templates/]
 ```
-  <figcaption>Joonis 11.1. site.yml käivitab rollid; igal rollil on oma kaustastruktuur (Talvik, 2025).</figcaption>
+  <figcaption>Joonis 11.1. site.yml käivitab rollid; igal rollil on oma kaustastruktuur (Talvik, 2026).</figcaption>
 </figure>
 
 ## 2. Rolli struktuur
 
-Roll on kindlate nimedega kaustade kogum. Ansible otsib igast kaustast faili `main.yml` ja teab kausta nime järgi, mida sellega teha. Kaustade täielik loetelu on Ansible'i dokumentatsioonis [Roles](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_reuse_roles.html).
+Roll on kindlate nimedega kaustade kogum. Ansible loeb igast kaustast faili `main.yml` ja kausta nimi määrab, milleks faili kasutatakse. Kaustade täielik loetelu on Ansible'i dokumentatsioonis [Roles](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_reuse_roles.html).
 
 - `tasks/main.yml`: ülesannete loend (sama süntaks mis playbook'is).
 - `defaults/main.yml`: vaikeväärtused, mida kõik muud muutujad üle kirjutavad.
@@ -61,7 +61,7 @@ roles/nginx/
 └── files/robots.txt
 ```
 
-Ansible teab ise, et `templates/nginx.conf.j2` kuulub rolli juurde ja et `tasks/main.yml` tuleb käivitada. Rolli kirjutaja ülesanne on failide sisu.
+Ansible leiab rolli kaustast ise malli `templates/nginx.conf.j2` ja käivitab ülesanded failist `tasks/main.yml`. Rolli kirjutaja kirjutab ainult failide sisu.
 
 ## 3. `ansible-galaxy init`: skelett ühe käsuga
 
@@ -142,15 +142,10 @@ Standardsete teenuste jaoks alusta Galaxy rollist ja kohanda seda muutujatega. E
 
 Lehe käsud on kontrollitud Ansible core 2.17 versiooniga.
 
-## Kokkuvõte
-
 ??? abstract "Kokkuvõte"
-
     - Roll koondab ülesanded, muutujad, mallid ja handlerid kindlasse struktuuri ning teeb suure playbook'i loetavaks.
     - Standardkaustad on `tasks/`, `defaults/`, `handlers/`, `templates/`, `files/`, `vars/` ja `meta/`; piisab neist, mida on vaja.
     - `ansible-galaxy init` loob skeleti, sisu kirjutad ise.
     - Roll käivitatakse loendiga `roles:` või `include_role`/`import_role` abil; Ansible otsib rolle kaustast `roles/`.
     - Playbook'i tasandil `vars:` kirjutab üle rolli `defaults/`.
     - Galaxy pakub valmis rolle, aga kolmanda osapoole roll vaadatakse enne tootmist üle.
-
-*Edasi: [praktikum](lab_ansible_roles.md), kus lood oma rolli nullist.*

@@ -8,58 +8,46 @@ tags:
 
 # Loeng: infrastruktuur koodina, mõtteviis
 
-See nädal on iseseisev ja Proxmoxi ei ole vaja. Selles loengus võrdled tööriistu, mida oled seni kasutanud: mida igaüks kirjeldab ja mida ta teeb, kui masin ei vasta kirjeldusele.
+See nädal on iseseisev ja Proxmoxi ei ole vaja. Loengus võrdled kursusel kasutatud tööriistu: mida igaüks kirjeldab ja mida ta teeb, kui masin ei vasta kirjeldusele.
 
 ??? abstract "Õpiväljundid"
     Pärast loengut oskad:
 
-    - eristada imperatiivset ja deklaratiivset lähenemist ja paigutada iga seni kasutatud tööriista ühte neist
+    - eristada imperatiivset ja deklaratiivset lähenemist ja paigutada iga kursusel kasutatud tööriista ühte neist
     - selgitada, mis on soovitud olek ja kuidas tööriist ühtlustab tegeliku oleku soovitud olekuga
     - selgitada idempotentsust ja kontrollida seda tööriista väljundist
     - kirjeldada konfiguratsiooni triivi ja seda, mida järgmine automaatne käivitus sellega teeb
     - selgitada muudetava ja muutumatu infrastruktuuri vahet
 
-## 1. Seni kasutatud tööriistad
+## 1. Server, mida hoitakse käsitsi
 
-Sa oled õppinud mitu tööriista, igaühel oma süntaks. Tööintervjuul ei küsita süntaksit. Küsitakse, miks valiksid ühe või teise. Selleks pead nägema, mis neil ühist on.
+Paljudes firmades on server, mida on aastaid hooldatud käsitsi. Nginx paigaldati mitu aastat tagasi, PHP versiooni vahetati eelmisel talvel ja tulemüüri reeglid on kuskil kirjas. Kõike, mis serveris on, ei tea keegi täpselt. Kui server rikki läheb, võtab uue ülesseadmine päevi, sest iga seadistus tuleb meelde tuletada.
 
-Kati alustas sügisel praktikat väikeses hostingufirmas. Esimesel päeval näitas vanem sysadmin Mati talle serverit, mida ta oli kuus aastat ise hooldanud.
+Kursusel kasutatud tööriistad lahendavad sama probleemi. Kõik, mis serveris peab olema, kirjutatakse faili ja tööriist seadistab masina selle faili järgi. Seda mõtteviisi nimetatakse **infrastruktuur koodina** (Infrastructure as Code, IaC).
 
-„Siin on veebiserver. Nginx'i panin 2019. aastal, PHP versiooni vahetasin eelmisel talvel, tulemüüri reeglid on kuskil, pean järele vaatama.“
-
-Kati küsis: „Kui see server homme ära põleb, kui kaua läheb uue ülesseadmisega?“
-
-Mati mõtles. „Nädal? Kui ma mäletan kõike.“
-
-See vastus on põhjus, miks see kursus olemas on. Kõik, mida oled kaheksa nädalaga teinud, on üks ja sama mõte erinevate tööriistadega: **kirjuta üles, mis peab olema, ja lase masinal see tekitada.** Seda mõtet nimetatakse **infrastruktuur koodina** (Infrastructure as Code, IaC).
-
-??? note "Tabel 9.1. Iga nädal panid sa midagi koodi kujul kirja. Täna vaatame, mille poolest need kirjapanekud erinevad"
-    | Nädal | Tööriist | Mida sa kirja panid | Sinu fail |
+??? note "Tabel 9.1. Kursusel kasutatud tööriistad ja failid"
+    | Nädal | Tööriist | Mida failis kirjeldatakse | Fail |
     |---|---|---|---|
     | N2 | Bash, Git | käsud järjest; muudatuste ajalugu | `monitor.sh` |
     | N3-4 | Ansible | mis peab serveris olema | `nginx.yml`, `templates/*.j2` |
     | N5 | Docker | kuidas image ehitada | `Dockerfile` |
     | N6 | Docker Compose | millised konteinerid koos töötavad | `docker-compose.yml` |
 
-Fail on Gitis, seega on sellel ajalugu ja seda saab üle vaadata. Mati mälu ei saa kumbagi.
+Fail on Gitis, seega on sellel ajalugu ja selle muudatusi saab üle vaadata. Inimese mälestustel ei ole ajalugu ega ülevaatust.
 
 ??? question "Kontrolli ennast"
-    1. Miks oli Mati vastus „nädal, kui ma mäletan kõike“ firmale ohtlik?
-    2. Too oma laboritest üks fail, mille põhjal saaks keegi teine sinu tööd korrata ilma sinult midagi küsimata.
+    1. Miks on firmale ohtlik, kui serveri seadistus on ainult ühe inimese mälus?
+    2. Too praktikumidest üks fail, mille põhjal saaks keegi teine sinu tööd korrata ilma sinult midagi küsimata.
 
 ## 2. Imperatiivne ja deklaratiivne
 
-Need kaks sõna on IaC kõige olulisem jaotus. Kui tead, kummale poole tööriist kuulub, tead juba, kuidas ta käitub teisel käivitusel.
+Kui tead, kas tööriist kirjeldab samme või tulemust, oskad ennustada, mida ta teeb teisel käivitusel.
 
-Mõtle restoranile. Sul on kaks võimalust süüa saada.
+Võrdle kahte viisi süüa tellida. Võid kokale öelda iga sammu: „Võta pann, vala õli, löö kaks muna pannile.“ Kui pannil on juba munad, lisab kokk veel kaks. Teine võimalus on tellida „üks praemuna“ ja köök otsustab, mis samme on vaja. Kui praemuna on juba valmis, tuuakse see lauale.
 
-**Retsept.** Sa seisad köögis ja ütled kokale: „Võta pann. Pane pliit põlema. Vala õli. Löö kaks muna pannile. Oota kolm minutit.“ Sina vastutad iga sammu ja järjekorra eest. Kui pannil on juba munad, löövad nad sinna veel kaks.
+Esimene on **imperatiivne** (imperative) lähenemine: kirjeldad samme, kuidas midagi teha. Teine on **deklaratiivne** (declarative) lähenemine: kirjeldad tulemust, mis peab olema.
 
-**Tellimus.** Sa ütled ettekandjale: „Üks praemuna, palun.“ Köök otsustab ise, mis samme on vaja. Kui praemuna on juba valmis, tuuakse see lihtsalt lauale.
-
-Esimene on **imperatiivne** (imperative) lähenemine: kirjeldad **samme**, kuidas midagi teha. Teine on **deklaratiivne** (declarative) lähenemine: kirjeldad **tulemust**, mis peab olema.
-
-Meenuta Märteni `monitor.sh`-i N2-st. See on puhas retsept:
+Monitooringu skripti paigaldamine Bashiga on imperatiivne:
 
 ```bash
 mkdir /opt/monitor
@@ -67,9 +55,9 @@ cp monitor.sh /opt/monitor/
 echo "*/5 * * * * /opt/monitor/monitor.sh" >> /etc/crontab
 ```
 
-Käivita see teist korda. `mkdir` annab vea, sest kaust on olemas. `echo >>` lisab crontabi **teise** sama rea ja nüüd jookseb monitor iga 5 minuti järel kaks korda.
+Kui käivitad selle teist korda, annab `mkdir` vea, sest kaust on olemas. Käsk `echo >>` lisab crontabi teise sama rea ja monitor käivitub iga 5 minuti järel kaks korda.
 
-Sama asi Ansible'iga, nagu N3-s kirjutasid:
+Sama Ansible'iga:
 
 ```yaml
 - name: monitori kaust on olemas
@@ -84,7 +72,7 @@ Sama asi Ansible'iga, nagu N3-s kirjutasid:
     job: /opt/monitor/monitor.sh
 ```
 
-Pane tähele task'ide nimesid: „kaust **on olemas**“, „kirje **on olemas**“. Sa ei kirjuta „tee kaust“. Sa kirjeldad olekut. Ansible vaatab ise, kas kaust on juba olemas, ja kui on, ei tee midagi.
+Task'ide nimed kirjeldavad olekut: kaust on olemas, kirje on olemas. Moodul kontrollib enne muutmist, kas kaust juba on, ja kui on, ei tee midagi.
 
 <figure markdown="span">
 ```mermaid
@@ -98,25 +86,23 @@ graph LR
         T --> D2[teeb ainult puuduva]
     end
 ```
-  <figcaption>Joonis 9.1. Imperatiivne skript täidab sammud alati uuesti. Deklaratiivne kirjeldus annab tööriistale eesmärgi ja tööriist otsustab ise, mis samme on vaja (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 9.1. Imperatiivne skript täidab sammud alati uuesti. Deklaratiivse kirjelduse järgi otsustab tööriist, mis samme on vaja (Talvik, 2026).</figcaption>
 </figure>
 
-Töös on piir hägune. Dockerfile koosneb käskudest (`RUN apt install`, `COPY`), seega on ta oma olemuselt retsept. Aga tulemus, image, on üks kindel asi, mida saab käivitada ükskõik kui mitu korda. Ansible'is saad kirjutada `ansible.builtin.shell: mkdir /opt/monitor` ja siis on ka Ansible imperatiivne. Tööriist annab võimaluse, aga mõtteviisi valid sina.
+Töös on piir hägune. Dockerfile koosneb käskudest (`RUN apt install`, `COPY`), seega on see retsept. Tulemus, image, on aga üks kindel asi, mida saab käivitada ükskõik kui mitu korda. Ansible'is võid kirjutada `ansible.builtin.shell: mkdir /opt/monitor` ja siis on ka see task imperatiivne.
 
 ??? question "Kontrolli ennast"
-    1. Kumb on imperatiivne ja kumb deklaratiivne: navirakendusele sihtkoha andmine või sõbrale tee kirjeldamine „sõida 200 m otse, siis vasakule“?
-    2. Miks lisab `echo ... >> /etc/crontab` teisel käivitusel probleemi, aga Ansible'i `cron` moodul mitte?
-    3. Leia oma N5 `Dockerfile`-ist üks rida, mis on imperatiivne.
+    1. Kumb on imperatiivne ja kumb deklaratiivne: navirakendusele sihtkoha andmine või tee kirjeldamine „sõida 200 m otse, siis vasakule“?
+    2. Miks tekitab `echo ... >> /etc/crontab` teisel käivitusel probleemi, aga Ansible'i `cron` moodul mitte?
+    3. Leia `Dockerfile`-ist üks rida, mis on imperatiivne.
 
 ## 3. Soovitud olek ja ühtlustamine
 
-Deklaratiivne tööriist teeb iga kord sama tsüklit: vaatab, võrdleb, parandab. Kui see tsükkel on sul peas, saad ennustada iga deklaratiivse tööriista käitumist, ka nende oma, mida sa veel ei tunne.
+Deklaratiivne tööriist teeb igal käivitusel sama tsükli: loeb, võrdleb ja parandab vahe. Selle tsükli järgi saad ennustada ka nende tööriistade käitumist, mida sa veel ei tunne.
 
-Toas on termostaat. Sa keerad selle 21 kraadi peale. See on **soovitud olek** (desired state). Termomeeter näitab 18 kraadi. See on **tegelik olek** (actual state).
+Termostaat on keeratud 21 kraadi peale. See on **soovitud olek** (desired state). Termomeeter näitab 18 kraadi. See on **tegelik olek** (actual state). Termostaat võrdleb kahte numbrit ja kui need erinevad, lülitab kütte sisse. Kui toas on 21 kraadi, ei tee termostaat midagi. Kui aken tehakse lahti ja tuba jahtub, lülitub küte uuesti sisse.
 
-Termostaat ei küsi, kuidas toa sai 18-kraadiseks. Ta võrdleb kahte numbrit ja kui need erinevad, paneb kütte tööle. Kui tuba on 21 kraadi, ei tee ta midagi. Kui keegi teeb akna lahti ja tuba jahtub, paneb ta kütte uuesti tööle.
-
-Seda nimetatakse **ühtlustamiseks** (reconciliation): tööriist loeb tegeliku oleku, võrdleb soovitud olekuga ja muudab ainult vahet.
+**Ühtlustamine** (reconciliation) tähendab, et tööriist loeb tegeliku oleku, võrdleb seda soovitud olekuga ja muudab ainult erinevust.
 
 <figure markdown="span">
 ```mermaid
@@ -128,38 +114,36 @@ graph LR
     V -->|samad| O[Ära tee midagi]
     M --> T
 ```
-  <figcaption>Joonis 9.2. Ühtlustamise tsükkel. Ansible ja Docker Compose teevad sama tsüklit, ainult „tegelik olek“ on neil erinev asi (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 9.2. Ühtlustamise tsükkel. Ansible ja Docker Compose teevad sama tsüklit, ainult tegelik olek on neil erinev (Talvik, 2026).</figcaption>
 </figure>
 
-N6-s kirjutasid `docker-compose.yml` faili ja käivitasid `docker compose up -d`. Mis juhtub, kui käivitad seda teist korda? Compose loeb faili (soovitud olek), küsib Dockerilt, mis konteinerid jooksevad (tegelik olek), ja näeb, et kõik klapib. Väljundis on:
+Docker Compose loeb faili `docker-compose.yml` (soovitud olek) ja küsib Dockerilt, millised konteinerid töötavad (tegelik olek). Kui käivitad `docker compose up -d` teist korda ja midagi ei ole muutunud, on väljundis:
 
 ```text
  ✔ Container lab09-web-1    Running
  ✔ Container lab09-cache-1  Running
 ```
 
-`Running` tähendab: „see on juba olemas ja sobib, ma ei puutunud seda“. Kui kustutad ühe konteineri käsitsi ja käivitad `up -d` uuesti, näeb Compose vahet ja loob ainult puuduva. Praktikumis teed täpselt seda.
+`Running` tähendab, et konteiner on olemas ja vastab failile, nii et Compose seda ei muutnud. Kui kustutad ühe konteineri käsitsi ja käivitad `up -d` uuesti, loob Compose ainult puuduva konteineri. Praktikumi lisaülesandes proovid seda.
 
-??? note "Tabel 9.2. Sama tsükkel, erinev maailm"
+??? note "Tabel 9.2. Sama tsükkel eri tööriistades"
     | Tööriist | Soovitud olek | Tegelik olek |
     |---|---|---|
     | Ansible | playbook | mis on serveris (paketid, failid, teenused) |
-    | Docker Compose | `compose.yaml` | mis konteinerid jooksevad |
+    | Docker Compose | `compose.yaml` | millised konteinerid töötavad |
 
 ??? question "Kontrolli ennast"
     1. Selgita termostaadi näitel, mis on soovitud olek ja mis tegelik olek.
-    2. Compose näitab teisel käivitusel `Running`. Mida see ütleb sulle tegeliku ja soovitud oleku kohta?
-    3. Miks ei saa bash-skript ühtlustada, kui ta ei kontrolli enne midagi?
+    2. Compose näitab teisel käivitusel `Running`. Mida see ütleb tegeliku ja soovitud oleku kohta?
+    3. Miks ei saa Bashi skript ühtlustada, kui see enne midagi ei kontrolli?
 
 ## 4. Idempotentsus
 
-Automaatika käivitub sageli: iga push, iga öö, iga kord, kui keegi kahtleb. Kui iga käivitus midagi lõhub või topelt teeb, ei julge keegi seda käivitada ja automaatika jääb seisma.
+Automaatika käivitub sageli: pärast igat push'i, igal ööl ja alati, kui keegi tahab tulemust kontrollida. Kui iga käivitus midagi lõhub või topelt teeb, ei julge keegi seda käivitada.
 
-Liftis on kaks sorti nuppe. Korruse nupp: vajutad „5“ üks kord või kümme korda, lift sõidab ikka viiendale korrusele. Sellist toimingut, mida võib korrata ja tulemus ei muutu, nimetatakse **idempotentseks** (idempotent).
+Lifti korruse nupp töötab alati samamoodi: vajutad „5“ üks kord või kümme korda ja lift sõidab ikka viiendale korrusele. Toimingut, mida võib korrata ja mille tulemus ei muutu, nimetatakse **idempotentseks** (idempotent). Valguslüliti, mis iga vajutusega olekut vahetab, ei ole idempotentne.
 
-Valguslüliti, mis iga vajutusega olekut vahetab, ei ole idempotentne. Kaks vajutust ja oled tagasi pimeduses.
-
-Meenuta N3 praktikumi. Käivitasid `nginx.yml` playbooki kolm korda:
+Kui käivitad Ansible'i playbook'i `nginx.yml` kolm korda, näed kokkuvõttes (`PLAY RECAP`):
 
 ```text
 1. kord:  ok=4  changed=3  failed=0
@@ -167,38 +151,32 @@ Meenuta N3 praktikumi. Käivitasid `nginx.yml` playbooki kolm korda:
 3. kord:  ok=4  changed=0  failed=0
 ```
 
-`changed=0` oli tõend, mille sa Lab 03 `logid/play_recap.txt` faili salvestasid. See ütleb: kõik oli juba soovitud olekus, Ansible kontrollis ja ei muutnud midagi.
+`changed=0` tähendab, et kõik oli juba soovitud olekus. Ansible kontrollis iga task'i ja ei muutnud midagi.
 
-Idempotentsus ei tule tasuta. Ansible'i moodulid (`package`, `file`, `copy`) on kirjutatud nii, et nad kontrollivad enne muutmist. `shell` ja `command` moodulid ei tea, mida su käsk teeb, ja näitavad iga kord `changed`. Bash'is saad idempotentsust ise ehitada:
+Ansible'i moodulid (`package`, `file`, `copy`) kontrollivad enne muutmist, kas muudatust on vaja. Moodulid `shell` ja `command` ei tea, mida käsk teeb, ja näitavad iga kord `changed`. Bashi skripti saab teha idempotentseks, kui lisad enne iga muudatust kontrolli.
 
-??? note "Tabel 9.3. Bash-skripti saab teha idempotentseks, kui lisad enne iga muutust kontrolli. Deklaratiivne tööriist teeb seda sinu eest"
+??? note "Tabel 9.3. Bashi käsud ilma kontrollita ja kontrolliga"
     | Mitte-idempotentne | Idempotentne |
     |---|---|
     | `mkdir /opt/app` | `mkdir -p /opt/app` |
     | `echo "rida" >> fail` | `grep -qx "rida" fail \|\| echo "rida" >> fail` |
     | `docker run --name web nginx` | `docker ps -a --format '{{.Names}}' \| grep -qx web \|\| docker run --name web nginx` |
-    | `useradd kati` | `id kati \|\| useradd kati` |
+    | `useradd mtamm` | `id mtamm \|\| useradd mtamm` |
 
 ??? question "Kontrolli ennast"
-    1. Too oma elust üks idempotentne ja üks mitte-idempotentne tegevus.
-    2. Playbook näitab teisel käivitusel `changed=2`. Mida see sulle ütleb ja kust otsiksid põhjust?
-    3. Miks on idempotentsus eriti oluline, kui automaatika käivitub iga öö ise?
+    1. Too igapäevaelust üks idempotentne ja üks mitte-idempotentne tegevus.
+    2. Playbook näitab teisel käivitusel `changed=2`. Mida see tähendab ja kust otsiksid põhjust?
+    3. Miks on idempotentsus eriti oluline, kui automaatika käivitub igal ööl ise?
 
-## 5. Triiv: keegi muutis serveris käsitsi
+## 5. Triiv: serveris muudeti midagi käsitsi
 
-Ükski meeskond ei ole nii distsiplineeritud, et keegi kunagi serverisse käsitsi ei läheks. Sa pead teadma, mis juhtub sellise muudatusega järgmisel automaatsel jooksul, sest muidu kaob kellegi parandus vaikselt ära.
+Ka siis, kui serverit hoitakse Ansible'iga, muudab keegi aeg-ajalt midagi käsitsi. Järgmine automaatne käivitus võib sellise muudatuse märkamatult kaotada.
 
-Reede öösel kell 2 helistab klient: suured failid ei lae üles. Mati logib serverisse, avab `/etc/nginx/nginx.conf` ja muudab:
+Serveri nginx'i konfiguratsioonifaili loob Ansible malli järgi. Kasutajad ei saa üles laadida suuri faile. Administraator logib öösel serverisse, muudab failis `/etc/nginx/nginx.conf` rida `client_max_body_size 1m;` väärtuseks `50m` ja laadib nginx'i uuesti (`systemctl reload nginx`). Üleslaadimine töötab, aga playbook'i ja malli ta ei muuda.
 
-```text
-client_max_body_size 1m;   →   client_max_body_size 50m;
-```
+Nüüd erinevad serveri tegelik olek ja Gitis kirjeldatud soovitud olek. Seda nimetatakse **konfiguratsiooni triiviks** (configuration drift): server on kirjeldusest eemale triivinud.
 
-`systemctl reload nginx`, töötab, Mati läheb magama. Playbooki ta ei muutnud, sest kell oli 2.
-
-Nüüd on serveri tegelik olek ja Gitis olev soovitud olek erinevad. Seda nimetatakse **konfiguratsiooni triiviks** (configuration drift): server on vaikselt kirjeldusest eemale triivinud.
-
-Esmaspäeval jooksutab Kati Ansible'i, sest lisas uue kasutaja. Ansible'i `template` moodul näeb, et `nginx.conf` ei vasta mallile, ja kirjutab faili üle. Tulemus näitab `changed=1`. Mati 50 MB on kadunud, klient helistab uuesti.
+Järgmisel päeval käivitatakse playbook, sest serverisse on vaja lisada uus kasutaja. Moodul `template` näeb, et `nginx.conf` ei vasta mallile, ja kirjutab faili üle. Kokkuvõttes on `changed=1`, failis on jälle `1m` ja suured failid ei lähe enam üles.
 
 <figure markdown="span">
 ```mermaid
@@ -206,57 +184,53 @@ Esmaspäeval jooksutab Kati Ansible'i, sest lisas uue kasutaja. Ansible'i `templ
 sequenceDiagram
     participant G as Git (playbook)
     participant S as Server
-    participant M as Mati
-    participant K as Kati
-    G->>S: reede päeval: 1m (ühtlustatud)
-    M->>S: reede 02:00 käsitsi: 50m
-    Note over G,S: triiv: Git ütleb 1m, server 50m
-    K->>G: esmaspäev: lisab kasutaja
-    G->>S: ansible-playbook: nginx.conf tagasi 1m (changed=1)
-    Note over S: Mati parandus kadus
+    participant A as Administraator
+    G->>S: ansible-playbook: 1m (ühtlustatud)
+    A->>S: öösel käsitsi: 50m
+    Note over G,S: triiv: Gitis 1m, serveris 50m
+    G->>S: järgmine ansible-playbook: tagasi 1m (changed=1)
+    Note over S: käsitsi muudatus kadus
 ```
-  <figcaption>Joonis 9.3. Triiv tekib käsitsi muudatusest ja kaob järgmisel deklaratiivsel jooksul. Kaob ka muudatus, kui see Giti ei jõudnud (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 9.3. Triiv tekib käsitsi muudatusest ja kaob järgmisel deklaratiivsel käivitusel. Koos sellega kaob muudatus, mis Giti ei jõudnud (Talvik, 2026).</figcaption>
 </figure>
 
-Kas Ansible tegi valesti? Ei. Ta tegi täpselt seda, milleks ta on: viis serveri tagasi kirjeldatud olekusse. Viga oli selles, et parandus jäi Gitist välja. Õige käik pärast öist häiret on hommikul sama muudatus playbooki panna ja PR teha.
+Ansible tegi seda, mida playbook kirjeldab: seadistas faili malli järgi. Viga oli selles, et muudatus jäi Gitist välja. Pärast käsitsi parandust tuleb sama muudatus kirjutada malli või muutujasse ja teha pull request.
 
-Triivi saab ka **tuvastada** ilma midagi muutmata. `ansible-playbook --check --diff` näitab, mida Ansible muudaks, ja jätab serveri puutumata. Praktikumi boonusülesandes proovid seda.
-
-??? question "Kontrolli ennast"
-    1. Mis on triiv? Selgita Mati näite abil.
-    2. Mis oleks pidanud Mati tegema esmaspäeva hommikul, et Kati jooks tema parandust üle ei kirjutaks?
-    3. Ansible't jooksutatakse ainult siis, kui keegi seda käsitsi teeb. Mitu kuud võib triiv märkamatult kesta?
-
-## 6. Ansible ei mäleta, mida ta tegi
-
-Kui sa seda ei tea, kustutad ühel päeval playbookist rea ja imestad, miks see asi serveris ikka olemas on.
-
-Ansible ei mäleta midagi. Iga kord, kui playbook jookseb, vaatab Ansible serverit justkui esimest korda. Ta ei tea, mis ta eelmisel korral tegi.
-
-Proovi mõttes: N3 `nginx.yml` paigaldas nginx'i. Nüüd kustutad playbookist nginx'i task'i ja käivitad uuesti. Mis juhtub serveris? Mitte midagi. Nginx jääb paigaldatuks ja töötab edasi. Ansible ei mäleta, et ta selle kunagi pani, ja playbookis pole enam ühtegi rida, mis nginx'ist räägiks. Nginx'i eemaldamiseks pead kirjutama task'i `state: absent`.
-
-N10-s näed tööriista, mis mäletab olekut.
+Triivi saab ka tuvastada ilma midagi muutmata. Käsk `ansible-playbook --check --diff` näitab, mida Ansible muudaks, ja jätab serveri puutumata. Praktikumi lisaülesandes proovid seda.
 
 ??? question "Kontrolli ennast"
-    1. Kustutasid playbookist nginx'i task'i ja jooksutasid uuesti. Miks nginx ikka töötab?
+    1. Mis on triiv? Selgita `client_max_body_size` näitel.
+    2. Mida peab administraator tegema pärast käsitsi parandust, et järgmine käivitus seda üle ei kirjutaks?
+    3. Playbook'i käivitatakse ainult siis, kui keegi seda käsitsi teeb. Kui kaua võib triiv märkamatult kesta?
+
+## 6. Ansible ei salvesta, mida ta tegi
+
+Ansible ei pane kuskile kirja, mida ta eelmisel käivitusel tegi. Iga käivitus kontrollib serverit uuesti, nagu esimest korda.
+
+Playbook `nginx.yml` paigaldas nginx'i. Kui kustutad playbook'ist nginx'i task'i ja käivitad selle uuesti, jääb nginx serverisse ja töötab edasi. Playbook'is ei ole enam ühtegi rida nginx'i kohta ja Ansible'il ei ole kirjas, et ta selle kunagi paigaldas. Nginx'i eemaldamiseks on vaja task'i, kus on `state: absent`.
+
+N10 tööriist OpenTofu salvestab oleku faili ja seetõttu käitub selles olukorras teisiti.
+
+??? question "Kontrolli ennast"
+    1. Kustutasid playbook'ist nginx'i task'i ja käivitasid selle uuesti. Miks nginx ikka töötab?
 
 ## 7. Muudetav ja muutumatu infrastruktuur
 
-Triivi saab vältida kahel viisil: kas parandad serverit pidevalt kirjelduse järgi või ei paranda seda kunagi ja vahetad välja. N5-s Dockeriga tegid juba teist.
+Triivi saab vältida kahel viisil. Võib serverit pidevalt kirjelduse järgi parandada või seda üldse mitte muuta ja vajaduse korral uuega asendada.
 
-Mati server on **muudetav** (mutable) infrastruktuur. See on üks ja sama masin kuus aastat. Sellele paigaldatakse uuendusi, muudetakse faile, lisatakse pakette. Iga muudatus on väike, aga aastatega koguneb masinasse asju, mida keegi ei mäleta. Ansible hoiab sellist masinat korras, aga ainult nende asjade osas, mis playbookis kirjas on.
+Käsitsi hoitud server on **muudetav** (mutable) infrastruktuur. See on üks ja sama masin aastaid: sellele paigaldatakse uuendusi, muudetakse faile ja lisatakse pakette. Iga muudatus on väike, aga aastatega koguneb masinasse seadistusi, mida keegi ei mäleta. Ansible hoiab sellist masinat korras ainult nende asjade osas, mis playbook'is kirjas on.
 
-**Muutumatu** (immutable) infrastruktuur tähendab: masinat või konteinerit pärast käivitamist ei muudeta. Kui on vaja uut versiooni, ehitatakse uus ja vana visatakse ära. Meenuta N5: kui muutsid `app.py`-d, ei läinud sa jooksvasse konteinerisse faili parandama. Ehitasid uue image'i ja käivitasid uue konteineri. See oli muutumatu infrastruktuur.
+**Muutumatu** (immutable) infrastruktuur tähendab, et masinat või konteinerit pärast käivitamist ei muudeta. Uue versiooni jaoks ehitatakse uus ja vana kustutatakse. Kui Dockeri rakenduses muutub `app.py`, ei parandata faili töötavas konteineris. Ehitatakse uus image ja käivitatakse sellest uus konteiner.
 
-Inglise keeles räägitakse sellest **lemmikloomade ja kariloomade** (pets vs cattle) võrdlusega:
+Inglise keeles kasutatakse selle kohta võrdlust **lemmikloomad ja kariloomad** (pets vs cattle).
 
-??? note "Tabel 9.4. Lemmikloom ja kariloom. Mida rohkem su masinad on kariloomad, seda vähem on triivi"
+??? note "Tabel 9.4. Lemmikloom ja kariloom"
     | | Lemmikloom (pet) | Kariloom (cattle) |
     |---|---|---|
-    | Nimi | `mati-veeb-01`, kõik teavad teda | `web-7f3a`, number |
-    | Kui jääb haigeks | ravid, ööd läbi | asendad uuega |
+    | Nimi | `veeb-01`, kõik tunnevad seda | `web-7f3a`, number |
+    | Kui on rikkis | parandatakse | asendatakse uuega |
     | Kuidas tekkis | käsitsi, aastate jooksul | koodist, minutitega |
-    | Näide kursusel | Märteni server N2-s | Docker konteiner N5-6 |
+    | Näide | käsitsi seadistatud server | Dockeri konteiner |
 
 <figure markdown="span">
 ```mermaid
@@ -268,24 +242,22 @@ graph TB
     subgraph U["Muutumatu"]
         U1[image v1] --> C1[konteiner v1]
         U2[image v2] --> C2[konteiner v2]
-        C1 -. visatakse ära .-> X[prügikast]
+        C1 -. kustutatakse .-> X[prügikast]
     end
 ```
-  <figcaption>Joonis 9.4. Muudetav server kogub aja jooksul muudatusi, mida keegi ei mäleta. Muutumatu infrastruktuur ehitab iga kord uue ja viskab vana ära (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 9.4. Muudetav server kogub aja jooksul muudatusi, mida keegi ei mäleta. Muutumatu infrastruktuuri puhul ehitatakse iga kord uus ja vana kustutatakse (Talvik, 2026).</figcaption>
 </figure>
 
-Firmades on tavaliselt mõlemat. Andmebaasiserver on sageli lemmikloom, sest andmeid ei saa lihtsalt minema visata. Veebiserverid on kariloomad. Oluline on teada, kumb mingi masin on, ja hoida lemmikloomi vähe.
+Firmades on tavaliselt mõlemat. Andmebaasiserver on sageli lemmikloom, sest andmeid ei saa lihtsalt kustutada. Veebiserverid on sageli kariloomad. Lemmikloomi tasub hoida vähe.
 
 ??? question "Kontrolli ennast"
-    1. Miks ei tekki Docker konteineris triivi samal moel nagu Mati serveris?
-    2. Kas Lab 03 `proxmox1` oli lemmikloom või kariloom? Põhjenda.
+    1. Miks ei teki Dockeri konteineris triivi samal moel nagu käsitsi hoitud serveris?
+    2. Kas virtuaalmasin, mille oled ise käsitsi ja Ansible'iga seadistanud, on lemmikloom või kariloom? Põhjenda.
     3. Too üks põhjus, miks andmebaas jääb sageli lemmikloomaks.
 
-## 8. IaC spekter: kus iga tööriist asub
+## 8. Millist kihti iga tööriist haldab
 
-Tööriistad ei konkureeri omavahel, nad katavad erinevaid kihte. Kui näed, mis kiht on kelle oma, oskad valida õige tööriista ja ei püüa ühe tööriistaga teha kõike.
-
-Kujuta ette maja ehitamist. Kõigepealt on vaja krunti ja vundamenti (masinad, võrgud). Siis seinu ja juhtmeid (operatsioonisüsteem, paketid, konfiguratsioon). Siis mööblit (rakendused). Iga kihi jaoks on eri meister.
+Tööriistad on eri kihtide jaoks. Masinad ja võrgud luuakse esimesena, siis seadistatakse operatsioonisüsteem, paketid ja konfiguratsioon ning viimasena paigaldatakse rakendused.
 
 <figure markdown="span">
 ```mermaid
@@ -303,44 +275,37 @@ graph TB
   <figcaption>Joonis 9.5. Kolm kihti ja Git, mis hoiab kõigi kolme kirjelduste ajalugu (Talvik, 2026).</figcaption>
 </figure>
 
-??? note "Tabel 9.5. Seni kasutatud tööriistad ühe pilguga. Praktikumi boonusülesandes täidad sarnase tabeli ise ja lisad viite oma laborile"
-    | Tööriist | Kiht | Lähenemine | Idempotentne | Mäletab olekut |
+??? note "Tabel 9.5. Kursusel kasutatud tööriistade võrdlus"
+    | Tööriist | Kiht | Lähenemine | Idempotentne | Salvestab oleku |
     |---|---|---|---|---|
-    | Bash skript | ükskõik mis | imperatiivne | ainult kui ise ehitad | ei |
-    | Ansible | serveri konfiguratsioon | deklaratiivne (moodulid) | jah, kui moodulid | ei |
-    | Dockerfile | image | imperatiivne sees, tulemus muutumatu | korduv build annab sama image, vahemälu jätab tehtu vahele | ei |
-    | Docker Compose | konteinerid | deklaratiivne | jah | Docker teab, mis jookseb |
+    | Bashi skript | ükskõik milline | imperatiivne | ainult kui lisad kontrolli | ei |
+    | Ansible | serveri konfiguratsioon | deklaratiivne (moodulid) | jah, moodulitega | ei |
+    | Dockerfile | image | sees imperatiivne, tulemus muutumatu | korduv build annab sama image'i, vahemälu jätab tehtud sammud vahele | ei |
+    | Docker Compose | konteinerid | deklaratiivne | jah | Docker teab, millised konteinerid töötavad |
 
-Git on kõigi all. Ilma Gitita on iga ülaltoodud fail lihtsalt fail sinu kettal ja sa oled tagasi Mati mälu juures.
+Git on kõigi kihtide all. Ilma Gitita on iga fail lihtsalt fail ühe inimese kettal.
 
 ??? question "Kontrolli ennast"
-    1. Firma tahab 10 serverisse nginx'i ja igasse serverisse Docker konteinerit. Milline tööriist teeb millise osa?
-    2. Miks on Dockerfile tabelis „imperatiivne sees, tulemus muutumatu“?
+    1. Firma tahab 10 serverisse nginx'i ja igasse serverisse Dockeri konteinerit. Milline tööriist teeb millise osa?
+    2. Miks on Dockerfile tabelis „sees imperatiivne, tulemus muutumatu“?
 
-## Kokkuvõte
+??? abstract "Kokkuvõte"
+    Infrastruktuur koodina tähendab, et kõik, mis serveris ja selle ümber peab olema, on kirjeldatud failides Gitis. Imperatiivne kood kirjeldab samme, deklaratiivne tulemust. Deklaratiivne tööriist võrdleb soovitud olekut tegelikuga ja muudab ainult erinevust. Idempotentse tööriista võib käivitada mitu korda ja tulemus on sama. Käsitsi muudatus tekitab triivi, mille järgmine käivitus üle kirjutab. Ansible ei salvesta, mida ta eelmisel korral tegi. Muutumatu infrastruktuuri puhul vahetatakse masin või konteiner uuega ja triivi ei teki.
 
-Infrastruktuur koodina tähendab, et kõik, mis serveris ja selle ümber peab olema, on failides Gitis. Imperatiivne kood ütleb, kuidas; deklaratiivne ütleb, mis. Deklaratiivne tööriist võrdleb soovitud olekut tegelikuga ja muudab ainult vahet. Idempotentne tööriist võib joosta mitu korda ja tulemus on sama. Käsitsi muudatus tekitab triivi, mille järgmine jooks üle kirjutab. Ansible ei mäleta, mida ta eelmisel korral tegi. Muutumatu infrastruktuur väldib triivi sellega, et vahetab välja, selle asemel et parandada.
-
-### Mõisted ühe pilguga
-
-??? note "Tabel 9.6. Mõisted ühe pilguga"
-    | Mõiste | Selgitus | Kus nägid |
+    | Mõiste | Selgitus | Näide |
     |---|---|---|
-    | **Imperatiivne** | kirjeldad samme | `monitor.sh` |
-    | **Deklaratiivne** | kirjeldad tulemust | `nginx.yml`, `docker-compose.yml` |
-    | **Soovitud olek** | mis peab olema | fail Gitis |
-    | **Ühtlustamine** | tööriist võrdleb ja parandab vahet | `docker compose up -d` |
-    | **Idempotentsus** | korduv käivitus ei muuda tulemust | `changed=0` |
-    | **Triiv** | server erineb kirjeldusest käsitsi muudatuse tõttu | Mati öine parandus |
-    | **Muutumatu infrastruktuur** | ei paranda, vaid ehitab uue ja vahetab | Docker image (N5) |
-    | **Pets vs cattle** | ravitav lemmikloom ja asendatav kariloom | Märteni server ja konteiner |
+    | Imperatiivne | kirjeldad samme | `monitor.sh` |
+    | Deklaratiivne | kirjeldad tulemust | `nginx.yml`, `docker-compose.yml` |
+    | Soovitud olek | mis peab olema | fail Gitis |
+    | Ühtlustamine | tööriist võrdleb ja muudab erinevuse | `docker compose up -d` |
+    | Idempotentsus | korduv käivitus ei muuda tulemust | `changed=0` |
+    | Triiv | server erineb kirjeldusest käsitsi muudatuse tõttu | käsitsi muudetud `client_max_body_size` |
+    | Muutumatu infrastruktuur | uus versioon ehitatakse uuena ja vana kustutatakse | Dockeri image |
+    | Pets vs cattle | parandatav lemmikloom ja asendatav kariloom | käsitsi hoitud server ja konteiner |
 
-## 🎯 Lõplik kontroll
-
-1. Selgita retsepti ja tellimuse abil imperatiivse ja deklaratiivse vahet. Too näide oma laboritest.
-2. Kirjelda ühtlustamise tsükli iga sammu Docker Compose'i näitel.
-3. Mis juhtub Mati käsitsi parandusega järgmisel Ansible'i jooksul ja kuidas seda vältida?
-4. Kustutad playbookist ühe task'i. Mis juhtub serveris?
-5. Kati firma tahab, et ühegi serveri kaotus ei võtaks rohkem kui tund. Mida sa neile soovitad?
-
-*Praktikumis katsetad neid mõtteid Dockeriga: vaatad, kuidas Compose ühtlustab, kuidas bash-skript teisel korral kukub, ja kirjutad Mati triivi loo lõpuni.*
+??? question "Kontrolli ennast"
+    1. Selgita süüa tellimise näitel imperatiivse ja deklaratiivse vahet. Too näide praktikumidest.
+    2. Kirjelda ühtlustamise tsükli iga sammu Docker Compose'i näitel.
+    3. Mis juhtub käsitsi parandusega järgmisel Ansible'i käivitusel ja kuidas seda vältida?
+    4. Kustutad playbook'ist ühe task'i. Mis juhtub serveris?
+    5. Firma tahab, et ühe serveri kaotusest taastumine ei võtaks rohkem kui tund. Mida soovitad?
