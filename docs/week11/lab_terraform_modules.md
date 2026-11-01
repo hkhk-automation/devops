@@ -405,7 +405,7 @@ Kontrolli et mõlemad failid tekkisid ja siis kadusid.
 
 ---
 
-## Lisaülesanded (kui jõuad ette)
+## Lisaülesanded
 
 1. **Loop:** uuri `for_each` / `count`, loo viis faili **ühe** `module` plokiga.
 2. **Uus resource:** uuri mis muid resource'e `hashicorp/local` pakub, lisa moodulisse kaustaloomine.

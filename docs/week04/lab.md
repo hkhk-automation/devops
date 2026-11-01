@@ -22,10 +22,10 @@ tags:
     2. Kirjutad Jinja2 malli ja tead, miks `template:` ≠ `copy:`
     3. Paned handleri teenust uuesti laadima ainult siis, kui config muutus
     4. Krüpteerid saladuse Vault'iga ja käivitad playbooki sellega
-    5. **Diagnoosid** vigu veateate järgi (jutumärgid, undefined variable, mall ei asendu, no vault secrets)
+    5. **Leiad** veateate järgi vigade põhjuse (jutumärgid, undefined variable, mall ei asendu, no vault secrets)
     6. **Ennustad** enne käivitamist, mis muutub (`--check --diff`), ja selgitad, miks handler mõnikord ei käivitu
     7. **Lisad ise** uue teenuse (pakett + mall + teenus + handler) ilma samm-sammulise juhiseta
-    8. **Diagnoosid kaaslase tekitatud vea** ainult veateate ja tööriistade abil
+    8. **Leiad kaaslase tekitatud vea põhjuse** ainult veateate ja tööriistade abil
     9. **Leiad** Ansible'i ametlikust dokumentatsioonist mooduli, parameetri, lubatud väärtused ja näite
     10. **Praktiseerid Gitti**: töötad harul, teed mõttekaid commit'e, võtad muudatuse `git revert`-iga tagasi ja teed paarilise PR-ile review'd
 
@@ -282,7 +282,7 @@ ansible-playbook -i inventory.ini nginx.yml
 
 **Viga:** `We could be wrong, but this one looks like it might be an issue with missing quotes`.
 
-??? question "Diagnoosi enne kui parandad"
+??? question "Leia põhjus enne parandamist"
     YAML-is tähendab `{` sõnastiku algust. Kui väärtus **algab** `{{`-ga, arvab YAML, et see on sõnastik. Mis teeb talle selgeks, et see on tekst?
 
 **Paranda:** `name: "{{ paketi_nimi }}"`. Käivita: `changed=0`, sama tulemus. Väärtus on nüüd loogikast eraldi.
@@ -326,7 +326,7 @@ Kustuta `vars:` plokk playbookist. Nüüd **tee meelega viga:** nimeta muutuja f
 
 **Viga:** `'paketi_nimi' is undefined`.
 
-??? question "Diagnoosi"
+??? question "Leia põhjus"
     Ansible otsib `group_vars/`-i **inventory** (või playbooki) kõrvalt, ja kausta `all/` sisu kehtib kõigile hostidele. Nimi peab tähthaaval klappima. Kaks võimalikku põhjust: kumb on sinul?
 
 **Ära arva, küsi Ansible'ilt.** Vaata, mida ta sinu hostile tegelikult näeb:
@@ -393,7 +393,7 @@ ssh proxmox1 "curl -s localhost"
 
 Lehel on sõna-sõnalt `{{ omaniku_nimi }}`. Kas ennustasid nii?
 
-??? question "Diagnoosi"
+??? question "Leia põhjus"
     `copy` viib faili **muutmata**. Kes `{{ }}` asendab ja mis moodulis?
 
 **Paranda:** `ansible.builtin.copy` → `ansible.builtin.template`. Käivita ja tee `curl` uuesti: nüüd on lehel su nimi ja `proxmox1`. `inventory_hostname` väärtust sa kuskile ei kirjutanud, see on erimuutuja (N3).
@@ -425,7 +425,7 @@ ssh proxmox1 "curl -sI localhost"
 
 Task oli `changed`, fail on sõlmes, aga `X-Hallatud` päist vastuses **pole**.
 
-??? question "Diagnoosi"
+??? question "Leia põhjus"
     Nginx loeb konfiguratsiooni käivitamisel. Fail muutus, teenus sellest ei tea. `service` task ütleb `state: started`, aga ta on juba started, seega ei tee midagi. Mis peab juhtuma pärast config muutust?
 
 **Paranda**: lisa task'ile `notify` ja playbooki lõppu `handlers:` (`tasks:`-iga samal tasemel):
@@ -447,7 +447,7 @@ Task oli `changed`, fail on sõlmes, aga `X-Hallatud` päist vastuses **pole**.
 
 Käivita. Päist **ikka pole**.
 
-??? question "Diagnoosi: miks ikka mitte?"
+??? question "Leia põhjus: miks ikka mitte?"
     Vaata task'i olekut: `ok`, mitte `changed`. Fail oli juba eelmisest käivitusest paigas. Millal handler käivitub?
 
 **Paranda:** muuda mallis väärtust (nt `"ansible-{{ inventory_hostname }}-v2"`), käivita. Task `changed` → handler käivitub play lõpus → `curl -sI localhost` näitab `X-Hallatud`. Käivita veel kord: task `ok`, handlerit ei kutsuta, nginx jääb rahule.
@@ -575,7 +575,7 @@ ansible-playbook -i inventory.ini nginx.yml
 
 **Viga:** `Attempting to decrypt but no vault secrets found`.
 
-??? question "Diagnoosi"
+??? question "Leia põhjus"
     Ansible leidis `group_vars/all/vault.yml`, aga see on krüpteeritud ja sa ei andnud parooli. Mis lipp käsule puudu?
 
 **Paranda:**
@@ -708,7 +708,7 @@ Play katkes (`failed=1`), template task oli `changed`, aga `RUNNING HANDLER` rid
 
 **3. Eemalda "Meelega katki" task ja käivita uuesti.** Template on nüüd `ok` (fail on juba sõlmes), seega handlerit **ei kutsuta**. Vaata päist.
 
-??? question "Diagnoosi"
+??? question "Leia põhjus"
     Päis on **ikka vana**, vigu pole, kõik `ok`. Kus on vana väärtus ja miks Ansible ei tea, et midagi on valesti? Kuidas seda tootmises märgata?
 
 **4. Paranda kahel viisil:**
@@ -852,7 +852,7 @@ Sa kasutad kausta `/etc/chrony.d/`. Kui `confdir` rida puudub, anna õpetajale t
 
 Kuni siiani sa tekitasid vigu **ise** ja teadsid, mida oodata. Töös sa ei tea. Nüüd murrab **kaaslane** sinu playbooki ja sina otsid vea üles, ainult veateate ja tööriistade abil.
 
-**Diagnoosi plaan**: kui midagi on valesti, ära hakka juhuslikult muutma. Mine seda puud mööda:
+**Põhjuse otsimise plaan**: kui midagi on valesti, ära hakka juhuslikult muutma. Mine seda puud mööda:
 
 <figure markdown="span">
 ```mermaid
@@ -873,13 +873,13 @@ graph TD
 
 1. **Enne alustamist commit'i** oma töö oma harul `n04-vault` (`git add -A && git commit -m "töötav"`; `.vault_pass` ei lähe commitisse). Nii on sul alati `git restore .`.
 2. **Murdja** (kaaslane) valib **ühe** vea allolevast menüüst ja teeb selle sinu arvutis, kui sa ära vaatad. Ta **ei ütle**, mis viga on.
-3. **Diagnoosija** (sina) kasutab: veateadet, `--check --diff`, `ansible-inventory --host`, `git diff` (viimasena, alles kui oled ise kindel). **Kolm katset**, siis võib küsida vihjet. Vähemalt ühe vea puhul leia vastus ametlikust dokumentatsioonist ja lisa link faili `logid/dokumendid.txt`.
+3. **Parandaja** (sina) kasutab: veateadet, `--check --diff`, `ansible-inventory --host`, `git diff` (viimasena, alles kui oled ise kindel). **Kolm katset**, siis võib küsida vihjet. Vähemalt ühe vea puhul leia vastus ametlikust dokumentatsioonist ja lisa link faili `logid/dokumendid.txt`.
 4. Kui parandatud, vahetage rolle.
 
 ??? warning "Vigade menüü: ainult murdjale"
     Igal juhul murdja **muudab enne mallis `hallatud.conf.j2` väärtust** (`-v5`), et task oleks `changed` ja `notify`-vead ilmneksid.
 
-    | # | Mida murda | Mida diagnoosija näeb |
+    | # | Mida murda | Mida parandaja näeb |
     |---|---|---|
     | 1 | `notify:` nimi kirjaveaga (`Laadi nginx uuseti`) | `The requested handler ... was not found` |
     | 2 | Tõsta `vault.yml` kausta `group_vars/` (`all/` väljast) | `Saladus laetud: False`, viga puudub |
@@ -945,14 +945,14 @@ Testid 1–6 peavad olema ✅. Test 7 on kodutöö.
 - [ ] Ennustad enne käivitamist `--check --diff` abil, mis muutub
 - [ ] Selgitad, mis juhtub handleriga, kui play katkeb, ja kuidas seda parandada
 - [ ] Lisasid ise teise teenuse (pakett + mall + teenus + handler) ilma juhendita
-- [ ] Diagnoosisid kaaslase vea ilma tema vihjeta
+- [ ] Leidsid kaaslase vea põhjuse ilma tema vihjeta
 - [ ] Leiad mooduli parameetri ja lubatud väärtused ametlikust dokumentatsioonist ning oled need kirja pannud (`logid/dokumendid.txt`)
 - [ ] `vault.yml` on krüpteeritud, `.vault_pass` on `.gitignore`-is
 - [ ] `bash kontroll.sh` testid 1–6 ✅
 
 ---
 
-## Lisaülesanded (kui jõuad ette)
+## Lisaülesanded
 
 1. **Kolm sõlme:** lisa `[web]` alla `proxmox2` ja `proxmox3`. Kas iga leht näitab oma serveri nime?
 2. **Saladus diff'is:** tee mall `templates/rakendus.env.j2` (`DB_PASSWORD={{ db_password }}`), pane sõlme `/etc/rakendus.env` (`mode: '0600'`, `owner: root`). Käivita `--check --diff`. **Näed parooli?** Lisa task'ile `no_log: true` ja käivita uuesti. Mis muutus? Miks on see CI logide jaoks oluline?

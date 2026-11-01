@@ -21,7 +21,7 @@ tags:
     1. Genereerid rolli skeleti `ansible-galaxy init`-iga ja tunned iga kausta otstarvet
     2. Kirjutad töötava nginx-rolli kihthaaval (tasks → defaults → template)
     3. Kutsud rolli välja `site.yml`-ist, kirjutad muutuja üle
-    4. **Diagnoosid** miks `nginx_port` muutuja ei muuda tegelikku porti
+    4. **Leiad**, miks `nginx_port` muutuja ei muuda tegelikku porti
     5. Paigaldad ja kasutad Galaxy kogukonna rolli
 
 ---
@@ -167,7 +167,7 @@ curl http://<IP>:8080
 
 **Ei vasta.** Leht ütleb "8080", aga nginx kuulab ikka 80.
 
-??? question "Diagnoosi"
+??? question "Leia põhjus"
     `nginx_port` on praegu ainult HTML-i sees **dekoratiivne tekst**. Kuskil pole task'i, mis nginx'i **konfiguratsiooni** (mitte HTML-i) muudaks. Mis fail peaks olema malliks tehtud, et port päriselt muutuks? (Vihje: `/etc/nginx/sites-available/default`, `listen {{ nginx_port }};`.)
 
 See on tahtlik lõks — muutuja olemasolu ei tähenda et ta midagi mõjutab. Päris pordi muutmine jääb lisaülesandeks. Taasta `nginx_port: 80`.
@@ -241,7 +241,7 @@ ssh <kasutaja>@<IP> "git --version"
 
 ---
 
-## Lisaülesanded (kui jõuad ette)
+## Lisaülesanded
 
 1. **Päris port.** Loo `templates/nginx.conf.j2` (baseeru `/etc/nginx/sites-available/default`), `listen {{ nginx_port }};`, lisa `template` task + `notify: restart nginx`.
 2. **Handlers.** `handlers/main.yml`: `restart nginx` (`service: state: restarted`). Kutsu `notify:`-ga, veendu et käivitub ainult siis kui fail muutus.

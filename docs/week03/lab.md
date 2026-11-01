@@ -19,7 +19,7 @@ tags:
     Praktikumi lõpuks oskad:
 
     1. ehitada playbooki task'i kaupa ja testida seda igal sammul;
-    2. **diagnoosida** veateate järgi kolme tüüpilist viga (permission denied, katkine idempotentsus, sisu ja olemasolu erinevus);
+    2. **leida** veateate järgi kolme tüüpilise vea põhjuse (permission denied, katkine idempotentsus, sisu ja olemasolu erinevus);
     3. selgitada idempotentsust näite põhjal: millal on tulemus `changed` ja millal `ok` ning miks `shell:` idempotentsuse lõhub;
     4. paigaldada playbookiga nginx'i nii, et Märteni monitor näitab teenust töötavana. Ansible teeb koodina ära selle, mida Märten käsitsi tehes ei dokumenteerinud.
 
@@ -141,7 +141,7 @@ ansible-playbook -i inventory.ini nginx.yml
 
 **Viga:** näed teadet, mis sarnaneb `Permission denied` või `This command has to be run under the root user`.
 
-??? question "Diagnoosi enne parandamist"
+??? question "Leia põhjus enne parandamist"
     SSH-kasutaja ei ole root, kuid paketi paigaldamiseks on vaja root-õigusi. Milline rida ütles Ansible'ile, et käsk tuleb käivitada sudo abil, ja mis juhtus, kui selle eemaldasid? Miks Ansible ei kasuta sudo't vaikimisi?
 
 **Paranda:** pane rida `become: true` tagasi, käivita playbook ja veendu, et see läbib. `Permission denied` puhul kontrolli kõigepealt, kas task vajab root-õigusi ja kas `become` on sisse lülitatud.
@@ -190,7 +190,7 @@ ansible-playbook -i inventory.ini nginx.yml
 
 **Vaata tulemust:** see task on igal käivitusel **changed**. Kolm käivitust annavad kolm korda `changed`.
 
-??? question "Diagnoosi"
+??? question "Leia põhjus"
     `package` ja `service` **kontrollivad olekut** enne tegutsemist. `shell:` ei kontrolli midagi: moodul käivitab käsu ja raporteerib vaikimisi `changed`, sest Ansible ei tea, mida käsk tegi. Miks on pidev `changed` halb, kui sul on 50 sõlme ja Märteni monitor käib cron'is?
 
 **Paranda:** kui käsk peab käima ainult ühe korra, lisa `creates`. Siis jätab Ansible task'i vahele, kui fail on juba olemas:
@@ -277,7 +277,7 @@ Nginx'i paigaldus on nüüd playbookis kirjas: seda saab korrata, see on dokumen
 
 ---
 
-## Lisaülesanded (kui jõuad ette)
+## Lisaülesanded
 
 1. **Kolm sõlme korraga.** Lisa faili `inventory.ini` gruppi `[web]` sõlmed `proxmox2` ja `proxmox3` ning käivita sama playbook kõigis. Üks fail haldab kolme sõlme: selleks Ansible'it kasutataksegi.
 2. **`--check`:** käivita `ansible-playbook -i inventory.ini nginx.yml --check`. Mida see režiim teeb, kui tegelikke muudatusi ei tehta? Millal on see enne tootmiskeskkonda kasulik?

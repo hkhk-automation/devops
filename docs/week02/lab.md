@@ -22,12 +22,12 @@ tags:
     1. luua repo algusest peale ja selgitada, miks repo on kaust `.git/` sinu masinas ja GitHub on selle koopia;
     2. peatada saladuse `.gitignore`-i abil **enne** esimest push'i;
     3. kaitsta `main`-haru ja kontrollida, et reegel kehtib ka sinu enda kohta;
-    4. **diagnoosida** skripti käivitades neli viga, millest igaüks annab eri tüüpi signaali (veateade, vaikne tõrge, õiguste viga, eksitav kontroll);
+    4. **leida** skripti käivitades nelja vea põhjuse. Iga viga annab eri tüüpi signaali (veateade, vaikne tõrge, õiguste viga, eksitav kontroll);
     5. lahendada liitmiskonflikti ja selgitada, miks Git ei vali versiooni sinu eest.
 
 ---
 
-Praktikumi ülesehitus: **baas → kaitse → viga → parandus → viga → diagnoos → parandus → konflikt → lahendus.** Vigu ei ole ette loetletud. Need tulevad välja skripti käivitades ükshaaval ja igaüks annab märku erineval viisil. Sinu ülesanne on õppida neid signaale lugema.
+Praktikumi ülesehitus: **baas → kaitse → viga → parandus → viga → põhjuse otsimine → parandus → konflikt → lahendus.** Vigu ei ole ette loetletud. Need tulevad välja skripti käivitades ükshaaval ja igaüks annab märku erineval viisil. Sinu ülesanne on õppida neid signaale lugema.
 
 ---
 
@@ -177,7 +177,7 @@ git push origin main
 
 **Viga:** `remote: error: GH006: Protected branch update failed` / `protected branch hook declined`.
 
-??? question "Diagnoosi enne parandamist"
+??? question "Leia põhjus enne parandamist"
     Loe veateadet: eesliide `remote:` näitab, **kes** keeldus. Sinu masin lubas commiti teha ja lokaalne ajalugu on olemas. Miks lokaalne Git seda ei takistanud? Kus reegel tegelikult kehtib?
 
 Sinu enda reegel peatas sinu push'i. Lokaalne commit on aga alles ja tuleb eemaldada:
@@ -282,7 +282,7 @@ Esimene käivitus annab tulemuseks:
 monitor.sh: line 12: servis: command not found
 ```
 
-??? question "Diagnoosi enne parandamist"
+??? question "Leia põhjus enne parandamist"
     Veateade annab kolm asja: faili, rea numbri ja käsu, mis ebaõnnestus. Käsku `servis` Linuxis ei ole, Märten kirjutas selle mälu järgi. Mis on **õige** käsk teenuse oleku kontrollimiseks? (1. nädalal kasutasid `systemctl`-i juba.)
 
 **Paranda** viga oma masinas VS Code'is, mitte sihtmärgil, sest repo asub sinu masinas ja parandus peab jõudma ajalukku:
@@ -311,7 +311,7 @@ Skript lõpetas töö, kuid logifaili ei tekkinud. See on järgmist tüüpi viga
 
 ### 6.4 Viga 2: vaikne tõrge
 
-??? question "Diagnoosi enne parandamist"
+??? question "Leia põhjus enne parandamist"
     Vaata `else`-haru tähelepanelikult. `$LOQ`: Q, mitte G. Bash ei anna defineerimata muutuja kohta hoiatust: `$LOQ` on lihtsalt tühi string. Kuhu läheb väljund, kui `>> ` järel on tühi nimi? Miks on see viga ohtlikum kui viga 1 ja kumba neist märkad kiiremini?
 
 See on **vaikne tõrge**: skript ei anna märku probleemist, kuid tulemust ei ole. See viga tekib just siis, kui teenus ei tööta, ehk olukorras, kus logi on kõige rohkem vaja. Märteni monitooringuskript ei salvestanud teenuse tõrget.
@@ -324,7 +324,7 @@ monitor.sh: line 18: /var/log/monitor.log: Permission denied
 
 ### 6.5 Viga 3: Permission denied
 
-??? question "Diagnoosi enne parandamist"
+??? question "Leia põhjus enne parandamist"
     See veateade on tuttav 1. nädalast, kuid olukord on teine. Kaust `/var/log/` kuulub root'ile, sina käivitad skripti tavakasutajana. Võimalikke parandusi on kaks: (a) käivita skript sudo'ga, (b) kirjuta logi kohta, kuhu sul on kirjutusõigus. Kumb sobib paremini monitooringuskriptile, mis peaks käivituma iga minut? Miks on "anna lihtsalt sudo" Märteni stiilis lahendus?
 
 **Paranda** viga. Skript ei vaja root-õigusi, kui need pole tööks vajalikud:
@@ -405,7 +405,7 @@ service $SERVIIS status
 >>>>>>> main
 ```
 
-??? question "Diagnoosi enne parandamist"
+??? question "Leia põhjus enne parandamist"
     `<<<`, `===` ja `>>>` on Giti markerid, mitte kood. `HEAD` on sinu versioon, teisel pool on see, mis vahepeal `main`-i jõudis. Kumb rida on õige ja kuidas sa seda **tead**, ilma oletamata? (Üht neist käivitasid just sihtmärgil.)
 
 Vali õige rida, kustuta markerid, kontrolli uuesti `git diff`-iga ja seejärel käivita:

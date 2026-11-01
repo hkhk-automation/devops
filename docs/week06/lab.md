@@ -18,7 +18,7 @@ tags:
     Selle labi lõpuks sa:
 
     1. Ehitad kolme-teenuse stacki üks teenus korraga, testides igal sammul
-    2. **Diagnoosid** viis tüüpilist Compose-viga veateate järgi (kadunud parool, vale host-nimi, 502, kadunud andmed, `.env`)
+    2. **Leiad** veateate järgi viie tüüpilise Compose-vea põhjuse (kadunud parool, vale host-nimi, 502, kadunud andmed, `.env`)
     3. Selgitad miks teenused suhtlevad **nime**, mitte IP järgi
     4. Selgitad miks andmed lähevad volume'i, mitte konteinerisse — ja tõestad seda
     5. Taastad puhta seisu ise tehtud sasi järel
@@ -84,7 +84,7 @@ docker compose logs db
 
 **Vaata mis juhtub.** `db` sureb kohe, logis midagi stiilis `Database is uninitialized and superuser password is not specified`.
 
-??? question "Diagnoosi enne kui parandad"
+??? question "Leia põhjus enne parandamist"
     PostgreSQL image keeldub käivitumast ilma parooli. Miks arvad, et image on **teadlikult** tehtud niimoodi keelduma, mitte vaikeparooliga käivituma?
 
 **Paranda** — lisa `db`-le keskkonnamuutujad:
@@ -148,7 +148,7 @@ curl localhost:5000/db-check
 
 **Viga:** `DB viga: ... Connection refused`. `127.0.0.1` konteineri sees tähendab **seda sama konteinerit**, mitte db-konteinerit. `web`-i sees pole ühtegi andmebaasi, mis pordil 5432 vastaks.
 
-??? question "Diagnoosi"
+??? question "Leia põhjus"
     Iga konteiner on oma `localhost`. `web` konteineri `127.0.0.1` ei ole `db` konteiner. Compose annab teenustele **nime**-põhise aadressi. Mis on siis õige host `web`-i jaoks?
 
 **Paranda** — IP asemel teenuse nimi `db`:
@@ -201,7 +201,7 @@ curl localhost:8080
 
 **502 Bad Gateway.**
 
-??? question "Diagnoosi"
+??? question "Leia põhjus"
     Vaata `docker compose logs nginx`. Seal on `connect() failed (111: Connection refused) while connecting to upstream`. nginx leidis `web`-i üles, aga keegi ei vastanud pordil 8000. 502 tähendab alati: nginx ise töötab, aga see, kelle juurde ta liikluse saadab, ei vasta. Mis port on Flaski `app.run` reas?
 
 !!! tip "Kui nginx ei käivitu üldse"
@@ -250,7 +250,7 @@ docker compose exec db psql -U postgres -d appdb -c "SELECT * FROM test;"
 
 **Tabelit pole.** Andmed kadusid.
 
-??? question "Diagnoosi"
+??? question "Leia põhjus"
     `down` kustutas konteinerid. PostgreSQL kirjutas andmed konteineri **sisemisse** failisüsteemi, mis kadus koos konteineriga. Kus peaksid andmed elama, et konteineri kustutamine neid ei puudutaks?
 
 **Paranda** — lisa `db`-le volume ja faili lõppu `volumes:` sektsioon:
@@ -310,7 +310,7 @@ docker compose config
 
 `docker compose config` näitab lõplikku faili, muutujad asendatud. Vaata väljundi algust ja `db` osa.
 
-??? question "Diagnoosi"
+??? question "Leia põhjus"
     Hoiatus `The "POSTGRES_PASWORD" variable is not set. Defaulting to a blank string.` ja `POSTGRES_PASSWORD: ""`. Compose ei peatu, vaid paneb parooliks tühja teksti. Miks on see ohtlikum kui päris viga? Paranda nimi ja asenda ka teised kohad.
 
 **Paranda:**
@@ -389,7 +389,7 @@ Hinne tuleb kontrollidest 1–6, kokku 80 punkti, ja 80/80 on täistulemus. Kont
 
 ---
 
-## Lisaülesanded (kui jõuad ette)
+## Lisaülesanded
 
 1. **Healthcheck:** lisa `db`-le `healthcheck`, muuda `web depends_on` → `condition: service_healthy`. Millal `depends_on` üksi ei piisa?
 2. **Neljas teenus:** Redis või pgAdmin stacki (vt kodutöö) — teenus haaval, testi eraldi.

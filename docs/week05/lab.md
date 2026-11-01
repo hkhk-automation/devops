@@ -915,7 +915,7 @@ Ava **Pull Request** `main`-i ja liida see (**Merge**), kui Actions on roheline.
 
 ---
 
-## Lisaülesanded (kui jõuad ette)
+## Lisaülesanded
 
 1. **`docker exec`:** mine töötava `web1` sisse (`docker exec -it web1 bash`) ja muuda käsitsi faili `/var/www/html/index.html`. Tee `docker stop web1` ja `docker start web1` (mitte `rm` + `run`) — kas muudatus säilis? Aga pärast `rm` + `run`? Selgita vahet.
 2. **`--no-cache`:** ehita käsuga `docker build --no-cache -t minu-nginx .`. Miks on see aeglasem? Millal seda vaja on?

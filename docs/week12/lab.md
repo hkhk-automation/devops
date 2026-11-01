@@ -21,7 +21,7 @@ tags:
 
     1. Laiendad ühe hosti playbook'i mitmele hostile inventory gruppidega
     2. Eraldad kaks keskkonda `group_vars`-iga — **sama kood**, erinevad väärtused
-    3. **Diagnoosid** kolm viga: host ei kuulu gruppi, muutuja vales failis, drift
+    3. **Leiad** kolme vea põhjuse: host ei kuulu gruppi, muutuja vales failis, drift
     4. Tekitad käsitsi drifti ja lased Ansible'il selle parandada (`changed` räägib)
     5. Võrdled Ansible't ja Terraformi konkreetse töö peal, mitte definitsioonist
 
@@ -109,7 +109,7 @@ ansible-playbook -i inventory.ini site.yml
 
 `PLAY RECAP` näitab ikka **kahte** hosti. `<host3>` jäi vahele — nginx sinna ei paigaldatud, aga viga ka ei antud. Vaikne möödaminek.
 
-??? question "Diagnoosi enne kui parandad"
+??? question "Leia põhjus enne parandamist"
     `site.yml` ütleb `hosts: web`. Host, mis on kirjas **enne** esimest `[grupp]` rida, kuulub Ansible's erigruppi `ungrouped` — mitte `web`-i. Miks on see vaikne (ei anna viga) ohtlikum kui vali viga? Kus päris elus tähendaks "üks server jäi seadistamata, aga keegi ei märganud"?
 
 Kontrolli kellele playbook päriselt rakendub:
@@ -211,7 +211,7 @@ curl http://<host2>
 
 Hoiatus ilmub **mõlemale** — ka stagingule, kuhu see ei kuulu.
 
-??? question "Diagnoosi enne kui parandad"
+??? question "Leia põhjus enne parandamist"
     `group_vars/all.yml` rakendub **kõigile** hostidele, sõltumata grupist. Sa tahtsid ainult tootmist. Mis failinimi paneks muutuja kehtima ainult `[production]` grupile? (Vihje: sama loogika mis `web.yml` → `[web]`.)
 
 **Paranda** — vii `hoiatus` rida `all.yml`-ist `production.yml`-i. Kustuta `all.yml` (või jäta tühjaks). Jooksuta, kontrolli — hoiatus ainult `<host1>`-l.
@@ -317,7 +317,7 @@ Push'i see repo-sse — las nädal 7 pipeline jookseb ka selle peal.
 
 ---
 
-## Lisaülesanded (kui jõuad ette)
+## Lisaülesanded
 
 1. **`--limit`:** jooksuta `site.yml` ainult ühel hostil (`--limit <host1>`). Millal tootmises kasulik?
 2. **`--check` + `--diff`:** `ansible-playbook site.yml --check --diff` — näitab mida **muudaks**, ilma tegemata. Riku üks host käsitsi, jooksuta `--check --diff`, vaata kuidas drift on näha ilma parandamata. Miks on see enne tootmist kullaväärt?
