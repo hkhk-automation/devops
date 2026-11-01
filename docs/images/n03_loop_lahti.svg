@@ -31,5 +31,5 @@
     <text x="490" y="248" fill="#311b92">user: ravi</text>
     <text x="830" y="248" text-anchor="end" font-family="Inter" font-size="11" fill="#7e57c2">item = ravi</text>
   </g>
-  <text x="450" y="330" text-anchor="middle" font-family="Inter" font-size="12" fill="#666">Sama moodul jookseb kord iga elemendi kohta; "item" hoiab parajasti käes olevat väärtust.</text>
+  <text x="450" y="330" text-anchor="middle" font-family="Inter" font-size="12" fill="#666">Sama moodul käivitub kord iga elemendi kohta; "item" on parajasti töödeldav väärtus.</text>
 </svg>

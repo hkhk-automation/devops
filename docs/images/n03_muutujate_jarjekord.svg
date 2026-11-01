@@ -4,11 +4,11 @@
       <path d="M4,0 L8,6 L0,6 Z" fill="#7e57c2"/>
     </marker>
   </defs>
-  <text x="450" y="34" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Muutujate prioriteet, kes võidab</text>
+  <text x="450" y="34" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Milline muutuja väärtus kehtib</text>
   <text x="450" y="56" text-anchor="middle" font-size="12" fill="#666">sama muutuja mitmes kohas: ülemine kirjutab alumise üle</text>
 
   <line x1="150" y1="410" x2="150" y2="112" stroke="#7e57c2" stroke-width="3" marker-end="url(#up)"/>
-  <text x="132" y="270" text-anchor="middle" font-size="13" fill="#5e35b1" transform="rotate(-90 132 270)">prioriteet kasvab</text>
+  <text x="132" y="270" text-anchor="middle" font-size="13" fill="#5e35b1" transform="rotate(-90 132 270)">tugevus kasvab</text>
 
   <g font-size="14">
     <rect x="210" y="356" width="560" height="46" rx="9" fill="#f5f5f5" stroke="#bdbdbd"/>
@@ -26,6 +26,6 @@
 
     <rect x="210" y="120" width="560" height="52" rx="10" fill="#ffe0b2" stroke="#ffa726" stroke-width="2"/>
     <text x="230" y="150" fill="#e65100" font-weight="700">5 · extra-vars (-e) käsurealt</text>
-    <text x="750" y="150" text-anchor="end" font-size="12" fill="#e65100" font-weight="700">VÕIDAB</text>
+    <text x="750" y="150" text-anchor="end" font-size="12" fill="#e65100" font-weight="700">KEHTIB</text>
   </g>
 </svg>

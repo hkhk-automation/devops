@@ -4,33 +4,27 @@ tags:
   - Versioonihaldus
   - Meeskonnatöö
   - GitHub
+  - Kodutöö
 ---
 
 # Kodutöö: ülevaatus mõlemalt poolt
 
-Tähtaja näed Classroom 50-s.
-
-**Esitamine:** kahe liidetud (merged) PR-i lingid GitHub Projectis.
-
-Praktikumis seadistasid oma repositooriumi, kaitsesid `main`-haru ja parandasid Märteni skripti pull request'i kaudu. Kodutöös töötad paarilise repositooriumis ja teete läbi kogu ülevaatuse ringi nii autori kui ka ülevaataja rollis.
-
-!!! warning
-    Kõik muudatused tehakse pull request'i kaudu. Kui midagi jõuab otse `main`-i, ei ole kodutöö tehtud. Haru kaitse peaks sellise push'i niikuinii tagasi lükkama.
+Kodutöös teed paarilisega läbi kogu ülevaatuse ringi nii autori kui ka ülevaataja rollis, kasutades praktikumis loodud repositooriumeid `marten-monitor-<nimi>`. Kõik muudatused lähevad pull request'i kaudu, otse `main`-i midagi ei saadeta. Kodutöö on boonus.
 
 ## Osa 1 · Panus paarilise repositooriumisse
 
-Paarilise repositooriumis on sul **Write**-õigus: saad luua harusid ja PR-e, kuid ei saa muuta tema reegleid. Klooni tema repositoorium (kui sa ei teinud seda praktikumis):
+Paarilise repositooriumis on sul Write-õigus: saad luua harusid ja PR-e, kuid ei saa muuta tema reegleid. Klooni tema repositoorium (kui sa ei teinud seda praktikumis):
 
 ```bash
 git clone git@github.com:hkhk-automation/marten-monitor-<paarilise-nimi>.git
 cd marten-monitor-<paarilise-nimi>
 ```
 
-Loo oma haru ja tee üks sisuline muudatus. Vali üks järgmistest:
+Loo oma haru ja tee üks sisuline muudatus, näiteks üks järgmistest:
 
 - lisa failile `monitor.sh` kommentaariplokk, mis selgitab, mida iga rida teeb;
 - lisa faili `README.md` jaotis "Kasutamine" koos näidiskäsuga;
-- paranda midagi, mille Märten pooleli jättis.
+- paranda midagi, mis skriptis on veel pooleli.
 
 ```bash
 git switch -c lisa/<sinu-nimi>-panus
@@ -44,10 +38,10 @@ Ava paarilise repositooriumis PR ([pull request'i loomine](https://docs.github.c
 
 ## Osa 2 · Paarilise pull request'i ülevaatamine oma repositooriumis
 
-Paariline teeb sama sinu repositooriumis. Omanikuna on sinu ülesanded järgmised:
+Paariline teeb sama sinu repositooriumis. Omanikuna vaata tema muudatus üle:
 
 - ava tema PR ja vahekaart **Files changed** ([kuidas ülevaatus GitHubis käib](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/about-pull-request-reviews));
-- kirjuta vähemalt üks sisuline kommentaar. "LGTM" ei lähe arvesse. Kirjuta, mis on hästi tehtud ja mida võiks teha teisiti;
+- kirjuta vähemalt üks sisuline kommentaar: mis on hästi tehtud ja mida võiks teha teisiti ("LGTM" üksi ei ole sisuline kommentaar);
 - kui muudatus on korras, vajuta **Approve** ja liida PR.
 
 ??? question "Mõtle"
@@ -70,7 +64,7 @@ git push
 
 ## Osa 4 · Iseseisev töövoog oma haru kaitse all
 
-Loo oma repositooriumis uus haru ja tee väike lisandus. Nii näitad, et oskad reeglite piires ka üksi töötada:
+Ka üksi töötades kehtib haru kaitse. Loo oma repositooriumis uus haru ja tee väike lisandus:
 
 - lisa fail `.github/CODEOWNERS`, mis nõuab `monitor.sh` muudatustele sinu ülevaatust ([faili süntaks](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners)), või
 - lisa veateate mall `.github/ISSUE_TEMPLATE/bug.md`.
@@ -85,15 +79,8 @@ git push -u origin lisa/codeowners
 
 Ava PR. GitHub ei luba oma pull request'i ise kinnitada, seega selgita description'is, miks see on erand, ja liida PR.
 
-## Mida hinnatakse
+## Töö esitamine
 
-??? note "Hindamise kriteeriumid"
-    - [ ] Panus paarilise repositooriumisse on tehtud PR-iga funktsiooniharust, otse `main`-i ei ole midagi saadetud
-    - [ ] Paarilise PR-il on sisuline ülevaatuse kommentaar ("LGTM" ei lähe arvesse)
-    - [ ] Konflikt on lahendatud (kui see tekkis) ja faili ei jäänud markereid
-    - [ ] Iseseisev lisandus oma repositooriumis on tehtud PR-i kaudu
-    - [ ] Commit-sõnumid on konkreetsed
-    - [ ] GitHub Projectis on kahe liidetud PR-i lingid
+Lisa GitHub Projecti kahe liidetud (Merged) pull request'i lingid: sinu panus paarilise repositooriumisse ja sinu enda lisandus. Link peab viima pull request'ile, repositooriumi link ei sobi.
 
-!!! tip
-    Link peab viima PR-ile, repositooriumi link ei sobi. PR peab olema olekus "Merged".
+Tulemuse näed Classroom 50-s.

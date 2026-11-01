@@ -1,13 +1,12 @@
 # SSH-võti PowerShellist Linuxi serveritesse
 
-> Kui võti on loodud Windowsi PowerShellis, siis Linuxi juhendi käsud (`ssh-copy-id`)
-> ei tööta ja avaliku võtme faili kopeerimisel tekib kodeeringu probleem.
-> Windows PowerShell 5.1 salvestab ümbersuunamisel (`>`) faili kodeeringus UTF-16 koos BOM-iga
-> ja lisab rea lõppu CRLF-i (`\r`). Sellise võtme lükkab server tagasi ilma selgituseta
-> ja kasutaja näeb ainult teadet „Permission denied“.
-> Seepärast suunatakse võti toru kaudu otse `ssh` abil serverisse ja vahepeal faili ei kirjutata.
+Windowsi PowerShellis ei ole käsku `ssh-copy-id` ja avaliku võtme faili kopeerimisel tekib kodeeringu probleem. Windows PowerShell 5.1 salvestab ümbersuunamisel (`>`) faili kodeeringus UTF-16 koos BOM-iga ja lisab rea lõppu CRLF-i (`\r`). Sellise võtme lükkab server tagasi ja kasutaja näeb ainult teadet „Permission denied“.
+
+Seepärast suunatakse võti toru kaudu otse `ssh` abil serverisse ja vahepeal faili ei kirjutata.
 
 ## 1. Genereeri võti (PowerShell)
+
+Võtmepaar luuakse sama käsuga nagu Linuxis:
 
 ```powershell
 # Loo ed25519 võtmepaar (tugevam ja lühem kui RSA)
@@ -18,7 +17,7 @@ ssh-keygen -t ed25519 -C "opilane@windows"
 # Parool (passphrase) on soovitatav.
 ```
 
-## 2. Lisa avalik võti serverisse (ÕIGE käsk)
+## 2. Lisa avalik võti serverisse
 
 ```powershell
 # Torutab avaliku võtme otse serverisse. Faili ei kirjutata, seega kodeering ei rikne.
@@ -26,10 +25,11 @@ ssh-keygen -t ed25519 -C "opilane@windows"
 type $env:USERPROFILE\.ssh\id_ed25519.pub | ssh kasutaja@server "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
 ```
 
-> Käsku `ssh-copy-id` Windowsis ei ole, seega ära seda kasuta.
-> Ära kasuta ka ümbersuunamist `>` (`... > authorized_keys`), sest just see rikub kodeeringu.
+Ära kasuta ümbersuunamist `>` (`... > authorized_keys`), sest see rikub kodeeringu.
 
 ## 3. Logi sisse
+
+Kui võti on serveris, ei küsi server enam kasutajakonto parooli:
 
 ```powershell
 ssh kasutaja@server
@@ -40,6 +40,8 @@ ssh -vvv kasutaja@server
 
 ## 4. Õigused Linuxi serveris
 
+Kui sisselogimine ei õnnestu, kontrolli serveris õigusi ja reavahetusi:
+
 ```bash
 chmod 700 ~/.ssh                      # kaust: ainult omanik
 chmod 600 ~/.ssh/authorized_keys      # fail: ainult omanik
@@ -49,11 +51,11 @@ chmod 750 ~                           # (või 700)
 sed -i 's/\r$//' ~/.ssh/authorized_keys
 ```
 
-> SSH on failiõiguste suhtes range. Kui kausta `~/.ssh` või faili `authorized_keys` õigused
-> on liiga laiad, jätab server võtme kasutamata ja klient ei näe selle kohta veateadet.
-> Põhjus on kirjas serveri logis.
+SSH on failiõiguste suhtes range. Kui kausta `~/.ssh` või faili `authorized_keys` õigused on liiga laiad, jätab server võtme kasutamata ja klient ei näe selle kohta veateadet. Põhjus on kirjas serveri logis (`sudo journalctl -u ssh -e`).
 
 ## 5. Õigused Windowsis (privaatvõti)
+
+OpenSSH ei kasuta privaatvõtit, mida saavad lugeda ka teised kasutajad. Anna ligipääs ainult endale:
 
 ```powershell
 cd $env:USERPROFILE\.ssh
@@ -63,6 +65,8 @@ icacls id_ed25519 /grant:r "$($env:USERNAME):(R)"
 ```
 
 ## 6. ssh-agent (kui kasutad `ssh-add`)
+
+Windowsis on teenus `ssh-agent` vaikimisi välja lülitatud ja `ssh-add` annab vea, kuni teenus on käivitamata:
 
 ```powershell
 # Windowsis on teenus vaikimisi VÄLJAS -> lülita sisse, muidu ssh-add annab vea:
