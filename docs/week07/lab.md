@@ -758,7 +758,7 @@ Pull request harust `n07-ci` harusse `main` on avatud osast 5. Kui kastis **Chec
 
 Nüüd on `ci.yml` harus `main`. Ava vahekaardil **Actions** töövoog **CI**. Nupp **Run workflow** on nüüd olemas (osa 5.4). Vali haruks `main` ja käivita töövoog käsitsi. Käivituse juures on sündmuseks `workflow_dispatch`.
 
-Autograder hindab haru `main` nagu N5 ja N6 praktikumis. Tulemus on repositooriumi lehel jaotises **Releases** ja Classroom 50-s. Hinne tuleb kontrollidest 1–7 (kokku 100 punkti). Kodutöö kontroll „BOONUS 8“ annab lisapunkte.
+Tulemuse näed Classroom 50-s.
 
 ??? note "Kontrollnimekiri"
     Kui praktikum on tehtud, peaksid oskama järgmist ilma juhendita:
@@ -774,7 +774,8 @@ Autograder hindab haru `main` nagu N5 ja N6 praktikumis. Tulemus on repositooriu
 
 ## Lisaülesanded
 
-1. **Dockerfile'i kontroll.** Lisa kolmas töö `lint`. Sellel ei ole võtit `needs`, seega käivitub see korraga tööga `test`:
+??? example "1 · Dockerfile'i kontroll"
+    Lisa kolmas töö `lint`. Sellel ei ole võtit `needs`, seega käivitub see korraga tööga `test`:
 
     ```yaml
       lint:
@@ -788,13 +789,17 @@ Autograder hindab haru `main` nagu N5 ja N6 praktikumis. Tulemus on repositooriu
 
     Töö läheb tõenäoliselt punaseks hoiatuse [`DL3013`](https://github.com/hadolint/hadolint/wiki/DL3013) tõttu (`pip install` ilma versioonideta). Kas parandad `Dockerfile`'i või lisad parameetri `failure-threshold: error`? Mida kumbki valik maksab?
 
-2. **Mitu Pythoni versiooni.** Uuri võtit [`strategy: matrix`](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstrategymatrix) ja näidet juhendis [Building and testing Python](https://docs.github.com/en/actions/tutorials/build-and-test-code/python). Käivita töö `test` korraga Pythoni versioonidega 3.11, 3.12 ja 3.13. Mitu tööd tekib vahekaardile **Actions**?
+??? example "2 · Mitu Pythoni versiooni"
+    Uuri võtit [`strategy: matrix`](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstrategymatrix) ja näidet juhendis [Building and testing Python](https://docs.github.com/en/actions/tutorials/build-and-test-code/python). Käivita töö `test` korraga Pythoni versioonidega 3.11, 3.12 ja 3.13. Mitu tööd tekib vahekaardile **Actions**?
 
-3. **Kiirem paigaldus.** Action'il `setup-python` on parameeter [`cache: pip`](https://github.com/actions/setup-python#caching-packages-dependencies). Lisa see ja võrdle sammu `pip install` kestust enne ja pärast.
+??? example "3 · Kiirem paigaldus"
+    Action'il `setup-python` on parameeter [`cache: pip`](https://github.com/actions/setup-python#caching-packages-dependencies). Lisa see ja võrdle sammu `pip install` kestust enne ja pärast.
 
-4. **Käivitus ainult siis, kui vaja.** Muuda README-d ja saada muudatus GitHubi. Miks käivitus kogu konveier, kuigi kood ei muutunud? Uuri võtit [`on.push.paths`](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#onpushpull_requestpull_request_targetpathspaths-ignore). Kuidas panna CI käivituma ainult siis, kui muutub kaust `flask/` või fail `ci.yml`?
+??? example "4 · Käivitus ainult siis, kui vaja"
+    Muuda README-d ja saada muudatus GitHubi. Miks käivitus kogu konveier, kuigi kood ei muutunud? Uuri võtit [`on.push.paths`](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#onpushpull_requestpull_request_targetpathspaths-ignore). Kuidas panna CI käivituma ainult siis, kui muutub kaust `flask/` või fail `ci.yml`?
 
-5. **Jenkins.** Käivita Jenkins oma virtuaalmasinas konteinerina ([Jenkins Dockeris](https://www.jenkins.io/doc/book/installing/docker/)). Port 8080 on N6 nginx'i kasutuses, seepärast kasuta porti 8081:
+??? example "5 · Jenkins"
+    Käivita Jenkins oma virtuaalmasinas konteinerina ([Jenkins Dockeris](https://www.jenkins.io/doc/book/installing/docker/)). Port 8080 on N6 nginx'i kasutuses, seepärast kasuta porti 8081:
 
     ```bash
     docker run -d -p 8081:8080 --name jenkins jenkins/jenkins:lts-jdk21
@@ -803,11 +808,14 @@ Autograder hindab haru `main` nagu N5 ja N6 praktikumis. Tulemus on repositooriu
 
     Teine käsk näitab administraatori algparooli. Ava brauseris `http://<VM-IP>:8081`, sisesta parool ja vali **Install suggested plugins**. Vali **New Item → Pipeline**, kleebi sinna loengu §8 `Jenkinsfile`'ist `test` etapp ja vajuta **Build Now**. Mis viga tuleb ja miks? Võrdle osaga 3.1: kes peab Jenkinsis Pythoni paigaldama, kui action'it `setup-python` ei ole?
 
-6. **CI kodus ilma virtuaalmasinata.** Ava repositoorium [GitHub Codespaces'is](https://docs.github.com/en/codespaces/quickstart) (repositooriumi lehel **Code → Codespaces**). Seal on Python ja Docker olemas ning käske `pytest` ja `docker build` saab käivitada brauseris. Peata Codespace pärast kasutamist, sest tasuta kasutusaeg on piiratud.
+??? example "6 · CI kodus ilma virtuaalmasinata"
+    Ava repositoorium [GitHub Codespaces'is](https://docs.github.com/en/codespaces/quickstart) (repositooriumi lehel **Code → Codespaces**). Seal on Python ja Docker olemas ning käske `pytest` ja `docker build` saab käivitada brauseris. Peata Codespace pärast kasutamist, sest tasuta kasutusaeg on piiratud.
 
-7. **GitHubi Pythoni mall.** Vaata, kuidas GitHubi enda Pythoni mall sama tööd teeb, ja võrdle seda oma failiga `ci.yml`. Mallid avanevad vahekaardil **Actions** nupuga **New workflow**. Juhend piltidega on lehel [Using workflow templates](https://docs.github.com/en/actions/how-tos/write-workflows/use-workflow-templates). Otsi malli **Python application** ja ava see nupuga **Configure**, aga sulge leht ilma commit'ita. Kui commit'id malli, käivitub iga push'i järel lisaks töövoole `ci.yml` ka teine töövoog. Millised sammud on mallis ja sinu failis samad? Mida teeb mall lisaks (vihje: `flake8`)?
+??? example "7 · GitHubi Pythoni mall"
+    Vaata, kuidas GitHubi enda Pythoni mall sama tööd teeb, ja võrdle seda oma failiga `ci.yml`. Mallid avanevad vahekaardil **Actions** nupuga **New workflow**. Juhend piltidega on lehel [Using workflow templates](https://docs.github.com/en/actions/how-tos/write-workflows/use-workflow-templates). Otsi malli **Python application** ja ava see nupuga **Configure**, aga sulge leht ilma commit'ita. Kui commit'id malli, käivitub iga push'i järel lisaks töövoole `ci.yml` ka teine töövoog. Millised sammud on mallis ja sinu failis samad? Mida teeb mall lisaks (vihje: `flake8`)?
 
-8. **Action'ite turvalisus.** Vali üks kahest ([loengu §9](lecture.md#9-toovoo-turvalisus)):
+??? example "8 · Action'ite turvalisus"
+    Vali üks kahest ([loengu §9](lecture.md#9-toovoo-turvalisus)):
 
     - Kinnita `actions/checkout` täispika räsiga. Räsi leiad action'i repositooriumi lehelt **Releases** või käsuga `git ls-remote https://github.com/actions/checkout v7.0.1`. Kirjuta tag rea lõppu kommentaariks, näiteks `# v7.0.1`.
     - Lase Dependabotil action'eid ajakohasena hoida. Loo fail `.github/dependabot.yml` ([juhend](https://docs.github.com/en/code-security/dependabot/working-with-dependabot/keeping-your-actions-up-to-date-with-dependabot)):

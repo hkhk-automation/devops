@@ -263,10 +263,17 @@ Nginx'i paigaldus on nüüd playbookis kirjas: seda saab korrata, see on dokumen
 
 ## Lisaülesanded
 
-1. **Kolm sõlme korraga.** Lisa faili `inventory.ini` gruppi `[web]` sõlmed `proxmox2` ja `proxmox3` ning käivita sama playbook kõigis. Üks fail haldab kolme sõlme: selleks Ansible'it kasutataksegi.
-2. **`--check`:** käivita `ansible-playbook -i inventory.ini nginx.yml --check`. Mida see režiim teeb, kui tegelikke muudatusi ei tehta? Millal on see enne tootmiskeskkonda kasulik?
-3. **`--syntax-check`:** kustuta meelega üks koolon ja käivita `--syntax-check`. Kuidas Ansible vea esitab?
-4. **Tulemüür:** ava Almas port 80 (`ansible.posix.firewalld` või `firewall-cmd`), et leht avaneks ka väljast brauseriga. Miks on port vaikimisi suletud?
+??? example "1 · Kolm sõlme korraga"
+    Lisa faili `inventory.ini` gruppi `[web]` sõlmed `proxmox2` ja `proxmox3` ning käivita sama playbook kõigis. Üks fail haldab kolme sõlme: selleks Ansible'it kasutataksegi.
+
+??? example "2 · `--check`"
+    käivita `ansible-playbook -i inventory.ini nginx.yml --check`. Mida see režiim teeb, kui tegelikke muudatusi ei tehta? Millal on see enne tootmiskeskkonda kasulik?
+
+??? example "3 · `--syntax-check`"
+    kustuta meelega üks koolon ja käivita `--syntax-check`. Kuidas Ansible vea esitab?
+
+??? example "4 · Tulemüür"
+    ava Almas port 80 (`ansible.posix.firewalld` või `firewall-cmd`), et leht avaneks ka väljast brauseriga. Miks on port vaikimisi suletud?
 
 ## Esitamine: commit ja push oma repositooriumi
 

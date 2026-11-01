@@ -897,12 +897,23 @@ Testid 1–6 peavad olema läbitud. Test 7 on kodutöö.
 
 ## Lisaülesanded
 
-1. **Kolm sõlme:** lisa `[web]` alla `proxmox2` ja `proxmox3`. Kas iga leht näitab oma serveri nime?
-2. **Saladus diff'is:** tee mall `templates/rakendus.env.j2` (`DB_PASSWORD={{ db_password }}`), pane sõlme `/etc/rakendus.env` (`mode: '0600'`, `owner: root`). Käivita `--check --diff`. Näed parooli? Lisa task'ile `no_log: true` ja käivita uuesti. Mis muutus? Miks on see CI logide jaoks oluline?
-3. **`backup`:** lisa `backup: true` `hallatud.conf` task'ile, muuda väärtust ja vaata sõlmes `ls /etc/nginx/conf.d/`. Mis faile näed? Miks ei jää varukoopia nginx-i poolt loetavaks?
-4. **Filtrid:** kasuta lehel `{{ omaniku_nimi | upper }}` ja `{{ keskkond_nimi | default('LABOR') }}`. Mis juhtub, kui `keskkond_nimi` pole kuskil määratud, kui `default` on ja kui pole?
-5. **Parooli vahetus:** `ansible-vault rekey group_vars/all/vault.yml`. Mis juhtub vana `.vault_pass`-iga?
-6. **`encrypt_string`:** krüpteeri `db_password` üksik väärtus ja pane `main.yml`-i. Mis on eelis ja puudus võrreldes eraldi `vault.yml`-iga? *(Ära seda esita: `kontroll.sh` test 2 nõuab `db_password:` ainult `vault.yml`-is. Tee eraldi harul.)*
+??? example "1 · Kolm sõlme"
+    lisa `[web]` alla `proxmox2` ja `proxmox3`. Kas iga leht näitab oma serveri nime?
+
+??? example "2 · Saladus diff'is"
+    tee mall `templates/rakendus.env.j2` (`DB_PASSWORD={{ db_password }}`), pane sõlme `/etc/rakendus.env` (`mode: '0600'`, `owner: root`). Käivita `--check --diff`. Näed parooli? Lisa task'ile `no_log: true` ja käivita uuesti. Mis muutus? Miks on see CI logide jaoks oluline?
+
+??? example "3 · `backup`"
+    lisa `backup: true` `hallatud.conf` task'ile, muuda väärtust ja vaata sõlmes `ls /etc/nginx/conf.d/`. Mis faile näed? Miks ei jää varukoopia nginx-i poolt loetavaks?
+
+??? example "4 · Filtrid"
+    kasuta lehel `{{ omaniku_nimi | upper }}` ja `{{ keskkond_nimi | default('LABOR') }}`. Mis juhtub, kui `keskkond_nimi` pole kuskil määratud, kui `default` on ja kui pole?
+
+??? example "5 · Parooli vahetus"
+    `ansible-vault rekey group_vars/all/vault.yml`. Mis juhtub vana `.vault_pass`-iga?
+
+??? example "6 · `encrypt_string`"
+    krüpteeri `db_password` üksik väärtus ja pane `main.yml`-i. Mis on eelis ja puudus võrreldes eraldi `vault.yml`-iga? *(Ära seda esita: `kontroll.sh` test 2 nõuab `db_password:` ainult `vault.yml`-is. Tee eraldi harul.)*
 
 ??? warning "Tüüpilised vead"
     | Veateade | Põhjus | Lahendus |

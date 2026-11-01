@@ -222,10 +222,17 @@ ssh <kasutaja>@<IP> "git --version"
 
 ## Lisaülesanded
 
-1. **Port nginx'i konfiguratsioonis.** Loo `templates/nginx.conf.j2` faili `/etc/nginx/sites-available/default` põhjal, kirjuta sinna `listen {{ nginx_port }};` ja lisa ülesanne `template` koos reaga `notify: restart nginx`.
-2. **Handlerid.** Loo failis `handlers/main.yml` handler `restart nginx` (`service: state: restarted`). Käivita see `notify:` abil ja veendu, et handler käivitub ainult siis, kui fail muutus. Handlerite kirjeldus on lehel [Handlers](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_handlers.html).
-3. **Teine roll.** Loo roll `firewall` (`ufw allow {{ nginx_port }}`), lisa see faili `site.yml` kolmandaks ja jälgi käivitamise järjekorda.
-4. **Sõltuvus.** Lisa faili `nginx/meta/main.yml` plokk `dependencies:`, mis nõuab, et `firewall` käivituks enne. Kas pead `firewall`-i siis veel eraldi plokis `roles:` nimetama?
+??? example "1 · Port nginx'i konfiguratsioonis"
+    Loo `templates/nginx.conf.j2` faili `/etc/nginx/sites-available/default` põhjal, kirjuta sinna `listen {{ nginx_port }};` ja lisa ülesanne `template` koos reaga `notify: restart nginx`.
+
+??? example "2 · Handlerid"
+    Loo failis `handlers/main.yml` handler `restart nginx` (`service: state: restarted`). Käivita see `notify:` abil ja veendu, et handler käivitub ainult siis, kui fail muutus. Handlerite kirjeldus on lehel [Handlers](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_handlers.html).
+
+??? example "3 · Teine roll"
+    Loo roll `firewall` (`ufw allow {{ nginx_port }}`), lisa see faili `site.yml` kolmandaks ja jälgi käivitamise järjekorda.
+
+??? example "4 · Sõltuvus"
+    Lisa faili `nginx/meta/main.yml` plokk `dependencies:`, mis nõuab, et `firewall` käivituks enne. Kas pead `firewall`-i siis veel eraldi plokis `roles:` nimetama?
 
 ??? warning "Kui handler ei käivitu"
     `notify:` väärtus peab olema täpselt sama mis handleri `name:`, iga täht ja tühik.

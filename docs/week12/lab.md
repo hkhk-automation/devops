@@ -306,7 +306,14 @@ Saada fail GitHubi. Nädala 7 konveier käivitub ka selle muudatuse peal.
 
 ## Lisaülesanded
 
-1. **`--limit`:** käivita `site.yml` ainult ühes hostis (`--limit <host1>`). Millal on see tootmises kasulik?
-2. **`--check` ja `--diff`:** `ansible-playbook site.yml --check --diff` näitab, mida playbook **muudaks**, ilma muudatusi tegemata ([Check mode](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_checkmode.html)). Riku üks host käsitsi, käivita `--check --diff` ja vaata, kuidas triiv on näha ilma parandamata. Miks on see enne tootmist väga kasulik?
-3. **`[production:children]`:** tee grupp `all_web`, mis sisaldab nii gruppi `production` kui ka `staging`. Siht faili `site.yml` sellele grupile. Millal on grupp gruppidest kasulik?
-4. **Vault mitmele keskkonnale:** anna gruppidele `production` ja `staging` erinevad Vaultiga krüpteeritud paroolid (`group_vars/production/vault.yml`). Kuidas hoida kahte eri saladust sama koodiga? (Nädala 4 Vault ja selle nädala `group_vars`.)
+??? example "1 · `--limit`"
+    käivita `site.yml` ainult ühes hostis (`--limit <host1>`). Millal on see tootmises kasulik?
+
+??? example "2 · `--check` ja `--diff`"
+    `ansible-playbook site.yml --check --diff` näitab, mida playbook **muudaks**, ilma muudatusi tegemata ([Check mode](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_checkmode.html)). Riku üks host käsitsi, käivita `--check --diff` ja vaata, kuidas triiv on näha ilma parandamata. Miks on see enne tootmist väga kasulik?
+
+??? example "3 · `[production:children]`"
+    tee grupp `all_web`, mis sisaldab nii gruppi `production` kui ka `staging`. Siht faili `site.yml` sellele grupile. Millal on grupp gruppidest kasulik?
+
+??? example "4 · Vault mitmele keskkonnale"
+    anna gruppidele `production` ja `staging` erinevad Vaultiga krüpteeritud paroolid (`group_vars/production/vault.yml`). Kuidas hoida kahte eri saladust sama koodiga? (Nädala 4 Vault ja selle nädala `group_vars`.)

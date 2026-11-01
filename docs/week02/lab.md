@@ -428,9 +428,16 @@ Esimene commit, kaitse test, neli parandust, konflikt ja liitmine: kogu päeva t
 
 ## Lisaülesanded
 
-1. **Muudatuste tagasivõtmine:** tee vigane commit (nagu Märten). Millal kasutada käsku `git restore`, `git reset --soft` või `git revert`? Proovi kõiki kolme ja kirjuta igaühe erinevuse kohta üks lause. Vihje: ainult üks neist on ohutu pärast push'i.
-2. **shellcheck:** paigalda [shellcheck](https://www.shellcheck.net/) (või kasuta veebiversiooni) ja kontrolli sellega Märteni algset skripti. Mitu neljast veast leiab see ilma käivitamata? Milline jääb leidmata?
-3. **CODEOWNERS:** lisa fail `.github/CODEOWNERS`, mis nõuab, et `monitor.sh` muudatused vaatab üle kindel inimene. Testi seda.
-4. **`git stash`:** tee pooleli olev muudatus ja käivita `git stash`. Kuhu muudatus kadus? `git stash pop` toob selle tagasi. Millal on see kasulik?
+??? example "1 · Muudatuste tagasivõtmine"
+    tee vigane commit (nagu Märten). Millal kasutada käsku `git restore`, `git reset --soft` või `git revert`? Proovi kõiki kolme ja kirjuta igaühe erinevuse kohta üks lause. Vihje: ainult üks neist on ohutu pärast push'i.
+
+??? example "2 · shellcheck"
+    paigalda [shellcheck](https://www.shellcheck.net/) (või kasuta veebiversiooni) ja kontrolli sellega Märteni algset skripti. Mitu neljast veast leiab see ilma käivitamata? Milline jääb leidmata?
+
+??? example "3 · CODEOWNERS"
+    lisa fail `.github/CODEOWNERS`, mis nõuab, et `monitor.sh` muudatused vaatab üle kindel inimene. Testi seda.
+
+??? example "4 · `git stash`"
+    tee pooleli olev muudatus ja käivita `git stash`. Kuhu muudatus kadus? `git stash pop` toob selle tagasi. Millal on see kasulik?
 
 *Järgmine: 3. nädal, Ansible. Õpime Märteni käsitsi tehtud tööd automatiseerima, et järgmine praktikant ei peaks midagi mälu järgi kirjutama.*

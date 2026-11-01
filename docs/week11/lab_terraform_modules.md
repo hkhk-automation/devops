@@ -399,6 +399,11 @@ Kontrolli, et mõlemad failid tekkisid ja seejärel kadusid.
 
 ## Lisaülesanded
 
-1. **Tsükkel:** uuri `for_each` ja `count` võimalusi ning loo viis faili ühe plokiga `module`.
-2. **Uus ressurss:** uuri, milliseid ressursse provider `hashicorp/local` veel pakub, ja lisa moodulisse kausta loomine.
-3. **Aheldamine:** lisa kolmas kutse, mille `faili_sisu` sõltub teise mooduli väljundist (`module.logi.sisu_rasi`).
+??? example "1 · Tsükkel"
+    uuri `for_each` ja `count` võimalusi ning loo viis faili ühe plokiga `module`.
+
+??? example "2 · Uus ressurss"
+    uuri, milliseid ressursse provider `hashicorp/local` veel pakub, ja lisa moodulisse kausta loomine.
+
+??? example "3 · Aheldamine"
+    lisa kolmas kutse, mille `faili_sisu` sõltub teise mooduli väljundist (`module.logi.sisu_rasi`).

@@ -816,7 +816,7 @@ README-s vasta vähemalt neile küsimustele: miks on `uname -r` konteineris ja V
 git add . && git commit -m "N5 Docker lab" && git push -u origin n05-docker
 ```
 
-Ava **Pull Request** `main`-i ja liida see (**Merge**), kui Actions on roheline. Automaatkontroll hindab haru `main`. Autograder ehitab sinu image'id ise ja kontrollib, et nginx näitab sinu `index.html`-i, `turve` ei tööta root'ina, Flask vastab, multi-stage image on väike ja sinu Docker Hubi image on avalikult kättesaadav. Tõendifailide käsitsi kirjutamisest pole kasu. Hinne tuleb kontrollidest 1–12 (85 punkti), sealhulgas README; kontroll „BOONUS 13. Kodutöö“ on vabatahtlik ja punkte ei anna.
+Ava **Pull Request** `main`-i ja liida see (**Merge**), kui Actions on roheline. Automaatkontroll hindab haru `main`, tulemuse näed Classroom 50-s.
 
 ??? note "Kontrollnimekiri: kas oskad ilma juhendita?"
 

@@ -362,7 +362,7 @@ Faili `.env` reposse ei panda. Automaatkontroll loob testimiseks oma `.env`-i ja
 3. Ava GitHubis pull request `main` vastu ja liida see (**Merge**). Automaatkontroll hindab haru `main`.
 4. Vaata tulemust repo vahekaardil **Actions**. Punase testi korral loe selle väljundit, paranda ja push'i uuesti.
 
-Hinne tuleb kontrollidest 1–6, kokku 80 punkti, ja 80/80 on täistulemus. Kontroll „BOONUS 7. Kodutöö“ on vabatahtlik ja punkte ei anna.
+Tulemuse näed Classroom 50-s.
 
 ??? note "Kontrollnimekiri: kas oskad ilma juhendita?"
 
