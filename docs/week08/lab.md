@@ -3,59 +3,64 @@ tags:
   - CD
   - GHCR
   - GitHubActions
+  - Jenkins
   - Praktikum
 ---
 
 # N8 · Praktikum: katkine konveier korda
 
-N7 lõpus kontrollis konveier koodi ja konteinerit. Tänases repositooriumis on sama kood ja kolleeg on lisanud konveierile kolmanda job'i `build-and-push`, mis peaks image'i GHCR-i saatma, ning skripti, mis peaks selle serveris käivitama. Mõlemas on vigu. Leiad ja parandad need ükshaaval, kuni server näitab sama versiooni, mis on registris.
+N7 lõpus kontrollis konveier koodi ja konteinerit. Tänases repositooriumis on sama kood. Kolleeg on lisanud konveierile kolmanda töö `build-and-push`. See peaks saatma image'i registrisse GHCR. Ta on kirjutanud ka skripti, mis peaks image'i serveris käivitama. Mõlemas on vigu.
 
-Töötad masinas `proxmox1` VS Code'i kaudu nagu N7-s. Serveri rollis on samuti `proxmox1`, sest seal töötab Docker (N5). Töökohas on server eraldi masin, käsud on samad.
+Leiad ja parandad vead ükshaaval. Lõpus näitab server sama versiooni, mis on registris. Viimases osas käivitad sama konveieri Jenkinsis.
+
+Töötad masinas `proxmox1` VS Code'i kaudu nagu N7-s. Serveri rollis on samuti `proxmox1`, sest seal töötab Docker (N5). Töökohas on server eraldi masin, aga käsud on samad.
 
 **Edenemine:** laboritahvel <http://192.168.125.187:8091/> (VPN-iga).
 
 | Osa | Töö | Aeg |
 |---|---|---|
-| 1 | Ettevalmistus: repositoorium, testid, esimene push | 20 min |
-| 2 | Viga 1 koos õpetajaga: registrisse kirjutamine | 30 min |
-| 3 | Viga 2: katkine kood jõuab registrisse | 25 min |
-| 4 | Viga 3: pull request jõuab registrisse | 30 min |
-| 5 | Vead 4 ja 5: server | 45 min |
-| 6 | Töö esitamine | 15 min |
+| 1 | Ettevalmistus | 15 min |
+| 2 | Viga 1: registrisse kirjutamine (klassis koos) | 25 min |
+| 3 | Viga 2: katkine kood jõuab registrisse | 20 min |
+| 4 | Viga 3: pull request jõuab registrisse | 25 min |
+| 5 | Vead 4 ja 5: server | 35 min |
+| 6 | Sama konveier Jenkinsis, viga 6 | 40 min |
+| 7 | Korrektne lahendus | 10 min |
+| 8 | Töö esitamine | 10 min |
 
-*Tabel 8.3. Praktikumi osad.*
+*Tabel 8.5. Praktikumi osad. Koos vahetunniga kokku 3 h 15 min.*
 
 Iga vea juures on samad sammud samas järjekorras ([loengu §7](lecture.md#7-vea-leidmine-sumptom-hupotees-toend-parandus)):
 
-- **Sümptom:** mida näed (punane job, rida logis, käsu väljund).
+- **Sümptom:** mida näed. See võib olla punane töö, rida logis või käsu väljund.
 - **Ennusta:** mis on põhjus ja mis failis see on. Ütle oma oletus naabrile. Kirja seda panema ei pea.
-- **Uuri:** kust leida tõend, mis oletuse kinnitab või ümber lükkab. Enne tõendit ära midagi muuda.
-- **Paranda** ja **Kontrolli:** üks muudatus, siis sama sümptom uuesti. Põhjus ja parandus on kokkuvolditud plokis. Ava see alles siis, kui oled ise proovinud.
-- **Küsimus:** üks lause README-sse ja rida vigade tabelisse.
+- **Uuri:** kust leida tõend. Tõend kinnitab oletuse või lükkab selle ümber. Enne tõendit ära midagi muuda.
+- **Paranda** ja **Kontrolli:** tee üks muudatus ja vaata sama sümptomit uuesti. Põhjus ja parandus on kokkuvolditud plokis. Ava see alles siis, kui oled ise proovinud.
+- **Küsimus:** kirjuta README-sse üks lause ja vigade tabelisse üks rida.
 
-Esimese vea teete koos õpetajaga. Ülejäänud neli teed paaris naabriga, kumbki oma repositooriumis.
+Esimese vea teeme klassis koos. Ülejäänud vead teed paaris naabriga. Kumbki töötab oma repositooriumis.
 
 ??? note "Õpetajale: viga 1 tahvlil (umbes 15 minutit)"
-    Kõigil õpilastel on pärast sammu 1.3 sama punane käivitus. Ava oma repositooriumis sama käivitus projektoril ja mõtle valjult, ilma et ütleksid põhjust enne tõendit:
+    Kõigil õpilastel on pärast sammu 1.3 sama punane käivitus. Ava oma repositooriumis sama käivitus projektoril. Mõtle valjult ja ära ütle põhjust enne tõendit:
 
-    1. **Sümptom.** Loe ette, mis on roheline ja mis punane. Ava punane samm ja loe viimane rida lõpuni. Ütle, mis on veateates oluline sõna (`denied`).
-    2. **Hüpotees.** Ütle kaks oletust ja küsi klassilt, kumb on tõenäolisem: vale parool või puuduv õigus. Rõhuta, et sisselogimise samm oli roheline.
-    3. **Tõend.** Ava sama job'i samm **Set up job** → `GITHUB_TOKEN Permissions`. Näita rida `Packages: read`. Võrdle job'iga `konteiner`.
-    4. **Parandus.** Lisa `permissions` plokk, ütle, miks `contents: read` jääb alles. Commit, push, näita rohelist käivitust ja paketti **Packages** all.
+    1. **Sümptom.** Loe ette, mis on roheline ja mis punane. Ava punane samm ja loe viimane rida lõpuni. Näita, et oluline sõna on `denied`.
+    2. **Hüpotees.** Ütle kaks oletust: vale parool või puuduv õigus. Küsi klassilt, kumb on tõenäolisem. Rõhuta, et sisselogimise samm oli roheline.
+    3. **Tõend.** Ava sama töö samm **Set up job** ja lõik `GITHUB_TOKEN Permissions`. Näita rida `Packages: read`. Võrdle tööga `konteiner`.
+    4. **Parandus.** Lisa `permissions` plokk. Ütle, miks `contents: read` jääb alles. Tee commit ja push, näita rohelist käivitust ja paketti jaotises **Packages**.
 
-    Õpilased teevad sama parandust samal ajal oma repositooriumis. Siis paaris edasi osaga 3.
+    Õpilased teevad sama paranduse samal ajal oma repositooriumis. Siis paaris edasi osaga 3.
 
 ??? abstract "Õpiväljundid"
 
-    1. Oskad lugeda Actions'i logist, mis samm kukkus ja miks.
-    2. Oskad anda job'ile õiguse kirjutada GHCR-i ja põhjendada, miks ainult sellele job'ile.
-    3. Oskad seada image'i ehituse testide järele ja jätta selle pull request'is vahele.
+    1. Oskad lugeda Actionsi logist, mis samm kukkus ja miks.
+    2. Oskad anda tööle õiguse kirjutada GHCR-i ja põhjendada, miks ainult sellele tööle.
+    3. Oskad panna image'i ehituse testide järele ja jätta selle pull request'is vahele.
     4. Oskad tõmmata privaatse image'i serverisse ja käivitada selle õige pordiga.
-    5. Oskad leida vea järjekorras: sümptom, hüpotees, tõend, parandus.
+    5. Oskad käivitada sama konveieri Jenkinsis ja võrrelda seda GitHub Actionsiga.
 
 <figure markdown="span">
-  ![ci.yml-is jobid test, konteiner ja build-and-push. Punased numbrid: 1 build-and-push kirjutamisõigus, 2 konteineri ja build-and-push vahel puuduv järjekord, 3 millal workflow käivitub. build-and-push saadab image'i GHCR-i, kus pakett on privaatne. proxmox1-s server/paigalda.sh: 4 docker pull, 5 docker run -p](../images/n08_viis_viga.svg)
-  <figcaption>Joonis 8.4. Viis viga: kolm workflow'is, kaks serveri skriptis (Talvik, 2026).</figcaption>
+  ![ci.yml-is tööd test, konteiner ja build-and-push. Punased numbrid: 1 build-and-push kirjutamisõigus, 2 konteineri ja build-and-push vahel puuduv järjekord, 3 millal töövoog käivitub. build-and-push saadab image'i GHCR-i, kus pakett on privaatne. proxmox1-s server/paigalda.sh: 4 docker pull, 5 docker run -p](../images/n08_viis_viga.svg)
+  <figcaption>Joonis 8.4. Viis viga konveieris ja serveris. Kuues viga on Jenkinsis, osas 6 (Talvik, 2026).</figcaption>
 </figure>
 
 ---
@@ -66,23 +71,23 @@ Esimese vea teete koos õpetajaga. Ülejäänud neli teed paaris naabriga, kumbk
 
 **Ülesanne**
 
-Võta Classroom 50-s vastu ülesanne **Lab 08 - CD ja GHCR** ([Classroom 50](https://classroom50.org/hkhk-automation/it24-automatiseerimine/assignments)) ja klooni repositoorium masinasse `proxmox1`:
+Võta Classroom 50-s vastu ülesanne **Lab 08 - CD ja GHCR** ([Classroom 50](https://classroom50.org/hkhk-automation/it24-automatiseerimine/assignments)). Klooni repositoorium masinasse `proxmox1`:
 
 ```bash
 cd ~
 git clone <sinu-repo-url> lab08 && cd lab08
-ls -a . flask server
+ls -a . flask server jenkins
 ```
 
 **Kontrolli**
 
-Kaustas `flask/` on N7 failid: `app.py`, `test_app.py`, `requirements.txt` ja `Dockerfile`. Kaustas `server/` on skript `paigalda.sh`. Ava `.github/workflows/ci.yml` ja leia kolm job'i. Kaks esimest on sinu N7 omad, kolmas on uus.
+Kaustas `flask/` on N7 failid. Kaustas `server/` on skript `paigalda.sh`. Kaustas `jenkins/` on Jenkinsi `Dockerfile`. Ava `.github/workflows/ci.yml` ja leia kolm tööd. Kaks esimest on sinu N7 omad. Kolmas on uus.
 
-Rakendusel on uus route `/versioon`. Ava `flask/Dockerfile` ja leia read `ARG VERSIOON` ja `ENV VERSIOON`. Pipeline annab ehitamisel siia commit'i lühiräsi ([loengu §3](lecture.md#3-tagid-rasi-ja-latest)).
+Rakendusel on uus aadress `/versioon`. Ava `flask/Dockerfile` ja leia read `ARG VERSIOON` ja `ENV VERSIOON`. Konveier annab ehitamisel siia commit'i lühiräsi ([loengu §3](lecture.md#3-tagid-rasi-ja-latest)).
 
-### 1.2 Testid kohapeal
+### 1.2 Testid oma masinas
 
-Virtuaalkeskkond on sama, mis N7 Osa 0-s, ainult uues kaustas:
+Tee virtuaalkeskkond nagu N7 Osa 0-s ja käivita testid:
 
 ```bash
 python3 -m venv .venv
@@ -93,11 +98,11 @@ pytest flask -v
 
 **Kontrolli**
 
-Väljundi lõpus on `4 passed`. Neljas test kontrollib, et ilma pipeline'ita annab `/versioon` vastuse `kohalik`.
+Väljundi lõpus on `4 passed`. Neljas test kontrollib aadressi `/versioon`. Kui image'it ei ehitanud konveier, vastab see `kohalik`.
 
 ### 1.3 Esimene push
 
-Kirjuta README-s rea `**Sinu nimi:**` järele oma nimi. Salvesta muudatus repositooriumi ja saada see GitHubi:
+Kirjuta README-s rea `**Sinu nimi:**` järele oma nimi. Salvesta muudatus ja saada see GitHubi:
 
 ```bash
 git add README.md
@@ -105,25 +110,25 @@ git commit -m "N8: nimi README-sse"
 git push
 ```
 
-Push harusse `main` käivitab konveieri. Ava repositooriumi vahekaart **Actions** ja oota, kuni käivitus lõpeb. **Ära veel midagi paranda**: osa 2 teete koos.
+Push harusse `main` käivitab konveieri. Ava repositooriumis vahekaart **Actions** ja oota, kuni käivitus lõpeb. **Ära veel midagi paranda.**
 
 ---
 
 ## Osa 2 · Viga 1: registrisse kirjutamine
 
-Seda viga uurib õpetaja tahvlil ja sina teed samu samme oma repositooriumis.
+Seda viga uurime klassis koos. Tee samu samme oma repositooriumis.
 
 **Sümptom**
 
-Käivituse lehel on `test` ja `konteiner` rohelised ning `build-and-push` punane. Ava `build-and-push` ja leia punane samm.
+Käivituse lehel on `test` ja `konteiner` rohelised. `build-and-push` on punane. Ava see töö ja leia punane samm.
 
-**Ennusta.** Samm `Logi GHCR-i sisse` on roheline, samm `Saada image GHCR-i` punane. Mis on põhjus ja mis failis?
+**Ennusta.** Samm `Logi GHCR-i sisse` on roheline. Samm `Saada image GHCR-i` on punane. Mis on põhjus ja mis failis?
 
 **Uuri**
 
-1. Ava punane samm ja loe viimased read lõpuni.
-2. Ava sama job'i esimene samm **Set up job** ja selles lõik `GITHUB_TOKEN Permissions`.
-3. Ava `.github/workflows/ci.yml` ja otsi job'ist `build-and-push` sõna `permissions`.
+1. Ava punane samm. Loe viimased read lõpuni.
+2. Ava sama töö esimene samm **Set up job**. Leia lõik `GITHUB_TOKEN Permissions`.
+3. Ava `.github/workflows/ci.yml`. Otsi töö `build-and-push` juurest sõna `permissions`.
 
 ??? success "Põhjus ja parandus"
     Logi lõpus on:
@@ -133,9 +138,9 @@ Käivituse lehel on `test` ja `konteiner` rohelised ning `build-and-push` punane
     Error: Process completed with exit code 1.
     ```
 
-    Sõnastus võib erineda, aga sõna `denied` on alati. Lõigus `GITHUB_TOKEN Permissions` on `Packages: read`. Sisselogimine õnnestus, sest token kehtib. Kirjutada ei tohtinud, sest organisatsioonis `hkhk-automation` on tokenil vaikimisi ainult lugemisõigus ja workflow ei küsinud rohkem ([loengu §4](lecture.md#4-oigused-github_token-ja-permissions)).
+    Sõnastus võib erineda, aga sõna `denied` on alati. Lõigus `GITHUB_TOKEN Permissions` on `Packages: read`. Sisselogimine õnnestus, sest token kehtib. Kirjutada ei tohtinud, sest organisatsioonis on tokenil vaikimisi ainult lugemisõigus ([loengu §4](lecture.md#4-oigused-github_token-ja-permissions)).
 
-    Lisa job'ile `build-and-push` õigused, sama taandega nagu `runs-on`:
+    Lisa tööle `build-and-push` õigused. Taane on sama mis real `runs-on`:
 
     ```yaml
       build-and-push:
@@ -145,7 +150,7 @@ Käivituse lehel on `test` ja `konteiner` rohelised ning `build-and-push` punane
           packages: write
     ```
 
-    `contents: read` peab alles jääma: kui `permissions` on kirjas, on kõik loetlemata õigused keelatud ja `actions/checkout` ei saaks koodi lugeda.
+    `contents: read` peab alles jääma. Ilma selleta ei saa `actions/checkout` koodi lugeda.
 
 **Paranda**
 
@@ -157,15 +162,15 @@ git push
 
 **Kontrolli**
 
-Kõik kolm job'i on rohelised. Repositooriumi avalehel paremal jaotises **Packages** on pakett sinu repositooriumi nimega. Ava see: tag'id on `latest` ja seitsmemärgiline räsi. Võrdle räsi oma viimase commit'iga:
+Kõik kolm tööd on rohelised. Repositooriumi avalehel paremal, jaotises **Packages**, on pakett. Ava see. Tag'id on `latest` ja seitsmemärgiline räsi. Võrdle räsi oma viimase commit'iga:
 
 ```bash
 git log --oneline -1
 ```
 
 ??? warning "Kui `docker push` on ikka `denied`"
-    - Kontrolli, et `permissions` on job'i `build-and-push` all, mitte `steps` all, ja et taane on sama mis real `runs-on`.
-    - Ava uuesti **Set up job**. Kui seal on `Packages: write` ja push ikka kukub, ütle õpetajale: siis on organisatsiooni seadetes paketi loomine piiratud.
+    - Kontrolli, et `permissions` on töö `build-and-push` all ja taane on sama mis real `runs-on`.
+    - Ava uuesti **Set up job**. Kui seal on `Packages: write` ja push ikka kukub, ütle õpetajale.
     - Kui hoopis `actions/checkout` kukub (`Repository not found`), puudub `contents: read`.
 
 **Küsimus:** miks oli `GITHUB_TOKEN`-il vaikimisi õigus pakette ainult lugeda? (README küsimus 1 ja tabeli rida 1)
@@ -174,11 +179,11 @@ git log --oneline -1
 
 ## Osa 3 · Viga 2: katkine kood jõuab registrisse
 
-Nüüd on konveier roheline. Järgmisena kontrolli, kas registrisse jõuab ainult testitud kood. Kolleeg muudab tervitust ega käivita teste.
+Konveier on nüüd roheline. Kontrolli, kas registrisse jõuab ainult testitud kood. Kolleeg muudab tervitust ja ei käivita teste.
 
 **Ülesanne**
 
-Muuda failis `flask/app.py` rida `return "Tere konteinerist!"` reaks `return "Tervist konteinerist!"`. Ära käivita `pytest`-i. Saada muudatus GitHubi:
+Muuda failis `flask/app.py` tervitus kujule `Tervist konteinerist!`. Ära käivita `pytest`-i. Saada muudatus GitHubi:
 
 ```bash
 git add flask/app.py
@@ -188,20 +193,20 @@ git push
 
 **Sümptom**
 
-`test` on punane ja `konteiner` hall (`skipped`). Vaata, mis on `build-and-push` olekus. Ava **Packages** ja vaata tag'e.
+`test` on punane. `konteiner` on hall (`skipped`). Vaata, mis olekus on `build-and-push`. Ava **Packages** ja vaata tag'e.
 
-**Ennusta.** Test kukkus. Kas registrisse jõudis uus image? Kui jõudis, siis miks ja mis failis on põhjus?
+**Ennusta.** Test kukkus. Kas registrisse jõudis uus image? Kui jõudis, siis miks?
 
 **Uuri**
 
-1. Käivituse lehel on job'ide skeem. Vaata, millised job'id on noolega ühendatud.
-2. Ava job'id `test` ja `build-and-push` ning võrdle, mis kell kumbki alustas.
-3. Võrdle failis `ci.yml` job'i `konteiner` algust job'i `build-and-push` algusega.
+1. Käivituse lehel on tööde skeem. Vaata, millised tööd on noolega ühendatud.
+2. Ava tööd `test` ja `build-and-push`. Võrdle, mis kell kumbki alustas.
+3. Võrdle failis `ci.yml` töö `konteiner` algust töö `build-and-push` algusega.
 
 ??? success "Põhjus ja parandus"
-    `build-and-push` on roheline ja **Packages** all on uus räsi. `latest` näitab nüüd koodi, mille test kukkus. Skeemil on nool ainult `test` ja `konteiner` vahel, `build-and-push` alustas samal ajal kui `test`. Job'il `build-and-push` puudub `needs`, seega ei oota see teisi job'e ([loengu §5](lecture.md#5-millal-image-ehitatakse)).
+    `build-and-push` on roheline ja **Packages** all on uus räsi. `latest` näitab nüüd koodi, mille test kukkus. Skeemil on nool ainult `test` ja `konteiner` vahel. `build-and-push` alustas samal ajal kui `test`. Tööl puudub `needs`, seega ei oota see teisi ([loengu §5](lecture.md#5-millal-image-ehitatakse)).
 
-    Lisa `build-and-push` job'ile järjekord. `konteiner` ootab juba `test`-i, seega piisab `konteiner`-ist:
+    Lisa tööle järjekord. `konteiner` ootab juba `test`-i, seega piisab `konteiner`-ist:
 
     ```yaml
       build-and-push:
@@ -211,7 +216,7 @@ git push
 
 **Paranda**
 
-Jäta tervitus veel katki, et näeksid, kas parandus töötab:
+Jäta tervitus veel katki. Nii näed, kas parandus töötab:
 
 ```bash
 git add .github/workflows/ci.yml
@@ -221,9 +226,9 @@ git push
 
 **Kontrolli**
 
-`test` on punane, `konteiner` ja `build-and-push` on hallid (`skipped`). **Packages** all uut räsi ei ole. Skeemil on nool kõigi kolme job'i vahel.
+`test` on punane. `konteiner` ja `build-and-push` on hallid. **Packages** all uut räsi ei ole. Skeemil on nool kõigi kolme töö vahel.
 
-Pane tervitus tagasi (`Tere konteinerist!`), kontrolli `pytest flask -v` ja saada parandus GitHubi:
+Pane tervitus tagasi (`Tere konteinerist!`). Käivita `pytest flask -v` ja saada parandus GitHubi:
 
 ```bash
 git add flask/app.py
@@ -231,25 +236,25 @@ git commit -m "N8: tervitus tagasi"
 git push
 ```
 
-Kõik kolm job'i on rohelised ja järjest.
+Kõik kolm tööd on rohelised ja järjest.
 
-**Küsimus:** miks peab image'i ehitus ootama testide järel? (README küsimus 2 ja tabeli rida 2)
+**Küsimus:** miks peab image'i ehitus testide järel ootama? (README küsimus 2 ja tabeli rida 2)
 
 ---
 
 ## Osa 4 · Viga 3: pull request jõuab registrisse
 
-N7-s läks kood `main` harusse pull request'i kaudu. Pull request'i kood on veel üle vaatamata, seega ei tohi see registrisse jõuda. Kontrolli, kas see nii on.
+N7-s läks kood harusse `main` pull request'i kaudu. Pull request'i koodi pole keegi veel üle vaadanud. Seega ei tohi see registrisse jõuda. Kontrolli, kas see nii on.
 
 **Ülesanne**
 
-Tee uus haru, muuda tervitust ja ava pull request. Testi tekst `Tere` jääb tervitusse alles, seega test läbib:
+Tee uus haru:
 
 ```bash
 git switch -c n08-tervitus
 ```
 
-Muuda failis `flask/app.py` tervitus kujule `Tere konteinerist, N8!` ja saada haru GitHubi:
+Muuda failis `flask/app.py` tervitus kujule `Tere konteinerist, N8!`. Sõna `Tere` jääb alles, seega test läbib. Saada haru GitHubi:
 
 ```bash
 pytest flask -v
@@ -262,26 +267,28 @@ Ava GitHubis pull request `n08-tervitus` → `main`. **Ära seda veel liida.**
 
 **Sümptom**
 
-Vaata vahekaarti **Actions** ja pull request'i lehel kasti **Checks**. Vaata ka **Packages** all tag'e.
+Vaata vahekaarti **Actions**. Vaata pull request'i lehel kasti **Checks**. Vaata ka **Packages** all tag'e.
 
-**Ennusta.** Kood on ainult harus `n08-tervitus`. Kas see jõudis registrisse? Kui jõudis, siis mis selle käivitas ja mis failis?
+**Ennusta.** Kood on ainult harus `n08-tervitus`. Kas see jõudis registrisse? Kui jõudis, siis mis selle käivitas?
 
 **Uuri**
 
-1. Vahekaardi **Actions** nimekirjas on iga käivituse all sündmus ja haru. Mitu käivitust tekkis sinu viimase commit'i kohta ja mis sündmused need olid?
-2. Võrdle **Packages** all uusimat räsi oma haru commit'iga:
+1. Vahekaardil **Actions** on iga käivituse all sündmus ja haru. Mitu käivitust tekkis viimase commit'i kohta? Mis sündmused need olid?
+2. Võrdle **Packages** all uusimat räsi kahe commit'iga:
 
     ```bash
     git log --oneline -1
     git log --oneline -1 origin/main
     ```
 
-3. Ava failis `ci.yml` plokk `on:` ja job'i `build-and-push` päis. Kas miski seal ütleb, millises harus või millise sündmusega see job käivitub?
+3. Ava failis `ci.yml` plokk `on:` ja töö `build-and-push` päis. Kas miski ütleb, millises harus või millise sündmusega see töö käivitub?
 
 ??? success "Põhjus ja parandus"
-    Sama commit'i kohta on kaks käivitust: `push` harus `n08-tervitus` ja `pull_request`. Mõlemas oli `build-and-push` roheline. **Packages** all on haru commit'i räsi ja `latest` näitab nüüd koodi, mida keegi pole üle vaadanud ega `main` harusse liitnud. Trigger `push:` ilma harudeta käivitab workflow'i iga haru igal push'il ja job'il `build-and-push` ei ole tingimust, mis jätaks selle pull request'is vahele ([loengu §5](lecture.md#5-millal-image-ehitatakse)).
+    Sama commit'i kohta on kaks käivitust. Üks on `push` harus `n08-tervitus`, teine on `pull_request`. Mõlemas oli `build-and-push` roheline. **Packages** all on haru commit'i räsi. `latest` näitab nüüd koodi, mida keegi pole üle vaadanud.
 
-    Parandusi on kaks. Trigger `push` ainult harus `main`:
+    Põhjuseid on kaks. `push:` ilma harudeta käivitab töövoo iga haru igal push'il. Tööl `build-and-push` ei ole tingimust, mis jätaks selle pull request'is vahele ([loengu §5](lecture.md#5-millal-image-ehitatakse)).
+
+    Paranda sündmus. Push käivitab töövoo ainult harus `main`:
 
     ```yaml
     on:
@@ -290,7 +297,7 @@ Vaata vahekaarti **Actions** ja pull request'i lehel kasti **Checks**. Vaata ka 
       pull_request:
     ```
 
-    `build-and-push` ainult push'i korral:
+    Lisa tööle tingimus. `build-and-push` käivitub ainult push'i korral:
 
     ```yaml
       build-and-push:
@@ -299,11 +306,11 @@ Vaata vahekaarti **Actions** ja pull request'i lehel kasti **Checks**. Vaata ka 
         runs-on: ubuntu-latest
     ```
 
-    `pull_request` jääb alles, sest pull request'is peavad testid käivituma.
+    `pull_request` jääb alles. Pull request'is peavad testid käivituma.
 
 **Paranda**
 
-Tee parandus samas harus, et see läbiks pull request'i nagu iga teine muudatus:
+Tee parandus samas harus. Nii läbib see pull request'i nagu iga teine muudatus:
 
 ```bash
 git add .github/workflows/ci.yml
@@ -313,9 +320,9 @@ git push
 
 **Kontrolli**
 
-Uue commit'i kohta on üks käivitus, sündmusega `pull_request`. Selles on `test` ja `konteiner` rohelised ja `build-and-push` hall (`skipped`). **Packages** all uut räsi ei ole.
+Uue commit'i kohta on üks käivitus sündmusega `pull_request`. Selles on `test` ja `konteiner` rohelised. `build-and-push` on hall. **Packages** all uut räsi ei ole.
 
-Liida pull request GitHubis (**Merge pull request**). Liitmine on push harusse `main`: tekib uus käivitus, kus `build-and-push` on roheline ja **Packages** all on liitmise commit'i räsi. Too see oma masinasse:
+Liida pull request GitHubis (**Merge pull request**). Liitmine on push harusse `main`. Uues käivituses on `build-and-push` roheline. Too muudatus oma masinasse:
 
 ```bash
 git switch main
@@ -331,7 +338,7 @@ Viimase commit'i räsi on sama, mis **Packages** all uusim tag.
 
 ## Osa 5 · Server
 
-Image on registris. Nüüd tõmbab server selle sealt ja käivitab. Seda teeb skript `server/paigalda.sh`, et nime, tag'i ja porti ei peaks iga kord käsitsi sisestama ([loengu §6](lecture.md#6-server-tombab-imagei)). Loe skript enne käivitamist läbi:
+Image on registris. Nüüd tõmbab server selle sealt ja käivitab. Seda teeb skript `server/paigalda.sh` ([loengu §6](lecture.md#6-server-tombab-imagei)). Loe skript enne käivitamist läbi:
 
 ```bash
 cat server/paigalda.sh
@@ -347,36 +354,36 @@ bash server/paigalda.sh
 
 **Sümptom**
 
-Skript lõpetab pärast rida `== image ...` veaga.
+Pärast rida `== image ...` lõpetab skript veaga.
 
 **Ennusta.** Image on registris olemas, sa nägid seda **Packages** all. Miks ei saa server seda kätte?
 
 **Uuri**
 
-1. Loe veateade lõpuni. Mis sõna on viimane?
-2. Ava GitHubis pakett. Paremal on paketi nähtavus (**Private** või **Public**).
-3. Kontrolli, kas Docker on sinu kasutajana `ghcr.io`-sse sisse logitud:
+1. Loe veateade lõpuni. Mis on viimane sõna?
+2. Ava GitHubis pakett. Paremal on näha, kas pakett on **Private** või **Public**.
+3. Kontrolli, kas Docker on `ghcr.io`-sse sisse logitud:
 
     ```bash
     grep ghcr.io ~/.docker/config.json
     ```
 
 ??? success "Põhjus ja parandus"
-    Veateade on kujul:
+    Veateade on umbes selline:
 
     ```text
     Error response from daemon: Head "https://ghcr.io/v2/hkhk-automation/.../manifests/latest": unauthorized
     ```
 
-    Sõnastus võib erineda (`denied`), aga see tähendab alati, et registrisse ei ole sisse logitud. Pakett on privaatne nagu repositoorium ja `grep` ei leia failist `~/.docker/config.json` rida `ghcr.io`. Pipeline'i `GITHUB_TOKEN` kehtib ainult workflow'i ajal, serveris seda ei ole.
+    Viimane sõna võib olla ka `denied`. Mõlemad tähendavad, et server pole registrisse sisse logitud. Pakett on privaatne. `grep` ei leia failist rida `ghcr.io`. Konveieri `GITHUB_TOKEN` kehtib ainult käivituse ajal, serveris seda pole.
 
-    Tee GitHubis isiklik token, millel on ainult lugemisõigus:
+    Tee GitHubis isiklik token, mis tohib ainult lugeda ([juhend](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)):
 
-    1. Profiilipilt → **Settings** → **Developer settings** → **Personal access tokens** → **Tokens (classic)** → **Generate new token (classic)** ([juhend](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)).
-    2. **Note**: `proxmox1 GHCR`, **Expiration**: 30 päeva, õigus ainult **read:packages**.
+    1. Vali profiilipilt → **Settings** → **Developer settings** → **Personal access tokens** → **Tokens (classic)** → **Generate new token (classic)**.
+    2. **Note**: `proxmox1 GHCR`. **Expiration**: 30 päeva. Õigus ainult **read:packages**.
     3. Kopeeri token. GitHub näitab seda ainult üks kord.
 
-    Logi sisse. Kasutajanimi on sinu GitHubi kasutajanimi ja parooli asemel kleebi token. Ekraanil seda ei näidata:
+    Logi sisse. Kasutajanimi on sinu GitHubi kasutajanimi. Parooli asemel kleebi token. Ekraanil seda ei näidata:
 
     ```bash
     docker login ghcr.io -u <sinu-github-kasutaja>
@@ -390,10 +397,10 @@ Skript lõpetab pärast rida `== image ...` veaga.
 bash server/paigalda.sh
 ```
 
-`docker pull` õnnestub. Skript läheb edasi järgmise veani.
+`docker pull` õnnestub. Skript jõuab järgmise veani.
 
 ??? warning "Kui sisselogimine ei õnnestu"
-    - `unauthorized: authentication required` pärast `docker login`-i: tokenil puudub õigus `read:packages` või kopeerisid selle poolikult. Tee uus token.
+    - `unauthorized: authentication required`: tokenil puudub õigus `read:packages` või kopeerisid selle poolikult. Tee uus token.
     - `permission denied while trying to connect to the Docker daemon socket`: sinu kasutaja pole grupis `docker` (N5 Osa 0).
 
 **Küsimus:** miks on serveri tokenil ainult õigus `read:packages`? (README küsimus 4 ja tabeli rida 4)
@@ -402,9 +409,9 @@ bash server/paigalda.sh
 
 **Sümptom**
 
-Skript jõuab rea `== versioon` juurde, `curl` proovib mitu korda ja lõpetab veaga.
+Skript jõuab reani `== versioon`. `curl` proovib mitu korda ja lõpetab veaga.
 
-**Ennusta.** Konteiner käivitus. Miks ei saa `curl` vastust? Kus failis on põhjus?
+**Ennusta.** Konteiner käivitus. Miks ei saa `curl` vastust?
 
 **Uuri**
 
@@ -413,10 +420,12 @@ docker ps --filter name=flask-cd
 docker logs flask-cd
 ```
 
-Võrdle veergu PORTS ja logi rida `Running on`. Mis port on kummaski?
+Vaata `docker ps` veergu PORTS. Vaata logis rida `Running on`. Mis port on kummaski?
 
 ??? success "Põhjus ja parandus"
-    `curl` annab `curl: (56) Recv failure: Connection reset by peer` või `curl: (52) Empty reply from server`. Sama sümptomit nägid N5 Osa 10-s. `docker ps` näitab `0.0.0.0:8088->80/tcp`, aga logis on `Running on http://...:5000`. Skript suunab serveri pordi 8088 konteineri porti 80, kus keegi ei kuula. Flask kuulab konteineris pordil 5000.
+    `curl` annab `curl: (56) Recv failure: Connection reset by peer` või `curl: (52) Empty reply from server`. Sama sümptomit nägid N5 Osa 10-s.
+
+    `docker ps` näitab `0.0.0.0:8088->80/tcp`. Logis on `Running on http://...:5000`. Skript suunab serveri pordi 8088 konteineri porti 80. Seal ei kuula keegi. Flask kuulab pordil 5000.
 
     Paranda failis `server/paigalda.sh` rida `docker run`:
 
@@ -431,13 +440,13 @@ bash server/paigalda.sh
 curl localhost:8088
 ```
 
-Skripti viimane rida on seitsmemärgiline räsi ja `curl localhost:8088` vastab tervitusega.
+Skripti viimane rida on seitsmemärgiline räsi. `curl localhost:8088` vastab tervitusega.
 
 **Küsimus:** mida tähendavad `-p 8088:5000` kaks numbrit? (README küsimus 5 ja tabeli rida 5)
 
 ### 5.3 Viimane versioon serverisse
 
-Skripti parandus peab jõudma ka repositooriumi. Push harusse `main` ehitab samas uue image'i. Kui pipeline on roheline, paigalda see serverisse ja salvesta väljund logifaili:
+Skripti parandus peab jõudma ka repositooriumi. Push harusse `main` ehitab samas uue image'i:
 
 ```bash
 git add server/paigalda.sh
@@ -445,7 +454,7 @@ git commit -m "N8 viga 5: konteineri port 5000"
 git push
 ```
 
-Oota, kuni käivitus vahekaardil **Actions** on roheline. Siis:
+Oota, kuni käivitus vahekaardil **Actions** on roheline. Siis paigalda uus versioon ja salvesta väljund logifaili:
 
 ```bash
 bash server/paigalda.sh 2>&1 | tee logid/server.txt
@@ -454,60 +463,229 @@ git log --oneline -1
 
 **Kontrolli**
 
-`logid/server.txt` viimane rida on sama räsi, mis `git log --oneline -1` alguses ja mis **Packages** all uusim tag. Server töötab nüüd koodiga, mille sa just GitHubi saatsid, ja sa ei ehitanud serveris midagi.
+`logid/server.txt` viimane rida on sama räsi, mis `git log --oneline -1` alguses. Sama räsi on ka **Packages** all uusim tag. Server töötab koodiga, mille sa just GitHubi saatsid. Serveris ei ehitatud midagi.
 
 ??? warning "Kui räsi on vanem kui viimane commit"
-    Käivitasid skripti enne, kui `build-and-push` lõpetas, ja `latest` näitas veel eelmist image'it. Oota rohelist käivitust ja käivita skript uuesti.
+    Käivitasid skripti enne, kui `build-and-push` lõpetas. Siis näitas `latest` veel eelmist image'it. Oota rohelist käivitust ja käivita skript uuesti.
 
 **Küsimus:** mis versioon töötab serveris ja kust tead, et see on sama mis GHCR-is? (README küsimus 6)
 
 ---
 
-## Osa 6 · Töö esitamine
+## Osa 6 · Sama konveier Jenkinsis
+
+GitHub Actions on teenus: GitHub haldab masinaid, mis konveierit käivitavad. **Jenkins** on programm, mille paigaldad ise ([loengu §8](lecture.md#8-cicd-tooriistad-ja-litsentsid)). Selles osas käivitad Jenkinsi konteinerina ja paned sinna sama konveieri: testid ja image'i ehituse.
+
+Jenkins töötab masinas `proxmox1`, sest seal on Docker. Masinas `proxmox2` on N5-st ainult Podman.
+
+### 6.1 Jenkinsi failid
+
+Repositooriumis on kaks uut faili. Ava mõlemad:
+
+```bash
+cat jenkins/Dockerfile
+cat Jenkinsfile
+```
+
+`jenkins/Dockerfile` ehitab Jenkinsi image'i. Alus on ametlik image `jenkins/jenkins:lts-jdk21` ([Jenkins Dockeris](https://www.jenkins.io/doc/book/installing/docker/)). Käsk `jenkins-plugin-cli` paigaldab plugin'id juba ehitamisel. **Plugin** on Jenkinsi lisamoodul. Ilma plugin'iteta ei oska Jenkins isegi Git'i kasutada.
+
+| Plugin | Mida teeb |
+|---|---|
+| [`git`](https://plugins.jenkins.io/git/) | toob koodi Git'i repositooriumist |
+| [`workflow-aggregator`](https://plugins.jenkins.io/workflow-aggregator/) | lubab kirjutada konveieri faili `Jenkinsfile` |
+| [`pipeline-graph-view`](https://plugins.jenkins.io/pipeline-graph-view/) | näitab konveieri samme graafiliselt |
+| [`dark-theme`](https://plugins.jenkins.io/dark-theme/) | tume teema |
+
+*Tabel 8.6. Plugin'id failis `jenkins/Dockerfile`.*
+
+`Jenkinsfile` on konveier. See on sama mõttega kui `ci.yml`, aga teises keeles ([Jenkinsfile'i süntaks](https://www.jenkins.io/doc/book/pipeline/syntax/)):
+
+| `ci.yml` (GitHub Actions) | `Jenkinsfile` (Jenkins) |
+|---|---|
+| `jobs:` ja tööd `test`, `konteiner` | `stages` ja etapid `test`, `konteiner` |
+| `runs-on: ubuntu-latest` | `agent any`: konveier töötab Jenkinsi enda masinas |
+| `actions/setup-python` paigaldab Pythoni | Python peab Jenkinsi image'is olemas olema |
+| `needs: test` | etapid käivad järjest, kirjutatud järjekorras |
+| `on: push` | `pollSCM`: Jenkins küsib ise, kas on uus commit (samm 6.6) |
+
+*Tabel 8.7. Sama konveier kahes tööriistas.*
+
+### 6.2 Jenkins käima
+
+Jenkins vajab umbes 1 GB mälu. Kontrolli, kui palju mälu on vaba:
+
+```bash
+free -h
+```
+
+Kui veerus `available` on alla 1,5 GB, peata N6 rakendus: `cd ~/lab06 && docker compose down`, siis `cd ~/lab08`.
 
 **Ülesanne**
 
-1. Täida README-s vigade tabel. Sümptomi lahtrisse kopeeri logist või käsu väljundist rida, mis viga näitas. Põhjus ja parandus on kumbki üks lühike lause.
-2. Vasta README küsimustele 1-6, igaühele üks lause.
-3. Salvesta kõik repositooriumi ja saada GitHubi:
+Ehita Jenkinsi image ja käivita konteiner:
 
-    ```bash
-    git add README.md logid/server.txt
-    git status --short
-    git commit -m "N8: vigade tabel, vastused ja serveri logi"
-    git push
-    ```
+```bash
+docker build -t minu-jenkins jenkins/
+docker run -d --name jenkins --restart unless-stopped \
+  -p 8081:8080 \
+  -v jenkins_home:/var/jenkins_home \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --group-add "$(stat -c %g /var/run/docker.sock)" \
+  minu-jenkins
+```
+
+| Võti | Miks |
+|---|---|
+| `-p 8081:8080` | Jenkins kuulab pordil 8080. Masinas on port 8080 N6 käes, seega kasutame 8081 |
+| `-v jenkins_home:/var/jenkins_home` | Jenkinsi seaded on volume'is. Need jäävad alles, kui konteiner tehakse uuesti |
+| `-v /var/run/docker.sock:...` | Jenkins saab kasutada masina Dockerit, et ehitada image'it |
+| `--group-add ...` | Jenkinsi kasutaja saab õiguse Dockeri soklit kasutada |
+
+*Tabel 8.8. Jenkinsi konteineri võtmed.*
 
 **Kontrolli**
 
-Töö on esitatud, kui kõik muudatused on `main` harus GitHubis. Automaatkontrolli tulemuse näed repositooriumi vahekaardil **Actions** ja Classroom 50-s. Tahvlil on N8 vahelehel näha, kas masinas `proxmox1` on Docker `ghcr.io`-sse sisse logitud, kas image on tõmmatud GHCR-ist ja kas `/versioon` vastab pordil 8088.
+Jenkins käivitub umbes minutiga. Oota, kuni logis on rida `Jenkins is fully up and running`:
 
-??? note "Automaatkontroll (100 punkti)"
+```bash
+docker logs -f jenkins
+```
 
-    | Kontroll | Punktid |
-    |---|---|
-    | Failid olemas, N7 osa töötab (`pytest`, jobid `test` ja `konteiner`), `logid/server.txt` olemas | 10 |
-    | Viga 1: `build-and-push` saab kirjutada GHCR-i, image'i nimi väiketähtedega, tag'id räsi ja `latest` | 20 |
-    | Viga 2: `build-and-push` ootab teste (`needs`) | 15 |
-    | Viga 3: `push` ainult harus `main`, `build-and-push` jääb pull request'is vahele (`if`) | 15 |
-    | Viga 5: `server/paigalda.sh` suunab pordi 5000 | 10 |
-    | `logid/server.txt`: image GHCR-ist, viimane rida on räsi | 15 |
-    | Nimi, vigade tabel ja küsimused README-s | 15 |
+Vajuta `Ctrl+C`, et logi vaatamine lõpetada. Ava brauseris `http://<proxmox1-IP>:8081`.
 
-    Automaatkontroll ei ühendu sinu serveriga ega GHCR-iga. See loeb sinu faile ja käivitab teste. Viga 4 (sisselogimine) on näha logist `logid/server.txt` ja tahvlilt.
+??? warning "Kui brauser Jenkinsit ei ava"
+    Ava VS Code'is all vahekaart **PORTS** ja vali **Forward a Port**. Kirjuta `8081`. Siis ava brauseris `http://localhost:8081`.
 
-??? warning "Kui automaatkontroll annab vea"
-    - `pytest kukub`: tervitus failis `flask/app.py` peab sisaldama sõna `Tere` (osa 3).
-    - `logid/server.txt viimane rida peab olema /versioon vastus`: skript lõpetas veaga. Paranda see ja käivita uuesti käsuga `tee` (samm 5.3).
-    - `Vigade tabelis ja küsimustes on N vastust puudu`: README-s on `_vastus_` alles.
+### 6.3 Esimene sisselogimine
+
+Jenkins küsib esimesel korral parooli. See on konteineri failis:
+
+```bash
+docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+```
+
+1. Kleebi parool ja vajuta **Continue**.
+2. Vali **Select plugins to install**, siis üleval **None** ja **Install**. Plugin'id on image'is juba olemas.
+3. Loo administraatori kasutaja. Kirjuta parool üles.
+4. **Jenkins URL** jäta samaks. Vajuta **Save and Finish** ja **Start using Jenkins**.
+
+### 6.4 Konveier Jenkinsisse
+
+Sinu repositoorium on privaatne. Jenkins vajab koodi lugemiseks tokenit. Tee GitHubis uus token (classic), nagu sammus 5.1. **Note**: `jenkins`. **Expiration**: 7 päeva. Õigus: **repo**.
+
+Seadista Jenkinsis konveier:
+
+1. Vali **New Item**. Nimi `lab08`, tüüp **Pipeline**, vajuta **OK**.
+2. Keri lõiku **Pipeline**. **Definition**: `Pipeline script from SCM`. **SCM**: `Git`.
+3. **Repository URL**: `https://github.com/hkhk-automation/<sinu-repo>.git`.
+4. **Credentials** → **Add** → **Jenkins**. **Kind**: `Username with password`. **Username**: sinu GitHubi kasutajanimi. **Password**: token. **ID**: `github`. Vajuta **Add** ja vali see.
+5. **Branch Specifier**: `*/main`. **Script Path**: `Jenkinsfile`. Vajuta **Save**.
+
+### 6.5 Viga 6: Jenkinsis pole Pythonit
+
+**Ülesanne**
+
+Vajuta vasakul **Build Now**.
+
+**Sümptom**
+
+Käivitus on punane. Ava see ja vali **Pipeline Overview**. Plugin `pipeline-graph-view` näitab etappe graafiliselt. Etapp `test` on punane.
+
+**Ennusta.** Samad testid läbisid sinu masinas ja GitHub Actionsis. Miks kukuvad need Jenkinsis?
+
+**Uuri**
+
+1. Vali punane etapp ja loe logi viimased read.
+2. Võrdle Pythonit masinas ja Jenkinsi konteineris:
+
+    ```bash
+    python3 --version
+    docker exec jenkins python3 --version
+    ```
+
+3. Vaata tabelit 8.7. Kes paigaldas Pythoni GitHub Actionsis?
+
+??? success "Põhjus ja parandus"
+    Logis on rida `python3: not found`. Masinas `proxmox1` Python on, Jenkinsi konteineris mitte. GitHub Actionsis paigaldas Pythoni action `setup-python`. Jenkinsis peab selle paigaldama see, kes Jenkinsit haldab.
+
+    Lisa failis `jenkins/Dockerfile` pärast rida `FROM` Pythoni paigaldus. Paigaldamiseks on vaja root'i õigusi. Pärast seda tuleb kasutaja `jenkins` tagasi, et Jenkins ei töötaks root'ina:
+
+    ```dockerfile
+    FROM jenkins/jenkins:lts-jdk21
+
+    USER root
+    RUN apt-get update \
+        && apt-get install -y --no-install-recommends python3 python3-venv \
+        && rm -rf /var/lib/apt/lists/*
+    USER jenkins
+    ```
+
+    `python3-venv` on vajalik, sest `Jenkinsfile` teeb testide jaoks virtuaalkeskkonna.
+
+**Paranda**
+
+Image muutus. Ehita see uuesti ja tee konteiner uuesti, nagu N5 Osa 4-s. Seaded jäävad volume'isse alles:
+
+```bash
+docker build -t minu-jenkins jenkins/
+docker rm -f jenkins
+docker run -d --name jenkins --restart unless-stopped \
+  -p 8081:8080 \
+  -v jenkins_home:/var/jenkins_home \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --group-add "$(stat -c %g /var/run/docker.sock)" \
+  minu-jenkins
+```
+
+**Kontrolli**
+
+Logi uuesti Jenkinsisse ja vajuta **Build Now**. **Pipeline Overview** näitab kahte rohelist etappi. Etapp `konteiner` ehitas image'i masina Dockeriga:
+
+```bash
+docker images flask-jenkins
+```
+
+??? warning "Kui etapp `konteiner` kukub"
+    - `docker: not found`: `jenkins/Dockerfile` real `COPY --from=docker:27-cli` on viga. Võrdle starteriga.
+    - `permission denied while trying to connect to the Docker daemon socket`: `docker run` käsus puudub `--group-add`.
+
+Salvesta parandus GitHubi:
+
+```bash
+git add jenkins/Dockerfile
+git commit -m "N8 viga 6: Python Jenkinsi image'isse"
+git push
+```
+
+**Küsimus:** lisa vigade tabelisse rida 6.
+
+### 6.6 Jenkins ilma webhook'ita
+
+GitHub Actions käivitub kohe pärast push'i. GitHub teab push'ist ise. Jenkinsile saab GitHub saata teate (**webhook**). Teade on HTTP päring Jenkinsi aadressile. Sinu Jenkins on kooli võrgus VPN-i taga. GitHub ei pääse sinna.
+
+Seepärast on `Jenkinsfile`-is plokk `triggers` ja seal `pollSCM('H/5 * * * *')`. Jenkins küsib ise iga 5 minuti järel, kas harus `main` on uus commit. Täht `H` hajutab küsimise aja, et kõik konveierid ei küsiks samal minutil.
+
+**Ennusta.** Sammu 6.5 lõpus saatsid GitHubi uue commit'i. Mis juhtub Jenkinsis järgmise 5 minuti jooksul?
+
+**Kontrolli**
+
+Oota kuni 5 minutit. Vasakul tekib uus käivitus. Ava see. Üleval on kirjas `Started by an SCM change`.
+
+**Küsimus:** miks ei saa GitHub Jenkinsit ise käivitada ja mida teeb selle asemel `pollSCM`? (README küsimus 7)
+
+### 6.7 Tume teema
+
+Vali **Manage Jenkins** → **Appearance**. Lõigus **Themes** vali `Dark` ja vajuta **Save**. Selle võimaluse lisas plugin `dark-theme`.
+
+Mõtle tagasi tabelile 8.7. GitHub Actionsis ei pidanud sa paigaldama serverit, plugin'eid ega Pythonit. Jenkinsis tegid kõike seda ise. Vastutasuks töötab Jenkins sinu võrgus ja seda saab seadistada nii, nagu firma vajab.
 
 ---
 
-## Osa 7 · Korrektne workflow
+## Osa 7 · Korrektne lahendus
 
-Kõik viis parandust on nüüd sinu failides. Siin on need koos ühes terviklahenduses, nii nagu seda töökohas tehakse. Võrdle oma faili `.github/workflows/ci.yml` sellega. Kui midagi erineb, mõtle, kas sinu variant teeb sama asja (näiteks `needs: [test, konteiner]` on samaväärne) või on seal veel viga.
+Kõik kuus parandust on nüüd sinu failides. Siin on need koos, nii nagu seda töökohas tehakse. Võrdle oma faile nendega. Kui midagi erineb, mõtle, kas sinu variant teeb sama asja. Näiteks `needs: [test, konteiner]` on samaväärne.
 
-Numbrile koodi kõrval klõpsates näed selle rea selgitust.
+Rea selgituse näed, kui klõpsad numbril koodi kõrval.
 
 ```yaml
 name: CI/CD
@@ -567,17 +745,17 @@ jobs:
         run: docker push --all-tags "$IMAGE" # (9)!
 ```
 
-1.  Push käivitab workflow'i ainult harus `main`. Teiste harude push'id ei ehita image'it (viga 3).
+1.  Push käivitab töövoo ainult harus `main`. Teiste harude push ei ehita image'it (viga 3).
 2.  Pull request'is käivituvad testid. N7 lukk vajab neid enne liitmist.
 3.  Image ehitatakse alles siis, kui `konteiner` on roheline. `konteiner` ootab omakorda `test`-i (viga 2).
-4.  Pull request'i käivituses jääb job vahele (`skipped`). Registrisse jõuab ainult liidetud kood (viga 3).
-5.  Kirjutamisõigus registrisse ainult sellele job'ile. `contents: read` on vajalik, et `actions/checkout` saaks koodi lugeda (viga 1).
-6.  Image'i nimes on lubatud ainult väiketähed: `${GITHUB_REPOSITORY,,}` teeb repositooriumi nime väiketähtedeks. `${GITHUB_SHA::7}` on commit'i lühiräsi, tag, mis ütleb täpselt, mis koodist image tehti.
-7.  Kaks tag'i samale image'ile: räsi ja `latest`. `--build-arg` annab rakendusele versiooni, silt `org.opencontainers.image.source` seob paketi repositooriumiga.
+4.  Pull request'i käivituses jääb töö vahele. Registrisse jõuab ainult liidetud kood (viga 3).
+5.  Kirjutamisõigus registrisse ainult sellele tööle. `contents: read` on vajalik, et `actions/checkout` saaks koodi lugeda (viga 1).
+6.  Image'i nimes on ainult väiketähed: `${GITHUB_REPOSITORY,,}`. Tag on commit'i lühiräsi: `${GITHUB_SHA::7}`.
+7.  Samale image'ile kaks tag'i: räsi ja `latest`. `--build-arg` annab rakendusele versiooni. Silt `org.opencontainers.image.source` seob paketi repositooriumiga.
 8.  Ajutine token, mis kehtib ainult selle käivituse ajal. Faili ei kirjutata ühtegi saladust.
 9.  Saadab registrisse mõlemad tag'id.
 
-Serveris tehakse üks kord sisselogimine ja iga paigaldus on üks käsk:
+Serveris logitakse sisse üks kord. Iga paigaldus on siis üks käsk:
 
 ```bash
 docker login ghcr.io -u <sinu-github-kasutaja>   # token õigusega read:packages (viga 4)
@@ -587,38 +765,107 @@ curl localhost:8088/versioon
 
 | Rida skriptis `server/paigalda.sh` | Miks |
 |---|---|
-| `IMAGE="ghcr.io/hkhk-automation/${REPO,,}"` | sama nimi, mille pipeline andis, väiketähtedega |
+| `IMAGE="ghcr.io/hkhk-automation/${REPO,,}"` | sama nimi, mille konveier andis, väiketähtedega |
 | `docker pull "$IMAGE:$TAG"` | server ei ehita, ta tõmbab registrist valmis image'i |
 | `docker rm -f flask-cd` | vana konteiner eemaldatakse enne uue käivitamist |
-| `--restart unless-stopped` | konteiner käivitub uuesti ka pärast serveri taaskäivitust |
-| `-p 8088:5000` | serveri port 8088 suunatakse konteineri porti 5000, kus Flask kuulab |
+| `--restart unless-stopped` | konteiner käivitub uuesti ka pärast masina taaskäivitust |
+| `-p 8088:5000` | serveri port 8088 läheb konteineri porti 5000, kus Flask kuulab |
 
-*Tabel 8.4. Serveri skripti read.*
+*Tabel 8.9. Serveri skripti read.*
+
+Jenkinsi image (viga 6):
+
+```dockerfile
+FROM jenkins/jenkins:lts-jdk21
+
+# (1)!
+USER root
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3 python3-venv \
+    && rm -rf /var/lib/apt/lists/*
+# (2)!
+USER jenkins
+
+# (3)!
+COPY --from=docker:27-cli /usr/local/bin/docker /usr/local/bin/docker
+
+# (4)!
+RUN jenkins-plugin-cli --plugins git workflow-aggregator pipeline-graph-view dark-theme
+```
+
+1.  Paketi paigaldamiseks on vaja root'i õigusi.
+2.  Jenkins töötab jälle tavakasutajana. Kui keegi saab Jenkinsi üle kontrolli, ei ole tal konteineris root'i õigusi.
+3.  Dockeri käsurea klient kopeeritakse ametlikust image'ist. Etapp `konteiner` kasutab seda.
+4.  Plugin'id paigaldatakse ehitamisel. Iga uus Jenkinsi konteiner on kohe samade plugin'itega.
+
+---
+
+## Osa 8 · Töö esitamine
+
+**Ülesanne**
+
+1. Täida README-s vigade tabel. Sümptomi lahtrisse kopeeri rida logist või käsu väljundist. Põhjus ja parandus on kumbki üks lühike lause.
+2. Vasta README küsimustele 1-7. Igaühele piisab ühest lausest.
+3. Salvesta kõik ja saada GitHubi:
+
+    ```bash
+    git add README.md logid/server.txt
+    git status --short
+    git commit -m "N8: vigade tabel, vastused ja serveri logi"
+    git push
+    ```
+
+**Kontrolli**
+
+Töö on esitatud, kui kõik muudatused on GitHubis harus `main`. Automaatkontrolli tulemust näed vahekaardil **Actions** ja Classroom 50-s. Tahvlil on N8 vahelehel näha, mis masinas `proxmox1` töötab: sisselogimine `ghcr.io`-sse, image GHCR-ist, `/versioon` pordil 8088 ja Jenkins pordil 8081.
+
+??? note "Automaatkontroll (100 punkti)"
+
+    | Kontroll | Punktid |
+    |---|---|
+    | Failid olemas, N7 osa töötab, `logid/server.txt` olemas | 10 |
+    | Viga 1: `build-and-push` saab kirjutada GHCR-i, image'i nimi ja tag'id õiged | 15 |
+    | Viga 2: `build-and-push` ootab teste (`needs`) | 15 |
+    | Viga 3: push ainult harus `main`, pull request'is töö vahele (`if`) | 15 |
+    | Viga 5: `server/paigalda.sh` suunab pordi 5000 | 10 |
+    | `logid/server.txt`: image GHCR-ist, viimane rida on räsi | 10 |
+    | Nimi, vigade tabel ja küsimused README-s | 15 |
+    | Viga 6: `Jenkinsfile` korras, `jenkins/Dockerfile` paigaldab Pythoni | 10 |
+
+    Automaatkontroll ei ühendu sinu masinaga ega GHCR-iga. See loeb sinu faile ja käivitab teste. Viga 4 näitavad logi `logid/server.txt` ja tahvel.
+
+??? warning "Kui automaatkontroll annab vea"
+    - `pytest kukub`: tervitus failis `flask/app.py` peab sisaldama sõna `Tere` (osa 3).
+    - `logid/server.txt viimane rida peab olema /versioon vastus`: skript lõpetas veaga. Paranda see ja käivita uuesti käsuga `tee` (samm 5.3).
+    - `Vigade tabelis ja küsimustes on N vastust puudu`: README-s on `_vastus_` alles.
 
 ---
 
 ## Lisaülesanded
 
-??? example "A · Tagasipööramine (lihtne)"
-    Registris on iga commit'i image alles. Leia **Packages** alt või käsuga `git log --oneline` mõne varasema image'i räsi, näiteks osa 2 oma, ja käivita see:
+??? example "A · Tagasi eelmisele versioonile (lihtne)"
+    Registris on iga commit'i image alles. Leia **Packages** alt või käsuga `git log --oneline` mõne vanema image'i räsi. Näiteks osa 2 oma. Käivita see:
 
     ```bash
-    bash server/paigalda.sh <varasem-räsi>
+    bash server/paigalda.sh <vanem-räsi>
     curl localhost:8088
     ```
 
-    Mis tervitust näed? Pane viimane versioon tagasi (`bash server/paigalda.sh`). Mitu käsku kulus tagasipööramiseks ja mida oleks pidanud tegema, kui server oleks image'i ise ehitanud?
+    Mis tervitust näed? Pane viimane versioon tagasi käsuga `bash server/paigalda.sh`. Mitu käsku kulus? Mida oleks pidanud tegema, kui server oleks image'i ise ehitanud?
 
 ??? example "B · Vähim õigus kogu failis (keskmine)"
-    Lisa faili `ci.yml` algusesse, enne rida `jobs:`, õigused, mis kehtivad kõigile job'idele:
+    Lisa faili `ci.yml` algusesse, enne rida `jobs:`, õigus, mis kehtib kõigile töödele:
 
     ```yaml
     permissions:
       contents: read
     ```
 
-    Ava pärast push'i job'i `test` samm **Set up job**. Mis on lõigus `GITHUB_TOKEN Permissions` muutunud? Mis on nüüd job'i `build-and-push` õigused ja miks?
+    Pärast push'i ava töö `test` samm **Set up job**. Mis muutus lõigus `GITHUB_TOKEN Permissions`? Mis õigused on nüüd tööl `build-and-push` ja miks?
+
+??? example "C · Seinaekraan Jenkinsile (keskmine)"
+    Lisa failis `jenkins/Dockerfile` plugin'ite loendisse [`build-monitor-plugin`](https://plugins.jenkins.io/build-monitor-plugin/). Ehita image ja tee konteiner uuesti (samm 6.5). Loo Jenkinsis uus vaade: **+** → **Build Monitor View** → vali `lab08`. Sellist vaadet näidatakse kontorites seinal suurel ekraanil. Mis värvi on `lab08`, kui konveier kukub?
 
 ---
 
-*Edasi: [kodutöö](homework.md), kus leiad ise vead väljalaske workflow'is. N9 teema on infrastruktuur koodina.*
+*Edasi: [kodutöö](homework.md). Seal leiad ise vead väljalaske töövoos. N9 teema on infrastruktuur koodina.*
