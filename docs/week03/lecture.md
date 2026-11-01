@@ -7,9 +7,7 @@ tags:
 
 # Loeng: serveri konfiguratsiooni automatiseerimine
 
-See leht on mõeldud iseseisvaks lugemiseks. Loe see rahulikult läbi enne praktikumi. Tunnis käime põhiosa kiiremini üle, kuid siit leiad kõik koos näidetega lahti seletatuna ja saad lehte praktikumi ajal spikrina kasutada.
-
-Praktikumiks 1 piisab põhiosast: peatükid 1–8 (kuni esimese playbooki ja idempotentsuseni). Peatükid alates 9-ndast (muutujad põhjalikumalt, tingimused, tsüklid) on lisalugemine: loe need läbi, kuid esimeseks praktikumiks ei pea neid peast teadma.
+N2-s panid skripti Giti ja tegid muudatusi pull request'iga. Täna seadistad serverit Ansible'iga: playbook kirjeldab soovitud olekut ja Ansible rakendab vajalikud muudatused.
 
 ??? abstract "Õpiväljundid"
     Pärast seda materjali oskad:

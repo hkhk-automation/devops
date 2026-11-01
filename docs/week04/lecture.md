@@ -8,9 +8,7 @@ tags:
 
 # Loeng: dünaamiline konfiguratsioon ja saladuste kaitse
 
-See leht on mõeldud iseseisvaks lugemiseks ja praktikumi ajal spikriks. Tunnis läbime põhiosa kiiremini.
-
-Praktikumiks on vaja: peatükid 1–5 ja 7.1–7.4 (välisfailid, mall, `template`, handler, Vault fail + parool). Ülejäänu (filtrite tabel, `encrypt_string`, vault ID-d, `no_log`) on lugemismaterjal: loe läbi, aga peast pole vaja teada.
+N3-s kirjutasid playbook'i, kus kõik väärtused olid failis otse kirjas. Täna tõstad väärtused muutujatesse ja mallidesse ning paned parooli krüpteeritud faili.
 
 ??? abstract "Õpiväljundid"
     Pärast seda materjali oskad:

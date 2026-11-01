@@ -11,7 +11,7 @@ tags:
 
 N9 loengus võrdlesid Bashi, Ansible'it ja Docker Compose'i. Täna kirjutad kõigepealt kaks ennustust tööriista kohta, mida sa veel ei kasutanud. Siis kirjeldad OpenTofuga kooli Proxmoxis ühe virtuaalmasina ja kontrollid mõlemat ennustust oma masinaga.
 
-!!! abstract "Õpiväljundid"
+??? abstract "Õpiväljundid"
     Pärast loengut ja praktikumi oskad:
 
     - selgitada, millist olekut OpenTofu haldab ja millist jätab Ansible'ile

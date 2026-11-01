@@ -19,9 +19,6 @@ tags:
     5. mis vahe on lokaalsel Gitil ja kaugrepol, mis on `clone` ja `fork`;
     6. mis on pull request / merge request ja koodiülevaatus.
 
-!!! info "Kaks peamist asja"
-    Tunni lõpuks pead oskama selgitada, miks kaks inimest ei saa ilma versioonihalduseta sama faili turvaliselt muuta ja kuidas haru ja pull request võimaldavad neil seda teha.
-
 ## 1. Näidisstsenaarium
 
 !!! abstract "Miks see oluline on?"

@@ -8,9 +8,9 @@ tags:
 
 # Loeng: infrastruktuur koodina, mõtteviis
 
-Täna on iseseisev nädal. Server ja Proxmox jäävad puhkama. Vaatad tagasi kõigele, mida oled kaheksa nädalaga teinud, ja paned selle ühte pilti. Loe loeng läbi, vasta iga osa lõpus olevatele küsimustele vihikus ja mine siis [praktikumi](lab.md). Praktikumis katsetad samu mõtteid Dockeriga oma silmaga.
+See nädal on iseseisev ja Proxmoxi ei ole vaja. Selles loengus võrdled tööriistu, mida oled seni kasutanud: mida igaüks kirjeldab ja mida ta teeb, kui masin ei vasta kirjeldusele.
 
-!!! abstract "Õpiväljundid"
+??? abstract "Õpiväljundid"
     Pärast loengut oskad:
 
     - eristada imperatiivset ja deklaratiivset lähenemist ja paigutada iga seni kasutatud tööriista ühte neist
@@ -352,7 +352,7 @@ Infrastruktuur koodina tähendab, et kõik, mis serveris ja selle ümber peab ol
 ## 🎯 Lõplik kontroll
 
 1. Selgita retsepti ja tellimuse abil imperatiivse ja deklaratiivse vahet. Too näide oma laboritest.
-2. Joonista vihikusse ühtlustamise tsükkel ja kirjuta iga kasti juurde, mis see Docker Compose'i puhul on.
+2. Kirjelda ühtlustamise tsükli iga sammu Docker Compose'i näitel.
 3. Mis juhtub Mati käsitsi parandusega järgmisel Ansible'i jooksul ja kuidas seda vältida?
 4. Kustutad playbookist ühe task'i. Mis juhtub serveris?
 5. Kati firma tahab, et ühegi serveri kaotus ei võtaks rohkem kui tund. Mida sa neile soovitad?

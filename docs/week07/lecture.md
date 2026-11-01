@@ -12,7 +12,7 @@ tags:
 
 N5-s pakkisid Flaski rakenduse konteinerisse ja N6-s panid selle Compose'iga koos andmebaasiga tööle. Iga kord kontrollisid tulemust ise: käivitasid `curl`-i ja vaatasid vastust. Täna antakse see kontroll üle masinale. GitHub hakkab iga muudatuse järel ise teste käivitama ja ütleb, kas kood on korras.
 
-!!! abstract "Õpiväljundid"
+??? abstract "Õpiväljundid"
     Pärast loengut ja praktikumi oskad:
 
     - selgitada, mis on CI ja millist probleemi see lahendab

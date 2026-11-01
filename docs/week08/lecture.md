@@ -14,7 +14,7 @@ N7-s kontrollis GitHub Actions iga muudatust. Konveier käivitas testid ja ehita
 
 Praktikumis saad konveieri, mille kolleeg on juba kirjutanud. Selles on vead. Loengus on need mõisted, mida vigade leidmiseks vaja läheb.
 
-!!! abstract "Õpiväljundid"
+??? abstract "Õpiväljundid"
     Pärast loengut ja praktikumi oskad:
 
     - selgitada, mis vahe on CI-l ja pideval tarnel
