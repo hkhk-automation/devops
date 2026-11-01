@@ -165,8 +165,6 @@ Iga atribuudi täpse tähenduse leiad provideri dokumentatsioonist: [proxmox_vir
     | `stop_on_destroy` | kustutamisel lülitatakse masin kohe välja, OpenTofu ei oota korrektset seiskamist |
     | `output "ip"` | `ipv4_addresses` on iga võrguliidese aadresside nimekiri. Esimene liides on `lo` (127.0.0.1), seega on masina IP teise liidese (`[1]`) esimene aadress (`[0]`) |
 
-    *Tabel 10.6. Atribuudid failis `vm.tf`.*
-
 ### 2.2 Provideri allalaadimine
 
 `tofu init` laeb alla provideri, mida nõuab `versions.tf` plokk `required_providers`.

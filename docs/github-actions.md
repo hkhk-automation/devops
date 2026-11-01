@@ -412,6 +412,4 @@ Dokumentatsioon on inglise keeles, aga võtmete nimed on samad, mida kirjutad fa
     | [Contexts](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts) | mida saab lugeda kujul `${{ github.* }}`, `${{ env.* }}`, `${{ secrets.* }}` |
     | [GitHub Marketplace → Actions](https://github.com/marketplace?type=actions) | valmis action'id, nende `with:` parameetrid on action'i README-s |
 
-    *Tabel GA.4. GitHub Actionsi dokumentatsiooni osad.*
-
 Dokumentatsiooni osade pikem kirjeldus on [N7 loengu §6](week07/lecture.md#6-kust-leida-vastus-github-actionsi-dokumentatsioon).

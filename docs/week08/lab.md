@@ -559,8 +559,6 @@ cat Jenkinsfile
     | [`pipeline-graph-view`](https://plugins.jenkins.io/pipeline-graph-view/) | näitab konveieri samme graafiliselt |
     | [`dark-theme`](https://plugins.jenkins.io/dark-theme/) | tume teema |
 
-    *Tabel 8.6. Plugin'id failis `jenkins/Dockerfile`.*
-
 `Jenkinsfile` on konveier. See on sama mõttega kui `ci.yml`, aga teises keeles ([Jenkinsfile'i süntaks](https://www.jenkins.io/doc/book/pipeline/syntax/)):
 
 ??? note "Tabel 8.7. Sama konveier kahes tööriistas"
@@ -571,8 +569,6 @@ cat Jenkinsfile
     | `actions/setup-python` paigaldab Pythoni | Python peab Jenkinsi image'is olemas olema |
     | `needs: test` | etapid käivad järjest, kirjutatud järjekorras |
     | `on: push` | `pollSCM`: Jenkins küsib ise, kas on uus commit (samm 6.6) |
-
-    *Tabel 8.7. Sama konveier kahes tööriistas.*
 
 ### 6.2 Jenkins käima
 
@@ -605,8 +601,6 @@ docker run -d --name jenkins --restart unless-stopped \
     | `-v jenkins_home:/var/jenkins_home` | Jenkinsi seaded on volume'is. Need jäävad alles, kui konteiner tehakse uuesti |
     | `-v /var/run/docker.sock:...` | Jenkins saab kasutada masina Dockerit, et ehitada image'it |
     | `--group-add ...` | Jenkinsi kasutaja saab õiguse Dockeri soklit kasutada |
-
-    *Tabel 8.8. Jenkinsi konteineri võtmed.*
 
 **Kontrolli**
 
@@ -880,8 +874,6 @@ curl localhost:8088/versioon
     | `docker rm -f flask-cd` | vana konteiner eemaldatakse enne uue käivitamist |
     | `--restart unless-stopped` | konteiner käivitub uuesti ka pärast masina taaskäivitust |
     | `-p 8088:5000` | serveri port 8088 läheb konteineri porti 5000, kus Flask kuulab |
-
-    *Tabel 8.9. Serveri skripti read.*
 
 Jenkinsi image (viga 6):
 

@@ -41,8 +41,6 @@ See vastus on põhjus, miks see kursus olemas on. Kõik, mida oled kaheksa näda
     | N5 | Docker | kuidas image ehitada | `Dockerfile` |
     | N6 | Docker Compose | millised konteinerid koos töötavad | `docker-compose.yml` |
 
-    *Tabel 9.1. Iga nädal panid sa midagi koodi kujul kirja. Täna vaatame, mille poolest need kirjapanekud erinevad.*
-
 Fail on Gitis, seega on sellel ajalugu ja seda saab üle vaadata. Mati mälu ei saa kumbagi.
 
 ??? question "Kontrolli ennast"
@@ -148,8 +146,6 @@ N6-s kirjutasid `docker-compose.yml` faili ja käivitasid `docker compose up -d`
     | Ansible | playbook | mis on serveris (paketid, failid, teenused) |
     | Docker Compose | `compose.yaml` | mis konteinerid jooksevad |
 
-    *Tabel 9.2. Sama tsükkel, erinev maailm.*
-
 ??? question "Kontrolli ennast"
     1. Selgita termostaadi näitel, mis on soovitud olek ja mis tegelik olek.
     2. Compose näitab teisel käivitusel `Running`. Mida see ütleb sulle tegeliku ja soovitud oleku kohta?
@@ -182,8 +178,6 @@ Idempotentsus ei tule tasuta. Ansible'i moodulid (`package`, `file`, `copy`) on 
     | `echo "rida" >> fail` | `grep -qx "rida" fail \|\| echo "rida" >> fail` |
     | `docker run --name web nginx` | `docker ps -a --format '{{.Names}}' \| grep -qx web \|\| docker run --name web nginx` |
     | `useradd kati` | `id kati \|\| useradd kati` |
-
-    *Tabel 9.3. Bash-skripti saab teha idempotentseks, kui lisad enne iga muutust kontrolli. Deklaratiivne tööriist teeb seda sinu eest.*
 
 ??? question "Kontrolli ennast"
     1. Too oma elust üks idempotentne ja üks mitte-idempotentne tegevus.
@@ -264,8 +258,6 @@ Inglise keeles räägitakse sellest **lemmikloomade ja kariloomade** (pets vs ca
     | Kuidas tekkis | käsitsi, aastate jooksul | koodist, minutitega |
     | Näide kursusel | Märteni server N2-s | Docker konteiner N5-6 |
 
-    *Tabel 9.4. Lemmikloom ja kariloom. Mida rohkem su masinad on kariloomad, seda vähem on triivi.*
-
 <figure markdown="span">
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'primaryColor':'#ede7f6','primaryBorderColor':'#5e35b1','primaryTextColor':'#212121','lineColor':'#7e57c2'}}}%%
@@ -319,8 +311,6 @@ graph TB
     | Dockerfile | image | imperatiivne sees, tulemus muutumatu | korduv build annab sama image, vahemälu jätab tehtu vahele | ei |
     | Docker Compose | konteinerid | deklaratiivne | jah | Docker teab, mis jookseb |
 
-    *Tabel 9.5. Seni kasutatud tööriistad ühe pilguga. Praktikumi boonusülesandes täidad sarnase tabeli ise ja lisad viite oma laborile.*
-
 Git on kõigi all. Ilma Gitita on iga ülaltoodud fail lihtsalt fail sinu kettal ja sa oled tagasi Mati mälu juures.
 
 ??? question "Kontrolli ennast"
@@ -344,8 +334,6 @@ Infrastruktuur koodina tähendab, et kõik, mis serveris ja selle ümber peab ol
     | **Triiv** | server erineb kirjeldusest käsitsi muudatuse tõttu | Mati öine parandus |
     | **Muutumatu infrastruktuur** | ei paranda, vaid ehitab uue ja vahetab | Docker image (N5) |
     | **Pets vs cattle** | ravitav lemmikloom ja asendatav kariloom | Märteni server ja konteiner |
-
-    *Tabel 9.6. Mõisted ühe pilguga.*
 
 ## 🎯 Lõplik kontroll
 

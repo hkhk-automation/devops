@@ -48,8 +48,6 @@ Tähtaja ja automaatkontrolli tulemuse näed Classroom 50-s.
     | Nimi README-s | 10 |
     | Boonusülesanded | 0 |
 
-    *Tabel 9.9. Automaatkontroll*
-
 ## Boonusülesanded
 
 Vastused kirjuta faili `BOONUS.md`.

@@ -98,8 +98,6 @@ N3–N8 kasutasid Ansible'it. Mõlemad tööriistad on deklaratiivsed: kirjeldad
     | Mälu | ei mäleta eelmist käivitust | olekufail `terraform.tfstate` |
     | Tüüpiline järjekord | teine samm: seadistab masina | esimene samm: loob masina |
 
-    *Tabel 10.1. Ansible ja OpenTofu haldavad eri kihti. Tavaliselt kasutatakse neid koos.*
-
 <figure markdown="span">
   ![Vasakul ülal OpenTofu, mis loob API kaudu virtuaalmasina: tuumad, mälu, ketas, võrgukaart, mall. OpenTofu output annab IP-aadressi, mis läheb Ansible'i inventory'sse. Vasakul all Ansible, mis logib SSH-ga masinasse ja seadistab selle sisu: paketid, konfiguratsioonifailid, teenused, kasutajad](../images/n10_tofu_ansible.svg)
   <figcaption>Joonis 10.2. OpenTofu väljund (masina IP) on Ansible'i sisend (Talvik, 2026).</figcaption>
@@ -164,8 +162,6 @@ Kõik praktikumi failid kasutavad viit tüüpi plokke:
     | `resource` | hallatav objekt: masin, võrk, fail | `vm.tf` |
     | `output` | väärtus, mille OpenTofu pärast `apply` käsku välja trükib | `vm.tf` |
 
-    *Tabel 10.2. HCL-i põhiplokid.*
-
 `var.kasutaja` viitab muutujale, `proxmox_virtual_environment_vm.veeb.ipv4_addresses` viitab ressursi atribuudile. Atribuudi väärtus selgub alles siis, kui masin on olemas: masina IP-aadressi saab OpenTofu Proxmoxi kaudu masinas töötavalt guest agent'ilt.
 
 Muutujate väärtused on failis `terraform.tfvars`. OpenTofu loeb selle faili automaatselt. Samamoodi lugesid N4-s Ansible'i muutujaid failist `group_vars` ja Vaulti krüpteeritud failist: kood on kõigil sama, väärtused on igaühel oma.
@@ -201,8 +197,6 @@ graph LR
     | `-` | kustutatakse | kirjeldus eemaldati koodist |
     | `-/+` | kustutatakse ja luuakse uuesti | muutus atribuut, mida kohapeal muuta ei saa (näiteks `vm_id`) |
 
-    *Tabel 10.3. Plaani märgid.*
-
 Plaani viimane rida võtab kokku: `Plan: 1 to add, 0 to change, 0 to destroy.` Kui muuta pole midagi, on väljundis `No changes. Your infrastructure matches the configuration.` See vastab Ansible'i `changed=0` reale.
 
 **`tofu apply`** teeb muudatused ja kirjutab tulemuse olekufaili. Praktikumis salvestad plaani faili (`tofu plan -out=tfplan`) ja annad selle faili käsule `tofu apply tfplan`. Siis teeb OpenTofu täpselt need muudatused, mida plaanis lugesid. Ilma plaanifailita koostab `apply` plaani uuesti ja küsib kinnitust.
@@ -234,8 +228,6 @@ Lukufail `.terraform.lock.hcl` läheb Giti. Selles on provideri versioon ja kont
     | `.terraform/` | allalaetud provider (kümned MB) | ei |
     | `terraform.tfstate` | mida OpenTofu lõi | ei |
     | `terraform.tfvars` | muutujate väärtused, sh API token | ei |
-
-    *Tabel 10.4. Mis läheb Giti. Starteri `.gitignore` sisaldab juba õigeid ridu.*
 
 ??? question "Kontrolli ennast"
     1. Kustutad kogemata faili `terraform.tfstate`. Masin on Proxmoxis alles. Mida näitab järgmine `tofu plan`?
@@ -286,8 +278,6 @@ OpenTofu kirjeldab infrastruktuuri `.tf` failides ja haldab seda providerite kau
     | **plan** | võrdlus ja muudatuste nimekiri ilma muutmata |
     | **olekufail** | `terraform.tfstate`, OpenTofu mälu |
     | **lukufail** | `.terraform.lock.hcl`, provideri versioon |
-
-    *Tabel 10.5. Mõisted.*
 
 ??? question "Lõplik kontroll"
     1. Kirjelda oma sõnadega, mida teeb `tofu plan` enne, kui ta midagi välja trükib.

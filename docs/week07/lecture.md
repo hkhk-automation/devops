@@ -72,8 +72,6 @@ Need reeglid kirjutas [Martin Fowler](https://martinfowler.com/articles/continuo
     | Kiire tagasiside | Konveier, mis kestab tund aega, jäetakse vahele. Tulemus peab tulema minutitega. |
     | Testi tootmise sarnases keskkonnas | Testid ei käivitu otse tootmises ega arendaja arvutis. |
 
-    *Tabel 7.1. CI on harjumus. GitHub Actions, GitLab CI ja Jenkins on tööriistad, mis seda harjumust automatiseerivad.*
-
 ### Kas see on CI?
 
 Väikeses e-poes töötavad arendaja Kertu, süsteemiadministraator Rasmus ja praktikant Marko. Neil on kasutada GitHub Actions. Tabelist näed, et tööriist üksi ei tee veel CI-d.
@@ -88,8 +86,6 @@ Väikeses e-poes töötavad arendaja Kertu, süsteemiadministraator Rasmus ja pr
     | Kertu töötab uue makseviisi kallal kuu aega oma harus ja liidab siis korraga 3000 rida. CI on roheline. | **Ei** | Muudatusi liidetakse harva ja suurelt. Konfliktid ja vead tulevad välja korraga, kui nende parandamine on kõige kallim. |
     | Töövoos on üks samm: `run: echo "testid OK"`. Tulemus on alati roheline. | **Ei** | Roheline tulemus ei tähenda midagi, kui miski ei saa punaseks minna. |
     | Marko paigaldas oma arvutisse teegi ja testid läbivad tema arvutis. Ta teeb push'i otse harusse `main` ilma pull request'ita ja CI ei käivitu. | **Ei** | Kontroll toimus ainult tema arvutis. See ei ole kontroll, mida meeskond saab usaldada. |
-
-    *Tabel 7.2. CI on see, mis juhtub iga muudatusega. Vahekaardil Actions olev töövoog üksi ei ole veel CI.*
 
 ??? question "Mõtle"
     Vali tabelist üks rida, kus vastus on „Ei“. Mis peaks muutuma, et vastus oleks „Jah“: tööriist, reegel või meeskonna harjumus?
@@ -110,8 +106,6 @@ Lühend CI/CD tähistab kolme astet. Need erinevad selle poolest, kui kaugele au
     | **Pidev tarne** (continuous delivery) | lisaks pakkimine, väljalase on igal hetkel valmis | inimene ühe nupuvajutusega |
     | **Pidev paigaldus** (continuous deployment) | lisaks väljalase tootmisse | testid, inimest vahel ei ole |
 
-    *Tabel 7.3. Sel nädalal teed CI. N8 lisab pideva tarne: image läheb registrisse.*
-
 Kogu konveieri (commit, ehitus, testid, testkeskkond ja tootmine) näed ühel joonisel ByteByteGo artiklis [CI/CD pipeline explained in simple terms](https://blog.bytebytego.com/p/ep71-cicd-pipeline-explained-in-simple).
 
 Pidev paigaldus on võimalik ainult siis, kui teste usaldatakse täielikult, sest enne tootmist ei vaata muudatust ükski inimene. Seepärast soovitab [GitHub](https://github.com/resources/articles/ci-cd) alustada pidevast tarnest. Pideva paigalduse juurde minnakse alles siis, kui testid on end tõestanud.
@@ -129,8 +123,6 @@ CI-st räägitakse tavaliselt arendajate näidetega. Süsteemiadministraatori fa
     | Konfiguratsioonifail | `nginx -t` konteineris, `yamllint` | vigase konfiguratsiooni enne serverisse jõudmist | N3, N4 praktikumi lisaosa |
     | Saladused | [`gitleaks`](https://github.com/gitleaks/gitleaks) | commit'i, kus on parool või webhook'i aadress | N2 `.env`, N4 Vault |
     | Dockerfile | [`hadolint`](https://github.com/hadolint/hadolint) | tag'i `latest`, käivitamise root-kasutajana | N5 |
-
-    *Tabel 7.4. Sama põhimõte süsteemiadministraatori failidega.*
 
 <figure markdown="span">
   ![Vasakul süsteemiadministraatori failid Gitis (site.yml, monitor.sh, nginx.conf, Dockerfile, kogu repositoorium), keskel iga faili kontroll CI-s (ansible-lint, idempotentsus, shellcheck, nginx -t, hadolint, gitleaks), paremal kaks tulemust: kõik on roheline ja playbook läheb 20 serverisse, või üks on punane ja liitmine on blokeeritud](../images/n07_sysadmin_ci.svg)
@@ -173,8 +165,6 @@ Testid jagunevad selle järgi, kui suurt osa rakendusest need kontrollivad. Sell
     | Kuidas | `pytest` ja `test_client()` | `docker build`, `docker run` ja `curl` |
     | Kestus | millisekundid | kümned sekundid |
     | Mida leiab | loogikavead | pakkimise ja käivitamise vead, näiteks N5 `127.0.0.1` ja `0.0.0.0` erinevus |
-
-    *Tabel 7.5. Ühiktest näitab, kas kood on õige. Suitsutest näitab, kas sama kood töötab ka konteineris.*
 
 Suitsutesti nimi tuleb elektroonikast. Seade lülitati sisse ja vaadati, kas sellest tuleb suitsu. Kui suitsu tuli, polnud mõtet edasi testida.
 
@@ -355,8 +345,6 @@ Kõik võtmed ja nende võimalikud väärtused on [töövoo süntaksi juhendis](
     | Koolonile ei järgne tühikut | `Invalid workflow file` | Kirjuta `run: pytest`, mitte `run:pytest` |
     | Samm algab ilma kriipsuta | `Invalid workflow file` | Iga samm algab `- ` |
 
-    *Tabel 7.6. Töövoo faili tüüpilised vead.*
-
 ### Mida runner vajab
 
 Runner on tühi masin. Töö `test` iga samm annab sellele ühe asja, mida tal ilma selleta poleks:
@@ -368,8 +356,6 @@ Runner on tühi masin. Töö `test` iga samm annab sellele ühe asja, mida tal i
     | `setup-python` | Millist Pythoni versiooni kasutada? Võti `with:` annab action'ile parameetri, siin versiooni `3.12`. |
     | `pip install -r ...` | Milliseid pakette rakendus vajab? Paigaldatakse ainult need, mis on kirjas repositooriumis. Arendaja arvutis olevad paketid ei loe. |
     | `pytest` | Kas rakendus töötab? |
-
-    *Tabel 7.7. Töövoog kirjeldab kõik, mida runner vajab ja mis on arendaja masinas juba olemas.*
 
 <figure markdown="span">
   ![Vasakul õppija virtuaalmasin, kus on kood, Python, Flask, pytest ja kunagi paigaldatud requests. Keskel ci.yml read, mis toovad igaühe runnerisse. Paremal runner: kood, Python, Flask ja pytest on rohelised, requests on punane, sest seda pole failis requirements.txt](../images/n07_tyhi_masin.svg)
@@ -395,8 +381,6 @@ Dokumentatsioon on jagatud osadeks selle järgi, mida sa otsid:
     | [Reference](https://docs.github.com/en/actions/reference) | täpne süntaks: [Workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax), [Events that trigger workflows](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows), [Contexts](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts), [Variables](https://docs.github.com/en/actions/reference/workflows-and-actions/variables), [GitHub-hosted runners](https://docs.github.com/en/actions/reference/runners/github-hosted-runners), [Secrets](https://docs.github.com/en/actions/reference/security/secrets) | mis võtmed on `jobs.<id>` all |
     | [GitHub Marketplace → Actions](https://github.com/marketplace?type=actions) | valmis action'id ja nende `with:` parameetrid action'i README-s | `actions/setup-python` |
 
-    *Tabel 7.8. GitHub Actionsi dokumentatsiooni osad.*
-
 Marketplace'is on kahte tüüpi tooteid ([Actions vs Apps](https://docs.github.com/en/actions/get-started/actions-vs-apps)). Action'id käivituvad töövoo sammuna runneris ega vaja oma serverit. GitHub Apps töötavad pidevalt sinu enda serveris ja reageerivad repositooriumi sündmustele. Selles kursuses kasutame ainult action'eid.
 
 Osas How-tos on töövoo kirjutamise juhendid jaotises [Write workflows](https://docs.github.com/en/actions/how-tos/write-workflows). Selle all on kolm alajaotist, mis vastavad töövoo kolmele küsimusele: [Choose when workflows run](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run) (millal töövoog käivitub, näiteks harude ja failide järgi), [Choose where workflows run](https://docs.github.com/en/actions/how-tos/write-workflows/choose-where-workflows-run) (mis runneris töö tehakse) ja [Choose what workflows do](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do) (mida sammud teevad, näiteks saladuste ja muutujate kasutamine).
@@ -419,8 +403,6 @@ Väljumiskoodi järgi saad aru, kas viga on rakenduse koodis või töövoos. pyt
     | `4` | pytest'i käsk on vale, näiteks kausta ei ole | `file or directory not found`, viga on **töövoos** (näiteks puudub checkout) |
     | `5` | teste ei leitud | testifaili nimi ei alga sõnaga `test_` |
     | `127` | käsku ei ole olemas | `pytest: command not found`, tööriist on paigaldamata |
-
-    *Tabel 7.9. Väljumiskood ütleb, kas viga on koodis või konveieris.*
 
 Enamikus meeskondades kehtib reegel, et pull request'i ei saa harusse `main` liita enne, kui kõik nõutud kontrollid on rohelised. Nii on see tehtud meelega. Parem on, kui konveier peatab liitmise kohe, kui et katkine kood jõuab harusse `main` ja sealt tootmisse.
 
@@ -518,8 +500,6 @@ Allpool on sama konveier kolmes tööriistas. Süntaksit ei pea pähe õppima. L
     | Pythoni versioon | action `setup-python` | `image: python:3.12` | peab serveris juba olemas olema |
     | Järjekord | `needs:` | `stages:` | `stage`-plokid järjest |
     | Saladused | Secrets | CI/CD Variables | Credentials |
-
-    *Tabel 7.10. Kolm tööriista, üks mudel.*
 
 <figure markdown="span">
   ![Kolm veergu: GitHub Actions saab iga käivituse jaoks uue tühja virtuaalmasina, GitLab CI uue konteineri image'ist python:3.12, Jenkins kasutab sama serverit, kuhu kogunevad eelmiste käivituste failid ja ajutiselt paigaldatud teegid](../images/n07_kolm_tooriista.svg)

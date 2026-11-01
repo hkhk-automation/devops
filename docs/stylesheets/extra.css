@@ -171,3 +171,11 @@
 
 /* Vanemates lehtedes on "---" eraldajad; pealkirja joon eraldab niigi, seega ainult vahe, mitte teine joon */
 .md-typeset hr { border: 0; margin: 1.2em 0; }
+
+/* Tabeli allkiri tabeli vahetusse lähedusse: tabeli järel olev kursiivis lõik („Tabel N.M. …“) ei kleepu järgmise tekstiga kokku */
+.md-typeset .md-typeset__scrollwrap + p:has(> em:only-child) {
+  margin-top: -0.6em;
+  margin-bottom: 1.4em;
+  font-size: 0.9em;
+  color: var(--md-default-fg-color--light);
+}

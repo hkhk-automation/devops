@@ -33,7 +33,7 @@ Meenuta N7 sõnu. **Töövoog** (workflow) on fail kaustas `.github/workflows/`.
   <figcaption>Joonis 8.1. Sündmus käivitab töövoo, töövoos on tööd, töös on sammud. `needs` paneb tööd järjekorda (Talvik, 2026).</figcaption>
 </figure>
 
-N7 loengu tabelis 7.3 olid kolm astet:
+Automaatne tarne käib kolmes astmes. **CI** (continuous integration) kontrollib iga muudatust automaatselt: testid ja ehitus. **Pidev tarne** (continuous delivery) tähendab, et iga roheline muudatus on pakitud ja paigaldamiseks valmis, aga paigalduse käivitab inimene. **Pidev paigaldus** (continuous deployment) paigaldab ise ja inimest vahel ei ole.
 
 ??? note "Tabel 8.1. CI ja CD astmed"
     | Aste | Mida teeb | Millal |
@@ -41,8 +41,6 @@ N7 loengu tabelis 7.3 olid kolm astet:
     | CI (continuous integration) | kontrollib iga muudatust automaatselt | N7 |
     | pidev tarne (continuous delivery) | iga roheline muudatus on pakitud ja paigaldamiseks valmis | täna |
     | pidev paigaldus (continuous deployment) | paigaldab ka ise, inimest vahel pole | N13 |
-
-    *Tabel 8.1. CI ja CD astmed.*
 
 Täna teeme pideva tarne. Konveier ehitab image'i ja paneb selle registrisse. Paigalduse käivitab inimene.
 
@@ -95,8 +93,6 @@ Registreid on palju. Konveier logib igasse neist sisse veidi teisiti:
     | [AWS ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html) | Amazon | IAM-roll [OIDC kaudu](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws), siis [`amazon-ecr-login`](https://github.com/aws-actions/amazon-ecr-login) | serverid töötavad AWS-is |
     | [GitLab Container Registry](https://docs.gitlab.com/user/packages/container_registry/build_and_push_images/) | GitLab | muutujad `CI_REGISTRY_USER` ja `CI_REGISTRY_PASSWORD`, mille GitLab annab igale tööle | kood ja konveier on GitLabis |
 
-    *Tabel 8.2. Levinud registrid.*
-
 **OIDC** tähendab, et konveier ei hoia AWS-i parooli üldse. GitHub annab käivitusele lühiajalise tõendi ja AWS vahetab selle ajutiste õiguste vastu. Põhimõte on sama mis `GITHUB_TOKEN`-il: ajutine võti on parem kui püsiv saladus.
 
 ??? question "Kontrolli ennast"
@@ -113,8 +109,6 @@ Registreid on palju. Konveier logib igasse neist sisse veidi teisiti:
     | `latest` | `:latest` | viimane ehitatud image; homme võib see olla teine |
     | commit'i lühiräsi | `:3f2a9c1` | täpselt see commit, millest image ehitati |
     | versioon | `:v1.0.0` | väljalase, mille inimene märkis (kodutöö) |
-
-    *Tabel 8.3. Tag'id, mida N8 konveier kasutab.*
 
 Konveier paneb igale image'ile kaks tag'i: räsi ja `latest`. Räsi tuleb muutujast `GITHUB_SHA`. Kirjutis `${GITHUB_SHA::7}` võtab sellest seitse esimest märki. Sama lühiräsi näitab ka `git log --oneline`.
 
@@ -151,7 +145,7 @@ Iga töö logi esimene samm on **Set up job**. Selle all on lõik `GITHUB_TOKEN 
 
 Registrisse tohib jõuda ainult kood, mis on testitud ja üle vaadatud. Selle eest hoolitsevad töövoos kolm asja.
 
-**Järjekord: `needs`.** Ilma `needs`-ita käivituvad tööd korraga. Siis ehitatakse image ka siis, kui test kukub. `latest` hakkab näitama katkist koodi. N7 loengus lubasime, et kolmas töö tuleb järjekorda `konteiner`-i järele. Käivituse lehel on järjekord näha noolena tööde vahel.
+**Järjekord: `needs`.** Ilma `needs`-ita käivituvad tööd korraga. Siis ehitatakse image ka siis, kui test kukub. `latest` hakkab näitama katkist koodi. Käivituse lehel on järjekord näha noolena tööde vahel.
 
 **Sündmus: `on`.** Sündmus on see, mis töövoo käivitab. `push` ilma piiranguta käivitab töövoo iga haru igal push'il. `push: branches: [main]` käivitab selle ainult harus `main`. `pull_request` käivitab testid pull request'is. Seda on vaja, sest N7 lukk ei luba enne rohelist testi liita.
 
@@ -174,7 +168,7 @@ GitHubi runner ei pääse kooli võrku. Seepärast ei saada konveier image'it se
 
 **Sisselogimine.** Pakett on privaatne. `GITHUB_TOKEN` kaob pärast käivitust ja serveris seda pole. Server kasutab sinu isiklikku tokenit (personal access token, classic). Sellel on ainult õigus `read:packages`. Kui token lekib, saab sellega image'eid ainult tõmmata ([token GHCR-i jaoks](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic)). `docker login` salvestab tokeni faili `~/.docker/config.json`. Seepärast anna tokenile lühike kehtivusaeg.
 
-**Tõmbamine ja käivitamine.** Käsud `docker pull` ja `docker run` on samad mis N5-s. Võti `-p 8088:5000` suunab serveri pordi 8088 konteineri porti 5000. Teine number peab olema port, kus rakendus kuulab. N5 Osa 10-s nägid, mis juhtub, kui see ei klapi.
+**Tõmbamine ja käivitamine.** Käsud `docker pull` ja `docker run` on samad mis N5-s. Võti `-p 8088:5000` suunab serveri pordi 8088 konteineri porti 5000. Teine number peab olema port, kus rakendus kuulab.
 
 **Skript.** Käske saab iga kord käsitsi sisestada. Siis tuleb meeles pidada nime, tag'i, porti ja vana konteineri eemaldamist. Starteris on skript `server/paigalda.sh`, mis teeb need sammud alati samas järjekorras. N13-s käivitab sama sammu konveier ise.
 
@@ -222,8 +216,6 @@ Praktikumi konveier on kirjutatud, aga katki. Kõige aeglasem viis on muuta ridu
     | `docker ps`, veerg PORTS | kuhu port on suunatud |
     | `docker logs <konteiner>` | mida rakendus konteineris ise ütleb |
 
-    *Tabel 8.4. Kust leida tõend.*
-
 Kõik vead ei tee konveierit punaseks. Kui katkine kood jõuab registrisse, on kõik tööd rohelised. Sellist viga näed ainult siis, kui kontrollid tulemust: mis on registris ja mis töötab serveris.
 
 **Viga saab issue.** Töökohas pannakse iga viga kirja **issue**'na: mida nähti, mis oli hüpotees ja mis oli tõend. Kui paranduse commit'i sõnumis on rida `Fixes #12`, sulgeb GitHub issue numbriga 12 siis, kui commit jõuab harusse `main`, ja lisab issue'le lingi sellele commit'ile ([issue sulgemine võtmesõnaga](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword)). Nii saab hiljem minna ahelat pidi: issue, commit'i räsi, image'i tag sama räsiga ja server, mis näitab seda räsi. Praktikumis teed iga vea kohta issue ja leiad räsi järgi vana versiooni üles (`git log --oneline`, `git show <räsi>`).
@@ -256,8 +248,6 @@ Jenkinsi konveier on repositooriumi failis `Jenkinsfile` ([Jenkinsfile'i süntak
     | GitLab Enterprise Edition | [kommertslitsents](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/LICENSE) | tootmises tohib kasutada ainult tasulise tellimusega |
     | GitHub Actions (teenus) | suletud, GitHubi kasutustingimused | koodi ei näe ega tohi ise paigaldada; maksad kasutuse eest |
     | GitHub Actionsi runner | [MIT](https://github.com/actions/runner/blob/main/LICENSE) | runneri programmi tohib vabalt kasutada ja muuta |
-
-    *Tabel 8.5. CI/CD tööriistade litsentsid.*
 
 **MIT** on lühike ja vaba litsents. See lubab tarkvara kasutada, muuta, levitada ja müüa. Tingimus on üks: autoriõiguse teade peab jääma koopiasse alles.
 
