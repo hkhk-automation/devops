@@ -13,22 +13,29 @@ Täna paned kokku kolme teenusega stacki (Flask, PostgreSQL ja nginx) ühe teenu
 
 ??? abstract "Õpiväljundid"
 
-    Praktikumi lõpuks sa:
+    Praktikumi lõpuks oskad:
 
-    1. Ehitad kolme teenusega stacki ühe teenuse kaupa ja testid igal sammul
-    2. Leiad veateate järgi viie tüüpilise Compose'i vea põhjuse (puuduv parool, vale hostinimi, 502, kadunud andmed, `.env`)
-    3. Selgitad, miks teenused suhtlevad nime järgi ja IP-aadressi ei kasutata
-    4. Selgitad, miks andmed lähevad volume'i, ja näitad seda katsega
-    5. Taastad pärast vigu puhta oleku
+    1. koostada kolme teenusega stacki ühe teenuse kaupa ja kontrollida iga sammu tulemust;
+    2. leida veateate järgi tüüpiliste Compose'i vigade põhjused (puuduv parool, vale hostinimi, 502, kadunud andmed, `.env`);
+    3. selgitada, miks teenused suhtlevad nime järgi ja IP-aadressi ei kasutata;
+    4. selgitada, miks andmed lähevad nimega volume'i, ja näidata seda katsega;
+    5. taastada pärast vigu puhta oleku.
 
 Rida **Ennusta** tähendab, et enne käsku mõtled läbi, mis juhtub. Vastus on kokkuvolditud plokis.
 
 ## Osa 1 · Üks teenus
 
-Tee uus kaust ja kopeeri sinna N5 Flaski rakendus (`app.py`, `requirements.txt`, `Dockerfile`) nimega `app`. Kui sul N5 kausta pole, on failid [N5 praktikumi osas 10](../week05/lab.md#osa-10-tegelik-rakendus-flask-konteinerisse). Kontrolli, et rakendus töötab:
+Võta Classroom 50-s ülesanne vastu ja klooni repositoorium VM-i kausta `~/lab06`. Loo kohe tööharu ja lisa `.env` faili `.gitignore`, sest osas 6 tuleb sinna parool:
 
 ```bash
-mkdir ~/lab06 && cd ~/lab06
+git clone <sinu-repo-URL> ~/lab06 && cd ~/lab06
+git switch -c n06-lab
+echo ".env" >> .gitignore
+```
+
+Kopeeri kausta alamkausta `app/` N5 Flaski rakendus (`app.py`, `requirements.txt`, `Dockerfile`). Kui sul N5 kausta pole, on failid [N5 praktikumi osas 10](../week05/lab.md#osa-10-tegelik-rakendus-flask-konteinerisse). N5 konteiner `flask1` võib veel pordil 5000 töötada: kontrolli `docker ps` ja eemalda see vajadusel (`docker rm -f flask1`). Kontrolli, et rakendus töötab:
+
+```bash
 cp -r ~/lab05/flask app
 docker build -t week06-app ./app
 docker run --rm -p 5000:5000 week06-app
@@ -55,7 +62,7 @@ curl localhost:5000
 Vastus on sama, aga nüüd piisab ühest käsust. Kui `curl` ei vasta, paranda see enne edasiminekut.
 
 ??? warning "Kui `build: ./app` ei leia Dockerfile'i"
-    Tee arvestatakse `docker-compose.yml` asukohast. `docker-compose.yml` peab olema kaustas `~/lab06` ja `app/` selle kõrval.
+    Suhteline failitee arvestatakse `docker-compose.yml` asukohast. `docker-compose.yml` peab olema kaustas `~/lab06` ja `app/` selle kõrval.
 
 ??? warning "Kui saad vea `port is already allocated`"
     N5 konteiner `flask1` kasutab veel porti 5000. `docker ps` näitab seda ja `docker rm -f flask1` vabastab pordi.
@@ -173,7 +180,7 @@ curl localhost:5000/db-check
 
 ## Osa 4 · nginx ja viga 502
 
-Pane nginx Flaski ette pöördproksiks. Loo fail `nginx/default.conf`, meelega vale pordiga (`8000`, aga Flask kuulab porti `5000`):
+Pane nginx Flaski ette pöördproksiks. Loo kaustas `~/lab06` kaust `nginx` (`mkdir -p nginx`) ja sinna fail `nginx/default.conf`, meelega vale pordiga (`8000`, aga Flask kuulab pordil `5000`):
 
 ```nginx
 server {
@@ -197,7 +204,7 @@ Lisa teenus `nginx`:
       - web
 ```
 
-Konteineri nginx on VM-i pordil 8080, sest VM-i port 80 võib olla juba kasutusel.
+Nginx'i teenus on kättesaadav VM-i pordil 8080, sest VM-i port 80 võib olla juba kasutusel.
 
 **Ennusta:** mida `curl` näitab?
 
@@ -213,7 +220,7 @@ curl localhost:8080
     Vaata `docker compose logs nginx`. Seal on `connect() failed (111: Connection refused) while connecting to upstream`. nginx leidis `web`-i üles, aga pordil 8000 ei vastanud keegi. Viga 502 tähendab, et nginx ise töötab, aga teenus, kuhu see liikluse saadab, ei vasta. Mis port on Flaski `app.run` reas?
 
 ??? warning "Kui nginx ei käivitu üldse"
-    Kui `docker compose ps` ei näita nginx-i ja logis on `host not found in upstream`, on `proxy_pass` reas teenuse nimi, mida Compose'i failis pole (näiteks `app` või `flask`). nginx kontrollib nimed käivitumisel ja vale nime korral ei käivitu. Nimi `proxy_pass` reas peab olema sama mis teenuse nimi Compose'i failis.
+    Kui `docker compose ps` ei näita nginx'i ja logis on `host not found in upstream`, on `proxy_pass` reas teenuse nimi, mida Compose'i failis pole (näiteks `app` või `flask`). nginx kontrollib nimed käivitumisel ja vale nime korral ei käivitu. Nimi `proxy_pass` reas peab olema sama mis teenuse nimi Compose'i failis.
 
 Paranda: muuda `default.conf`-is port `8000` pordiks `5000`:
 
@@ -228,9 +235,9 @@ docker compose restart nginx
 curl localhost:8080
 ```
 
-Nüüd tuleb vastus pordilt 8080 nginx-i kaudu. Kui saad ikka vea 502, vaata `docker compose logs nginx`, kas muudatus jõudis konteinerisse. Kindel viis on `docker compose up -d --force-recreate nginx`.
+Nüüd tuleb vastus pordilt 8080 nginx'i kaudu. Kui saad ikka vea 502, vaata `docker compose logs nginx`, kas muudatus jõudis konteinerisse. Kindel viis on `docker compose up -d --force-recreate nginx`.
 
-Eemalda `web`-lt `ports: 5000:5000`, sest kogu liiklus käib nginx-i kaudu ja Flaski pole vaja otse väljapoole avada:
+Eemalda `web`-lt `ports: 5000:5000`, sest kogu liiklus käib nginx'i kaudu ja Flaski pole vaja otse väljapoole avada:
 
 ```bash
 docker compose up -d
@@ -239,7 +246,7 @@ curl localhost:8080
 
 ## Osa 5 · Andmed kaovad
 
-Kirjuta andmebaasi tabel ja üks rida:
+Loo andmebaasis tabel ja lisa sellesse üks rida:
 
 ```bash
 docker compose exec db psql -U postgres -d appdb -c "CREATE TABLE test (id int); INSERT INTO test VALUES (1);"
@@ -260,7 +267,7 @@ docker compose exec db psql -U postgres -d appdb -c "SELECT * FROM test;"
     Tabelit pole, andmed kadusid.
 
 ??? question "Leia põhjus"
-    `down` kustutas konteinerid. PostgreSQL kirjutas andmed konteineri sisemisse failisüsteemi, mis kadus koos konteineriga. Kus peaksid andmed olema, et konteineri kustutamine neid ei kustutaks?
+    `down` kustutas konteinerid. Image `postgres:16` hoiab andmeid kaustas `/var/lib/postgresql/data` ja loob sellele nimetu (anonüümse) volume'i. Uus konteiner sai uue tühja nimetu volume'i ja vana jäi kasutamata alles: vaata `docker volume ls`, seal on pika räsiga nimi. Kuidas anda andmetele kindel nimi, et uus konteiner kasutaks sama volume'it?
 
 Paranda: lisa `db`-le volume ja faili lõppu `volumes:` sektsioon:
 
@@ -291,14 +298,14 @@ docker compose up -d
 docker compose exec db psql -U postgres -d appdb -c "SELECT * FROM test;"
 ```
 
-Rida on alles, sest volume on konteinerist eraldi.
+Rida on alles, sest nimega volume `pgdata` on konteinerist eraldi ja uus konteiner ühendab sama volume'i.
 
 ??? question "Mõtle"
     `docker compose down -v` (tähega `v`) kustutab ka volume'i. Millal seda vaja on ja miks Docker seda vaikimisi ei tee?
 
 ## Osa 6 · Parool failis
 
-`secret123` on `docker-compose.yml`-is kahes kohas selge tekstina. Kui fail jõuab GitHubi, on parool lekkinud. Vii see faili `.env` ([loengu osa 7](lecture.md#7-paroolid-valja-env)).
+`secret123` on kohalik testparool, mis on `docker-compose.yml`-is kahes kohas avatekstina. Kui fail jõuab GitHubi, on parool lekkinud. Vii see faili `.env` ([loengu osa 7](lecture.md#7-paroolide-eraldamine-composei-failist)).
 
 Loo fail `.env` samasse kausta, kus on `docker-compose.yml`:
 
@@ -313,14 +320,14 @@ Asenda `db` all parool kõigepealt meelega trükiveaga muutuja nimes (üks `S` p
       POSTGRES_PASSWORD: ${POSTGRES_PASWORD}
 ```
 
-[`docker compose config`](https://docs.docker.com/reference/cli/docker/compose/config/) näitab lõplikku faili, kus muutujad on asendatud. Vaata väljundi algust ja `db` osa:
+[`docker compose config`](https://docs.docker.com/reference/cli/docker/compose/config/) näitab lõplikku faili, kus muutujad on asendatud. Väljundis on ka paroolid, seega ära seda repositooriumi ega ekraanipildile pane. Vaata väljundi algust ja `db` osa:
 
 ```bash
 docker compose config
 ```
 
 ??? question "Leia põhjus"
-    Väljundis on hoiatus `The "POSTGRES_PASWORD" variable is not set. Defaulting to a blank string.` ja rida `POSTGRES_PASSWORD: ""`. Compose ei peatu ja paneb parooliks tühja teksti. Miks on see ohtlikum kui viga, mis peatab käivituse? Paranda nimi ja asenda ka teised kohad.
+    Väljundis on hoiatus `The "POSTGRES_PASWORD" variable is not set. Defaulting to a blank string.` ja rida `POSTGRES_PASSWORD: ""`. Compose ei peatu ja asendab muutuja tühja väärtusega. Miks on see ohtlikum kui viga, mis peatab käivituse? Paranda nimi ja asenda ka teised kohad.
 
 Paranda muutujate nimed `db` all:
 
@@ -341,7 +348,7 @@ curl localhost:8080/db-check
     Kontrolli, et muutuja nimi on `.env`-is ja `docker-compose.yml`-is sama ning et `.env` on `docker-compose.yml`-iga samas kaustas.
 
 !!! warning
-    Lisa `.env` kohe `.gitignore`-i: `echo ".env" >> .gitignore`. Kui kaust on Giti repositoorium, kontrolli `git status` väljundit: `.env` ei tohi olla jälgitavate failide seas.
+    Kontrolli `git status` väljundit: `.env` ei tohi olla jälgitavate failide seas (osas 1 lisasid selle faili `.gitignore`).
 
 ## Osa 7 · Koristamine
 
@@ -364,22 +371,29 @@ docker volume ls
 
 `pgdata` on seal. Jäta see alles, sest laboritahvel kontrollib volume'i `pgdata` olemasolu. Käsk `docker compose down -v` kustutaks andmebaasi andmed.
 
+Käivita stack uuesti ja jäta see tööle, et laboritahvel näeks töötavat lahendust:
+
+```bash
+docker compose up -d
+curl localhost:8080
+curl localhost:8080/db-check
+```
+
 ??? note "Kontrollnimekiri"
 
     - [ ] Ehitad kolme teenusega stacki ühe teenuse kaupa
-    - [ ] `curl localhost:8080` vastab nginx-i kaudu
+    - [ ] `curl localhost:8080` vastab nginx'i kaudu
     - [ ] Selgitad, miks host on `db` ja miks `127.0.0.1` või IP-aadress ei sobi
-    - [ ] Eristad vigu: 502 tähendab, et nginx töötab, aga `web` ei vasta (port); kui nginx ei käivitu, on `proxy_pass` reas vale teenuse nimi
+    - [ ] Eristad nginx'i logi järgi selle praktikumi kahte viga: vale upstream-port (502) ja tundmatu teenuse nimi (`host not found in upstream`)
     - [ ] Näitad katsega, et volume hoiab andmed alles pärast `down` ja `up` käsku
     - [ ] Parool on `.env`-is (`${NIMI}` süntaks), `.env` on `.gitignore`-is
     - [ ] Oskad teha `docker compose ps` väljundi tühjaks
 
 ## Töö esitamine
 
-Töö on harus `n06-lab`: tee haru, saada see GitHubi ja liida pull request harusse `main`.
+Töö on harus `n06-lab`: saada see GitHubi ja liida pull request harusse `main`.
 
 ```bash
-git switch -c n06-lab
 git add docker-compose.yml app nginx .gitignore && git commit -m "N6 Compose stack" && git push -u origin n06-lab
 ```
 
@@ -391,7 +405,7 @@ Faili `.env` repositooriumi ei panda. Tulemuse näed Classroom 50-s.
     Lisa `db`-le `healthcheck` ja muuda `web` teenuse `depends_on` kujule `condition: service_healthy`. Näide on Dockeri juhendis [Control startup order](https://docs.docker.com/compose/how-tos/startup-order/), kõik võtmed [Compose'i failivormingu juhendis](https://docs.docker.com/reference/compose-file/). Millal `depends_on` üksi ei piisa?
 
 ??? example "B · Neljas teenus"
-    Lisa stacki Redis või pgAdmin (vt [kodutöö](homework.md)): teenus haaval, iga teenust testi eraldi.
+    Lisa stacki Redis või pgAdmin (vt [kodutöö](homework.md)) ühe teenuse kaupa ja testi iga teenust eraldi.
 
 ??? example "C · Skaleerimine"
-    Käivita `docker compose up -d --scale web=3`. Mis läheb katki pordivastendusega (`ports`) ja miks vajaks see nginx-i koormusejaoturit?
+    Käivita `docker compose up -d --scale web=3` ja kontrolli `docker compose ps`. Kuidas nginx päringuid Flaski konteineritele suunab? Mis juhtuks, kui igal `web` konteineril oleks sama fikseeritud hostipordi vastendus (`ports: 5000:5000`)?
