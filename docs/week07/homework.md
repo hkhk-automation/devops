@@ -6,35 +6,37 @@ tags:
   - Kodutöö
 ---
 
-# Kodutöö — CI testib terve stacki
+# N7 · Kodutöö: CI testib rakendust koos andmebaasiga
 
-**Eeldused:** labor on tehtud: `ci.yml`-is on `test` ja `konteiner`, PR `n07-ci` on roheline. Nädal 6 labor: `web` + `db`, `/db-check`, `.env`.
+**Eeldus:** praktikum on tehtud. Failis `ci.yml` on tööd `test` ja `konteiner` ning pull request `n07-ci` on roheline. N6 praktikumist on vaja teenuseid `web` ja `db`, aadressi `/db-check` ja faili `.env`.
 
 ## Ülesanne
 
-Laboris kontrollis CI üht konteinerit üksinda. Rakendus ei ela üksi: N6-s nägid, et Flask võib töötada ja andmebaas võib töötada, aga omavahel nad ikka ei räägi (vale host, puuduv parool). Neid vigu ei leia ühiktest ega üksiku konteineri suitsutest.
+Praktikumis kontrollis CI üht konteinerit üksinda. Rakendus vajab aga ka andmebaasi. N6-s nägid, et Flask ja andmebaas võivad mõlemad töötada, aga nad ei saa omavahel ühendust, näiteks vale hostinime või puuduva parooli tõttu. Selliseid vigu ei leia ühiktest ega üksiku konteineri suitsutest.
 
-Lisa CI-sse kolmas job `stack`, mis käivitab **Compose'iga Flaski koos PostgreSQL-iga** ja kontrollib, et `/db-check` vastab `DB OK`.
+Selles kodutöös lisad töövoogu kolmanda töö `stack`. See käivitab Compose'iga Flaski koos PostgreSQL-iga ja kontrollib, et aadress `/db-check` vastab `DB OK`.
 
 <figure markdown="span">
-  ![Kolm job'i ahelas: test, konteiner ja stack. Stack käivitab Compose'iga web ja db konteineri ning curl küsib /db-check. Esimene katse on punane, sest db sureb ilma paroolita; parool tuleb GitHub Secretist](../images/n07_kodutoo_stack.svg)
-  <figcaption>Joonis 7.8. Kolmas job kontrollib teenuste koostööd, mitte üht teenust. Esimene katse on punane meelega (Talvik, 2026).</figcaption>
+  ![Kolm tööd järjest: test, konteiner ja stack. Töö stack käivitab Compose'iga konteinerid web ja db ning curl küsib aadressi /db-check. Esimene katse on punane, sest db lõpetab töö ilma paroolita. Parool tuleb GitHubi saladusest](../images/n07_kodutoo_stack.svg)
+  <figcaption>Joonis 7.8. Kolmas töö kontrollib teenuste koostööd, mitte üht teenust. Esimene katse on punane meelega (Talvik, 2026).</figcaption>
 </figure>
 
 ## Sammud
 
 ### 1. Haru
 
+Kodutöö teed eraldi harus, et praktikumi töö jääks muutmata. Tee uus haru `n07-kodu` haru `n07-ci` uusima seisu pealt:
+
 ```bash
 git switch n07-ci && git pull
 git switch -c n07-kodu
 ```
 
-### 2. Rakendus oskab andmebaasi küsida
+### 2. Rakendus küsib andmebaasilt
 
-Vii N6 labi Osa 3 `/db-check` route oma repo `flask/app.py`-sse ja lisa `psycopg2-binary` faili `flask/requirements.txt`. Pane kood ise kokku: N6-s tegid seda kaustas `~/lab06/app`, nüüd tuleb see repo kausta `flask/`.
+Töö `stack` kontrollib aadressi `/db-check`, seega peab see aadress olema rakenduses olemas. Too N6 praktikumi osast 3 aadressi `/db-check` kood oma repositooriumi faili `flask/app.py`. Lisa faili `flask/requirements.txt` rida `psycopg2-binary`, sest selle teegiga ühendub Flask PostgreSQL-iga. N6-s oli kood kaustas `~/lab06/app`, nüüd tuleb see repositooriumi kausta `flask/`.
 
-Kontrolli lokaalselt, et vanad testid töötavad edasi:
+Kontrolli oma masinas, et praktikumi testid töötavad edasi:
 
 ```bash
 source .venv/bin/activate
@@ -42,20 +44,24 @@ pip install -r flask/requirements.txt
 pytest flask -v
 ```
 
-!!! question "Uus route vajab ka testi?"
-    `/db-check` vajab töötavat andmebaasi, seega `test_client()`-iga seda ilma baasita testida ei saa. Selle kontrollib `stack` job. Mõtle: mis vahe on testil, mis vajab ainult koodi, ja testil, mis vajab terve stacki?
+Väljundi lõpus peab olema `3 passed`.
 
-### 3. `compose.yaml` repo juurde
+!!! question "Kas uus aadress vajab ka testi?"
+    Aadress `/db-check` vajab töötavat andmebaasi. Seepärast ei saa seda testida testkliendiga `test_client()` ilma andmebaasita. Selle kontrollib töö `stack`. Mõtle, mis vahe on testil, mis vajab ainult koodi, ja testil, mis vajab kogu rakendust koos andmebaasiga.
 
-Kirjuta repo juurkausta `compose.yaml` N6 labi põhjal. Ainult **kaks teenust** (`web` ja `db`, nginx-it pole vaja). Erinevused N6-st:
+### 3. Fail `compose.yaml`
 
-| N6 laboris | Siin |
+Compose'i fail kirjeldab, mis konteinerid koos käivitatakse. Kirjuta repositooriumi juurkausta fail `compose.yaml` N6 praktikumi põhjal. Vaja on ainult kaht teenust, `web` ja `db`. Nginx'i ei ole siin vaja. Erinevused N6 failist:
+
+| N6 praktikumis | Siin |
 |---|---|
 | `build: ./app` | `build: ./flask` |
-| `depends_on: [db]` | `db` vajab [`healthcheck`](https://docs.docker.com/reference/compose-file/services/#healthcheck)-i (`pg_isready`), `web` ootab `condition: service_healthy` (N6 lisaülesanne 1) |
-| parool `.env`-ist | sama: `${POSTGRES_PASSWORD}`, `${POSTGRES_DB}` |
+| `depends_on: [db]` | `db` vajab [`healthcheck`](https://docs.docker.com/reference/compose-file/services/#healthcheck)-i (`pg_isready`) ja `web` ootab tingimust `condition: service_healthy` (N6 lisaülesanne 1) |
+| parool failist `.env` | sama: `${POSTGRES_PASSWORD}`, `${POSTGRES_DB}` |
 
-Testi lokaalselt **enne**, kui CI-sse paned:
+Võti `healthcheck` laseb Compose'il kontrollida, kas andmebaas on päringuteks valmis. Ilma selleta võib `web` käivituda enne, kui andmebaas ühendusi vastu võtab.
+
+Proovi faili oma masinas enne, kui paned selle CI-sse. Võti [`--wait`](https://docs.docker.com/reference/cli/docker/compose/up/) ootab, kuni teenused on olekus `healthy`. Käsu `pg_isready` kirjelduse leiad [PostgreSQL-i image'i lehelt](https://hub.docker.com/_/postgres).
 
 ```bash
 docker compose up -d --build --wait
@@ -63,54 +69,65 @@ curl localhost:5000/db-check
 docker compose down -v
 ```
 
-`DB OK`? Edasi. ([`--wait`](https://docs.docker.com/reference/cli/docker/compose/up/) ootab, kuni teenused on `healthy`; `pg_isready` kohta vaata [PostgreSQL image'i lehte](https://hub.docker.com/_/postgres).)
+Käsk `curl` peab vastama `DB OK`. Viimane käsk peatab konteinerid ja kustutab andmebaasi andmeköite.
 
-### 4. Job `stack`
+### 4. Töö `stack`
 
-Lisa `ci.yml`-i kolmas job. Nõuded:
+Lisa failis `ci.yml` võtme `jobs:` alla kolmas töö `stack`. Selle sammud kirjutad ise praktikumi töö `konteiner` eeskujul. Töö peab vastama järgmistele nõuetele:
 
-1. jookseb alles pärast `konteiner`-it (`needs`);
-2. [`docker compose up -d --build --wait`](https://docs.docker.com/reference/cli/docker/compose/up/);
-3. `curl` aadressile `/db-check` — sama `-f` ja `--retry` loogika, mis laboris Osa 6;
-4. kukkumise korral näitab `docker compose logs` (`if: failure()`);
-5. lõpus **alati** `docker compose down -v` (`if: always()`).
+1. töö käivitub alles pärast tööd `konteiner` (`needs`);
+2. üks samm käivitab käsu [`docker compose up -d --build --wait`](https://docs.docker.com/reference/cli/docker/compose/up/);
+3. üks samm küsib `curl`-iga aadressi `/db-check` samade võtmetega `-f` ja `--retry` nagu praktikumi osas 6;
+4. kui mõni samm kukub, näitab samm `docker compose logs` konteinerite logi (`if: failure()`);
+5. viimane samm käivitab **alati** käsu `docker compose down -v` (`if: always()`).
 
-Push. **Oodatav: punane.**
+Tingimus `if: always()` tähendab, et samm käivitub ka siis, kui mõni eelmine samm kukkus.
 
-### 5. Diagnoosi
+Saada muudatus GitHubi. Töö `stack` peab olema **punane**.
 
-Ava `stack` job'i logi. Keri `docker compose logs` väljundini. Sealt leiad rea, mida oled varem näinud — N6 labi Osa 2-s.
+### 5. Leia põhjus
 
-??? question "Mõtle"
-    Sinu masinas töötas sama `compose.yaml`. Mis fail on sinu masinas olemas, aga runneris mitte? Miks see seal ei ole — ja miks on hea, et ei ole?
+Ava vahekaardil **Actions** töö `stack` logi. Keri sammu `docker compose logs` väljundini. Sealt leiad rea, mida nägid juba N6 praktikumi osas 2.
+
+??? question "Küsimus"
+    Sinu masinas töötas sama `compose.yaml`. Mis fail on sinu masinas olemas, aga runneris mitte? Miks seda faili runneris ei ole ja miks on hea, et ei ole?
 
 ### 6. Paranda
 
-Runner vajab parooli, aga `.env` ei tohi GitHubi minna. Selleks on **GitHub Secrets**: krüpteeritud muutujad, mida workflow näeb, aga logis ja koodis neid pole. Miks see oluline on, vaata loengu [§7 „Konveier hoiab võtmeid"](lecture.md#konveier-hoiab-votmeid) ja koomiksit [Compromising CI/CD Pipelines](https://blog.gitguardian.com/security-zines-2-compromising-ci-cd-pipelines/).
+Runner vajab andmebaasi parooli, aga faili `.env` ei tohi GitHubi panna. Selleks on **GitHubi saladused** (Secrets). Saladus on krüpteeritud muutuja, mida töövoog saab kasutada, aga mida ei ole koodis ja mida GitHub logis ei näita. Miks see oluline on, loe loengu osast [„Konveier hoiab võtmeid“](lecture.md#konveier-hoiab-votmeid) ja GitGuardiani koomiksist [Compromising CI/CD Pipelines](https://blog.gitguardian.com/security-zines-2-compromising-ci-cd-pipelines/).
 
-[**Settings → Secrets and variables → Actions → New repository secret**](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets), nimi `POSTGRES_PASSWORD`. Lab 07 repos on sul admin-õigus, seega saad selle ise lisada.
+Lisa saladus repositooriumi seadetes: ava [**Settings → Secrets and variables → Actions → New repository secret**](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets) ja pane nimeks `POSTGRES_PASSWORD`. Praktikumi repositooriumis on sul administraatori õigus, seega saad saladuse ise lisada.
 
-Workflow'is anna see `stack` job'i tasemel `env:` kaudu edasi (job'i all, `runs-on` kõrval), nii näevad seda kõik sammud (`${{ secrets.POSTGRES_PASSWORD }}`). Compose loeb muutujad shelli keskkonnast samamoodi nagu `.env`-ist; kui mõlemad on olemas, võidab shell ([Compose: muutujate järjekord](https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/)). `POSTGRES_DB` võib olla otse `env:` all, see pole saladus.
+**Leia dokumentatsioonist:** leia lehelt [Secrets](https://docs.github.com/en/actions/reference/security/secrets), kas saladus jõuab töövoogu, mis käivitub teisest repositooriumist (*fork*) tehtud pull request'ist.
 
-Push → kolm rohelist job'i.
+??? success "Vastus"
+    Ei jõua. Kui pull request tuleb fork'ist, ei anta saladusi (välja arvatud `GITHUB_TOKEN`) töövoole edasi. Nii ei saa võõras inimene pull request'iga saladusi välja lugeda.
 
-??? question "Mõtle"
-    Proovi meelega lisada samm `run: echo $POSTGRES_PASSWORD`. Mida logis näed? Paljud meeskonnad paneksid CI testibaasi parooli lihtsalt otse `ci.yml`-i (`POSTGRES_PASSWORD: ci-ainult-test`). Millal on see okei ja millal mitte? Võrdle oma N4 Vaulti parooliga.
+Anna saladus töövoole töö `stack` tasemel võtmega `env:`. Võti `env:` on töö all sama taandega kui `runs-on`, nii näevad muutujat kõik selle töö sammud. Väärtus on `${{ secrets.POSTGRES_PASSWORD }}`. Loengu [§5](lecture.md#5-toovoo-fail-rida-realt) on selle kohta näide.
 
-## Esita
+Compose loeb muutujaid shelli keskkonnast samamoodi nagu failist `.env`. Kui muutuja on mõlemas, kasutatakse shelli väärtust ([Compose: muutujate järjekord](https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/)). Muutuja `POSTGRES_DB` võib kirjutada otse võtme `env:` alla, sest andmebaasi nimi ei ole saladus.
 
-PR `n07-kodu` → `main`, oota rohelisi check'e ja merge. Autograderi kontroll „BOONUS 8“ näitab tulemust, lisapunktid paneb õpetaja. PR-i kirjeldusse:
+Saada muudatus GitHubi. Kõik kolm tööd peavad olema rohelised.
 
-- link **punasele** `stack` run'ile (samm 4) ja **rohelisele** (samm 6);
-- 2–3 lauset: mis rida logis näitas põhjust ja mida nägid `echo $POSTGRES_PASSWORD` sammu logis.
+??? question "Küsimus"
+    Lisa ajutiselt samm `run: echo $POSTGRES_PASSWORD`. Mida näed logis? Paljud meeskonnad kirjutavad CI testibaasi parooli otse faili `ci.yml`, näiteks `POSTGRES_PASSWORD: ci-ainult-test`. Millal on see lubatav ja millal mitte? Võrdle N4 Vaulti parooliga.
+
+## Töö esitamine
+
+Tee pull request harust `n07-kodu` harusse `main`. Kirjuta pull request'i kirjeldusse:
+
+- link **punasele** töö `stack` käivitusele sammust 4 ja **rohelisele** käivitusele sammust 6;
+- 2–3 lauset: mis rida logis näitas vea põhjust ja mida nägid sammu `echo $POSTGRES_PASSWORD` logis.
+
+Oota, kuni kõik kontrollid on rohelised, ja liida pull request. Autograderi kontroll „BOONUS 8“ näitab tulemust ja lisapunktid paneb õpetaja.
 
 ## Enesekontroll enne esitamist
 
-- [ ] `pytest flask -v` läbib lokaalselt
-- [ ] `docker compose up -d --build --wait` + `curl localhost:5000/db-check` annab sinu VM-is `DB OK`
-- [ ] `ci.yml`-is on kolm job'i ahelas: `test` → `konteiner` → `stack`
-- [ ] PR-il on kõik kolm rohelised
-- [ ] `.env` **ei ole** repos (`git ls-files | grep .env` ei leia midagi)
-- [ ] `stack` job'i viimane samm on `docker compose down -v` ja see jookseb ka punase run'i järel
-- [ ] Parool on GitHub Secretis, mitte `ci.yml`-is
-- [ ] PR-i kirjelduses on punane ja roheline run'i link ning põhjendus
+- [ ] `pytest flask -v` läbib sinu masinas.
+- [ ] `docker compose up -d --build --wait` ja `curl localhost:5000/db-check` annavad sinu virtuaalmasinas vastuse `DB OK`.
+- [ ] Failis `ci.yml` on kolm tööd järjest: `test`, `konteiner` ja `stack`.
+- [ ] Pull request'is on kõik kolm tööd rohelised.
+- [ ] Faili `.env` ei ole repositooriumis. Käsk `git ls-files | grep .env` ei leia midagi.
+- [ ] Töö `stack` viimane samm on `docker compose down -v` ja see käivitub ka punase käivituse järel.
+- [ ] Parool on GitHubi saladuses ja failis `ci.yml` seda ei ole.
+- [ ] Pull request'i kirjelduses on punase ja rohelise käivituse link ning põhjendus.
