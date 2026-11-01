@@ -72,58 +72,9 @@ Kui failis on sündmus `push`, käivitub töövoog kohe pärast `git push`-i ja 
 
 ## 3. Süntaks võti-võtmelt
 
-Tabelis on võtmed, mida sellel kursusel kasutame. Veerg „Kus“ näitab, millises praktikumis võti esimest korda tuleb. Kõik võtmed ja nende täpne tähendus on lehel [Workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax).
+Kõige lihtsam on alustada tervest failist. Kõik võtmed ja nende täpne tähendus on lehel [Workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax).
 
-| Võti | Mida teeb | Näide | Kus |
-|---|---|---|---|
-| `name` | töövoo nimi vahekaardil **Actions** | `name: CI` | N7 |
-| `on` | sündmused, mis töövoo käivitavad | `on: [push, pull_request]` | N7 |
-| `on.<sündmus>.branches` | piirab sündmust harudega | `branches: [main]` | N8 |
-| `on.<sündmus>.types` | valib sündmuse tegevuse tüübid | `types: [opened, synchronize]` | |
-| `on.schedule` | käivitab töövoo kellaajal (cron, UTC) | `- cron: "0 6 * * *"` | N7 |
-| `on.workflow_dispatch` | lisab nupu **Run workflow** | `workflow_dispatch:` | N7 |
-| `permissions` | `GITHUB_TOKEN`-i õigused | `packages: write` | N8 |
-| `env` | keskkonnamuutujad töövoole, tööle või sammule | `env: VERSIOON: "1.0"` | N8 |
-| `concurrency` | lubab korraga ainult ühe käivituse samas grupis | `group: pages` | |
-| `jobs` | töövoo tööd | `jobs:` | N7 |
-| `jobs.<id>.runs-on` | runner, kus töö tehakse | `runs-on: ubuntu-latest` | N7 |
-| `jobs.<id>.needs` | töö ootab teise töö lõppu | `needs: test` | N7 |
-| `jobs.<id>.if` | töö käivitub ainult siis, kui tingimus kehtib | `if: github.event_name == 'push'` | N8 |
-| `jobs.<id>.steps` | töö sammud järjekorras | `steps:` | N7 |
-| `steps[*].name` | sammu nimi logis | `name: Käivita testid` | N7 |
-| `steps[*].uses` | käivitab valmis action'i | `uses: actions/checkout@v7` | N7 |
-| `steps[*].with` | action'i parameetrid | `python-version: "3.12"` | N7 |
-| `steps[*].run` | käivitab shelli käsu | `run: pytest flask -v` | N7 |
-| `steps[*].shell` | shell, millega `run` käivitatakse | `shell: bash` | |
-| `steps[*].if` | samm käivitub ainult siis, kui tingimus kehtib | `if: failure()` | N7 |
-| `steps[*].id` | sammu nimi, mille kaudu saab lugeda selle väljundit | `id: meta` | N8 |
-
-*Tabel GA.1. Töövoo võtmed.*
-
-Kaks võtit vajavad lisaselgitust.
-
-**`shell`.** Linuxi runneris on vaikimisi Bash. Kui kirjutad `shell: bash`, käivitab GitHub käsu valikutega `-e` ja `-o pipefail`: samm katkeb esimese vea juures ja ka toru (`|`) keskel olev viga muudab sammu punaseks ([shell](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepsshell)).
-
-**`env` ja `secrets`.** Parooli ja tokenit ei kirjutata töövoo faili, sest fail on repositooriumis kõigile näha. Saladus lisatakse repositooriumi seadetes (**Settings** → **Secrets and variables** → **Actions**) ja töövoos loetakse seda kujul `${{ secrets.NIMI }}` ([Using secrets](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets)). GitHub peidab saladuse väärtuse logis tärnidega. Saladust `GITHUB_TOKEN` ei pea ise lisama, GitHub loob selle iga käivituse jaoks ja selle õigused määrab võti `permissions`.
-
-### Sündmused
-
-| Sündmus | Millal käivitub | Näide |
-|---|---|---|
-| `push` | commit jõuab GitHubi | `push: { branches: [main] }` |
-| `pull_request` | pull request avatakse, uuendatakse või avatakse uuesti (vaikimisi tüübid `opened`, `synchronize`, `reopened`) | `pull_request: { types: [opened, synchronize] }` |
-| `workflow_dispatch` | keegi vajutab vahekaardil **Actions** nuppu **Run workflow** | `workflow_dispatch:` |
-| `schedule` | kellaajal, mis on kirjutatud cron-süntaksis (UTC) | `- cron: "30 5 * * 1-5"` |
-| `release` | GitHubis avaldatakse uus väljalase | `release: { types: [published] }` |
-| `issues` | issue avatakse, sildistatakse, suletakse jne | `issues: { types: [opened, labeled] }` |
-
-*Tabel GA.2. Sündmused, mida sellel kursusel kasutame või näeme.*
-
-Cron-avaldises on viis välja: minut, tund, kuupäev, kuu ja nädalapäev. `"30 5 * * 1-5"` tähendab tööpäeviti kell 05:30 UTC, mis on Eesti talveajal 07:30 ja suveajal 08:30. Avaldist saad kontrollida lehel [crontab.guru](https://crontab.guru/). Sündmused `schedule` ja `workflow_dispatch` töötavad ainult siis, kui töövoo fail on repositooriumi vaikeharus (`main`). Ajastatud käivitus võib GitHubi koormuse tõttu hilineda mitu minutit. Kõik sündmused ja nende tegevuse tüübid on lehel [Events that trigger workflows](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows).
-
-### Terve näidisfail
-
-Selles failis on peaaegu kõik tabeli võtmed. See on N7 `ci.yml`, millele on lisatud käsitsi käivitamine, õigused ja keskkonnamuutuja. Vajuta numbril, et näha selgitust.
+Selles failis on peaaegu kõik võtmed, mida kursusel kasutame. See on N7 `ci.yml`, millele on lisatud käsitsi käivitamine, õigused ja keskkonnamuutuja. Vajuta numbril, et näha selgitust.
 
 ```yaml
 name: CI
@@ -182,6 +133,36 @@ jobs:
 11. Samm käivitub ainult siis, kui mõni eelmine samm kukkus. Konteineri logist näed, miks rakendus ei vastanud.
 
 ---
+
+### Millal töövoog käivitub
+
+- `on` loetleb sündmused, mis töövoo käivitavad, näiteks `push` ja `pull_request`.
+- `branches` piirab sündmust: `push: branches: [main]` käivitub ainult harus `main`.
+- `workflow_dispatch` lisab vahekaardile **Actions** nupu **Run workflow**.
+- `schedule` käivitab töövoo kellaajal. Aeg on cron-kujul ja UTC ajas: `"30 5 * * 1-5"` on tööpäeviti 07:30 Eesti talveajal. Avaldist saad kontrollida lehel [crontab.guru](https://crontab.guru/).
+- `schedule` ja `workflow_dispatch` töötavad ainult siis, kui fail on harus `main`.
+
+Kõik sündmused on lehel [Events that trigger workflows](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows).
+
+### Mida töövoog tohib
+
+- `permissions` annab `GITHUB_TOKEN`-ile õigused, näiteks `packages: write` registrisse kirjutamiseks.
+- `env` loob keskkonnamuutuja kogu töövoole, ühele tööle või ühele sammule.
+- Parool ja token ei lähe faili. Need lisatakse **Settings → Secrets and variables → Actions** ja töövoos loetakse kujul `${{ secrets.NIMI }}` ([saladused](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets)).
+
+### Tööd
+
+- `jobs` all on töövoo tööd. Töö nime valid ise, näiteks `test`.
+- `runs-on` ütleb, mis masinas töö käib, tavaliselt `ubuntu-latest`.
+- `needs` paneb töö ootama teise töö lõppu. Ilma selleta käivad tööd korraga.
+- `if` käivitab töö ainult siis, kui tingimus kehtib, näiteks `if: github.event_name == 'push'`.
+
+### Sammud
+
+- `uses` käivitab valmis action'i, näiteks `actions/checkout@v7`. `with` annab sellele parameetrid.
+- `run` käivitab shelli käsu, näiteks `pytest flask -v`.
+- `name` on sammu nimi, mida näed logis.
+- `if: failure()` käivitab sammu ainult siis, kui eelmine samm kukkus.
 
 ## 4. Näited
 
@@ -398,18 +379,30 @@ Lõplik kontroll on ikkagi GitHubis: roheline `act` ei tähenda, et käivitus Gi
 
 Kui käivitus on punane, ava see vahekaardil **Actions**, vali punane töö ja ava punane samm. Loe logi viimased read, sest seal on veateade ja väljumiskood. Esimeses sammus **Set up job** on runneri versioon, action'ite versioonid ja lõik `GITHUB_TOKEN Permissions`.
 
-| Mida näed | Tõenäoline põhjus | Kust vaadata |
-|---|---|---|
-| vahekaardil **Actions** ei ilmu käivitust | fail ei ole kaustas `.github/workflows/` (näiteks `.github/workflow/`) või sündmus `on` ei vasta (vale haru, `branches` piirab) | faili tee ja võti `on` |
-| **Invalid workflow file** ja rea number | YAML-i viga: tabulaator, vale taane, koolonile ei järgne tühikut | näidatud rida failis |
-| nuppu **Run workflow** ei ole | `workflow_dispatch` puudub või fail ei ole harus `main` | haru `main` fail |
-| `Unable to resolve action` | action'i nimes või versioonis on viga | **Set up job**, action'i lehel **Releases** |
-| `command not found` | runner on tühi, tööriist või kood on puudu | kas enne on `checkout` või `setup-*` samm |
-| `Process completed with exit code 1` | sammu käsk lõpetas veaga | sama sammu logi read enne seda rida |
-| `denied` või `Resource not accessible by integration` | `GITHUB_TOKEN`-il ei ole õigust | **Set up job** → `GITHUB_TOKEN Permissions`, võti `permissions` |
-| töö on hall ja **skipped** | töö tingimus `if` ei kehtinud või `needs` töö kukkus | võtmed `if` ja `needs` |
+??? warning "Vahekaardil Actions ei ilmu käivitust"
+    Põhjus: fail ei ole kaustas `.github/workflows/` (näiteks `.github/workflow/`) või sündmus `on` ei vasta (vale haru, `branches` piirab). Vaata: faili tee ja võti `on`.
 
-*Tabel GA.3. Tüüpilised vead.*
+??? warning "Invalid workflow file ja rea number"
+    Põhjus: YAML-i viga: tabulaator, vale taane, koolonile ei järgne tühikut. Vaata: näidatud rida failis.
+
+??? warning "Nuppu Run workflow ei ole"
+    Põhjus: `workflow_dispatch` puudub või fail ei ole harus `main`. Vaata: haru `main` fail.
+
+??? warning "Unable to resolve action"
+    Põhjus: action'i nimes või versioonis on viga. Vaata: **Set up job**, action'i lehel **Releases**.
+
+??? warning "Command not found"
+    Põhjus: runner on tühi, tööriist või kood on puudu. Vaata: kas enne on `checkout` või `setup-*` samm.
+
+??? warning "Process completed with exit code 1"
+    Põhjus: sammu käsk lõpetas veaga. Vaata: sama sammu logi read enne seda rida.
+
+??? warning "Denied või Resource not accessible by integration"
+    Põhjus: `GITHUB_TOKEN`-il ei ole õigust. Vaata: **Set up job** → `GITHUB_TOKEN Permissions`, võti `permissions`.
+
+??? warning "Töö on hall ja skipped"
+    Põhjus: töö tingimus `if` ei kehtinud või `needs` töö kukkus. Vaata: võtmed `if` ja `needs`.
+
 
 Kui logist ei piisa, käivita töö uuesti nupuga **Re-run jobs** ja vali **Enable debug logging**. Siis näitab logi iga sammu kohta rohkem ridu ([Enable debug logging](https://docs.github.com/en/actions/how-tos/monitor-workflows/enable-debug-logging)). Rohkem näiteid on lehel [Troubleshoot workflows](https://docs.github.com/en/actions/how-tos/troubleshoot-workflows). Vea leidmise järjekorda (sümptom, hüpotees, tõend, parandus) kasutasime [N8 loengus](week08/lecture.md#7-vea-leidmine-sumptom-hupotees-toend-parandus).
 
