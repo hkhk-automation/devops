@@ -1,0 +1,48 @@
+<svg viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg" font-family="Inter, -apple-system, sans-serif">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5e35b1"/></marker></defs>
+  <text x="450" y="32" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Iga töö saab uue runneri, mis pärast kustutatakse</text>
+
+  <rect x="20" y="60" width="610" height="200" rx="12" fill="#fafafa" stroke="#9e9e9e" stroke-dasharray="6 4"/>
+  <text x="40" y="84" font-size="13" font-weight="700" fill="#616161">GitHubi masinad: üks käivitus</text>
+
+  <g text-anchor="middle">
+    <rect x="40" y="100" width="180" height="140" rx="10" fill="#ede7f6" stroke="#7e57c2"/>
+    <text x="130" y="126" font-size="14" font-weight="700" fill="#311b92">runner 1</text>
+    <text x="130" y="146" font-size="12" fill="#5e35b1">uus tühi VM</text>
+    <text x="130" y="176" font-size="14" fill="#311b92" font-family="ui-monospace, Menlo, monospace">test</text>
+    <text x="130" y="222" font-size="12" fill="#c62828">pärast: kustutatakse</text>
+
+    <rect x="240" y="100" width="180" height="140" rx="10" fill="#ede7f6" stroke="#7e57c2"/>
+    <text x="330" y="126" font-size="14" font-weight="700" fill="#311b92">runner 2</text>
+    <text x="330" y="146" font-size="12" fill="#5e35b1">uus tühi VM</text>
+    <text x="330" y="176" font-size="14" fill="#311b92" font-family="ui-monospace, Menlo, monospace">konteiner</text>
+    <text x="330" y="196" font-size="11" fill="#616161">image ehitatakse...</text>
+    <text x="330" y="222" font-size="12" fill="#c62828">...ja kaob koos VM-iga</text>
+
+    <rect x="440" y="100" width="180" height="140" rx="10" fill="#ede7f6" stroke="#5e35b1" stroke-width="2.5"/>
+    <text x="530" y="126" font-size="14" font-weight="700" fill="#311b92">runner 3</text>
+    <text x="530" y="146" font-size="12" fill="#5e35b1">uus tühi VM</text>
+    <text x="530" y="176" font-size="14" fill="#311b92" font-family="ui-monospace, Menlo, monospace">build-and-push</text>
+    <text x="530" y="196" font-size="11" fill="#616161">image ehitatakse uuesti</text>
+    <text x="530" y="222" font-size="12" fill="#2e7d32" font-weight="700">ja saadetakse registrisse</text>
+  </g>
+
+  <path d="M620 170 L700 170" stroke="#2e7d32" stroke-width="2.2" marker-end="url(#a)"/>
+  <text x="660" y="160" text-anchor="middle" font-size="12" fill="#2e7d32" font-family="ui-monospace, Menlo, monospace">push</text>
+  <rect x="704" y="110" width="176" height="120" rx="10" fill="#e8f5e9" stroke="#66bb6a"/>
+  <text x="792" y="140" text-anchor="middle" font-size="15" font-weight="700" fill="#1b5e20">GHCR</text>
+  <text x="792" y="162" text-anchor="middle" font-size="12" fill="#2e7d32" font-family="ui-monospace, Menlo, monospace">:3f2a9c1</text>
+  <text x="792" y="182" text-anchor="middle" font-size="12" fill="#2e7d32" font-family="ui-monospace, Menlo, monospace">:latest</text>
+  <text x="792" y="210" text-anchor="middle" font-size="12" fill="#2e7d32">jääb alles</text>
+
+  <path d="M792 230 L792 300" stroke="#5e35b1" stroke-width="2" marker-end="url(#a)"/>
+  <text x="802" y="270" font-size="12" fill="#4527a0" font-family="ui-monospace, Menlo, monospace">pull</text>
+  <rect x="694" y="304" width="196" height="70" rx="10" fill="#fff3e0" stroke="#ffa726"/>
+  <text x="792" y="332" text-anchor="middle" font-size="14" font-weight="700" fill="#bf360c">server proxmox1</text>
+  <text x="792" y="354" text-anchor="middle" font-size="12" fill="#e65100">tõmbab, ei ehita</text>
+
+  <rect x="20" y="290" width="610" height="84" rx="10" fill="#fff8e1" stroke="#ffb300"/>
+  <text x="40" y="316" font-size="13" font-weight="700" fill="#e65100">Runnerisse tuleb väljast ainult see, mida töövoog küsib:</text>
+  <text x="40" y="340" font-size="13" fill="#6d4c41">kood (checkout), tööriistad (setup-python), saladused ja GITHUB_TOKEN.</text>
+  <text x="40" y="362" font-size="13" fill="#6d4c41">Töö tulemus jääb alles ainult siis, kui see salvestatakse väljapoole: registrisse.</text>
+</svg>

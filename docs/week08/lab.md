@@ -28,7 +28,7 @@ Töötad masinas `proxmox1` VS Code'i kaudu nagu N7-s. Serveri rollis on samuti 
 | 7 | Korrektne lahendus | 5 min |
 | 8 | Töö esitamine | 10 min |
 
-*Tabel 8.5. Praktikumi osad. Koos vahetunniga kokku 3 h 15 min.*
+*Tabel 8.6. Praktikumi osad. Koos vahetunniga kokku 3 h 15 min.*
 
 Iga vea juures on samad sammud samas järjekorras ([loengu §7](lecture.md#7-vea-leidmine-sumptom-hupotees-toend-parandus)):
 
@@ -51,7 +51,7 @@ Kõik vead teed iseseisvalt.
 
 <figure markdown="span">
   ![ci.yml-is tööd test, konteiner ja build-and-push. Punased numbrid: 1 build-and-push kirjutamisõigus, 2 konteineri ja build-and-push vahel puuduv järjekord, 3 millal töövoog käivitub. build-and-push saadab image'i GHCR-i, kus pakett on privaatne. proxmox1-s server/paigalda.sh: 4 docker pull, 5 docker run -p](../images/n08_viis_viga.svg)
-  <figcaption>Joonis 8.4. Viis viga konveieris ja serveris. Kuues viga on Jenkinsis, osas 6 (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 8.7. Viis viga konveieris ja serveris. Kuues viga on Jenkinsis, osas 6 (Talvik, 2026).</figcaption>
 </figure>
 
 ---
@@ -583,7 +583,7 @@ cat Jenkinsfile
 | [`pipeline-graph-view`](https://plugins.jenkins.io/pipeline-graph-view/) | näitab konveieri samme graafiliselt |
 | [`dark-theme`](https://plugins.jenkins.io/dark-theme/) | tume teema |
 
-*Tabel 8.6. Plugin'id failis `jenkins/Dockerfile`.*
+*Tabel 8.7. Plugin'id failis `jenkins/Dockerfile`.*
 
 `Jenkinsfile` on konveier. See on sama mõttega kui `ci.yml`, aga teises keeles ([Jenkinsfile'i süntaks](https://www.jenkins.io/doc/book/pipeline/syntax/)):
 
@@ -595,7 +595,7 @@ cat Jenkinsfile
 | `needs: test` | etapid käivad järjest, kirjutatud järjekorras |
 | `on: push` | `pollSCM`: Jenkins küsib ise, kas on uus commit (samm 6.6) |
 
-*Tabel 8.7. Sama konveier kahes tööriistas.*
+*Tabel 8.8. Sama konveier kahes tööriistas.*
 
 ### 6.2 Jenkins käima
 
@@ -628,7 +628,7 @@ docker run -d --name jenkins --restart unless-stopped \
 | `-v /var/run/docker.sock:...` | Jenkins saab kasutada masina Dockerit, et ehitada image'it |
 | `--group-add ...` | Jenkinsi kasutaja saab õiguse Dockeri soklit kasutada |
 
-*Tabel 8.8. Jenkinsi konteineri võtmed.*
+*Tabel 8.9. Jenkinsi konteineri võtmed.*
 
 **Kontrolli**
 
@@ -690,7 +690,7 @@ Käivitus on punane. Ava see ja vali **Pipeline Overview**. Plugin `pipeline-gra
     docker exec jenkins python3 --version
     ```
 
-3. Vaata tabelit 8.7. Kes paigaldas Pythoni GitHub Actionsis?
+3. Vaata tabelit 8.8. Kes paigaldas Pythoni GitHub Actionsis?
 
 ??? success "Põhjus ja parandus"
     Logis on rida `python3: not found`. Masinas `proxmox1` Python on, Jenkinsi konteineris mitte. GitHub Actionsis paigaldas Pythoni action `setup-python`. Jenkinsis peab selle paigaldama see, kes Jenkinsit haldab.
@@ -764,7 +764,7 @@ Oota kuni 5 minutit. Vasakul tekib uus käivitus. Ava see. Üleval on kirjas `St
 
 Vali **Manage Jenkins** → **Appearance**. Lõigus **Themes** vali `Dark` ja vajuta **Save**. Selle võimaluse lisas plugin `dark-theme`.
 
-Mõtle tagasi tabelile 8.7. GitHub Actionsis ei pidanud sa paigaldama serverit, plugin'eid ega Pythonit. Jenkinsis tegid kõike seda ise. Vastutasuks töötab Jenkins sinu võrgus ja seda saab seadistada nii, nagu firma vajab.
+Mõtle tagasi tabelile 8.8. GitHub Actionsis ei pidanud sa paigaldama serverit, plugin'eid ega Pythonit. Jenkinsis tegid kõike seda ise. Vastutasuks töötab Jenkins sinu võrgus ja seda saab seadistada nii, nagu firma vajab.
 
 ---
 
@@ -774,73 +774,119 @@ Kõik kuus parandust on nüüd sinu failides. Siin on need koos, nii nagu seda t
 
 Rea selgituse näed, kui klõpsad numbril koodi kõrval.
 
-```yaml
-name: CI/CD
+Praktikumis kirjutasime käsud ise, sest siis näed iga sammu eraldi logis. Töökohas kasutatakse sageli Dockeri ametlikke action'eid: koodi on vähem ja kihtide vahemälu teeb ehituse kiiremaks ([docker/build-push-action](https://github.com/docker/build-push-action)). Teisel vahelehel on sama töö `build-and-push` action'itega.
 
-on:
-  push:
-    branches: [main] # (1)!
-  pull_request: # (2)!
+=== "docker käsud"
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
-        with:
-          python-version: "3.12"
-      - run: pip install -r flask/requirements.txt pytest
-      - run: pytest flask -v
+    ```yaml
+    name: CI/CD
 
-  konteiner:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - run: docker build -t flask-app ./flask
-      - run: docker run -d -p 5000:5000 --name flask1 flask-app
-      - run: curl -fsS --retry 10 --retry-all-errors --retry-delay 1 localhost:5000/health
-      - if: failure()
-        run: docker logs flask1
+    on:
+      push:
+        branches: [main] # (1)!
+      pull_request: # (2)!
 
-  build-and-push:
-    needs: konteiner # (3)!
-    if: github.event_name == 'push' # (4)!
-    runs-on: ubuntu-latest
-    permissions: # (5)!
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v7
-      - name: Image'i nimi ja versioon # (6)!
-        run: |
-          echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
-          echo "VERSIOON=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
-      - name: Ehita image # (7)!
-        run: >
-          docker build
-          --build-arg VERSIOON=$VERSIOON
-          --label org.opencontainers.image.source=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY
-          -t "$IMAGE:$VERSIOON" -t "$IMAGE:latest"
-          ./flask
-      - name: Logi GHCR-i sisse
-        env:
-          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }} # (8)!
-        run: echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
-      - name: Saada image GHCR-i
-        run: docker push --all-tags "$IMAGE" # (9)!
-```
+    jobs:
+      test:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v7
+          - uses: actions/setup-python@v7
+            with:
+              python-version: "3.12"
+          - run: pip install -r flask/requirements.txt pytest
+          - run: pytest flask -v
 
-1.  Push käivitab töövoo ainult harus `main`. Teiste harude push ei ehita image'it (viga 3).
-2.  Pull request'is käivituvad testid. N7 lukk vajab neid enne liitmist.
-3.  Image ehitatakse alles siis, kui `konteiner` on roheline. `konteiner` ootab omakorda `test`-i (viga 2).
-4.  Pull request'i käivituses jääb töö vahele. Registrisse jõuab ainult liidetud kood (viga 3).
-5.  Kirjutamisõigus registrisse ainult sellele tööle. `contents: read` on vajalik, et `actions/checkout` saaks koodi lugeda (viga 1).
-6.  Image'i nimes on ainult väiketähed: `${GITHUB_REPOSITORY,,}`. Tag on commit'i lühiräsi: `${GITHUB_SHA::7}`.
-7.  Samale image'ile kaks tag'i: räsi ja `latest`. `--build-arg` annab rakendusele versiooni. Silt `org.opencontainers.image.source` seob paketi repositooriumiga.
-8.  Ajutine token, mis kehtib ainult selle käivituse ajal. Faili ei kirjutata ühtegi saladust.
-9.  Saadab registrisse mõlemad tag'id.
+      konteiner:
+        needs: test
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v7
+          - run: docker build -t flask-app ./flask
+          - run: docker run -d -p 5000:5000 --name flask1 flask-app
+          - run: curl -fsS --retry 10 --retry-all-errors --retry-delay 1 localhost:5000/health
+          - if: failure()
+            run: docker logs flask1
+
+      build-and-push:
+        needs: konteiner # (3)!
+        if: github.event_name == 'push' # (4)!
+        runs-on: ubuntu-latest
+        permissions: # (5)!
+          contents: read
+          packages: write
+        steps:
+          - uses: actions/checkout@v7
+          - name: Image'i nimi ja versioon # (6)!
+            run: |
+              echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+              echo "VERSIOON=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+          - name: Ehita image # (7)!
+            run: >
+              docker build
+              --build-arg VERSIOON=$VERSIOON
+              --label org.opencontainers.image.source=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY
+              -t "$IMAGE:$VERSIOON" -t "$IMAGE:latest"
+              ./flask
+          - name: Logi GHCR-i sisse
+            env:
+              GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }} # (8)!
+            run: echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          - name: Saada image GHCR-i
+            run: docker push --all-tags "$IMAGE" # (9)!
+    ```
+
+    1.  Push käivitab töövoo ainult harus `main`. Teiste harude push ei ehita image'it (viga 3).
+    2.  Pull request'is käivituvad testid. N7 lukk vajab neid enne liitmist.
+    3.  Image ehitatakse alles siis, kui `konteiner` on roheline. `konteiner` ootab omakorda `test`-i (viga 2).
+    4.  Pull request'i käivituses jääb töö vahele. Registrisse jõuab ainult liidetud kood (viga 3).
+    5.  Kirjutamisõigus registrisse ainult sellele tööle. `contents: read` on vajalik, et `actions/checkout` saaks koodi lugeda (viga 1).
+    6.  Image'i nimes on ainult väiketähed: `${GITHUB_REPOSITORY,,}`. Tag on commit'i lühiräsi: `${GITHUB_SHA::7}`.
+    7.  Samale image'ile kaks tag'i: räsi ja `latest`. `--build-arg` annab rakendusele versiooni. Silt `org.opencontainers.image.source` seob paketi repositooriumiga.
+    8.  Ajutine token, mis kehtib ainult selle käivituse ajal. Faili ei kirjutata ühtegi saladust.
+    9.  Saadab registrisse mõlemad tag'id.
+
+=== "Ametlikud action'id"
+
+    ```yaml
+      build-and-push:
+        needs: konteiner
+        if: github.event_name == 'push'
+        runs-on: ubuntu-latest
+        permissions:
+          contents: read
+          packages: write
+        steps:
+          - uses: actions/checkout@v7
+          - uses: docker/login-action@v4 # (1)!
+            with:
+              registry: ghcr.io
+              username: ${{ github.actor }}
+              password: ${{ secrets.GITHUB_TOKEN }}
+          - id: meta
+            uses: docker/metadata-action@v6 # (2)!
+            with:
+              images: ghcr.io/${{ github.repository }}
+              tags: |
+                type=sha,prefix=,format=short
+                type=raw,value=latest
+          - uses: docker/setup-buildx-action@v4 # (3)!
+          - run: echo "VERSIOON=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+          - uses: docker/build-push-action@v7 # (4)!
+            with:
+              context: ./flask
+              push: true
+              tags: ${{ steps.meta.outputs.tags }}
+              labels: ${{ steps.meta.outputs.labels }}
+              build-args: VERSIOON=${{ env.VERSIOON }}
+              cache-from: type=gha
+              cache-to: type=gha,mode=max
+    ```
+
+    1.  Sama mis `docker login`: registrisse logitakse `GITHUB_TOKEN`-iga ([login-action](https://github.com/docker/login-action)).
+    2.  Teeb tag'id: lühiräsi ja `latest`. `prefix=` jätab ära vaikimisi eesliite `sha-`. Image'i nime teeb see ise väiketähtedeks ja lisab sildid, mis seovad paketi repositooriumiga ([metadata-action](https://github.com/docker/metadata-action)).
+    3.  Seadistab Buildx'i. Ilma selleta ei saa vahemälu `type=gha` kasutada.
+    4.  Ehitab image'i ja saadab selle registrisse (`push: true`). `cache-from` ja `cache-to` hoiavad kihte GitHub Actionsi vahemälus, nii et järgmine ehitus on kiirem ([vahemälu](https://docs.docker.com/build/ci/github-actions/cache/)).
 
 Serveris logitakse sisse üks kord. Iga paigaldus on siis üks käsk:
 
@@ -858,7 +904,7 @@ curl localhost:8088/versioon
 | `--restart unless-stopped` | konteiner käivitub uuesti ka pärast masina taaskäivitust |
 | `-p 8088:5000` | serveri port 8088 läheb konteineri porti 5000, kus Flask kuulab |
 
-*Tabel 8.9. Serveri skripti read.*
+*Tabel 8.10. Serveri skripti read.*
 
 Jenkinsi image (viga 6):
 

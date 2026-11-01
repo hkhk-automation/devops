@@ -31,6 +31,11 @@ Praktikumis saad konveieri, mille kolleeg on juba kirjutanud. Selles on vead. Lo
 
 Meenuta N7 sõnu. **Töövoog** (workflow) on fail kaustas `.github/workflows/`. Töövoos on **tööd** (jobs), näiteks `test` ja `konteiner`. Igas töös on **sammud** (steps). Iga kord, kui töövoog käivitub, tekib vahekaardile **Actions** uus **käivitus** (run).
 
+<figure markdown="span">
+  ![Vasakul sündmused (on:): push harusse main, pull_request, schedule, workflow_dispatch. Sündmus käivitab töövoo .github/workflows/ci.yml. Töövoos on kolm tööd: test, konteiner ja build-and-push, nende vahel nooled needs. Iga töö all on sammud, näiteks checkout, docker build, docker push. Paremal märkus: ilma needs'ita käivituvad kõik tööd korraga](../images/n08_moisted.svg)
+  <figcaption>Joonis 8.1. Sündmus käivitab töövoo, töövoos on tööd, töös on sammud. `needs` paneb tööd järjekorda (Talvik, 2026).</figcaption>
+</figure>
+
 N7 loengu tabelis 7.3 olid kolm astet:
 
 | Aste | Mida teeb | Millal |
@@ -47,7 +52,7 @@ Miks seda vaja on? Kui image'i ehitab inimene oma arvutis, võib ta eksida. Ta v
 
 <figure markdown="span">
   ![GitHub Actions push'i peale harusse main: test, siis konteiner, siis build-and-push, igaühe vahel needs. build-and-push saadab image'i GHCR-i kahe tag'iga, 3f2a9c1 ja latest. Server proxmox1 tõmbab image'i, käivitab selle pordil 8088 ja curl /versioon vastab 3f2a9c1](../images/n08_cd_ahel.svg)
-  <figcaption>Joonis 8.1. Pidev tarne: kolmas töö paneb testitud image'i registrisse, server tõmbab selle sealt (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 8.2. Pidev tarne: kolmas töö paneb testitud image'i registrisse, server tõmbab selle sealt (Talvik, 2026).</figcaption>
 </figure>
 
 Server ei ehita image'it. Ta tõmbab registrist sama faili, mille konveier ehitas ja testis. Seda põhimõtet nimetatakse **ehita üks kord, paigalda mitu korda**. Kui sama image läheb testserverisse ja tootmisse, töötab mõlemas sama tarkvara.
@@ -59,6 +64,13 @@ Server ei ehita image'it. Ta tõmbab registrist sama faili, mille konveier ehita
 ---
 
 ## 2. Register ja GHCR
+
+Miks registrit üldse vaja on? Iga töö saab GitHubis uue tühja virtuaalmasina (runneri). Kui töö lõpeb, kustutatakse masin koos kõigega, mis seal tehti. Ka image kaob. Alles jääb ainult see, mis saadeti masinast välja.
+
+<figure markdown="span">
+  ![Ühes käivituses kolm runnerit: runner 1 teeb testi, runner 2 ehitab konteineri ja image kaob koos masinaga, runner 3 ehitab image'i uuesti ja saadab selle push'iga GHCR-i, kus tag'id 3f2a9c1 ja latest jäävad alles. Server proxmox1 tõmbab image'i GHCR-ist pull'iga. All märkus: runnerisse tuleb väljast ainult see, mida töövoog küsib](../images/n08_runnerid.svg)
+  <figcaption>Joonis 8.3. Runner kustutatakse pärast tööd. Image jääb alles ainult registris (Talvik, 2026).</figcaption>
+</figure>
 
 **Register** on server, kus hoitakse image'eid. Käsk `docker push` saadab image'i registrisse. Käsk `docker pull` tõmbab selle sealt.
 
@@ -77,6 +89,19 @@ Image'i nimes on lubatud ainult väiketähed. Repositooriumi nimes võib olla su
 
 GitHub nimetab image'it **paketiks** (package). Pakett on repositooriumi avalehel paremal, jaotises **Packages**. Kui repositoorium on privaatne, on ka pakett privaatne. Siis peab server enne tõmbamist sisse logima (§6).
 
+Registreid on palju. Konveier logib igasse neist sisse veidi teisiti:
+
+| Register | Kes haldab | Kuidas konveier sisse logib | Millal valitakse |
+|---|---|---|---|
+| [Docker Hub](https://docs.docker.com/docker-hub/) | Docker Inc | [juurdepääsutoken](https://docs.docker.com/security/for-developers/access-tokens/) GitHub Secretis ([näide](https://docs.docker.com/build/ci/github-actions/)) | avalikud image'id, mida kõik saavad tõmmata |
+| GHCR | GitHub | `GITHUB_TOKEN`, eraldi saladust pole | kood ja konveier on GitHubis |
+| [AWS ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html) | Amazon | IAM-roll [OIDC kaudu](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws), siis [`amazon-ecr-login`](https://github.com/aws-actions/amazon-ecr-login) | serverid töötavad AWS-is |
+| [GitLab Container Registry](https://docs.gitlab.com/user/packages/container_registry/build_and_push_images/) | GitLab | muutujad `CI_REGISTRY_USER` ja `CI_REGISTRY_PASSWORD`, mille GitLab annab igale tööle | kood ja konveier on GitLabis |
+
+*Tabel 8.2. Levinud registrid.*
+
+**OIDC** tähendab, et konveier ei hoia AWS-i parooli üldse. GitHub annab käivitusele lühiajalise tõendi ja AWS vahetab selle ajutiste õiguste vastu. Põhimõte on sama mis `GITHUB_TOKEN`-il: ajutine võti on parem kui püsiv saladus.
+
 ??? question "Kontrolli ennast"
     1. Repositooriumi nimi on `lab-MariTamm`. Mis juhtub, kui image'i nimeks saab `ghcr.io/hkhk-automation/lab-MariTamm`?
     2. Miks ei pea konveieri failis olema sinu GitHubi kasutajanimi?
@@ -93,7 +118,7 @@ GitHub nimetab image'it **paketiks** (package). Pakett on repositooriumi avalehe
 | commit'i lühiräsi | `:3f2a9c1` | täpselt see commit, millest image ehitati |
 | versioon | `:v1.0.0` | väljalase, mille inimene märkis (kodutöö) |
 
-*Tabel 8.2. Tag'id, mida N8 konveier kasutab.*
+*Tabel 8.3. Tag'id, mida N8 konveier kasutab.*
 
 Konveier paneb igale image'ile kaks tag'i: räsi ja `latest`. Räsi tuleb muutujast `GITHUB_SHA`. Kirjutis `${GITHUB_SHA::7}` võtab sellest seitse esimest märki. Sama lühiräsi näitab ka `git log --oneline`.
 
@@ -142,8 +167,10 @@ Registrisse tohib jõuda ainult kood, mis on testitud ja üle vaadatud. Selle ee
 
 <figure markdown="span">
   ![Ülemine rida pull_request: test ja konteiner rohelised, build-and-push hall ja skipped, registrisse ei jõua midagi. Alumine rida push harusse main: test, konteiner ja build-and-push, mis saadab image'i GHCR-i. All read on: push: branches: [main], pull_request ja if: github.event_name == 'push'](../images/n08_pr_vs_main.svg)
-  <figcaption>Joonis 8.2. Pull request'is käivad testid, registrisse jõuab ainult liidetud kood (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 8.4. Pull request'is käivad testid, registrisse jõuab ainult liidetud kood (Talvik, 2026).</figcaption>
 </figure>
+
+**Failide filter: `paths`.** Vahel pole mõtet image'it ehitada, kui muutus ainult README. Võti `paths` käivitab töövoo ainult siis, kui muutusid kindlad failid ([`paths` süntaks](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#onpushpull_requestpull_request_targetpathspaths-ignore)). Näiteks `paths: ["flask/**", ".github/workflows/ci.yml"]` jätab README muudatused vahele. Ettevaatust: kui pull request'i kohustuslik kontroll jääb filtri tõttu käivitamata, jääb see ootele ja liita ei saa.
 
 ??? question "Kontrolli ennast"
     1. Saadad GitHubi haru `n08-tervitus` ja avad pull request'i. Töövoos on `push:` ilma harudeta ja `pull_request:`. Mitu käivitust tekib?
@@ -161,6 +188,19 @@ GitHubi runner ei pääse kooli võrku. Seepärast ei saada konveier image'it se
 
 **Skript.** Käske saab iga kord käsitsi sisestada. Siis tuleb meeles pidada nime, tag'i, porti ja vana konteineri eemaldamist. Starteris on skript `server/paigalda.sh`, mis teeb need sammud alati samas järjekorras. N13-s käivitab sama sammu konveier ise.
 
+### Keskkonnad: test ja tootmine
+
+Töökohas on sageli kaks või enam keskkonda. **Testkeskkond** (staging) on server, kus uus versioon enne kontrollitakse. **Tootmine** on server, mida kasutavad firma kliendid ja töötajad. GitHubis kirjeldatakse need **keskkondadena** (environments) ([keskkonnad](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments)). Paigaldustöö märgib, kuhu see paigaldab: `environment: tootmine`.
+
+Keskkonnal võivad olla oma saladused. Tootmise parooli näeb ainult töö, mis paigaldab tootmisse. Keskkonnale saab lisada ka kinnitajad (required reviewers). Siis jääb töö ootama, kuni inimene vajutab nupule. Mõlemasse keskkonda läheb sama räsiga image ja tootmise jaoks midagi uuesti ei ehitata.
+
+<figure markdown="span">
+  ![build-and-push ehitab image'i ühe korra ja saadab selle GHCR-i tag'iga 3f2a9c1. Sealt läheb see automaatselt testkeskkonda (staging), kus on testserveri saladused. Tootmisse läheb sama image alles pärast inimese kinnitust (required reviewers). Tootmisel on oma saladused, mida teised tööd ei näe](../images/n08_keskkonnad.svg)
+  <figcaption>Joonis 8.5. Sama image testis ja tootmises. Tootmisse alles pärast kinnitust (Talvik, 2026).</figcaption>
+</figure>
+
+Siin on näha ka pideva tarne ja pideva paigalduse vahe (tabel 8.1). Kui tootmise ees on kinnitus, on tegu pideva tarnega. Kui kinnitust pole ja iga roheline muudatus läheb kohe tootmisse, on tegu pideva paigaldusega. Praktikumis keskkondi ei seadista.
+
 ??? question "Kontrolli ennast"
     1. Miks ei anna me serveri tokenile õigust `write:packages`, kuigi see lubaks ka lugeda?
     2. `docker ps` näitab pordiks `0.0.0.0:8088->80/tcp`. Rakendus kuulab pordil 5000. Mida vastab `curl localhost:8088`?
@@ -173,7 +213,7 @@ Praktikumi konveier on kirjutatud, aga katki. Kõige aeglasem viis on muuta ridu
 
 <figure markdown="span">
   ![Neli kasti järjest: 1 Sümptom (punane töö, rida logis, curl vastus), 2 Hüpotees (mis võib olla põhjus, mis failis, mis real), 3 Tõend (Set up job, docker ps, logs), 4 Parandus (üks muudatus korraga, siis kontroll uuesti). Tõendist tagasi hüpoteesini katkendlik nool: kui tõend ei kinnita hüpoteesi, tee uus hüpotees](../images/n08_veaotsing.svg)
-  <figcaption>Joonis 8.3. Vea otsimise järjekord (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 8.6. Vea otsimise järjekord (Talvik, 2026).</figcaption>
 </figure>
 
 1. **Sümptom** on see, mida näed: punane töö, punane samm, rida logis. Loe veateade lõpuni. Tähtsaim sõna on tihti viimane.
@@ -191,7 +231,7 @@ Praktikumi konveier on kirjutatud, aga katki. Kõige aeglasem viis on muuta ridu
 | `docker ps`, veerg PORTS | kuhu port on suunatud |
 | `docker logs <konteiner>` | mida rakendus konteineris ise ütleb |
 
-*Tabel 8.3. Kust leida tõend.*
+*Tabel 8.4. Kust leida tõend.*
 
 Järgmisena näed seda järjekorda ühe vea peal. Õpetaja otsib viga oma repositooriumis ja mõtleb valjult.
 
@@ -233,7 +273,7 @@ Jenkinsit kasutatakse endiselt palju, eriti suurtes firmades ja vanades süsteem
 | GitHub Actions (teenus) | suletud, GitHubi kasutustingimused | koodi ei näe ega tohi ise paigaldada; maksad kasutuse eest |
 | GitHub Actionsi runner | [MIT](https://github.com/actions/runner/blob/main/LICENSE) | runneri programmi tohib vabalt kasutada ja muuta |
 
-*Tabel 8.4. CI/CD tööriistade litsentsid.*
+*Tabel 8.5. CI/CD tööriistade litsentsid.*
 
 **MIT** on lühike ja vaba litsents. See lubab tarkvara kasutada, muuta, levitada ja müüa. Tingimus on üks: autoriõiguse teade peab jääma koopiasse alles.
 
@@ -242,7 +282,7 @@ GitLab kasutab mudelit **open core**. Põhiosa on avatud (Community Edition, MIT
 Litsents võib ka muutuda. N10-s nägid, et HashiCorp muutis 2023. aastal Terraformi litsentsi. Uus litsents BSL ei luba Terraformi kasutada HashiCorpiga konkureerivas tootes ([HashiCorpi teade](https://www.hashicorp.com/blog/hashicorp-adopts-business-source-license)). Kogukond jätkas viimase vaba versiooniga ja nii tekkis OpenTofu. Seega tasub enne tööriista valimist vaadata ka litsentsi ja seda, kes projekti juhib.
 
 ??? question "Kontrolli ennast"
-    1. Firma tahab CI/CD-d, mis töötab ainult tema enda serverites ja on tasuta. Milliseid tabeli 8.4 tööriistu ta saab kasutada?
+    1. Firma tahab CI/CD-d, mis töötab ainult tema enda serverites ja on tasuta. Milliseid tabeli 8.5 tööriistu ta saab kasutada?
     2. Mida peab firma Jenkinsi puhul ise tegema, mida GitHub Actionsi puhul teeb GitHub?
 
 ---
