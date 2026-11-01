@@ -8,9 +8,9 @@ tags:
 # Loeng: infrastruktuuri kirjeldamine koodina (OpenTofu)
 
 **Kestus:** umbes 45 minutit tunni alguses, siis [praktikum](lab.md).
-**Eeldus:** N9 loeng ja praktikum: soovitud olek, ühtlustamine, triiv, olekufail. N9 README Osa 5 ennustused on kirjas.
+**Eeldus:** N9 loeng: soovitud olek, ühtlustamine, triiv.
 
-N9-s võrdlesid Bashi, Ansible'it ja Docker Compose'i ning kirjutasid kaks ennustust tööriista kohta, mida sa veel ei kasutanud. Täna kirjeldad OpenTofuga kooli Proxmoxis ühe virtuaalmasina ja kontrollid mõlemat ennustust oma masinaga.
+N9 loengus võrdlesid Bashi, Ansible'it ja Docker Compose'i. Täna kirjutad kõigepealt kaks ennustust tööriista kohta, mida sa veel ei kasutanud. Siis kirjeldad OpenTofuga kooli Proxmoxis ühe virtuaalmasina ja kontrollid mõlemat ennustust oma masinaga.
 
 !!! abstract "Õpiväljundid"
     Pärast loengut ja praktikumi oskad:
@@ -23,14 +23,14 @@ N9-s võrdlesid Bashi, Ansible'it ja Docker Compose'i ning kirjutasid kaks ennus
 
 ---
 
-## 1. N9 ennustused
+## 1. Kaks ennustust
 
-N9 praktikumi lõpus vastasid kahele küsimusele:
+OpenTofu on deklaratiivne tööriist nagu Ansible ja Docker Compose. Enne kui loed edasi, vasta N9 loengu põhjal kahele küsimusele:
 
 1. Keegi kustutab Proxmoxis käsitsi masina, mille OpenTofu lõi. Mis juhtub OpenTofu järgmisel käivitusel?
 2. Kustutad OpenTofu failist masina kirjelduse. Mis juhtub järgmisel käivitusel? Kas Ansible teeks sama?
 
-Tunni alguses loeb igaüks oma vastused ette. Me ei arutle, kellel on õigus. Praktikumi osades 4 ja 5 teed mõlemad katsed läbi ja võrdled tulemust oma ennustusega.
+Võta Classroom 50-s vastu ülesanne **Lab 10 - OpenTofu** ([Classroom 50](https://classroom50.org/hkhk-automation/it24-automatiseerimine/assignments)), ava GitHubis oma repositooriumi fail `README.md` (pliiatsi nupp) ja kirjuta vastused Osa 0 alla. Õiget vastust praegu ei oodata. Praktikumi osades 4 ja 5 teed mõlemad katsed läbi ja võrdled tulemust oma ennustusega.
 
 ---
 
@@ -264,7 +264,7 @@ Token on saladus nagu parool. Ta on ainult failis `terraform.tfvars` (`.gitignor
 
 ## 8. OpenTofu meeskonnas: Spacelift
 
-Praktikumis käivitad `tofu` oma virtuaalmasinas ja olekufail on sinu kaustas. Meeskonnas nii ei tehta. Kui iga insener käivitab `apply` käsku oma arvutist, on igaühel oma olekufail ja oma API võti ning kellegi logist ei näe, kes mida muutis. Seepärast käivitab OpenTofu tsentraalne platvorm, samamoodi nagu N7-s käivitas testid GitHub Actions.
+Praktikumis käivitad `tofu` oma virtuaalmasinas ja olekufail on sinu kaustas. Meeskonnas nii ei tehta. Kui iga insener käivitab `apply` käsku oma arvutist, on igaühel oma olekufail ja oma API võti ning kellegi logist ei näe, kes mida muutis. Seepärast käivitab OpenTofu tsentraalne platvorm.
 
 Üks levinud platvorm on [Spacelift](https://spacelift.io/). Spacelift oli ka üks firmadest, kes 2023. aastal OpenTofu projekti algatasid. Spacelift seob Giti repositooriumi kausta ja haru ühe **stack**'iga ([stack'i kirjeldus](https://docs.spacelift.io/concepts/stack)) ja töötab nii:
 
@@ -272,18 +272,18 @@ Praktikumis käivitad `tofu` oma virtuaalmasinas ja olekufail on sinu kaustas. M
 2. **Reeglid** ([policy](https://docs.spacelift.io/concepts/policy)) kontrollivad plaani automaatselt. Reegel võib näiteks keelata andmebaasi kustutamise või nõuda, et iga kustutamise kinnitab teine inimene.
 3. Kolleeg vaatab plaani üle. Pärast merge'i käivitab Spacelift `tofu apply`.
 4. Olekufaili ja API võtmeid hoiab Spacelift, inseneride arvutites neid ei ole.
-5. **Triivi tuvastus** ([drift detection](https://docs.spacelift.io/concepts/stack/drift-detection)) käivitab `tofu plan` regulaarselt ja annab teada, kui keegi on infrastruktuuri käsitsi muutnud. Triivi mõistet kasutasid N9-s.
+5. **Triivi tuvastus** ([drift detection](https://docs.spacelift.io/concepts/stack/drift-detection)) käivitab `tofu plan` regulaarselt ja annab teada, kui keegi on infrastruktuuri käsitsi muutnud. Triivi mõiste on N9 loengu osas 5.
 
 <figure markdown="span">
   ![Ülemises reas viis kasti: pull request, tofu plan plaaniga PR-i juures, reeglid kontrollivad kustutamist, kolleegi kinnitus, tofu apply pärast merge'i. All kaks kasti: olekufail ja saladused on platvormis ühised, lukustatud ja krüpteeritud; triivi tuvastus käivitab plan'i iga paari tunni järel](../images/n10_spacelift.svg)
-  <figcaption>Joonis 10.4. OpenTofu meeskonnas: muudatus läbib plaani, reeglid ja ülevaatuse nagu kood N7 CI-s (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 10.4. OpenTofu meeskonnas: muudatus läbib plaani, reeglid ja ülevaatuse (Talvik, 2026).</figcaption>
 </figure>
 
-Spacelift oskab käivitada ka Terraformi, Ansible'it, Pulumit ja Kubernetese manifeste. Sama tüüpi platvormid on HashiCorpi HCP Terraform, env0 ja Scalr ning avatud lähtekoodiga Atlantis. Väiksemas meeskonnas piisab sageli GitHub Actionsi workflow'st, mis käivitab PR-is `tofu plan` ja pärast merge'i `tofu apply`, olekufail on siis ühises backend'is.
+Spacelift oskab käivitada ka Terraformi, Ansible'it, Pulumit ja Kubernetese manifeste. Sama tüüpi platvormid on HashiCorpi HCP Terraform, env0 ja Scalr ning avatud lähtekoodiga Atlantis.
 
 ??? question "Kontrolli ennast"
     1. Mis probleemi lahendab Spacelift võrreldes sellega, et iga insener käivitab `tofu apply` oma arvutist?
-    2. Kuidas on Spacelifti töövoog sarnane N7 CI töövooga?
+    2. Miks käivitab Spacelift `tofu plan` juba pull request'i juures, enne merge'i?
 
 ---
 

@@ -8,9 +8,9 @@ tags:
 
 # N10 · Praktikum: virtuaalmasin OpenTofuga
 
-N9-s kirjutasid ennustuse, mida teeb OpenTofu, kui masin kustutatakse käsitsi või kui masina kirjeldus kaob failist. Täna kirjeldad kooli Proxmoxis ühe masina, lood selle OpenTofuga ja kontrollid mõlemat ennustust.
+Loengu alguses kirjutasid README-sse kaks ennustust: mida teeb OpenTofu, kui masin kustutatakse käsitsi või kui masina kirjeldus kaob failist. Täna kirjeldad kooli Proxmoxis ühe masina, lood selle OpenTofuga ja kontrollid mõlemat ennustust.
 
-Töötad oma esimeses AlmaLinuxi masinas (`proxmox1`) VS Code'i kaudu nagu N7-s. OpenTofu ühendub sealt Proxmoxi API-ga.
+Töötad oma esimeses AlmaLinuxi masinas (`proxmox1`) VS Code'i kaudu nagu varasemates praktikumides. OpenTofu ühendub sealt Proxmoxi API-ga.
 
 **Edenemine:** laboritahvel <http://192.168.125.187:8091/> (VPN-iga).
 
@@ -29,7 +29,7 @@ Mõnes sammus on rida **Ennusta**. Enne käsu käivitamist mõtle läbi, mis juh
 
 ### 1.1 Mida vajad
 
-- VPN-ühendus ja VS Code'i ühendus masinaga `proxmox1` (N1 ja N7).
+- VPN-ühendus ja VS Code'i ühendus masinaga `proxmox1` (N1).
 - Proxmoxi veebiliides <https://192.168.124.200:8006>. Logi sisse sama kasutajaga, millega avasid N1-s masinate konsooli.
 - **VMID**: number vahemikus 4100-4199, mille annab õpetaja tunni alguses. Proxmoxis kannab sinu uus masin seda numbrit.
 
@@ -39,7 +39,7 @@ Mõnes sammus on rida **Ennusta**. Enne käsu käivitamist mõtle läbi, mis juh
 
 **Ülesanne**
 
-Võta Classroom 50-s vastu ülesanne **Lab 10 - OpenTofu** ([Classroom 50](https://classroom50.org/hkhk-automation/it24-automatiseerimine/assignments)) ja klooni repositoorium masinasse `proxmox1`:
+Kui sa loengu alguses ülesannet **Lab 10 - OpenTofu** vastu ei võtnud, tee seda nüüd ([Classroom 50](https://classroom50.org/hkhk-automation/it24-automatiseerimine/assignments)). Klooni repositoorium masinasse `proxmox1`:
 
 ```bash
 cd ~
@@ -111,9 +111,9 @@ Väljundis ei ole faili `terraform.tfvars`, sest `.gitignore` jätab selle välj
 ??? warning "Kui sulgesid akna enne saladuse kopeerimist"
     Vali sama token (**API Tokens** nimekirjas), vajuta **Remove** ja loo uus sama nimega token.
 
-### 1.5 N9 ennustused README-sse
+### 1.5 Nimi ja ennustused README-s
 
-Kirjuta README-sse oma nimi ja Osa 0 alla oma N9 ennustused. Need on sinu Lab 09 repositooriumi README Osas 5. Kopeeri need muutmata, sest osades 4 ja 5 võrdled nendega.
+Ava VS Code'is fail `README.md`. Kirjuta rea `**Sinu nimi:**` järele oma nimi ja kontrolli, et Osa 0 all on loengu alguses kirjutatud kaks ennustust. Kui need puuduvad, kirjuta need nüüd, enne kui lood esimese masina, sest osades 4 ja 5 võrdled nendega.
 
 ---
 
@@ -343,7 +343,7 @@ Proxmoxis on masina **Hardware** lehel **Memory** väärtus 2.00 GiB.
 
 ## Osa 4 · Ennustus 1: masin kustutatakse käsitsi
 
-Loe README-st oma N9 ennustus 1.
+Loe README Osa 0-st oma ennustus 1.
 
 **Ennusta.** Kustutad masina Proxmoxi veebiliideses. Mida näitab OpenTofu järgmine plaan?
 
@@ -377,13 +377,13 @@ Proxmoxis on masin `tofu-<kasutaja>` jälle olemas ja töötab.
     ...
     Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
     ```
-    Plaani alguses küsis OpenTofu Proxmoxilt masinat, mis olekufailis oli. Proxmox vastas, et sellist masinat ei ole, ja OpenTofu eemaldas selle olekust. Kood nõuab ühte masinat, seega lõi OpenTofu uue. Sama tegi N9-s Docker Compose konteineriga, mille kustutasid käsitsi. Uuel masinal on sama nimi ja VMID, aga võib olla teine IP-aadress.
+    Plaani alguses küsis OpenTofu Proxmoxilt masinat, mis olekufailis oli. Proxmox vastas, et sellist masinat ei ole, ja OpenTofu eemaldas selle olekust. Kood nõuab ühte masinat, seega lõi OpenTofu uue. Uuel masinal on sama nimi ja VMID, aga võib olla teine IP-aadress. Samamoodi loob Docker Compose uuesti konteineri, mis kustutati käsitsi (N9 loengu osa 3).
 
 ---
 
 ## Osa 5 · Ennustus 2: kirjeldus eemaldatakse failist
 
-Loe README-st oma N9 ennustus 2.
+Loe README Osa 0-st oma ennustus 2.
 
 OpenTofu loeb kaustast ainult `.tf` laiendiga faile. Kui nimetad faili `vm.tf` ümber, kaob masina kirjeldus koodist, aga fail jääb alles ja saad selle hiljem tagasi panna.
 
@@ -414,7 +414,7 @@ tofu plan 2>&1 | tee -a logid/06-kirjeldus-eemaldatud.txt
     ```
     Pärast `mv vm.tf.off vm.tf` näitab teine plaan `No changes.`
 
-    Olekufailis on masin, mida kood enam ei kirjelda. OpenTofu peab seda masinat enda loodud masinaks ja kustutaks selle. Ansible ei mäleta, mida ta eelmisel korral tegi: kui ülesanne kaob playbook'ist, jääb nginx masinasse alles (N9 loengu tabel 9.4).
+    Olekufailis on masin, mida kood enam ei kirjelda. OpenTofu peab seda masinat enda loodud masinaks ja kustutaks selle. Ansible ei mäleta, mida ta eelmisel korral tegi: kui ülesanne kaob playbook'ist, jääb nginx masinasse alles (N9 loengu osa 6).
 
 ---
 

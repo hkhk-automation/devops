@@ -3,14 +3,13 @@ tags:
   - IaC
   - Ansible
   - Docker
-  - OpenTofu
   - Iseseisev
 ---
 
 # Loeng: infrastruktuur koodina, mõtteviis
 
 **Kestus:** ~60 minutit iseseisvalt lugedes
-**Tase:** eeldame nädalaid 2-7: Git ja Märteni `monitor.sh` (N2), Ansible (N3-4), Dockerfile (N5), Compose (N6), GitHub Actions (N7). Uut tööriista täna ei paigalda.
+**Tase:** eeldame nädalaid 2-6: Git ja Märteni `monitor.sh` (N2), Ansible (N3-4), Dockerfile (N5), Compose (N6). Uut tööriista täna ei paigalda.
 
 Täna on iseseisev nädal. Server ja Proxmox jäävad puhkama. Vaatad tagasi kõigele, mida oled kaheksa nädalaga teinud, ja paned selle ühte pilti. Loe loeng läbi, vasta iga osa lõpus olevatele küsimustele vihikus ja mine siis [praktikumi](lab.md). Praktikumis katsetad samu mõtteid Dockeriga oma silmaga.
 
@@ -23,15 +22,14 @@ Täna on iseseisev nädal. Server ja Proxmox jäävad puhkama. Vaatad tagasi kõ
     - selgitada, mis on soovitud olek ja kuidas tööriist ühtlustab tegeliku oleku soovitud olekuga
     - selgitada idempotentsust ja kontrollida seda tööriista väljundist
     - kirjeldada konfiguratsiooni triivi ja seda, mida järgmine automaatne jooks sellega teeb
-    - eristada tööriista, mis mäletab olekut (OpenTofu), ja tööriista, mis ei mäleta (Ansible)
     - selgitada muudetava ja muutumatu infrastruktuuri vahet
 
 ---
 
-## 1. Kaheksa nädalat, kuus tööriista
+## 1. Seni kasutatud tööriistad
 
 !!! abstract "Miks see oluline on?"
-    Sa oled õppinud kuus tööriista, igaühel oma süntaks. Tööintervjuul ei küsita süntaksit. Küsitakse, miks valiksid ühe või teise. Selleks pead nägema, mis neil ühist on.
+    Sa oled õppinud mitu tööriista, igaühel oma süntaks. Tööintervjuul ei küsita süntaksit. Küsitakse, miks valiksid ühe või teise. Selleks pead nägema, mis neil ühist on.
 
 Kati alustas sügisel praktikat väikeses hostingufirmas. Esimesel päeval näitas vanem sysadmin Mati talle serverit, mida ta oli kuus aastat ise hooldanud.
 
@@ -49,12 +47,10 @@ See vastus on põhjus, miks see kursus olemas on. Kõik, mida oled kaheksa näda
 | N3-4 | Ansible | mis peab serveris olema | `nginx.yml`, `templates/*.j2` |
 | N5 | Docker | kuidas image ehitada | `Dockerfile` |
 | N6 | Docker Compose | millised konteinerid koos jooksevad | `docker-compose.yml` |
-| N7 | GitHub Actions | mida iga push'i peale kontrollida | `.github/workflows/ci.yml` |
-| N10 | OpenTofu | millised masinad ja võrgud on olemas | `main.tf` |
 
 *Tabel 9.1. Iga nädal panid sa midagi koodi kujul kirja. Täna vaatame, mille poolest need kirjapanekud erinevad.*
 
-Fail on Gitis, seega on sellel ajalugu, seda saab üle vaadata (PR) ja testida (CI). Mati mälu ei saa ühtegi neist.
+Fail on Gitis, seega on sellel ajalugu ja seda saab üle vaadata. Mati mälu ei saa kumbagi.
 
 ??? question "Kontrolli ennast"
     1. Miks oli Mati vastus „nädal, kui ma mäletan kõike“ firmale ohtlik?
@@ -117,7 +113,7 @@ graph LR
   <figcaption>Joonis 9.1. Imperatiivne skript täidab sammud alati uuesti. Deklaratiivne kirjeldus annab tööriistale eesmärgi ja tööriist otsustab ise, mis samme on vaja (Talvik, 2026).</figcaption>
 </figure>
 
-Töös on piir hägune. Dockerfile koosneb käskudest (`RUN apt install`, `COPY`), seega on ta oma olemuselt retsept. Aga tulemus, image, on üks kindel asi, mida saab käivitada ükskõik kui mitu korda. GitHub Actions'i `ci.yml` kirjeldab deklaratiivselt, **millal** konveier käivitub (`on: push`), aga `run:` read sees on tavalised bash-käsud. Ansible'is saad kirjutada `ansible.builtin.shell: mkdir /opt/monitor` ja siis on ka Ansible imperatiivne. Tööriist annab võimaluse, aga mõtteviisi valid sina.
+Töös on piir hägune. Dockerfile koosneb käskudest (`RUN apt install`, `COPY`), seega on ta oma olemuselt retsept. Aga tulemus, image, on üks kindel asi, mida saab käivitada ükskõik kui mitu korda. Ansible'is saad kirjutada `ansible.builtin.shell: mkdir /opt/monitor` ja siis on ka Ansible imperatiivne. Tööriist annab võimaluse, aga mõtteviisi valid sina.
 
 ??? question "Kontrolli ennast"
     1. Kumb on imperatiivne ja kumb deklaratiivne: navirakendusele sihtkoha andmine või sõbrale tee kirjeldamine „sõida 200 m otse, siis vasakule“?
@@ -147,7 +143,7 @@ graph LR
     V -->|samad| O[Ära tee midagi]
     M --> T
 ```
-  <figcaption>Joonis 9.2. Ühtlustamise tsükkel. Ansible, Docker Compose, OpenTofu ja Kubernetes teevad sama tsüklit, ainult „tegelik olek“ on igaühel erinev asi (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 9.2. Ühtlustamise tsükkel. Ansible ja Docker Compose teevad sama tsüklit, ainult „tegelik olek“ on neil erinev asi (Talvik, 2026).</figcaption>
 </figure>
 
 N6-s kirjutasid `docker-compose.yml` faili ja käivitasid `docker compose up -d`. Mis juhtub, kui käivitad seda teist korda? Compose loeb faili (soovitud olek), küsib Dockerilt, mis konteinerid jooksevad (tegelik olek), ja näeb, et kõik klapib. Väljundis on:
@@ -163,8 +159,6 @@ N6-s kirjutasid `docker-compose.yml` faili ja käivitasid `docker compose up -d`
 |---|---|---|
 | Ansible | playbook | mis on serveris (paketid, failid, teenused) |
 | Docker Compose | `compose.yaml` | mis konteinerid jooksevad |
-| OpenTofu | `.tf` failid | mis masinad ja võrgud pilves või Proxmoxis on |
-| Kubernetes | YAML manifest | mis konteinerid klastris jooksevad |
 
 *Tabel 9.2. Sama tsükkel, erinev maailm.*
 
@@ -249,7 +243,7 @@ sequenceDiagram
 
 Kas Ansible tegi valesti? Ei. Ta tegi täpselt seda, milleks ta on: viis serveri tagasi kirjeldatud olekusse. Viga oli selles, et parandus jäi Gitist välja. Õige käik pärast öist häiret on hommikul sama muudatus playbooki panna ja PR teha.
 
-Triivi saab ka **tuvastada** ilma midagi muutmata. `ansible-playbook --check --diff` näitab, mida Ansible muudaks, ja jätab serveri puutumata. Praktikumi lisaülesandes proovid seda.
+Triivi saab ka **tuvastada** ilma midagi muutmata. `ansible-playbook --check --diff` näitab, mida Ansible muudaks, ja jätab serveri puutumata. Praktikumi boonusülesandes proovid seda.
 
 ??? question "Kontrolli ennast"
     1. Mis on triiv? Selgita Mati näite abil.
@@ -258,44 +252,19 @@ Triivi saab ka **tuvastada** ilma midagi muutmata. `ansible-playbook --check --d
 
 ---
 
-## 6. Olek: kes mäletab, mida ta lõi
+## 6. Ansible ei mäleta, mida ta tegi
 
 !!! abstract "Miks see oluline on?"
-    See on peamine vahe Ansible'i ja OpenTofu vahel, mida N10-s näed. Kui sa seda ei tea, kustutad ühel päeval koodist rea ja imestad, miks server ikka olemas on, või vastupidi, miks see kadus.
+    Kui sa seda ei tea, kustutad ühel päeval playbookist rea ja imestad, miks see asi serveris ikka olemas on.
 
 Ansible ei mäleta midagi. Iga kord, kui playbook jookseb, vaatab Ansible serverit justkui esimest korda. Ta ei tea, mis ta eelmisel korral tegi.
 
 Proovi mõttes: N3 `nginx.yml` paigaldas nginx'i. Nüüd kustutad playbookist nginx'i task'i ja käivitad uuesti. Mis juhtub serveris? Mitte midagi. Nginx jääb paigaldatuks ja töötab edasi. Ansible ei mäleta, et ta selle kunagi pani, ja playbookis pole enam ühtegi rida, mis nginx'ist räägiks. Nginx'i eemaldamiseks pead kirjutama task'i `state: absent`.
 
-**OpenTofu** (avatud lähtekoodiga Terraformi järglane, käsk `tofu`) töötab teisiti. Ta hoiab **olekufaili** (state file, `terraform.tfstate`), kuhu ta kirjutab iga asja, mille ta lõi: masina ID, IP-aadressi, ketta suuruse. Järgmisel korral võrdleb ta kolme asja: koodi, olekufaili ja seda, mis Proxmoxis või pilves tegelikult olemas on.
-
-| Olukord | Ansible | OpenTofu |
-|---|---|---|
-| Kustutad koodist rea | asi jääb serverisse alles | `plan` näitab `destroy`: asi kustutatakse |
-| Keegi kustutab VM-i käsitsi | Ansible ei saa VM-iga ühendust, task'id kukuvad | `plan` näitab `create`: VM luuakse uuesti |
-| Keegi muudab serveris faili | järgmine jooks kirjutab üle (triiv) | OpenTofu ei vaata serveri sisse, ta haldab ainult masinat ennast |
-| Olekufail läheb kaotsi | pole olekufaili | OpenTofu ei tea enam, mida ta lõi, ja proovib kõike uuesti luua |
-
-*Tabel 9.4. Olekut mäletav ja mittemäletav tööriist. Mõlemad on deklaratiivsed, aga koodist rea kustutamine tähendab neile erinevat asja.*
-
-<figure markdown="span">
-```mermaid
-%%{init: {'theme':'base','themeVariables':{'primaryColor':'#ede7f6','primaryBorderColor':'#5e35b1','primaryTextColor':'#212121','lineColor':'#7e57c2'}}}%%
-graph LR
-    K["Kood<br/>main.tf"] --> P{tofu plan}
-    O["Olekufail<br/>mida ma lõin"] --> P
-    R["Tegelik olek<br/>Proxmox, pilv"] --> P
-    P --> A["+ create<br/>~ update<br/>- destroy"]
-```
-  <figcaption>Joonis 9.4. OpenTofu võrdleb kolme asja. Olekufail on tema mälu: ilma selleta ei tea ta, mis on tema loodud ja mis kellegi teise oma (Talvik, 2026).</figcaption>
-</figure>
-
-Olekufail on väärtuslik ja ohtlik korraga. Seal võivad olla paroolid ja IP-aadressid, seega Giti seda ei panda (meenuta N4 `.gitignore` ja Vault). Meeskonnas hoitakse seda ühises kohas, et kaks inimest ei muudaks sama infrastruktuuri korraga.
+N10-s näed tööriista, mis mäletab olekut.
 
 ??? question "Kontrolli ennast"
     1. Kustutasid playbookist nginx'i task'i ja jooksutasid uuesti. Miks nginx ikka töötab?
-    2. Keegi kustutas Proxmoxis VM-i käsitsi. Mida näitab `tofu plan` järgmisel korral ja miks?
-    3. Miks ei panda olekufaili Giti?
 
 ---
 
@@ -317,7 +286,7 @@ Inglise keeles räägitakse sellest **lemmikloomade ja kariloomade** (pets vs ca
 | Kuidas tekkis | käsitsi, aastate jooksul | koodist, minutitega |
 | Näide kursusel | Märteni server N2-s | Docker konteiner N5-6 |
 
-*Tabel 9.5. Lemmikloom ja kariloom. Mida rohkem su masinad on kariloomad, seda vähem on triivi.*
+*Tabel 9.4. Lemmikloom ja kariloom. Mida rohkem su masinad on kariloomad, seda vähem on triivi.*
 
 <figure markdown="span">
 ```mermaid
@@ -332,7 +301,7 @@ graph TB
         C1 -. visatakse ära .-> X[prügikast]
     end
 ```
-  <figcaption>Joonis 9.5. Muudetav server kogub aja jooksul muudatusi, mida keegi ei mäleta. Muutumatu infrastruktuur ehitab iga kord uue ja viskab vana ära (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 9.4. Muudetav server kogub aja jooksul muudatusi, mida keegi ei mäleta. Muutumatu infrastruktuur ehitab iga kord uue ja viskab vana ära (Talvik, 2026).</figcaption>
 </figure>
 
 Firmades on tavaliselt mõlemat. Andmebaasiserver on sageli lemmikloom, sest andmeid ei saa lihtsalt minema visata. Veebiserverid on kariloomad. Oluline on teada, kumb mingi masin on, ja hoida lemmikloomi vähe.
@@ -347,7 +316,7 @@ Firmades on tavaliselt mõlemat. Andmebaasiserver on sageli lemmikloom, sest and
 ## 8. IaC spekter: kus iga tööriist asub
 
 !!! abstract "Miks see oluline on?"
-    Tööriistad ei konkureeri omavahel, nad katavad erinevaid kihte. Kui näed, mis kiht on kelle oma, oskad valida õige tööriista ja ei püüa Ansible'iga teha seda, milleks on OpenTofu.
+    Tööriistad ei konkureeri omavahel, nad katavad erinevaid kihte. Kui näed, mis kiht on kelle oma, oskad valida õige tööriista ja ei püüa ühe tööriistaga teha kõike.
 
 Kujuta ette maja ehitamist. Kõigepealt on vaja krunti ja vundamenti (masinad, võrgud). Siis seinu ja juhtmeid (operatsioonisüsteem, paketid, konfiguratsioon). Siis mööblit (rakendused). Iga kihi jaoks on eri meister.
 
@@ -355,16 +324,16 @@ Kujuta ette maja ehitamist. Kõigepealt on vaja krunti ja vundamenti (masinad, v
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'primaryColor':'#ede7f6','primaryBorderColor':'#5e35b1','primaryTextColor':'#212121','lineColor':'#7e57c2'}}}%%
 graph TB
-    A["Rakendus ja konteinerid<br/>Dockerfile, Compose, (Kubernetes)"]
+    A["Rakendus ja konteinerid<br/>Dockerfile, Compose"]
     B["Serveri konfiguratsioon<br/>Ansible (Bash)"]
-    C["Masinad ja võrgud<br/>OpenTofu"]
-    D["Muudatuste kontroll<br/>Git + GitHub Actions"]
+    C["Masinad ja võrgud<br/>seni Proxmoxis käsitsi"]
+    D["Muudatuste ajalugu<br/>Git"]
     C --> B --> A
     D -.-> A
     D -.-> B
     D -.-> C
 ```
-  <figcaption>Joonis 9.6. Kolm kihti ja üks tööriistapaar, mis hoiab kõiki kolme ajaloos ja testitud olekus (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 9.5. Kolm kihti ja Git, mis hoiab kõigi kolme kirjelduste ajalugu (Talvik, 2026).</figcaption>
 </figure>
 
 | Tööriist | Kiht | Lähenemine | Idempotentne | Mäletab olekut |
@@ -373,71 +342,20 @@ graph TB
 | Ansible | serveri konfiguratsioon | deklaratiivne (moodulid) | jah, kui moodulid | ei |
 | Dockerfile | image | imperatiivne sees, tulemus muutumatu | korduv build annab sama image, vahemälu jätab tehtu vahele | ei |
 | Docker Compose | konteinerid | deklaratiivne | jah | Docker teab, mis jookseb |
-| GitHub Actions | muudatuste kontroll | deklaratiivne päästik, imperatiivsed sammud | sõltub sammudest | ei |
-| OpenTofu | masinad ja võrgud | deklaratiivne | jah | jah, olekufail |
 
-*Tabel 9.6. Kõik kuus ühe pilguga. Praktikumi Osa 1-s täidad sama tabeli ise, iga lahtri põhjendusega ja viitega oma laborile.*
+*Tabel 9.5. Seni kasutatud tööriistad ühe pilguga. Praktikumi boonusülesandes täidad sarnase tabeli ise ja lisad viite oma laborile.*
 
 Git on kõigi all. Ilma Gitita on iga ülaltoodud fail lihtsalt fail sinu kettal ja sa oled tagasi Mati mälu juures.
 
 ??? question "Kontrolli ennast"
-    1. Firma tahab Proxmoxi 10 uut VM-i, igaühele nginx'i ja seal Docker konteinerit. Milline tööriist teeb millise osa?
+    1. Firma tahab 10 serverisse nginx'i ja igasse serverisse Docker konteinerit. Milline tööriist teeb millise osa?
     2. Miks on Dockerfile tabelis „imperatiivne sees, tulemus muutumatu“?
-
----
-
-## 9. Sild N10-le: OpenTofu
-
-!!! abstract "Miks see oluline on?"
-    Järgmisel kontaktkohtumisel lood OpenTofuga Proxmoxi masina. Kui tead juba, mis on plan, apply ja olekufail, jääb kohtumisel aega katsetamiseks.
-
-OpenTofu kood näeb välja nii (lihtsustatud):
-
-```hcl
-resource "proxmox_vm_qemu" "veeb" {
-  name   = "veeb-01"
-  cores  = 2
-  memory = 2048
-}
-```
-
-See on puhas deklaratsioon: „peab olema üks VM nimega `veeb-01`, 2 tuuma, 2 GB mälu“. Ühtegi sammu pole.
-
-Töövoog on kolm käsku:
-
-| Käsk | Mida teeb | Analoogia |
-|---|---|---|
-| `tofu init` | laeb alla pistikprogrammi (provider), mis oskab Proxmoxiga rääkida | paigaldad Ansible'i kollektsiooni |
-| `tofu plan` | võrdleb koodi, olekufaili ja tegelikku olekut ning **näitab**, mida teeks | `ansible-playbook --check --diff` |
-| `tofu apply` | teeb plaani järgi muudatused ja uuendab olekufaili | `ansible-playbook` |
-
-*Tabel 9.7. OpenTofu töövoog.*
-
-`plan` väljundi viimane rida on alati sama kujuga:
-
-```text
-Plan: 1 to add, 0 to change, 0 to destroy.
-```
-
-Teisel käivitusel, kui midagi pole muutunud:
-
-```text
-No changes. Your infrastructure matches the configuration.
-```
-
-Tunned ära? See on OpenTofu `changed=0`.
-
-OpenTofu ja Terraform on sama keel ja sama töövoog. Terraform muutis 2023. aastal litsentsi, kogukond tegi sellest avatud haru nimega OpenTofu. Kui tööpakkumises on kirjas Terraform, kehtib kõik, mida N10-s õpid. Käsu nimi on ainult erinev: `terraform plan` asemel `tofu plan`.
-
-??? question "Kontrolli ennast"
-    1. Mis vahe on `tofu plan` ja `tofu apply` vahel? Miks on hea neid eraldi käivitada?
-    2. `plan` näitab `0 to add, 0 to change, 1 to destroy`, kuigi sa ei tahtnud midagi kustutada. Mis võis juhtuda?
 
 ---
 
 ## Kokkuvõte
 
-Infrastruktuur koodina tähendab, et kõik, mis serveris ja selle ümber peab olema, on failides Gitis. Imperatiivne kood ütleb, kuidas; deklaratiivne ütleb, mis. Deklaratiivne tööriist võrdleb soovitud olekut tegelikuga ja muudab ainult vahet. Idempotentne tööriist võib joosta mitu korda ja tulemus on sama. Käsitsi muudatus tekitab triivi, mille järgmine jooks üle kirjutab. Ansible ei mäleta, mida ta lõi; OpenTofu mäletab olekufailis. Muutumatu infrastruktuur väldib triivi sellega, et vahetab välja, selle asemel et parandada.
+Infrastruktuur koodina tähendab, et kõik, mis serveris ja selle ümber peab olema, on failides Gitis. Imperatiivne kood ütleb, kuidas; deklaratiivne ütleb, mis. Deklaratiivne tööriist võrdleb soovitud olekut tegelikuga ja muudab ainult vahet. Idempotentne tööriist võib joosta mitu korda ja tulemus on sama. Käsitsi muudatus tekitab triivi, mille järgmine jooks üle kirjutab. Ansible ei mäleta, mida ta eelmisel korral tegi. Muutumatu infrastruktuur väldib triivi sellega, et vahetab välja, selle asemel et parandada.
 
 ### Mõisted ühe pilguga
 
@@ -449,20 +367,18 @@ Infrastruktuur koodina tähendab, et kõik, mis serveris ja selle ümber peab ol
 | **Ühtlustamine** | tööriist võrdleb ja parandab vahet | `docker compose up -d` |
 | **Idempotentsus** | korduv käivitus ei muuda tulemust | `changed=0` |
 | **Triiv** | server erineb kirjeldusest käsitsi muudatuse tõttu | Mati öine parandus |
-| **Olekufail** | tööriista mälu sellest, mida ta lõi | OpenTofu `terraform.tfstate` (N10) |
 | **Muutumatu infrastruktuur** | ei paranda, vaid ehitab uue ja vahetab | Docker image (N5) |
 | **Pets vs cattle** | ravitav lemmikloom ja asendatav kariloom | Märteni server ja konteiner |
 
-*Tabel 9.8. Mõisted ühe pilguga.*
+*Tabel 9.6. Mõisted ühe pilguga.*
 
 ## 🎯 Lõplik kontroll
 
 1. Selgita retsepti ja tellimuse abil imperatiivse ja deklaratiivse vahet. Too näide oma laboritest.
 2. Joonista vihikusse ühtlustamise tsükkel ja kirjuta iga kasti juurde, mis see Docker Compose'i puhul on.
 3. Mis juhtub Mati käsitsi parandusega järgmisel Ansible'i jooksul ja kuidas seda vältida?
-4. Kustutad koodist ühe ressursi. Mis juhtub Ansible'iga ja mis OpenTofuga?
-5. Kas su N7 `ci.yml` on idempotentne? Põhjenda.
-6. Kati firma tahab, et ühegi serveri kaotus ei võtaks rohkem kui tund. Mida sa neile soovitad?
+4. Kustutad playbookist ühe task'i. Mis juhtub serveris?
+5. Kati firma tahab, et ühegi serveri kaotus ei võtaks rohkem kui tund. Mida sa neile soovitad?
 
 ---
 
