@@ -154,17 +154,18 @@ output "ip" {
 
 Iga atribuudi täpse tähenduse leiad provideri dokumentatsioonist: [proxmox_virtual_environment_vm](https://search.opentofu.org/provider/bpg/proxmox/latest/docs/resources/virtual_environment_vm).
 
-| Atribuut | Mida teeb |
-|---|---|
-| `node_name`, `vm_id`, `pool_id` | Proxmoxi sõlm, masina number ja pool, kuhu masin luuakse |
-| `clone` | masin kloonitakse mallist `template_id` (AlmaLinux). `full = false` teeb lingitud koopia: uus masin kasutab malli ketast ja salvestab ainult erinevused, seega valmib see mõne sekundiga |
-| `cpu.type` | AlmaLinux 9 vajab protsessori tüüpi vähemalt `x86-64-v2`. Vaikimisi tüübiga masin ei käivitu |
-| `memory.dedicated` | mälu megabaitides |
-| `agent` | Proxmox küsib masinas töötavalt guest agent'ilt IP-aadressi. Ilma selleta ei tea OpenTofu masina IP-d |
-| `stop_on_destroy` | kustutamisel lülitatakse masin kohe välja, OpenTofu ei oota korrektset seiskamist |
-| `output "ip"` | `ipv4_addresses` on iga võrguliidese aadresside nimekiri. Esimene liides on `lo` (127.0.0.1), seega on masina IP teise liidese (`[1]`) esimene aadress (`[0]`) |
+??? note "Tabel 10.6. Atribuudid failis `vm.tf`"
+    | Atribuut | Mida teeb |
+    |---|---|
+    | `node_name`, `vm_id`, `pool_id` | Proxmoxi sõlm, masina number ja pool, kuhu masin luuakse |
+    | `clone` | masin kloonitakse mallist `template_id` (AlmaLinux). `full = false` teeb lingitud koopia: uus masin kasutab malli ketast ja salvestab ainult erinevused, seega valmib see mõne sekundiga |
+    | `cpu.type` | AlmaLinux 9 vajab protsessori tüüpi vähemalt `x86-64-v2`. Vaikimisi tüübiga masin ei käivitu |
+    | `memory.dedicated` | mälu megabaitides |
+    | `agent` | Proxmox küsib masinas töötavalt guest agent'ilt IP-aadressi. Ilma selleta ei tea OpenTofu masina IP-d |
+    | `stop_on_destroy` | kustutamisel lülitatakse masin kohe välja, OpenTofu ei oota korrektset seiskamist |
+    | `output "ip"` | `ipv4_addresses` on iga võrguliidese aadresside nimekiri. Esimene liides on `lo` (127.0.0.1), seega on masina IP teise liidese (`[1]`) esimene aadress (`[0]`) |
 
-*Tabel 10.6. Atribuudid failis `vm.tf`.*
+    *Tabel 10.6. Atribuudid failis `vm.tf`.*
 
 ### 2.2 Provideri allalaadimine
 

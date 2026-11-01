@@ -53,11 +53,12 @@ Väljundi lõpus peab olema `3 passed`.
 
 Compose'i fail kirjeldab, mis konteinerid koos käivitatakse. Kirjuta repositooriumi juurkausta fail `compose.yaml` N6 praktikumi põhjal. Vaja on ainult kaht teenust, `web` ja `db`. Nginx'i ei ole siin vaja. Erinevused N6 failist:
 
-| N6 praktikumis | Siin |
-|---|---|
-| `build: ./app` | `build: ./flask` |
-| `depends_on: [db]` | `db` vajab [`healthcheck`](https://docs.docker.com/reference/compose-file/services/#healthcheck)-i (`pg_isready`) ja `web` ootab tingimust `condition: service_healthy` (N6 lisaülesanne 1) |
-| parool failist `.env` | sama: `${POSTGRES_PASSWORD}`, `${POSTGRES_DB}` |
+??? note "Tabel"
+    | N6 praktikumis | Siin |
+    |---|---|
+    | `build: ./app` | `build: ./flask` |
+    | `depends_on: [db]` | `db` vajab [`healthcheck`](https://docs.docker.com/reference/compose-file/services/#healthcheck)-i (`pg_isready`) ja `web` ootab tingimust `condition: service_healthy` (N6 lisaülesanne 1) |
+    | parool failist `.env` | sama: `${POSTGRES_PASSWORD}`, `${POSTGRES_DB}` |
 
 Võti `healthcheck` laseb Compose'il kontrollida, kas andmebaas on päringuteks valmis. Ilma selleta võib `web` käivituda enne, kui andmebaas ühendusi vastu võtab.
 

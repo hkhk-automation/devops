@@ -88,16 +88,17 @@ AWS-i ressursse kirjeldab provider [`hashicorp/aws`](https://search.opentofu.org
 
 N3–N8 kasutasid Ansible'it. Mõlemad tööriistad on deklaratiivsed: kirjeldad soovitud olekut ja tööriist teeb ainult vajalikud muudatused. Erinevus on selles, mida nad haldavad. Ansible eeldab, et masin on juba olemas ja sellesse saab SSH-ga sisse logida. OpenTofu loob masina ise platvormi API kaudu ega logi masinasse kunagi sisse.
 
-| | Ansible | OpenTofu |
-|---|---|---|
-| Mida haldab | masina sisu: paketid, failid, teenused, kasutajad | masinat ennast: kas see on olemas, mitu tuuma, kui palju mälu, mis võrgus |
-| Kuidas ühendub | SSH kaudu masinasse | platvormi API kaudu (Proxmox, AWS, Azure) |
-| Mida vajab masinas | SSH-d, Pythonit ja kasutajat | mitte midagi, masinat ei pruugi veel olla |
-| Järjekord | ülesanded käivad playbook'is kirjutatud järjekorras | OpenTofu arvutab järjekorra viidete järgi (võrk enne masinat) |
-| Mälu | ei mäleta eelmist käivitust | olekufail `terraform.tfstate` |
-| Tüüpiline järjekord | teine samm: seadistab masina | esimene samm: loob masina |
+??? note "Tabel 10.1. Ansible ja OpenTofu haldavad eri kihti. Tavaliselt kasutatakse neid koos"
+    | | Ansible | OpenTofu |
+    |---|---|---|
+    | Mida haldab | masina sisu: paketid, failid, teenused, kasutajad | masinat ennast: kas see on olemas, mitu tuuma, kui palju mälu, mis võrgus |
+    | Kuidas ühendub | SSH kaudu masinasse | platvormi API kaudu (Proxmox, AWS, Azure) |
+    | Mida vajab masinas | SSH-d, Pythonit ja kasutajat | mitte midagi, masinat ei pruugi veel olla |
+    | Järjekord | ülesanded käivad playbook'is kirjutatud järjekorras | OpenTofu arvutab järjekorra viidete järgi (võrk enne masinat) |
+    | Mälu | ei mäleta eelmist käivitust | olekufail `terraform.tfstate` |
+    | Tüüpiline järjekord | teine samm: seadistab masina | esimene samm: loob masina |
 
-*Tabel 10.1. Ansible ja OpenTofu haldavad eri kihti. Tavaliselt kasutatakse neid koos.*
+    *Tabel 10.1. Ansible ja OpenTofu haldavad eri kihti. Tavaliselt kasutatakse neid koos.*
 
 <figure markdown="span">
   ![Vasakul ülal OpenTofu, mis loob API kaudu virtuaalmasina: tuumad, mälu, ketas, võrgukaart, mall. OpenTofu output annab IP-aadressi, mis läheb Ansible'i inventory'sse. Vasakul all Ansible, mis logib SSH-ga masinasse ja seadistab selle sisu: paketid, konfiguratsioonifailid, teenused, kasutajad](../images/n10_tofu_ansible.svg)
@@ -154,15 +155,16 @@ Rida `resource "proxmox_virtual_environment_vm" "veeb"` sisaldab kahte nime. Esi
 
 Kõik praktikumi failid kasutavad viit tüüpi plokke:
 
-| Plokk | Mida kirjeldab | Praktikumi fail |
-|---|---|---|
-| `terraform` | OpenTofu versioon ja providerid, mida kood vajab | `versions.tf` |
-| `provider` | kuidas providerid süsteemiga ühenduvad (aadress, token) | `versions.tf` |
-| `variable` | sisend, mille väärtus tuleb väljastpoolt koodi | `variables.tf` |
-| `resource` | hallatav objekt: masin, võrk, fail | `vm.tf` |
-| `output` | väärtus, mille OpenTofu pärast `apply` käsku välja trükib | `vm.tf` |
+??? note "Tabel 10.2. HCL-i põhiplokid"
+    | Plokk | Mida kirjeldab | Praktikumi fail |
+    |---|---|---|
+    | `terraform` | OpenTofu versioon ja providerid, mida kood vajab | `versions.tf` |
+    | `provider` | kuidas providerid süsteemiga ühenduvad (aadress, token) | `versions.tf` |
+    | `variable` | sisend, mille väärtus tuleb väljastpoolt koodi | `variables.tf` |
+    | `resource` | hallatav objekt: masin, võrk, fail | `vm.tf` |
+    | `output` | väärtus, mille OpenTofu pärast `apply` käsku välja trükib | `vm.tf` |
 
-*Tabel 10.2. HCL-i põhiplokid.*
+    *Tabel 10.2. HCL-i põhiplokid.*
 
 `var.kasutaja` viitab muutujale, `proxmox_virtual_environment_vm.veeb.ipv4_addresses` viitab ressursi atribuudile. Atribuudi väärtus selgub alles siis, kui masin on olemas: masina IP-aadressi saab OpenTofu Proxmoxi kaudu masinas töötavalt guest agent'ilt.
 
@@ -191,14 +193,15 @@ graph LR
 
 **`tofu plan`** küsib Proxmoxilt iga olekufailis oleva ressursi tegeliku oleku, võrdleb seda koodiga ja näitab, mida ta muudaks. Plaan ei muuda midagi. Iga ressursi ees on märk:
 
-| Märk | Tähendus | Näide |
-|---|---|---|
-| `+` | luuakse | uus masin |
-| `~` | muudetakse kohapeal | mälu 1024 → 2048 |
-| `-` | kustutatakse | kirjeldus eemaldati koodist |
-| `-/+` | kustutatakse ja luuakse uuesti | muutus atribuut, mida kohapeal muuta ei saa (näiteks `vm_id`) |
+??? note "Tabel 10.3. Plaani märgid"
+    | Märk | Tähendus | Näide |
+    |---|---|---|
+    | `+` | luuakse | uus masin |
+    | `~` | muudetakse kohapeal | mälu 1024 → 2048 |
+    | `-` | kustutatakse | kirjeldus eemaldati koodist |
+    | `-/+` | kustutatakse ja luuakse uuesti | muutus atribuut, mida kohapeal muuta ei saa (näiteks `vm_id`) |
 
-*Tabel 10.3. Plaani märgid.*
+    *Tabel 10.3. Plaani märgid.*
 
 Plaani viimane rida võtab kokku: `Plan: 1 to add, 0 to change, 0 to destroy.` Kui muuta pole midagi, on väljundis `No changes. Your infrastructure matches the configuration.` See vastab Ansible'i `changed=0` reale.
 
@@ -223,15 +226,16 @@ Olekufail ei lähe Giti. Selles võivad olla saladused (bpg provider salvestab n
 
 Lukufail `.terraform.lock.hcl` läheb Giti. Selles on provideri versioon ja kontrollsummad. Kui kolleeg või CI käivitab `tofu init`, saab ta täpselt sama versiooni. Sama rolli täidab Pythonis `requirements.txt` koos versiooninumbritega.
 
-| Fail või kaust | Mis seal on | Gitis? |
-|---|---|---|
-| `*.tf` | infrastruktuuri kirjeldus | jah |
-| `.terraform.lock.hcl` | provideri versioon ja kontrollsummad | jah |
-| `.terraform/` | allalaetud provider (kümned MB) | ei |
-| `terraform.tfstate` | mida OpenTofu lõi | ei |
-| `terraform.tfvars` | muutujate väärtused, sh API token | ei |
+??? note "Tabel 10.4. Mis läheb Giti. Starteri `.gitignore` sisaldab juba õigeid ridu"
+    | Fail või kaust | Mis seal on | Gitis? |
+    |---|---|---|
+    | `*.tf` | infrastruktuuri kirjeldus | jah |
+    | `.terraform.lock.hcl` | provideri versioon ja kontrollsummad | jah |
+    | `.terraform/` | allalaetud provider (kümned MB) | ei |
+    | `terraform.tfstate` | mida OpenTofu lõi | ei |
+    | `terraform.tfvars` | muutujate väärtused, sh API token | ei |
 
-*Tabel 10.4. Mis läheb Giti. Starteri `.gitignore` sisaldab juba õigeid ridu.*
+    *Tabel 10.4. Mis läheb Giti. Starteri `.gitignore` sisaldab juba õigeid ridu.*
 
 ??? question "Kontrolli ennast"
     1. Kustutad kogemata faili `terraform.tfstate`. Masin on Proxmoxis alles. Mida näitab järgmine `tofu plan`?
@@ -272,17 +276,18 @@ Spacelift oskab käivitada ka Terraformi, Ansible'it, Pulumit ja Kubernetese man
 
 OpenTofu kirjeldab infrastruktuuri `.tf` failides ja haldab seda providerite kaudu, meie puhul Proxmoxi API kaudu. Töövoog on `init`, `plan`, `apply` ja lõpuks `destroy`. Plaan näitab enne muutmist, mida luuakse (`+`), muudetakse (`~`) ja kustutatakse (`-`). OpenTofu mäletab olekufailis, mida ta lõi, ja võrdleb iga kord kolme asja: koodi, olekufaili ja Proxmoxi tegelikku olekut. Olekufail ja token ei lähe Giti, lukufail läheb.
 
-| Mõiste | Selgitus |
-|---|---|
-| **provider** | programm, mis tõlgib kirjelduse ühe süsteemi API päringuteks (`bpg/proxmox`) |
-| **resource** | hallatav objekt, näiteks virtuaalmasin |
-| **variable** | sisend, mille väärtus on failis `terraform.tfvars` |
-| **output** | väärtus, mille OpenTofu pärast `apply` käsku trükib (masina IP) |
-| **plan** | võrdlus ja muudatuste nimekiri ilma muutmata |
-| **olekufail** | `terraform.tfstate`, OpenTofu mälu |
-| **lukufail** | `.terraform.lock.hcl`, provideri versioon |
+??? note "Tabel 10.5. Mõisted"
+    | Mõiste | Selgitus |
+    |---|---|
+    | **provider** | programm, mis tõlgib kirjelduse ühe süsteemi API päringuteks (`bpg/proxmox`) |
+    | **resource** | hallatav objekt, näiteks virtuaalmasin |
+    | **variable** | sisend, mille väärtus on failis `terraform.tfvars` |
+    | **output** | väärtus, mille OpenTofu pärast `apply` käsku trükib (masina IP) |
+    | **plan** | võrdlus ja muudatuste nimekiri ilma muutmata |
+    | **olekufail** | `terraform.tfstate`, OpenTofu mälu |
+    | **lukufail** | `.terraform.lock.hcl`, provideri versioon |
 
-*Tabel 10.5. Mõisted.*
+    *Tabel 10.5. Mõisted.*
 
 ??? question "Lõplik kontroll"
     1. Kirjelda oma sõnadega, mida teeb `tofu plan` enne, kui ta midagi välja trükib.

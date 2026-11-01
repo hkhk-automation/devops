@@ -41,13 +41,14 @@ Repositooriumis on kaust `kodekloud/` ja selles `.pdf`, `.png` või `.jpg` fail.
 
 Tähtaja ja automaatkontrolli tulemuse näed Classroom 50-s.
 
-| Kontroll | Punktid |
-|---|---|
-| KodeKloudi sertifikaat või ekraanipilt kaustas `kodekloud/` | 90 |
-| Nimi README-s | 10 |
-| Boonusülesanded | 0 |
+??? note "Tabel 9.9. Automaatkontroll"
+    | Kontroll | Punktid |
+    |---|---|
+    | KodeKloudi sertifikaat või ekraanipilt kaustas `kodekloud/` | 90 |
+    | Nimi README-s | 10 |
+    | Boonusülesanded | 0 |
 
-*Tabel 9.9. Automaatkontroll*
+    *Tabel 9.9. Automaatkontroll*
 
 ## Boonusülesanded
 

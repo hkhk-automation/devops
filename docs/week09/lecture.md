@@ -33,14 +33,15 @@ Mati mõtles. „Nädal? Kui ma mäletan kõike.“
 
 See vastus on põhjus, miks see kursus olemas on. Kõik, mida oled kaheksa nädalaga teinud, on üks ja sama mõte erinevate tööriistadega: **kirjuta üles, mis peab olema, ja lase masinal see tekitada.** Seda mõtet nimetatakse **infrastruktuur koodina** (Infrastructure as Code, IaC).
 
-| Nädal | Tööriist | Mida sa kirja panid | Sinu fail |
-|---|---|---|---|
-| N2 | Bash, Git | käsud järjest; muudatuste ajalugu | `monitor.sh` |
-| N3-4 | Ansible | mis peab serveris olema | `nginx.yml`, `templates/*.j2` |
-| N5 | Docker | kuidas image ehitada | `Dockerfile` |
-| N6 | Docker Compose | millised konteinerid koos töötavad | `docker-compose.yml` |
+??? note "Tabel 9.1. Iga nädal panid sa midagi koodi kujul kirja. Täna vaatame, mille poolest need kirjapanekud erinevad"
+    | Nädal | Tööriist | Mida sa kirja panid | Sinu fail |
+    |---|---|---|---|
+    | N2 | Bash, Git | käsud järjest; muudatuste ajalugu | `monitor.sh` |
+    | N3-4 | Ansible | mis peab serveris olema | `nginx.yml`, `templates/*.j2` |
+    | N5 | Docker | kuidas image ehitada | `Dockerfile` |
+    | N6 | Docker Compose | millised konteinerid koos töötavad | `docker-compose.yml` |
 
-*Tabel 9.1. Iga nädal panid sa midagi koodi kujul kirja. Täna vaatame, mille poolest need kirjapanekud erinevad.*
+    *Tabel 9.1. Iga nädal panid sa midagi koodi kujul kirja. Täna vaatame, mille poolest need kirjapanekud erinevad.*
 
 Fail on Gitis, seega on sellel ajalugu ja seda saab üle vaadata. Mati mälu ei saa kumbagi.
 
@@ -141,12 +142,13 @@ N6-s kirjutasid `docker-compose.yml` faili ja käivitasid `docker compose up -d`
 
 `Running` tähendab: „see on juba olemas ja sobib, ma ei puutunud seda“. Kui kustutad ühe konteineri käsitsi ja käivitad `up -d` uuesti, näeb Compose vahet ja loob ainult puuduva. Praktikumis teed täpselt seda.
 
-| Tööriist | Soovitud olek | Tegelik olek |
-|---|---|---|
-| Ansible | playbook | mis on serveris (paketid, failid, teenused) |
-| Docker Compose | `compose.yaml` | mis konteinerid jooksevad |
+??? note "Tabel 9.2. Sama tsükkel, erinev maailm"
+    | Tööriist | Soovitud olek | Tegelik olek |
+    |---|---|---|
+    | Ansible | playbook | mis on serveris (paketid, failid, teenused) |
+    | Docker Compose | `compose.yaml` | mis konteinerid jooksevad |
 
-*Tabel 9.2. Sama tsükkel, erinev maailm.*
+    *Tabel 9.2. Sama tsükkel, erinev maailm.*
 
 ??? question "Kontrolli ennast"
     1. Selgita termostaadi näitel, mis on soovitud olek ja mis tegelik olek.
@@ -173,14 +175,15 @@ Meenuta N3 praktikumi. Käivitasid `nginx.yml` playbooki kolm korda:
 
 Idempotentsus ei tule tasuta. Ansible'i moodulid (`package`, `file`, `copy`) on kirjutatud nii, et nad kontrollivad enne muutmist. `shell` ja `command` moodulid ei tea, mida su käsk teeb, ja näitavad iga kord `changed`. Bash'is saad idempotentsust ise ehitada:
 
-| Mitte-idempotentne | Idempotentne |
-|---|---|
-| `mkdir /opt/app` | `mkdir -p /opt/app` |
-| `echo "rida" >> fail` | `grep -qx "rida" fail \|\| echo "rida" >> fail` |
-| `docker run --name web nginx` | `docker ps -a --format '{{.Names}}' \| grep -qx web \|\| docker run --name web nginx` |
-| `useradd kati` | `id kati \|\| useradd kati` |
+??? note "Tabel 9.3. Bash-skripti saab teha idempotentseks, kui lisad enne iga muutust kontrolli. Deklaratiivne tööriist teeb seda sinu eest"
+    | Mitte-idempotentne | Idempotentne |
+    |---|---|
+    | `mkdir /opt/app` | `mkdir -p /opt/app` |
+    | `echo "rida" >> fail` | `grep -qx "rida" fail \|\| echo "rida" >> fail` |
+    | `docker run --name web nginx` | `docker ps -a --format '{{.Names}}' \| grep -qx web \|\| docker run --name web nginx` |
+    | `useradd kati` | `id kati \|\| useradd kati` |
 
-*Tabel 9.3. Bash-skripti saab teha idempotentseks, kui lisad enne iga muutust kontrolli. Deklaratiivne tööriist teeb seda sinu eest.*
+    *Tabel 9.3. Bash-skripti saab teha idempotentseks, kui lisad enne iga muutust kontrolli. Deklaratiivne tööriist teeb seda sinu eest.*
 
 ??? question "Kontrolli ennast"
     1. Too oma elust üks idempotentne ja üks mitte-idempotentne tegevus.
@@ -253,14 +256,15 @@ Mati server on **muudetav** (mutable) infrastruktuur. See on üks ja sama masin 
 
 Inglise keeles räägitakse sellest **lemmikloomade ja kariloomade** (pets vs cattle) võrdlusega:
 
-| | Lemmikloom (pet) | Kariloom (cattle) |
-|---|---|---|
-| Nimi | `mati-veeb-01`, kõik teavad teda | `web-7f3a`, number |
-| Kui jääb haigeks | ravid, ööd läbi | asendad uuega |
-| Kuidas tekkis | käsitsi, aastate jooksul | koodist, minutitega |
-| Näide kursusel | Märteni server N2-s | Docker konteiner N5-6 |
+??? note "Tabel 9.4. Lemmikloom ja kariloom. Mida rohkem su masinad on kariloomad, seda vähem on triivi"
+    | | Lemmikloom (pet) | Kariloom (cattle) |
+    |---|---|---|
+    | Nimi | `mati-veeb-01`, kõik teavad teda | `web-7f3a`, number |
+    | Kui jääb haigeks | ravid, ööd läbi | asendad uuega |
+    | Kuidas tekkis | käsitsi, aastate jooksul | koodist, minutitega |
+    | Näide kursusel | Märteni server N2-s | Docker konteiner N5-6 |
 
-*Tabel 9.4. Lemmikloom ja kariloom. Mida rohkem su masinad on kariloomad, seda vähem on triivi.*
+    *Tabel 9.4. Lemmikloom ja kariloom. Mida rohkem su masinad on kariloomad, seda vähem on triivi.*
 
 <figure markdown="span">
 ```mermaid
@@ -307,14 +311,15 @@ graph TB
   <figcaption>Joonis 9.5. Kolm kihti ja Git, mis hoiab kõigi kolme kirjelduste ajalugu (Talvik, 2026).</figcaption>
 </figure>
 
-| Tööriist | Kiht | Lähenemine | Idempotentne | Mäletab olekut |
-|---|---|---|---|---|
-| Bash skript | ükskõik mis | imperatiivne | ainult kui ise ehitad | ei |
-| Ansible | serveri konfiguratsioon | deklaratiivne (moodulid) | jah, kui moodulid | ei |
-| Dockerfile | image | imperatiivne sees, tulemus muutumatu | korduv build annab sama image, vahemälu jätab tehtu vahele | ei |
-| Docker Compose | konteinerid | deklaratiivne | jah | Docker teab, mis jookseb |
+??? note "Tabel 9.5. Seni kasutatud tööriistad ühe pilguga. Praktikumi boonusülesandes täidad sarnase tabeli ise ja lisad viite oma laborile"
+    | Tööriist | Kiht | Lähenemine | Idempotentne | Mäletab olekut |
+    |---|---|---|---|---|
+    | Bash skript | ükskõik mis | imperatiivne | ainult kui ise ehitad | ei |
+    | Ansible | serveri konfiguratsioon | deklaratiivne (moodulid) | jah, kui moodulid | ei |
+    | Dockerfile | image | imperatiivne sees, tulemus muutumatu | korduv build annab sama image, vahemälu jätab tehtu vahele | ei |
+    | Docker Compose | konteinerid | deklaratiivne | jah | Docker teab, mis jookseb |
 
-*Tabel 9.5. Seni kasutatud tööriistad ühe pilguga. Praktikumi boonusülesandes täidad sarnase tabeli ise ja lisad viite oma laborile.*
+    *Tabel 9.5. Seni kasutatud tööriistad ühe pilguga. Praktikumi boonusülesandes täidad sarnase tabeli ise ja lisad viite oma laborile.*
 
 Git on kõigi all. Ilma Gitita on iga ülaltoodud fail lihtsalt fail sinu kettal ja sa oled tagasi Mati mälu juures.
 
@@ -328,18 +333,19 @@ Infrastruktuur koodina tähendab, et kõik, mis serveris ja selle ümber peab ol
 
 ### Mõisted ühe pilguga
 
-| Mõiste | Selgitus | Kus nägid |
-|---|---|---|
-| **Imperatiivne** | kirjeldad samme | `monitor.sh` |
-| **Deklaratiivne** | kirjeldad tulemust | `nginx.yml`, `docker-compose.yml` |
-| **Soovitud olek** | mis peab olema | fail Gitis |
-| **Ühtlustamine** | tööriist võrdleb ja parandab vahet | `docker compose up -d` |
-| **Idempotentsus** | korduv käivitus ei muuda tulemust | `changed=0` |
-| **Triiv** | server erineb kirjeldusest käsitsi muudatuse tõttu | Mati öine parandus |
-| **Muutumatu infrastruktuur** | ei paranda, vaid ehitab uue ja vahetab | Docker image (N5) |
-| **Pets vs cattle** | ravitav lemmikloom ja asendatav kariloom | Märteni server ja konteiner |
+??? note "Tabel 9.6. Mõisted ühe pilguga"
+    | Mõiste | Selgitus | Kus nägid |
+    |---|---|---|
+    | **Imperatiivne** | kirjeldad samme | `monitor.sh` |
+    | **Deklaratiivne** | kirjeldad tulemust | `nginx.yml`, `docker-compose.yml` |
+    | **Soovitud olek** | mis peab olema | fail Gitis |
+    | **Ühtlustamine** | tööriist võrdleb ja parandab vahet | `docker compose up -d` |
+    | **Idempotentsus** | korduv käivitus ei muuda tulemust | `changed=0` |
+    | **Triiv** | server erineb kirjeldusest käsitsi muudatuse tõttu | Mati öine parandus |
+    | **Muutumatu infrastruktuur** | ei paranda, vaid ehitab uue ja vahetab | Docker image (N5) |
+    | **Pets vs cattle** | ravitav lemmikloom ja asendatav kariloom | Märteni server ja konteiner |
 
-*Tabel 9.6. Mõisted ühe pilguga.*
+    *Tabel 9.6. Mõisted ühe pilguga.*
 
 ## 🎯 Lõplik kontroll
 

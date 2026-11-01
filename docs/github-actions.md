@@ -401,16 +401,17 @@ Avalikus repositooriumis on GitHubi runnerid tasuta. Privaatses repositooriumis 
 
 Dokumentatsioon on inglise keeles, aga võtmete nimed on samad, mida kirjutad faili. Seetõttu leiad need lehelt otsinguga (++ctrl+f++). Veebiliidese klõpsud (seaded, saladused, käsitsi käivitamine) on ametlikel How-to lehtedel piltidega.
 
-| Osa | Mida sealt leiad |
-|---|---|
-| [Get started → Quickstart](https://docs.github.com/en/actions/get-started/quickstart) | esimene töövoog umbes 5 minutiga |
-| [Concepts](https://docs.github.com/en/actions/concepts) | mõisted: töövood, runnerid, turvalisus |
-| [How-tos](https://docs.github.com/en/actions/how-tos) | kuidas midagi teha: töövoo kirjutamine, saladused, paigaldamine, vigade otsimine |
-| [Workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) | kõik töövoo võtmed |
-| [Events that trigger workflows](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows) | kõik sündmused ja tegevuse tüübid |
-| [Contexts](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts) | mida saab lugeda kujul `${{ github.* }}`, `${{ env.* }}`, `${{ secrets.* }}` |
-| [GitHub Marketplace → Actions](https://github.com/marketplace?type=actions) | valmis action'id, nende `with:` parameetrid on action'i README-s |
+??? note "Tabel GA.4. GitHub Actionsi dokumentatsiooni osad"
+    | Osa | Mida sealt leiad |
+    |---|---|
+    | [Get started → Quickstart](https://docs.github.com/en/actions/get-started/quickstart) | esimene töövoog umbes 5 minutiga |
+    | [Concepts](https://docs.github.com/en/actions/concepts) | mõisted: töövood, runnerid, turvalisus |
+    | [How-tos](https://docs.github.com/en/actions/how-tos) | kuidas midagi teha: töövoo kirjutamine, saladused, paigaldamine, vigade otsimine |
+    | [Workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) | kõik töövoo võtmed |
+    | [Events that trigger workflows](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows) | kõik sündmused ja tegevuse tüübid |
+    | [Contexts](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts) | mida saab lugeda kujul `${{ github.* }}`, `${{ env.* }}`, `${{ secrets.* }}` |
+    | [GitHub Marketplace → Actions](https://github.com/marketplace?type=actions) | valmis action'id, nende `with:` parameetrid on action'i README-s |
 
-*Tabel GA.4. GitHub Actionsi dokumentatsiooni osad.*
+    *Tabel GA.4. GitHub Actionsi dokumentatsiooni osad.*
 
 Dokumentatsiooni osade pikem kirjeldus on [N7 loengu §6](week07/lecture.md#6-kust-leida-vastus-github-actionsi-dokumentatsioon).

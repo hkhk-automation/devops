@@ -35,13 +35,14 @@ Meenuta N7 sõnu. **Töövoog** (workflow) on fail kaustas `.github/workflows/`.
 
 N7 loengu tabelis 7.3 olid kolm astet:
 
-| Aste | Mida teeb | Millal |
-|---|---|---|
-| CI (continuous integration) | kontrollib iga muudatust automaatselt | N7 |
-| pidev tarne (continuous delivery) | iga roheline muudatus on pakitud ja paigaldamiseks valmis | täna |
-| pidev paigaldus (continuous deployment) | paigaldab ka ise, inimest vahel pole | N13 |
+??? note "Tabel 8.1. CI ja CD astmed"
+    | Aste | Mida teeb | Millal |
+    |---|---|---|
+    | CI (continuous integration) | kontrollib iga muudatust automaatselt | N7 |
+    | pidev tarne (continuous delivery) | iga roheline muudatus on pakitud ja paigaldamiseks valmis | täna |
+    | pidev paigaldus (continuous deployment) | paigaldab ka ise, inimest vahel pole | N13 |
 
-*Tabel 8.1. CI ja CD astmed.*
+    *Tabel 8.1. CI ja CD astmed.*
 
 Täna teeme pideva tarne. Konveier ehitab image'i ja paneb selle registrisse. Paigalduse käivitab inimene.
 
@@ -86,14 +87,15 @@ GitHub nimetab image'it **paketiks** (package). Pakett on repositooriumi avalehe
 
 Registreid on palju. Konveier logib igasse neist sisse veidi teisiti:
 
-| Register | Kes haldab | Kuidas konveier sisse logib | Millal valitakse |
-|---|---|---|---|
-| [Docker Hub](https://docs.docker.com/docker-hub/) | Docker Inc | [juurdepääsutoken](https://docs.docker.com/security/for-developers/access-tokens/) GitHub Secretis ([näide](https://docs.docker.com/build/ci/github-actions/)) | avalikud image'id, mida kõik saavad tõmmata |
-| GHCR | GitHub | `GITHUB_TOKEN`, eraldi saladust pole | kood ja konveier on GitHubis |
-| [AWS ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html) | Amazon | IAM-roll [OIDC kaudu](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws), siis [`amazon-ecr-login`](https://github.com/aws-actions/amazon-ecr-login) | serverid töötavad AWS-is |
-| [GitLab Container Registry](https://docs.gitlab.com/user/packages/container_registry/build_and_push_images/) | GitLab | muutujad `CI_REGISTRY_USER` ja `CI_REGISTRY_PASSWORD`, mille GitLab annab igale tööle | kood ja konveier on GitLabis |
+??? note "Tabel 8.2. Levinud registrid"
+    | Register | Kes haldab | Kuidas konveier sisse logib | Millal valitakse |
+    |---|---|---|---|
+    | [Docker Hub](https://docs.docker.com/docker-hub/) | Docker Inc | [juurdepääsutoken](https://docs.docker.com/security/for-developers/access-tokens/) GitHub Secretis ([näide](https://docs.docker.com/build/ci/github-actions/)) | avalikud image'id, mida kõik saavad tõmmata |
+    | GHCR | GitHub | `GITHUB_TOKEN`, eraldi saladust pole | kood ja konveier on GitHubis |
+    | [AWS ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html) | Amazon | IAM-roll [OIDC kaudu](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws), siis [`amazon-ecr-login`](https://github.com/aws-actions/amazon-ecr-login) | serverid töötavad AWS-is |
+    | [GitLab Container Registry](https://docs.gitlab.com/user/packages/container_registry/build_and_push_images/) | GitLab | muutujad `CI_REGISTRY_USER` ja `CI_REGISTRY_PASSWORD`, mille GitLab annab igale tööle | kood ja konveier on GitLabis |
 
-*Tabel 8.2. Levinud registrid.*
+    *Tabel 8.2. Levinud registrid.*
 
 **OIDC** tähendab, et konveier ei hoia AWS-i parooli üldse. GitHub annab käivitusele lühiajalise tõendi ja AWS vahetab selle ajutiste õiguste vastu. Põhimõte on sama mis `GITHUB_TOKEN`-il: ajutine võti on parem kui püsiv saladus.
 
@@ -105,13 +107,14 @@ Registreid on palju. Konveier logib igasse neist sisse veidi teisiti:
 
 **Tag** on image'i nimi pärast koolonit. Ühel image'il võib olla mitu tag'i. Tag'i saab hiljem teisele image'ile ümber tõsta.
 
-| Tag | Näide | Mida ütleb |
-|---|---|---|
-| `latest` | `:latest` | viimane ehitatud image; homme võib see olla teine |
-| commit'i lühiräsi | `:3f2a9c1` | täpselt see commit, millest image ehitati |
-| versioon | `:v1.0.0` | väljalase, mille inimene märkis (kodutöö) |
+??? note "Tabel 8.3. Tag'id, mida N8 konveier kasutab"
+    | Tag | Näide | Mida ütleb |
+    |---|---|---|
+    | `latest` | `:latest` | viimane ehitatud image; homme võib see olla teine |
+    | commit'i lühiräsi | `:3f2a9c1` | täpselt see commit, millest image ehitati |
+    | versioon | `:v1.0.0` | väljalase, mille inimene märkis (kodutöö) |
 
-*Tabel 8.3. Tag'id, mida N8 konveier kasutab.*
+    *Tabel 8.3. Tag'id, mida N8 konveier kasutab.*
 
 Konveier paneb igale image'ile kaks tag'i: räsi ja `latest`. Räsi tuleb muutujast `GITHUB_SHA`. Kirjutis `${GITHUB_SHA::7}` võtab sellest seitse esimest märki. Sama lühiräsi näitab ka `git log --oneline`.
 
@@ -208,17 +211,18 @@ Praktikumi konveier on kirjutatud, aga katki. Kõige aeglasem viis on muuta ridu
 3. **Tõend** on kontroll, mis oletuse kinnitab või ümber lükkab. Tee see enne, kui midagi muudad.
 4. **Parandus** on üks muudatus. Pärast seda vaata sama sümptomit uuesti.
 
-| Kus vaadata | Mida näitab |
-|---|---|
-| Actions → käivitus → töö → samm | veateade ja sammu väljund |
-| töö samm **Set up job**, lõik `GITHUB_TOKEN Permissions` | mis õigused tokenil olid |
-| käivituse lehel tööde skeem | kas tööde vahel on nool (`needs`) |
-| käivituse pealkirja all sündmus ja haru | mis töövoo käivitas |
-| **Packages** → pakett → tag'id | mis image'id registrisse jõudsid |
-| `docker ps`, veerg PORTS | kuhu port on suunatud |
-| `docker logs <konteiner>` | mida rakendus konteineris ise ütleb |
+??? note "Tabel 8.4. Kust leida tõend"
+    | Kus vaadata | Mida näitab |
+    |---|---|
+    | Actions → käivitus → töö → samm | veateade ja sammu väljund |
+    | töö samm **Set up job**, lõik `GITHUB_TOKEN Permissions` | mis õigused tokenil olid |
+    | käivituse lehel tööde skeem | kas tööde vahel on nool (`needs`) |
+    | käivituse pealkirja all sündmus ja haru | mis töövoo käivitas |
+    | **Packages** → pakett → tag'id | mis image'id registrisse jõudsid |
+    | `docker ps`, veerg PORTS | kuhu port on suunatud |
+    | `docker logs <konteiner>` | mida rakendus konteineris ise ütleb |
 
-*Tabel 8.4. Kust leida tõend.*
+    *Tabel 8.4. Kust leida tõend.*
 
 Kõik vead ei tee konveierit punaseks. Kui katkine kood jõuab registrisse, on kõik tööd rohelised. Sellist viga näed ainult siis, kui kontrollid tulemust: mis on registris ja mis töötab serveris.
 
@@ -244,15 +248,16 @@ Jenkinsi konveier on repositooriumi failis `Jenkinsfile` ([Jenkinsfile'i süntak
 
 **Litsents** ütleb, mida tarkvaraga tohib teha: kas seda tohib tasuta kasutada, muuta, oma serverisse paigaldada ja edasi müüa. Firma jaoks on see sama oluline kui tehnilised omadused.
 
-| Tööriist | Litsents | Mida see firmale tähendab |
-|---|---|---|
-| Jenkins | [MIT](https://github.com/jenkinsci/jenkins/blob/master/LICENSE.txt) | tohib tasuta kasutada, muuta ja edasi müüa |
-| GitLab Community Edition | [MIT](https://gitlab.com/gitlab-org/gitlab/-/blob/master/LICENSE) | nagu Jenkins: tasuta ja vaba |
-| GitLab Enterprise Edition | [kommertslitsents](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/LICENSE) | tootmises tohib kasutada ainult tasulise tellimusega |
-| GitHub Actions (teenus) | suletud, GitHubi kasutustingimused | koodi ei näe ega tohi ise paigaldada; maksad kasutuse eest |
-| GitHub Actionsi runner | [MIT](https://github.com/actions/runner/blob/main/LICENSE) | runneri programmi tohib vabalt kasutada ja muuta |
+??? note "Tabel 8.5. CI/CD tööriistade litsentsid"
+    | Tööriist | Litsents | Mida see firmale tähendab |
+    |---|---|---|
+    | Jenkins | [MIT](https://github.com/jenkinsci/jenkins/blob/master/LICENSE.txt) | tohib tasuta kasutada, muuta ja edasi müüa |
+    | GitLab Community Edition | [MIT](https://gitlab.com/gitlab-org/gitlab/-/blob/master/LICENSE) | nagu Jenkins: tasuta ja vaba |
+    | GitLab Enterprise Edition | [kommertslitsents](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/LICENSE) | tootmises tohib kasutada ainult tasulise tellimusega |
+    | GitHub Actions (teenus) | suletud, GitHubi kasutustingimused | koodi ei näe ega tohi ise paigaldada; maksad kasutuse eest |
+    | GitHub Actionsi runner | [MIT](https://github.com/actions/runner/blob/main/LICENSE) | runneri programmi tohib vabalt kasutada ja muuta |
 
-*Tabel 8.5. CI/CD tööriistade litsentsid.*
+    *Tabel 8.5. CI/CD tööriistade litsentsid.*
 
 **MIT** on lühike ja vaba litsents. See lubab tarkvara kasutada, muuta, levitada ja müüa. Tingimus on üks: autoriõiguse teade peab jääma koopiasse alles.
 

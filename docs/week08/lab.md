@@ -551,26 +551,28 @@ cat Jenkinsfile
 
 `jenkins/Dockerfile` ehitab Jenkinsi image'i. Alus on ametlik image `jenkins/jenkins:lts-jdk21` ([Jenkins Dockeris](https://www.jenkins.io/doc/book/installing/docker/)). Käsk `jenkins-plugin-cli` paigaldab plugin'id juba ehitamisel. **Plugin** on Jenkinsi lisamoodul. Ilma plugin'iteta ei oska Jenkins isegi Git'i kasutada.
 
-| Plugin | Mida teeb |
-|---|---|
-| [`git`](https://plugins.jenkins.io/git/) | toob koodi Git'i repositooriumist |
-| [`workflow-aggregator`](https://plugins.jenkins.io/workflow-aggregator/) | lubab kirjutada konveieri faili `Jenkinsfile` |
-| [`pipeline-graph-view`](https://plugins.jenkins.io/pipeline-graph-view/) | näitab konveieri samme graafiliselt |
-| [`dark-theme`](https://plugins.jenkins.io/dark-theme/) | tume teema |
+??? note "Tabel 8.6. Plugin'id failis `jenkins/Dockerfile`"
+    | Plugin | Mida teeb |
+    |---|---|
+    | [`git`](https://plugins.jenkins.io/git/) | toob koodi Git'i repositooriumist |
+    | [`workflow-aggregator`](https://plugins.jenkins.io/workflow-aggregator/) | lubab kirjutada konveieri faili `Jenkinsfile` |
+    | [`pipeline-graph-view`](https://plugins.jenkins.io/pipeline-graph-view/) | näitab konveieri samme graafiliselt |
+    | [`dark-theme`](https://plugins.jenkins.io/dark-theme/) | tume teema |
 
-*Tabel 8.6. Plugin'id failis `jenkins/Dockerfile`.*
+    *Tabel 8.6. Plugin'id failis `jenkins/Dockerfile`.*
 
 `Jenkinsfile` on konveier. See on sama mõttega kui `ci.yml`, aga teises keeles ([Jenkinsfile'i süntaks](https://www.jenkins.io/doc/book/pipeline/syntax/)):
 
-| `ci.yml` (GitHub Actions) | `Jenkinsfile` (Jenkins) |
-|---|---|
-| `jobs:` ja tööd `test`, `konteiner` | `stages` ja etapid `test`, `konteiner` |
-| `runs-on: ubuntu-latest` | `agent any`: konveier töötab Jenkinsi enda masinas |
-| `actions/setup-python` paigaldab Pythoni | Python peab Jenkinsi image'is olemas olema |
-| `needs: test` | etapid käivad järjest, kirjutatud järjekorras |
-| `on: push` | `pollSCM`: Jenkins küsib ise, kas on uus commit (samm 6.6) |
+??? note "Tabel 8.7. Sama konveier kahes tööriistas"
+    | `ci.yml` (GitHub Actions) | `Jenkinsfile` (Jenkins) |
+    |---|---|
+    | `jobs:` ja tööd `test`, `konteiner` | `stages` ja etapid `test`, `konteiner` |
+    | `runs-on: ubuntu-latest` | `agent any`: konveier töötab Jenkinsi enda masinas |
+    | `actions/setup-python` paigaldab Pythoni | Python peab Jenkinsi image'is olemas olema |
+    | `needs: test` | etapid käivad järjest, kirjutatud järjekorras |
+    | `on: push` | `pollSCM`: Jenkins küsib ise, kas on uus commit (samm 6.6) |
 
-*Tabel 8.7. Sama konveier kahes tööriistas.*
+    *Tabel 8.7. Sama konveier kahes tööriistas.*
 
 ### 6.2 Jenkins käima
 
@@ -596,14 +598,15 @@ docker run -d --name jenkins --restart unless-stopped \
   minu-jenkins
 ```
 
-| Võti | Miks |
-|---|---|
-| `-p 8081:8080` | Jenkins kuulab pordil 8080. Masinas on port 8080 N6 käes, seega kasutame 8081 |
-| `-v jenkins_home:/var/jenkins_home` | Jenkinsi seaded on volume'is. Need jäävad alles, kui konteiner tehakse uuesti |
-| `-v /var/run/docker.sock:...` | Jenkins saab kasutada masina Dockerit, et ehitada image'it |
-| `--group-add ...` | Jenkinsi kasutaja saab õiguse Dockeri soklit kasutada |
+??? note "Tabel 8.8. Jenkinsi konteineri võtmed"
+    | Võti | Miks |
+    |---|---|
+    | `-p 8081:8080` | Jenkins kuulab pordil 8080. Masinas on port 8080 N6 käes, seega kasutame 8081 |
+    | `-v jenkins_home:/var/jenkins_home` | Jenkinsi seaded on volume'is. Need jäävad alles, kui konteiner tehakse uuesti |
+    | `-v /var/run/docker.sock:...` | Jenkins saab kasutada masina Dockerit, et ehitada image'it |
+    | `--group-add ...` | Jenkinsi kasutaja saab õiguse Dockeri soklit kasutada |
 
-*Tabel 8.8. Jenkinsi konteineri võtmed.*
+    *Tabel 8.8. Jenkinsi konteineri võtmed.*
 
 **Kontrolli**
 
@@ -869,15 +872,16 @@ bash server/paigalda.sh                          # docker pull ja docker run -p 
 curl localhost:8088/versioon
 ```
 
-| Rida skriptis `server/paigalda.sh` | Miks |
-|---|---|
-| `IMAGE="ghcr.io/hkhk-automation/${REPO,,}"` | sama nimi, mille konveier andis, väiketähtedega |
-| `docker pull "$IMAGE:$TAG"` | server ei ehita, ta tõmbab registrist valmis image'i |
-| `docker rm -f flask-cd` | vana konteiner eemaldatakse enne uue käivitamist |
-| `--restart unless-stopped` | konteiner käivitub uuesti ka pärast masina taaskäivitust |
-| `-p 8088:5000` | serveri port 8088 läheb konteineri porti 5000, kus Flask kuulab |
+??? note "Tabel 8.9. Serveri skripti read"
+    | Rida skriptis `server/paigalda.sh` | Miks |
+    |---|---|
+    | `IMAGE="ghcr.io/hkhk-automation/${REPO,,}"` | sama nimi, mille konveier andis, väiketähtedega |
+    | `docker pull "$IMAGE:$TAG"` | server ei ehita, ta tõmbab registrist valmis image'i |
+    | `docker rm -f flask-cd` | vana konteiner eemaldatakse enne uue käivitamist |
+    | `--restart unless-stopped` | konteiner käivitub uuesti ka pärast masina taaskäivitust |
+    | `-p 8088:5000` | serveri port 8088 läheb konteineri porti 5000, kus Flask kuulab |
 
-*Tabel 8.9. Serveri skripti read.*
+    *Tabel 8.9. Serveri skripti read.*
 
 Jenkinsi image (viga 6):
 
