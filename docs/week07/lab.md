@@ -250,7 +250,7 @@ git push -u origin n07-ci
 ```
 
 ??? success "Oodatav tulemus"
-    Käivitab. GitHub otsib töövoo faile sellest commit'ist, mille push saatis, ja see commit on harus `n07-ci` ([loengu §4](lecture.md#kuidas-toovoog-kaivitub)). Haru `main` ei mõjuta seda.
+    Käivitab. GitHub otsib töövoofaile sellest commit'ist, mille push saatis, ja see commit on harus `n07-ci` ([loengu §4](lecture.md#kuidas-toovoog-kaivitub)). Haru `main` ei mõjuta seda.
 
 Ava vahekaart **Actions**. Vasakul on nüüd töövoog **CI**. Paremal on uus käivitus, mille pealkiri on sinu commit'i sõnum, sest selles töövoos ei ole rida `run-name`. Klõpsa käivitusel, siis tööl `test` ja seejärel sammul `Run echo "tere runnerist"`. Logis on rida `tere runnerist`.
 
@@ -432,7 +432,7 @@ Kui käivitus kukkus põhjusel, mis ei ole sinu koodis (näiteks võrguühendus 
 **Ennusta:** käivita uuesti osa 3.1 punane käivitus (`pytest: command not found`). Kas see on nüüd roheline, kuna sinu praegune `ci.yml` on korras?
 
 ??? success "Oodatav tulemus"
-    Ei ole, see on jälle punane. Uuesti käivitamine kasutab sama commit'i ja selle commit'i töövoo faili, kus samm `pip install` veel puudus ([loengu §4](lecture.md#kuidas-toovoog-kaivitub)). Uus töövoo fail kehtib ainult uutele commit'idele.
+    Ei ole, see on jälle punane. Uuesti käivitamine kasutab sama commit'i ja selle commit'i töövoofaili, kus samm `pip install` veel puudus ([loengu §4](lecture.md#kuidas-toovoog-kaivitub)). Uus töövoofail kehtib ainult uutele commit'idele.
 
 ## Osa 4 · Teek, mis on ainult sinu masinas
 

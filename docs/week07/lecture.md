@@ -19,8 +19,8 @@ N5-s ja N6-s kontrollisid Flaski rakendust ise käsuga `curl`. Täna antakse see
     - lugeda GitHub Actionsi töövoogu: sündmus, töö, runner, samm, `needs`
     - koostada töövoo YAML-faili ja leida selles tüüpilised vead
     - leida GitHub Actionsi dokumentatsioonist võtme või action'i kirjeldus
-    - leida samad osad GitLab CI ja Jenkinsi konveierist
-    - lugeda väljumiskoodi järgi, kas viga on koodis või töövoos
+    - leida GitLab CI ja Jenkinsi konveierist GitHub Actionsiga samaväärsed osad
+    - kasutada väljumiskoodi, et leida, kas viga on koodis või töövoos
 
 ## 1. „Töötab minu masinas“ meeskonnas
 
@@ -30,7 +30,7 @@ Kaks tüüpilist viga näevad välja nii.
 
 Esimene viga: arendaja muudab üht osa rakendusest ja käivitab ainult selle osa testid. Tema muudatus rikub teise osa, aga seda ta ei näe, sest neid teste ta ei käivitanud. Kood jõuab harusse `main`. Järgmine arendaja tõmbab muudatused ja tema arvutis läheb midagi katki. Tema ei ole midagi valesti teinud. Viga tuli eelmisest commit'ist.
 
-Teine viga: arendaja paigaldab oma arvutisse teegi ja unustab selle kirjutada faili `requirements.txt`. Tema arvutis töötab kõik. Serveris, teise arendaja arvutis ja Docker image'is see teek puudub ja rakendus ei käivitu. Arendaja arvutisse on aastate jooksul kogunenud palju programme, mille paigaldamist keegi enam ei mäleta.
+Teine viga: arendaja paigaldab oma arvutisse teegi ja unustab selle kirjutada faili `requirements.txt`. Tema arvutis töötab kõik. Serveris, teise arendaja arvutis ja Dockeri image'is see teek puudub ja rakendus ei käivitu. Arendaja arvutisse on aastate jooksul kogunenud palju programme, mille paigaldamist keegi enam ei mäleta.
 
 **CI** lahendab mõlemad probleemid. Iga push käivitab automaatselt kõik testid ja teeb seda värskes tühjas masinas. Kui mõni test kukub, ei saa koodi harusse `main` liita. Keegi ei pea meeles pidama, et teste tuleb käivitada, ega mäletama, mis tema arvutisse paigaldatud on.
 
@@ -45,11 +45,11 @@ Teine viga: arendaja paigaldab oma arvutisse teegi ja unustab selle kirjutada fa
 
 Muudatused peavad olema väikesed, sest mida väiksem on muudatus, seda kiiremini viga leitakse ja seda vähem koodi tuleb vea otsimisel läbi vaadata. Kui kõik liidavad oma tööd tihti, on ka liitmiskonfliktid väiksemad. Varem töötas igaüks nädalaid oma harus ja kõik muudatused pandi kokku ühel päeval. Red Hat nimetab seda *merge day* ([Red Hat: CI/CD](https://www.redhat.com/en/topics/devops/what-is-ci-cd)). Konfliktid ja vead tulid siis välja hilja, kui nende parandamine oli kallis.
 
-CI kontrollid võivad olla eri tüüpi:
+CI-s saab teha eri tüüpi kontrolle ja koguda kvaliteedinäitajaid:
 
 - **linterid** kontrollivad koodi stiili ja levinud vigu;
 - **turvakontrollid** otsivad näiteks koodi sattunud paroole ja teadaolevate turvaaukudega teeke;
-- **testide katvus** näitab, kui suurt osa koodist testid läbivad;
+- **testikatvus** näitab, kui suur osa koodist testide käigus käivitatakse;
 - **funktsionaalsed testid** kontrollivad, kas rakendus teeb seda, mida peab. Täna kirjutad selliseid teste pytest'iga.
 
 Testide käivitamiseks on vaja masinat. Arendaja võib testid käivitada oma arvutis enne push'i. CI puhul teeb seda server, mis jälgib repositooriumi ja käivitab testid iga muudatuse järel. GitHub Actionsis on selleks runner. GitHub näitab tulemust pull request'i lehel. Kui kõik kontrollid on rohelised, võib teine arendaja muudatuse üle vaadata ja liita.
@@ -83,7 +83,7 @@ Tabelis on olukorrad väikesest e-poe meeskonnast, kus kasutatakse GitHub Action
     | Haru `main` on punane juba kaks nädalat. Kõik ütlevad, et see üks test on alati punane, ja liidavad muudatusi edasi. | Ei | Tööriist on olemas, harjumus puudub. Kui punast tulemust keegi ei vaata, ei kaitse CI millegi eest. |
     | Arendaja töötab uue makseviisi kallal kuu aega oma harus ja liidab siis korraga 3000 rida. CI on roheline. | Ei | Muudatusi liidetakse harva ja suurelt. Konfliktid ja vead tulevad välja korraga, kui nende parandamine on kõige kallim. |
     | Töövoos on üks samm: `run: echo "testid OK"`. Tulemus on alati roheline. | Ei | Roheline tulemus ei tähenda midagi, kui miski ei saa punaseks minna. |
-    | Arendaja paigaldas oma arvutisse teegi ja testid läbivad tema arvutis. Ta teeb push'i otse harusse `main` ilma pull request'ita ja CI ei käivitu. | Ei | Testid käivitati ainult tema arvutis. See ei ole kontroll, mida meeskond saab usaldada. |
+    | Arendaja paigaldas oma arvutisse teegi ja testid õnnestuvad tema arvutis. Ta teeb push'i otse harusse `main` ilma pull request'ita ja CI ei käivitu. | Ei | Testid käivitati ainult tema arvutis. See ei ole kontroll, mida meeskond saab usaldada. |
 
 ??? question "Mõtle"
     Vali tabelist üks rida, kus vastus on „Ei“. Mis peaks muutuma, et vastus oleks „Jah“: tööriist, reegel või meeskonna harjumus?
@@ -97,16 +97,16 @@ Lühend CI/CD tähistab kolme astet. Need erinevad selle poolest, kui kaugele au
   <figcaption>Joonis 7.2. CI lõpeb testidega. Pidev tarne valmistab väljalaske ette ja inimene vajutab nuppu. Pidev paigaldus viib muudatuse tootmisse ilma inimeseta (Talvik, 2026).</figcaption>
 </figure>
 
-??? note "Tabel 7.3. Sel nädalal teed CI. N8 lisab pideva tarne: image läheb registrisse"
+??? note "Tabel 7.3. Sel nädalal seadistad CI. N8 lisab pideva tarne: image läheb registrisse"
     | Aste | Mis on automaatne | Kes otsustab tootmisse viimise |
     |---|---|---|
     | **CI** (continuous integration) | ehitus ja testid | keegi ei otsusta, sest CI tootmiseni ei jõua |
     | **Pidev tarne** (continuous delivery) | lisaks pakkimine, väljalase on igal hetkel valmis | inimene ühe nupuvajutusega |
-    | **Pidev paigaldus** (continuous deployment) | lisaks väljalase tootmisse | testid, inimest vahel ei ole |
+    | **Pidev paigaldus** (continuous deployment) | lisaks väljalase tootmisse | automaatsed kontrollid, inimese kinnitust pole vaja |
 
 Kogu konveieri (commit, ehitus, testid, testkeskkond ja tootmine) näed ühel joonisel ByteByteGo artiklis [CI/CD pipeline explained in simple terms](https://blog.bytebytego.com/p/ep71-cicd-pipeline-explained-in-simple).
 
-Pidev paigaldus on võimalik ainult siis, kui teste usaldatakse täielikult, sest enne tootmist ei vaata muudatust ükski inimene. Seepärast soovitab [GitHub](https://github.com/resources/articles/ci-cd) alustada pidevast tarnest. Pideva paigalduse juurde minnakse alles siis, kui testid on end tõestanud.
+Pideva paigalduse korral peab meeskond automaatseid kontrolle usaldama, sest pärast nende edukat läbimist ei vaja tootmisse paigaldamine inimese kinnitust. Seepärast soovitab [GitHub](https://github.com/resources/articles/ci-cd) alustada pidevast tarnest. Pideva paigalduse juurde minnakse alles siis, kui testid on end tõestanud.
 
 ### CI süsteemiadministraatorile
 
@@ -115,7 +115,7 @@ CI-st räägitakse tavaliselt arendajate näidetega. Süsteemiadministraatori fa
 ??? note "Tabel 7.4. Sama põhimõte süsteemiadministraatori failidega"
     | Fail | Kontroll CI-s | Mida leiab | Kursusel |
     |---|---|---|---|
-    | Ansible playbook | `ansible-playbook --syntax-check`, [`ansible-lint`](https://docs.ansible.com/projects/lint/) | taandevead, `command` mooduli kasutamise sobiva mooduli asemel | N3–N4 |
+    | Ansible'i playbook | `ansible-playbook --syntax-check`, [`ansible-lint`](https://docs.ansible.com/projects/lint/) | taandevead, mooduli `command` kasutamine sobiva mooduli asemel | N3–N4 |
     | Idempotentsus | playbook käivitatakse konteineris kaks korda, teisel korral peab olema `changed=0` | playbook'i, mis muudab iga kord midagi | N3 |
     | Bashi skript | [`shellcheck`](https://www.shellcheck.net/) | jutumärkideta muutujad, `cd` ilma veakontrollita | N2 `monitor.sh` |
     | Konfiguratsioonifail | `nginx -t` konteineris, `yamllint` | vigase konfiguratsiooni enne serverisse jõudmist | N3, N4 praktikumi lisaosa |
@@ -162,7 +162,7 @@ Testid jagunevad selle järgi, kui suurt osa rakendusest need kontrollivad. Sell
     | Mida kontrollib | üht funktsiooni või aadressi koodi tasemel | kas kogu rakendus käivitub ja vastab |
     | Kuidas | `pytest` ja `test_client()` | `docker build`, `docker run` ja `curl` |
     | Kestus | millisekundid | kümned sekundid |
-    | Mida leiab | loogikavead | pakkimise ja käivitamise vead, näiteks rakendus kuulab ainult aadressil `127.0.0.1` ja konteinerist väljast ei vasta |
+    | Mida leiab | loogikavead | pakkimise ja käivitamise vead, näiteks rakendus kuulab ainult aadressil `127.0.0.1` ja väljaspool konteinerit tehtud päringutele ei vasta |
 
 Suitsutesti nimi tuleb elektroonikast. Seade lülitati sisse ja vaadati, kas sellest tuleb suitsu. Kui suitsu tuli, polnud mõtet edasi testida.
 
@@ -210,7 +210,7 @@ Iga kord, kui töövoog käivitub, tekib repositooriumi vahekaardile **Actions**
 
 **Töö** (job, võti `jobs:`) on sammude rühm, mis tehakse samas runneris. Näites on üks töö nimega `test`.
 
-**Samm** (step, võti `steps:`) on üks tegevus töö sees. Sammud tehakse järjest ülevalt alla. Kuna sammud on samas masinas, saavad need kasutada sama kausta ja samu faile: üks samm ehitab rakenduse ja järgmine testib sama tulemust. Samm on kahte tüüpi:
+**Samm** (step, võti `steps:`) on üks tegevus töö sees. Sammud tehakse järjest ülevalt alla. Kuna sammud on samas masinas, saavad need kasutada sama kausta ja samu faile: üks samm ehitab rakenduse ja järgmine testib sama tulemust. Samm võib olla kahte tüüpi:
 
 - `run:` käivitab tavalise Bashi käsu, näiteks `pytest` või `docker build`.
 - `uses:` käivitab action'i (vaata allpool).
@@ -221,7 +221,7 @@ Tööd käivituvad vaikimisi korraga ja eraldi masinates. Kahe töö vahel faile
 
 ### Action
 
-**Action** on korduvkasutatav programm, mis teeb ühe levinud tegevuse: tõmbab repositooriumi koodi, paigaldab tööriista või logib sisse pilveteenusesse. Action'i kirjutad ise või võtad valmis kujul [GitHub Marketplace'ist](https://github.com/marketplace?type=actions). Sammus kasutatakse seda võtmega `uses:`. Näiteks [`actions/checkout`](https://github.com/actions/checkout) laadib repositooriumi failid runnerisse. Märgi `@` järel on action'i versioon.
+**Action** on korduvkasutatav programm, mis teeb ühe levinud tegevuse: tõmbab repositooriumi koodi, paigaldab tööriista või logib sisse pilveteenusesse. Action'i võid kirjutada ise või võtta valmis kujul [GitHub Marketplace'ist](https://github.com/marketplace?type=actions). Sammus kasutatakse seda võtmega `uses:`. Näiteks [`actions/checkout`](https://github.com/actions/checkout) laadib repositooriumi failid runnerisse. Märgi `@` järel on action'i versioon.
 
 ### Runner
 
@@ -232,10 +232,10 @@ Tööd käivituvad vaikimisi korraga ja eraldi masinates. Kahe töö vahel faile
 GitHubi lehel [Workflows](https://docs.github.com/en/actions/concepts/workflows-and-actions/workflows) on käivitumine kirjeldatud kolme sammuna:
 
 1. Repositooriumis tekib sündmus, näiteks push, pull request või issue avamine. Igal sündmusel on commit (selle räsi ehk SHA) ja haru või tag (ref).
-2. GitHub otsib **selle commit'i** kaustast `.github/workflows/` töövoo faile.
+2. GitHub otsib **selle commit'i** kaustast `.github/workflows/` töövoofaile.
 3. Käivitub iga töövoog, mille võti `on:` vastab sündmusele.
 
-Sellest järeldub, et käivitus kasutab töövoo faili sellest commit'ist, mis sündmuse tekitas. Kui muudad töövoogu harus `n07-ci`, kehtib muudatus selle haru push'il. Harus `main` töötab vana töövoog seni, kuni muudatus sinna liidetakse. Runneris on sündmuse commit ja haru muutujates `GITHUB_SHA` ja `GITHUB_REF`.
+Sellest järeldub, et käivitus kasutab töövoofaili sellest commit'ist, mis sündmuse tekitas. Kui muudad töövoogu harus `n07-ci`, kehtib muudatus selle haru push'il. Harus `main` töötab vana töövoog seni, kuni muudatus sinna liidetakse. Runneris on sündmuse commit ja haru muutujates `GITHUB_SHA` ja `GITHUB_REF`.
 
 Töövoos peavad olema vähemalt üks sündmus ja vähemalt üks töö. Igas töös on sammud ja iga samm on kas Bashi skript (`run`) või action (`uses`). Peale repositooriumi sündmuste saab töövoo käivitada ka ajakava järgi (`schedule`), käsitsi nupuga vahekaardil **Actions** (`workflow_dispatch`) või väljastpoolt GitHubi API kaudu (`repository_dispatch`).
 
@@ -258,7 +258,7 @@ Töö `konteiner` alustab alles siis, kui töö `test` on lõppenud roheliselt. 
 
 ## 5. Töövoo fail rida realt
 
-Allpool on terve töövoo fail. See on peaaegu sama fail, mille koostad praktikumis, ainult mõne lisavõtmega. Klõpsa koodi kõrval oleval numbril, et näha, mida rida teeb ja mis juhtub, kui see puudub.
+Allpool on terve töövoofail. See on peaaegu sama fail, mille koostad praktikumis, ainult mõne lisavõtmega. Klõpsa koodi kõrval oleval numbril, et näha, mida rida teeb ja mis juhtub, kui see puudub.
 
 ### YAML-i reeglid
 
@@ -315,9 +315,9 @@ jobs: # (4)!
 10. `with` annab action'ile parameetrid. See on võtme `uses` all kahe tühiku võrra suurema taandega. Kui `with` puudub, kasutab action vaikeväärtusi. `setup-python` kasutaks siis runneris juba olevat Pythoni versiooni.
 11. `run` käivitab Bashi käsu runneris. Üks samm on kas `uses` või `run`, mõlemat korraga samas sammus olla ei saa.
 12. `needs` paneb tööd järjekorda. Töö `konteiner` alustab alles siis, kui `test` on roheline. Ilma selleta käivituvad mõlemad tööd korraga ja image ehitatakse ka siis, kui testid kukuvad.
-13. Märk `|` tähendab mitmerealist teksti. Kõik järgmised read, millel on suurem taane, on üks Bashi skript, mis käivitatakse ühes sammus. Kui mõni käsk kukub, on kogu samm punane.
+13. Märk `|` tähendab mitmerealist teksti. Kõik järgmised read, millel on suurem taane, on üks Bashi skript, mis käivitatakse ühes sammus. Kui mõni käsk ebaõnnestub, on kogu samm punane.
 
-Saladust, näiteks andmebaasi parooli, ei kirjutata töövoo faili. See salvestatakse repositooriumi seadetes **Settings → Secrets and variables → Actions** ja töövoos loetakse seda kujul `${{ secrets.NIMI }}`. Praktikumis seda vaja ei ole, kodutöös küll:
+Saladust, näiteks andmebaasi parooli, ei kirjutata töövoofaili. See salvestatakse repositooriumi seadetes **Settings → Secrets and variables → Actions** ja töövoos loetakse seda kujul `${{ secrets.NIMI }}`. Praktikumis seda vaja ei ole, kodutöös küll:
 
 ```yaml
   stack:
@@ -345,7 +345,7 @@ Kõik võtmed ja nende võimalikud väärtused on [töövoo süntaksi juhendis](
 
 ### Mida runner vajab
 
-Runner on tühi masin. Töö `test` iga samm lisab runnerisse ühe asja, mis seal muidu puuduks:
+Iga töö algab värskes masinas, kus projekti koodi ja sõltuvusi pole. Töö `test` sammud valmistavad ette testimiseks vajaliku keskkonna ja käivitavad seejärel kontrollid:
 
 ??? note "Tabel 7.7. Töövoog kirjeldab kõik, mida runner vajab ja mis on arendaja masinas juba olemas"
     | Samm | Mis ilma selleta puudub |
@@ -376,39 +376,39 @@ Dokumentatsioon on jagatud osadeks selle järgi, mida sa otsid:
     | [Get started → Quickstart](https://docs.github.com/en/actions/get-started/quickstart) | esimene töövoog umbes 5 minutiga | fail `github-actions-demo.yml` |
     | [Concepts](https://docs.github.com/en/actions/concepts) | mõisted: töövood, runnerid, turvalisus (Secrets, `GITHUB_TOKEN`) | mis on runner |
     | [How-tos](https://docs.github.com/en/actions/how-tos) | kuidas midagi teha: töövoo kirjutamine, turvalisus, paigaldamine, käivituste haldamine ja [vigade otsimine (Troubleshoot workflows)](https://docs.github.com/en/actions/how-tos/troubleshoot-workflows) | kuidas lisada saladus |
-    | [Reference](https://docs.github.com/en/actions/reference) | täpne süntaks: [Workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax), [Events that trigger workflows](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows), [Contexts](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts), [Variables](https://docs.github.com/en/actions/reference/workflows-and-actions/variables), [GitHub-hosted runners](https://docs.github.com/en/actions/reference/runners/github-hosted-runners), [Secrets](https://docs.github.com/en/actions/reference/security/secrets) | mis võtmed on `jobs.<id>` all |
+    | [Reference](https://docs.github.com/en/actions/reference) | täpne süntaks: [Workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax), [Events that trigger workflows](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows), [Contexts](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts), [Variables](https://docs.github.com/en/actions/reference/workflows-and-actions/variables), [GitHub-hosted runners](https://docs.github.com/en/actions/reference/runners/github-hosted-runners), [Secrets](https://docs.github.com/en/actions/reference/security/secrets) | millised võtmed on `jobs.<id>` all |
     | [GitHub Marketplace → Actions](https://github.com/marketplace?type=actions) | valmis action'id ja nende `with:` parameetrid action'i README-s | `actions/setup-python` |
 
-Marketplace'is on kahte tüüpi tooteid ([Actions vs Apps](https://docs.github.com/en/actions/get-started/actions-vs-apps)). Action'id käivituvad töövoo sammuna runneris ega vaja oma serverit. GitHub Apps töötavad pidevalt sinu enda serveris ja reageerivad repositooriumi sündmustele. Selles kursuses kasutame ainult action'eid.
+Marketplace'is on kahte tüüpi tooteid ([Actions vs Apps](https://docs.github.com/en/actions/get-started/actions-vs-apps)). Action'id käivituvad töövoo sammuna runneris ega vaja oma serverit. GitHub Apps töötavad pidevalt sinu enda serveris ja reageerivad repositooriumi sündmustele. Sellel kursusel kasutame ainult action'eid.
 
 Osas How-tos on töövoo kirjutamise juhendid jaotises [Write workflows](https://docs.github.com/en/actions/how-tos/write-workflows). Selle all on kolm alajaotist, mis vastavad töövoo kolmele küsimusele: [Choose when workflows run](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run) (millal töövoog käivitub, näiteks harude ja failide järgi), [Choose where workflows run](https://docs.github.com/en/actions/how-tos/write-workflows/choose-where-workflows-run) (mis runneris töö tehakse) ja [Choose what workflows do](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do) (mida sammud teevad, näiteks saladuste ja muutujate kasutamine).
 
-Kui tahad teada, mis võtmed on olemas ja mida need tähendavad, ava **Reference**. Kui tahad teada, kuidas midagi teha, ava **How-tos**. Lehe paremal üleval on otsingukast. Kui töövoog annab vea, kopeeri veateate põhiosa otsingusse, ilma sinu failinimede ja harude nimedeta. Dokumentatsioon on inglise keeles, aga võtmete nimed (`needs`, `runs-on`, `with`) on samad, mida kirjutad oma faili, seega leiad need ka otsinguga lehelt üles (++ctrl+f++).
+Kui tahad teada, millised võtmed on olemas ja mida need tähendavad, ava **Reference**. Kui tahad teada, kuidas midagi teha, ava **How-tos**. Lehe paremal üleval on otsingukast. Kui töövoog annab vea, kopeeri veateate põhiosa otsingusse, jättes välja oma failide ja harude nimed. Dokumentatsioon on inglise keeles, aga võtmete nimed (`needs`, `runs-on`, `with`) on samad, mida kirjutad oma faili, seega leiad need ka otsinguga lehelt üles (++ctrl+f++).
 
-Valmis töövooge, millest alustada, leiad mitmest kohast. Repositooriumi vahekaardil **Actions** on nupp **New workflow**. GitHub tuvastab repositooriumi koodi keele ja pakub sobivaid CI malle, Pythoni koodiga repositooriumile näiteks Pythoni testide malli. Samad mallid on repositooriumis [actions/starter-workflows](https://github.com/actions/starter-workflows) ja nende kasutamine on kirjeldatud lehel [Use workflow templates](https://docs.github.com/en/actions/how-tos/write-workflows/use-workflow-templates). Pythoni rakenduse testimiseks on GitHubil eraldi juhend [Building and testing Python](https://docs.github.com/en/actions/tutorials/build-and-test-code/python). Praktikumi töö `test` järgib sama mustrit: `setup-python`, `pip install` ja `pytest`.
+Valmis töövooge, millest alustada, leiad mitmest kohast. Repositooriumi vahekaardil **Actions** on nupp **New workflow**. GitHub tuvastab repositooriumi programmeerimiskeele ja pakub sobivaid CI malle, Pythoni koodiga repositooriumile näiteks Pythoni testide malli. Samad mallid on repositooriumis [actions/starter-workflows](https://github.com/actions/starter-workflows) ja nende kasutamine on kirjeldatud lehel [Use workflow templates](https://docs.github.com/en/actions/how-tos/write-workflows/use-workflow-templates). Pythoni rakenduse testimiseks on GitHubil eraldi juhend [Building and testing Python](https://docs.github.com/en/actions/tutorials/build-and-test-code/python). Praktikumi töö `test` järgib sama mustrit: `setup-python`, `pip install` ja `pytest`.
 
 ## 7. Millal konveier katkeb
 
 Iga käsk annab lõpetamisel **väljumiskoodi** (exit code). See on sama number, mida näed terminalis käsuga `echo $?`. Väljumiskood `0` tähendab, et käsk õnnestus. Iga muu number tähendab viga. Kui mõne sammu käsk lõpetab koodiga, mis ei ole `0`, on samm punane ja konveier katkeb.
 
-Väljumiskoodi järgi saad aru, kas viga on rakenduse koodis või töövoos. pytest'i koodide täielik nimekiri on [pytest'i dokumentatsioonis](https://docs.pytest.org/en/stable/reference/exit-codes.html).
+Väljumiskood aitab aru saada, kas viga on rakenduse koodis või töövoos. pytest'i koodide täielik nimekiri on [pytest'i dokumentatsioonis](https://docs.pytest.org/en/stable/reference/exit-codes.html).
 
 ??? note "Tabel 7.9. Väljumiskood ütleb, kas viga on koodis või konveieris"
     | Väljumiskood | Tähendus | Näide CI-s |
     |---|---|---|
-    | `0` | kõik on korras | testid läbisid ja samm on roheline |
+    | `0` | kõik on korras | kõik testid õnnestusid ja samm on roheline |
     | `1` | mõni test kukkus | `AssertionError`, viga on koodis |
     | `4` | pytest'i käsk on vale, näiteks kausta ei ole | `file or directory not found`, viga on töövoos (näiteks puudub checkout) |
     | `5` | teste ei leitud | testifaili nimi ei alga sõnaga `test_` |
     | `127` | käsku ei ole olemas | `pytest: command not found`, tööriist on paigaldamata |
 
-Enamikus meeskondades kehtib reegel, et pull request'i ei saa harusse `main` liita enne, kui kõik nõutud kontrollid on rohelised. Parem on, kui konveier peatab liitmise kohe, kui et katkine kood jõuab harusse `main` ja sealt tootmisse.
+Enamikus meeskondades kehtib reegel, et pull request'i ei saa harusse `main` liita enne, kui kõik nõutud kontrollid on rohelised. Parem on liitmine kohe peatada kui lasta katkisel koodil jõuda harusse `main` ja sealt tootmisse.
 
 N2-s seadistasid haru `main` kaitse. **Ruleset** on GitHubi reeglite kogum, mis määrab, mida harus tohib teha. N2 reegel nõudis, et muudatuse vaataks üle inimene. CI lisab samasse ruleset'i reegli [**Require status checks to pass**](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets): liita saab ainult siis, kui CI töö on roheline. Inimene hindab, kas lahendus on mõistlik, ja CI kontrollib, kas see töötab. Kumbki ei asenda teist.
 
 ## 8. Sama mõte, teised tööriistad
 
-GitHub Actions on üks paljudest CI tööriistadest. Eesti ettevõtetes kasutatakse sama sageli [**GitLab CI**](https://docs.gitlab.com/ci/yaml/)-d. Seda eelistavad näiteks pangad ja riigiasutused, kes hoiavad koodi oma serveris. Teine levinud tööriist on [**Jenkins**](https://www.jenkins.io/doc/book/pipeline/), mis on vanem ja töötab samuti oma serveris. Kõigis kolmes on sama põhimõte: sündmus käivitab konveieri, konveier saab masina, sammud tehakse järjest ja väljumiskood otsustab tulemuse.
+GitHub Actions pole ainus CI-tööriist. Töökohas võid kokku puutuda ka [**GitLab CI**](https://docs.gitlab.com/ci/yaml/)-ga, mida saab paigaldada oma serverisse. Teine levinud tööriist on [**Jenkins**](https://www.jenkins.io/doc/book/pipeline/), mis on vanem ja töötab samuti oma serveris. Kõigis kolmes on sama põhimõte: sündmus käivitab konveieri, konveier saab masina, sammud tehakse järjest ja väljumiskood otsustab tulemuse.
 
 Allpool on sama konveier kolmes tööriistas. Süntaksit ei pea pähe õppima. Leia igast failist need osad, mis on sulle GitHub Actionsist tuttavad.
 
@@ -512,7 +512,7 @@ Konveier ei piirdu testidega. N8-s saab konveier õiguse saata image'eid registr
 
 GitGuardiani koomiks [Compromising CI/CD Pipelines with Leaked Credentials](https://blog.gitguardian.com/security-zines-2-compromising-ci-cd-pipelines/) näitab viie pildiga, kuidas üks unustatud Jenkinsi parool võimaldab üle võtta kogu tarneahela.
 
-Igas CI tööriistas kehtib sama põhimõte: saladus ei ole repositooriumis ega logis ja igal tokenil on ainult vajalikud õigused. GitHub Actionsi jaoks on need reeglid kontrollnimekirjana järgmises osas.
+Igas CI-tööriistas kehtib sama põhimõte: saladus ei ole repositooriumis ega logis ja igal tokenil on ainult vajalikud õigused. GitHub Actionsi jaoks on need reeglid kontrollnimekirjana järgmises osas.
 
 N4-s hoidsid paroole Vaultis ja peitsid need Ansible'i väljundis võtmega `no_log: true`. CI saladuste hoidmine põhineb samal mõttel.
 
@@ -522,7 +522,7 @@ Töövoog käivitab koodi, millel on ligipääs repositooriumile ja saladustele.
 
 ### Saladused
 
-Saladust ei kirjutata kunagi töövoo faili lihttekstina. Iga parool või token on eraldi saladus, nii saab ühe saladuse vahetada ilma teisi puutumata. Kui saladus jõudis siiski logisse, kustuta see logi ja vaheta saladus kohe uue vastu ([Secrets](https://docs.github.com/en/actions/concepts/security/secrets)). **Kontrolli:** failis `ci.yml` ei ole ühtegi parooli ja kõik saladused on kujul `${{ secrets.NIMI }}`.
+Saladust ei kirjutata kunagi töövoofaili lihttekstina. Iga parool või token on eraldi saladus, nii saab ühe saladuse välja vahetada ja teisi muutma ei pea. Kui saladus jõudis siiski logisse, kustuta see logi ja vaheta saladus kohe uue vastu ([Secrets](https://docs.github.com/en/actions/concepts/security/secrets)). **Kontrolli:** failis `ci.yml` ei ole ühtegi parooli ja kõik saladused on kujul `${{ secrets.NIMI }}`.
 
 ### `GITHUB_TOKEN` vähimate õigustega
 
@@ -574,7 +574,7 @@ Dependabot teeb pull request'i, kui töövoos kasutatud action'ist ilmub uus ver
 
 Suurtes makseteenustes on tuhandeid automaatteste, mis kontrollivad maksete loogikat ja valuutade teisendamist. Iga pull request käivitab need testid enne, kui keegi muudatust üldse üle vaatama hakkab.
 
-Muudatuse autor saab tagasiside mõne minutiga. Viga leitakse enne väljalaset, kui see ei ole veel tootmises ega mõjuta kasutajate raha. Seepärast on CI tänapäeval tavapraktika. Tööintervjuul küsitakse, kas oled CI-d seadistanud, sama loomulikult kui seda, kas oskad Giti kasutada.
+Muudatuse autor saab tagasiside mõne minutiga. Viga leitakse enne väljalaset, kui see ei ole veel tootmises ega mõjuta kasutajate raha. Seepärast on CI tänapäeval tavapraktika. CI seadistamise kogemus aitab tööintervjuul selgitada, kuidas oled testimist ja muudatuste kontrollimist automatiseerinud.
 
 ??? abstract "Kokkuvõte"
     - Testimine peab meeskonnas olema automaatne. See ei tohi sõltuda inimese mälust ega tema arvutist.
@@ -582,7 +582,7 @@ Muudatuse autor saab tagasiside mõne minutiga. Viga leitakse enne väljalaset, 
     - Ühiktest kontrollib koodi. Suitsutest kontrollib, kas konteiner käivitub ja vastab.
     - Töövoog on YAML-fail kaustas `.github/workflows/`. Selles on sündmus (`on:`), tööd (`jobs:`) ja sammud (`steps:`).
     - `uses:` käivitab valmis action'i, `run:` käivitab Bashi käsu ja `needs:` paneb tööd järjekorda.
-    - Runner on tühi masin. Kõik, mida see vajab, peab olema kirjas repositooriumis.
+    - Iga töö algab värskes masinas. Kõik, mida töö vajab, peab olema kirjas töövoofailis või repositooriumis.
     - Võtmete süntaksi leiad dokumentatsiooni osast Reference, juhendid osast How-tos ja action'ite parameetrid Marketplace'ist.
     - Konveier katkeb, kui väljumiskood ei ole `0`. Kood näitab, kas viga on rakenduses või töövoos.
     - CI koos haru `main` kaitsega tähendab, et punase testiga koodi ei saa liita.

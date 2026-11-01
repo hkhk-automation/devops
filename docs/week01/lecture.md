@@ -21,7 +21,7 @@ tags:
 
 ## 1. Kus käsitsi tehtud töö katki läheb
 
-Uus veebilehe versioon töötab arendaja arvutis ja testid läbivad. Serverisse kopeerib selle administraator käsitsi. Ta teeb seda iga kord veidi erinevalt, sest juhend on ainult tema peas. Kui üks seadistus jääb tegemata, lakkab veebipood töötamast.
+Uus veebilehe versioon töötab arendaja arvutis ja testid õnnestuvad. Serverisse kopeerib selle administraator käsitsi. Ta teeb seda iga kord veidi erinevalt, sest juhend on ainult tema peas. Kui üks seadistus jääb tegemata, lakkab veebipood töötamast.
 
 Kood oli korras, valesti läks **protsess**: viis, kuidas kood serverisse jõuab. Failide kopeerimine, seadistamine ja taaskäivitus sõltusid ühe inimese mälust. Arvuti teeb samad sammud iga kord ühtemoodi ega unusta ühtegi.
 

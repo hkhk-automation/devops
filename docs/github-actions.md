@@ -160,7 +160,7 @@ Kõik sündmused on lehel [Events that trigger workflows](https://docs.github.co
 
 ## 4. Näited
 
-Iga näide on terve töövoo fail. Kopeeri see kausta `.github/workflows/` ja muuda kaustade nimed oma repositooriumi järgi.
+Iga näide on terve töövoofail. Kopeeri see kausta `.github/workflows/` ja muuda kaustade nimed oma repositooriumi järgi.
 
 ### Pythoni testid
 
