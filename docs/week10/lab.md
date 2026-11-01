@@ -65,7 +65,7 @@ Kaustas on failid `versions.tf`, `variables.tf`, `terraform.tfvars.example`, `.g
 
 ### 1.3 OpenTofu paigaldamine
 
-OpenTofu ametlik paigaldusskript lisab AlmaLinuxi dnf-i OpenTofu repositooriumi ja paigaldab paketi `tofu`. Skript küsib `sudo` parooli.
+OpenTofu [ametlik paigaldusskript](https://opentofu.org/docs/intro/install/) lisab AlmaLinuxi dnf-i OpenTofu repositooriumi ja paigaldab paketi `tofu`. Skript küsib `sudo` parooli. Teiste süsteemide (Windows, macOS, Debian) paigaldusviisid on samal lehel, AlmaLinuxi käsitsi paigaldus lehel [RPM-paketid](https://opentofu.org/docs/intro/install/rpm/).
 
 **Ülesanne**
 

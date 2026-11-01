@@ -38,9 +38,9 @@ Tunni alguses loeb igaüks oma vastused ette. Me ei arutle, kellel on õigus. Pr
 
 **OpenTofu** on tööriist, millega kirjeldatakse infrastruktuuri (virtuaalmasinad, võrgud, kettad, DNS-kirjed, pilveteenused) tekstifailides. Käsk on `tofu`.
 
-OpenTofu sündis Terraformist. HashiCorp muutis 2023. aastal Terraformi litsentsi ja kogukond jätkas viimase avatud versiooniga eraldi projektina, mida haldab nüüd Linux Foundation. Keel (HCL), failide laiend `.tf` ja töövoog on samad. Kui tööpakkumises on kirjas Terraform, kehtib kõik, mida täna teed: `terraform plan` asemel kirjutad `tofu plan`.
+OpenTofu sündis Terraformist. HashiCorp muutis 2023. aasta augustis Terraformi litsentsi: uus litsents (BSL) lubab koodi lugeda ja kasutada, aga mitte HashiCorpiga konkureerivas tootes. Firmad, kelle töö põhines Terraformil, avaldasid [OpenTofu manifesti](https://opentofu.org/manifesto/) ja jätkasid viimase avatud versiooniga eraldi projektina. Projekti haldab Linux Foundation ja see kuulub [CNCF-i projektide](https://www.cncf.io/projects/opentofu/) hulka. Ametlik dokumentatsioon on aadressil [opentofu.org/docs](https://opentofu.org/docs/intro/). Keel (HCL), failide laiend `.tf` ja töövoog on samad. Kui tööpakkumises on kirjas Terraform, kehtib kõik, mida täna teed: `terraform plan` asemel kirjutad `tofu plan`.
 
-OpenTofu ise ei tea Proxmoxist ega AWS-ist midagi. Iga süsteemi jaoks on eraldi **provider**: programm, mis tõlgib `.tf` faili kirjelduse selle süsteemi API päringuteks. Meie kasutame providerit [`bpg/proxmox`](https://search.opentofu.org/provider/bpg/proxmox/latest), sama, millega õpetaja loob monitooringu kursuse masinad.
+OpenTofu ise ei tea Proxmoxist ega AWS-ist midagi. Iga süsteemi jaoks on eraldi **provider**: programm, mis tõlgib `.tf` faili kirjelduse selle süsteemi API päringuteks. Providerid on [OpenTofu registris](https://search.opentofu.org/), kus on iga provideri ressursid, näited ja argumentide kirjeldused. Meie kasutame providerit [`bpg/proxmox`](https://search.opentofu.org/provider/bpg/proxmox/latest), sama, millega õpetaja loob monitooringu kursuse masinad.
 
 | | Ansible | OpenTofu |
 |---|---|---|
@@ -165,7 +165,7 @@ Plaani viimane rida võtab kokku: `Plan: 1 to add, 0 to change, 0 to destroy.` K
 
 ## 5. Olekufail ja lukufail
 
-OpenTofu kirjutab olekufaili `terraform.tfstate` iga ressursi, mille ta lõi: Proxmoxi VMID, sõlme, IP-aadressid ja kõik atribuudid. Fail on JSON. Selle järgi teab OpenTofu järgmisel käivitusel, et masin `tofu-<kasutaja>` on tema loodud ja tema hallata. Proxmoxi teisi masinaid olekufailis ei ole ja OpenTofu ei muuda neid.
+OpenTofu kirjutab [olekufaili](https://opentofu.org/docs/language/state/) `terraform.tfstate` iga ressursi, mille ta lõi: Proxmoxi VMID, sõlme, IP-aadressid ja kõik atribuudid. Fail on JSON. Selle järgi teab OpenTofu järgmisel käivitusel, et masin `tofu-<kasutaja>` on tema loodud ja tema hallata. Proxmoxi teisi masinaid olekufailis ei ole ja OpenTofu ei muuda neid.
 
 Olekufail ei lähe Giti. Selles võivad olla saladused (bpg provider salvestab näiteks masina parooli, kui see on koodis), ja kui kaks inimest muudavad sama infrastruktuuri oma olekufailiga, ei klapi need enam omavahel. Meeskonnas hoitakse olekut ühises kohas (S3, GitLab, PostgreSQL), mida OpenTofu nimetab **backend**'iks. Meie kasutame vaikimisi kohalikku faili.
 
@@ -193,7 +193,7 @@ OpenTofu ühendub Proxmoxiga **API tokeniga**. Token kuulub sinu Proxmoxi kasuta
 
 Õpetaja on andnud igale õppijale õiguse luua masinaid ainult oma pool'i (`tofu-<kasutaja>`) ja kloonida ühte AlmaLinuxi malli. Teiste masinaid ei saa sinu token muuta ega kustutada. Seda nimetatakse **vähimate õiguste põhimõtteks**: automaatika saab täpselt need õigused, mida ta vajab. Kui token lekib, piirdub kahju sinu pool'iga.
 
-Token on saladus nagu parool. Ta on ainult failis `terraform.tfvars` (`.gitignore`-is) ja muutuja on märgitud `sensitive = true`, et OpenTofu ei trükiks seda välja.
+Token on saladus nagu parool. Ta on ainult failis `terraform.tfvars` (`.gitignore`-is) ja muutuja on märgitud `sensitive = true`, et OpenTofu ei trükiks seda välja. `sensitive` peidab väärtuse ainult ekraanilt: olekufailis on see endiselt lihttekstina ([saladused olekufailis](https://opentofu.org/docs/language/state/sensitive-data/)). Terraformist erinevalt oskab OpenTofu olekufaili [krüpteerida](https://opentofu.org/docs/language/state/encryption/), meeskonnas kasutatakse seda koos ühise backend'iga.
 
 ---
 
