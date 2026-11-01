@@ -19,13 +19,13 @@ Töötad masinas `proxmox1` VS Code'i kaudu nagu N7-s. Serveri rollis on samuti 
 
 | Osa | Töö | Aeg |
 |---|---|---|
-| 1 | Ettevalmistus | 15 min |
+| 1 | Ettevalmistus ja issue'de mall | 15 min |
 | 2 | Viga 1: registrisse kirjutamine (klassis koos) | 25 min |
 | 3 | Viga 2: katkine kood jõuab registrisse | 20 min |
 | 4 | Viga 3: pull request jõuab registrisse | 25 min |
-| 5 | Vead 4 ja 5: server | 35 min |
-| 6 | Sama konveier Jenkinsis, viga 6 | 40 min |
-| 7 | Korrektne lahendus | 10 min |
+| 5 | Vead 4 ja 5: server, tagasi vanale versioonile | 45 min |
+| 6 | Sama konveier Jenkinsis, viga 6 | 35 min |
+| 7 | Korrektne lahendus | 5 min |
 | 8 | Töö esitamine | 10 min |
 
 *Tabel 8.5. Praktikumi osad. Koos vahetunniga kokku 3 h 15 min.*
@@ -37,6 +37,7 @@ Iga vea juures on samad sammud samas järjekorras ([loengu §7](lecture.md#7-vea
 - **Uuri:** kust leida tõend. Tõend kinnitab oletuse või lükkab selle ümber. Enne tõendit ära midagi muuda.
 - **Paranda** ja **Kontrolli:** tee üks muudatus ja vaata sama sümptomit uuesti. Põhjus ja parandus on kokkuvolditud plokis. Ava see alles siis, kui oled ise proovinud.
 - **Küsimus:** kirjuta README-sse üks lause ja vigade tabelisse üks rida.
+- **Issue:** iga vea kohta on repositooriumis issue (samm 1.4). Paranduse commit sulgeb selle.
 
 Esimese vea teeme klassis koos. Ülejäänud vead teed paaris naabriga. Kumbki töötab oma repositooriumis.
 
@@ -111,6 +112,24 @@ git push
 ```
 
 Push harusse `main` käivitab konveieri. Ava repositooriumis vahekaart **Actions** ja oota, kuni käivitus lõpeb. **Ära veel midagi paranda.**
+
+### 1.4 Vigade issue'd
+
+Töökohas ei parandata viga ilma kirjeta. Iga viga saab **issue**: GitHubi kirje, kus on kirjas, mida nähti ja mis oli põhjus. Paranduse commit viitab issue'le. Hiljem näeb igaüks, milline commit millise vea parandas.
+
+Repositooriumis on issue'de mall **Viga**. Iga vea juures toimi nii:
+
+1. Kui näed sümptomit, ava vahekaart **Issues** → **New issue** → **Viga**. Pealkirjaks kirjuta lühidalt, mida näed, näiteks `build-and-push: docker push denied`. Väljale **Sümptom** kopeeri rida logist.
+2. Kui oled tõendi leidnud, täida väljad **Hüpotees** ja **Tõend**.
+3. Pane paranduse commit'i sõnumisse teise reana `Fixes #<issue number>`. Issue number on pealkirja järel, näiteks `#2`:
+
+    ```bash
+    git commit -m "N8 viga 1: build-and-push saab kirjutada GHCR-i" -m "Fixes #2"
+    ```
+
+Kui commit jõuab harusse `main`, sulgeb GitHub issue ise ja lisab sellele lingi commit'ile ([issue sulgemine commit'iga](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword)). Pull request'i puhul pane `Fixes #<number>` pull request'i kirjeldusse. Siis sulgub issue liitmisel. Pull request'id ja issue'd kasutavad sama numbrijada, seega ei ole issue numbrid alati järjest.
+
+Selle osa juhendis on commit'i käskudes ainult esimene rida. Teise rea `-m "Fixes #<number>"` lisa ise.
 
 ---
 
@@ -501,6 +520,53 @@ git log --oneline -1
 
 **Küsimus:** mis versioon töötab serveris ja kust tead, et see on sama mis GHCR-is? (README küsimus 6)
 
+### 5.4 Räsi järgi: issue, commit, image, server
+
+Commit'i räsi seob kõik kokku. Issue viitab commit'ile, image'i tag on sama räsi ja server näitab seda aadressil `/versioon`. Selles sammus liigud räsi järgi tagasi ja edasi.
+
+**Ülesanne**
+
+Ava suletud issue, mis on osa 3 vea kohta (katkine kood jõudis registrisse). Selles on link paranduse commit'ile. Leia sama räsi käsurealt:
+
+```bash
+git log --oneline
+git show --stat <räsi>
+```
+
+`git log --oneline` näitab iga commit'i räsi ja esimest rida. `git show --stat <räsi>` näitab, mis failid selles commit'is muutusid.
+
+Osa 3 alguses jõudis registrisse image, mille test kukkus. Leia `git log --oneline` väljundist selle commit'i räsi. Vaata, mis selles muutus:
+
+```bash
+git show <räsi> -- flask/app.py
+```
+
+**Ennusta.** Kui käivitad serveris selle räsiga image'i, mida vastab `curl localhost:8088`?
+
+Käivita see versioon serveris:
+
+```bash
+bash server/paigalda.sh <räsi>
+curl localhost:8088
+```
+
+??? success "Oodatav tulemus"
+    `paigalda.sh` viimane rida on sama räsi ja `curl` vastab `Tervist konteinerist!`. Registris on iga ehitatud image alles. Vana versiooni käivitamiseks piisab selle räsist. Serveris ei ehitatud midagi.
+
+Pane viimane versioon tagasi:
+
+```bash
+bash server/paigalda.sh
+curl localhost:8088/versioon
+git log --oneline -1
+```
+
+**Kontrolli**
+
+`/versioon` vastus ja `git log --oneline -1` räsi on samad.
+
+**Küsimus:** tootmises läks viga käima. Kuidas leiad räsi järgi, mis commit selle tõi ja millise issue parandus seda puudutab? Kuidas lähed eelmisele versioonile tagasi?
+
 ---
 
 ## Osa 6 · Sama konveier Jenkinsis
@@ -874,17 +940,7 @@ Töö on esitatud, kui kõik muudatused on GitHubis harus `main`. Automaatkontro
 
 ## Lisaülesanded
 
-??? example "A · Tagasi eelmisele versioonile (lihtne)"
-    Registris on iga commit'i image alles. Leia **Packages** alt või käsuga `git log --oneline` mõne vanema image'i räsi. Näiteks osa 2 oma. Käivita see:
-
-    ```bash
-    bash server/paigalda.sh <vanem-räsi>
-    curl localhost:8088
-    ```
-
-    Mis tervitust näed? Pane viimane versioon tagasi käsuga `bash server/paigalda.sh`. Mitu käsku kulus? Mida oleks pidanud tegema, kui server oleks image'i ise ehitanud?
-
-??? example "B · Vähim õigus kogu failis (keskmine)"
+??? example "A · Vähim õigus kogu failis (keskmine)"
     Lisa faili `ci.yml` algusesse, enne rida `jobs:`, õigus, mis kehtib kõigile töödele:
 
     ```yaml
@@ -894,7 +950,7 @@ Töö on esitatud, kui kõik muudatused on GitHubis harus `main`. Automaatkontro
 
     Pärast push'i ava töö `test` samm **Set up job**. Mis muutus lõigus `GITHUB_TOKEN Permissions`? Mis õigused on nüüd tööl `build-and-push` ja miks?
 
-??? example "C · Seinaekraan Jenkinsile (keskmine)"
+??? example "B · Seinaekraan Jenkinsile (keskmine)"
     Lisa failis `jenkins/Dockerfile` plugin'ite loendisse [`build-monitor-plugin`](https://plugins.jenkins.io/build-monitor-plugin/). Ehita image ja tee konteiner uuesti (samm 6.5). Loo Jenkinsis uus vaade: **+** → **Build Monitor View** → vali `lab08`. Sellist vaadet näidatakse kontorites seinal suurel ekraanil. Mis värvi on `lab08`, kui konveier kukub?
 
 ---
