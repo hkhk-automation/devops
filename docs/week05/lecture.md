@@ -105,14 +105,14 @@ VM ja konteiner ei välista teineteist: sageli töötavad konteinerid VM-i sees.
     - **FreeBSD jails (2000), Solaris Zones (2004)**: lisaks failidele on eraldi ka protsessid, võrk ja kasutajad.
     - **cgroups + namespaces (Linux, 2006–2008)**: Google'i insenerid lisasid tuuma ressursipiirangud (cgroups); namespaces eraldavad protsessid, võrgu ja failisüsteemi. Need kaks koos ongi konteiner.
     - **LXC (2008)**: esimesed täisväärtuslikud Linuxi konteinerid, mida oli aga keeruline kasutada.
-    - **Docker (2013)**: firma dotCloud lõi lihtsa käsurea, `Dockerfile`-i, kihilise image'i ja registry (Docker Hub). Konteinerist sai arendaja tööriist.
+    - **Docker (2013)**: ettevõte dotCloud lõi lihtsa käsurea, `Dockerfile`-i, kihilise image'i ja registry (Docker Hub). Konteinerist sai arendaja tööriist.
     - **Kubernetes (2014)**: Google avaldas orkestreerija paljude konteinerite haldamiseks.
     - **OCI (2015)**: [Open Container Initiative](https://opencontainers.org): image'i ja käivitamise standard. Tänu sellele töötab Dockeriga ehitatud image ka Podmanis ja Kubernetes'is.
     - **Podman (Red Hat, versioon 1.0 aastal 2019)**: Dockeriga ühilduv, aga töötab ilma deemonita ja ilma root-õigusteta.
 
 ## 3. Kuidas Docker sees töötab
 
-"Docker" tähendab kolme asja: **Docker Engine** (tarkvara, mis konteinereid käitab), **Docker, Inc.** (firma, mis müüb Docker Desktopi ja Docker Hubi tasulisi plaane) ja **avatud lähtekoodiga projekt**. Engine'i lähtekood on projektis [Moby](https://github.com/moby/moby); [Dockeri ametlikus GitHubis](https://github.com/docker) on CLI (`docker/cli`), Compose (`docker/compose`), Buildx ja dokumentatsioon (`docker/docs`). Ametlike image'ide (`nginx`, `python`...) retseptid on [`docker-library`](https://github.com/docker-library/official-images) all. Kõigi osade juhendid on [Dockeri dokumentatsioonis](https://docs.docker.com). Kursusel kasutame Docker Engine'i versiooni 29.x AlmaLinux 9 repositooriumist `docker-ce`.
+"Docker" tähendab kolme asja: **Docker Engine** (tarkvara, mis konteinereid käitab), **Docker, Inc.** (ettevõte, mis müüb Docker Desktopi ja Docker Hubi tasulisi plaane) ja **avatud lähtekoodiga projekt**. Engine'i lähtekood on projektis [Moby](https://github.com/moby/moby); [Dockeri ametlikus GitHubis](https://github.com/docker) on CLI (`docker/cli`), Compose (`docker/compose`), Buildx ja dokumentatsioon (`docker/docs`). Ametlike image'ide (`nginx`, `python`...) retseptid on [`docker-library`](https://github.com/docker-library/official-images) all. Kõigi osade juhendid on [Dockeri dokumentatsioonis](https://docs.docker.com). Kursusel kasutame Docker Engine'i versiooni 29.x AlmaLinux 9 repositooriumist `docker-ce`.
 
 Dockeril on **klient-server-arhitektuur**:
 
@@ -264,7 +264,7 @@ Kui kirjutad lühikese nime, lisab Docker puuduvad osad ise: `nginx` = `docker.i
 - tootmises kasuta alati konkreetset tag'i (`nginx:1.27`), kriitilises kohas isegi digest'i (`@sha256:...`), sest tag'i saab teisele image'ile ümber tõsta, digest'i ei saa;
 - pane oma image'ile versioon (`v1`, `1.0.3` või Giti commit'i lühiräsi), siis tead täpselt, mis tootmises töötab, ja saad vajadusel tagasi minna (kui `v2` on katki, käivita `docker run ...:v1`).
 
-Image'eid hoitakse registry's. Kõige tuntum on [Docker Hub](https://hub.docker.com): kui kirjutad `FROM nginx`, tuleb image sealt. Teised on näiteks GitHub Container Registry (`ghcr.io`), Quay.io (Red Hat) ja firmade oma registry'd. `docker pull` tõmbab image'i alla, `docker push` laadib selle üles (et jagada oma image'it meeskonnaga; vaja on `docker login`).
+Image'eid hoitakse registry's. Kõige tuntum on [Docker Hub](https://hub.docker.com): kui kirjutad `FROM nginx`, tuleb image sealt. Teised on näiteks GitHub Container Registry (`ghcr.io`), Quay.io (Red Hat) ja ettevõtete oma registry'd. `docker pull` tõmbab image'i alla, `docker push` laadib selle üles (et jagada oma image'it meeskonnaga; vaja on `docker login`).
 
 Docker Hubis vaata image'i lehel kolme asja:
 
@@ -387,7 +387,7 @@ AlmaLinuxis ja RHEL-is on vaikimisi [Podman](https://podman.io/docs): Red Hati t
     | Compose | `docker compose` | `podman compose` / `podman-compose` |
     | Kus kasutatakse | Igal pool: arendajad, CI, Docker Desktop | RHEL/Alma/Fedora serverid, turvatundlikud keskkonnad |
 
-Kursusel kasutatakse Dockerit, sest see on valdkonnas levinuim tööriist, enamik juhendeid ja CI-süsteeme eeldab seda ning Compose (N6) töötab Dockeriga kõige sujuvamalt. Samas on `docker` grupi liige sisuliselt root ja Podmani rootless-mudel on turvalisem. RHEL-i kasutavas firmas kohtad Podmani ja samad käsud töötavad ka seal. Praktikumi osas 14 paigaldad teise Alma VM-i Podmani ja käivitad seal sama image'i.
+Kursusel kasutatakse Dockerit, sest see on valdkonnas levinuim tööriist, enamik juhendeid ja CI-süsteeme eeldab seda ning Compose (N6) töötab Dockeriga kõige sujuvamalt. Samas on `docker` grupi liige sisuliselt root ja Podmani rootless-mudel on turvalisem. RHEL-i kasutavas ettevõttes kohtad Podmani ja samad käsud töötavad ka seal. Praktikumi osas 14 paigaldad teise Alma VM-i Podmani ja käivitad seal sama image'i.
 
 ## 10. Ökosüsteem: Desktop, Compose, orkestreerimine
 

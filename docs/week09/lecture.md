@@ -254,7 +254,7 @@ graph TB
   <figcaption>Joonis 9.4. Muudetav server kogub aja jooksul muudatusi, mida keegi ei mäleta. Muutumatu infrastruktuuri puhul ehitatakse iga kord uus ja vana kustutatakse (Talvik, 2026).</figcaption>
 </figure>
 
-Firmades on tavaliselt mõlemat. Andmebaasiserver on sageli lemmikloom, sest andmeid ei saa lihtsalt kustutada. Veebiserverid on sageli kariloomad. Lemmikloomi tasub hoida vähe.
+Ettevõtetes on tavaliselt mõlemat. Andmebaasiserver on sageli lemmikloom, sest andmeid ei saa lihtsalt kustutada. Veebiserverid on sageli kariloomad. Lemmikloomi tasub hoida vähe.
 
 ??? question "Kontrolli ennast"
     1. Töötava konteineri faili muudeti käsitsi. Kuidas taastab soovitud oleku konteineri asendamine uuega, mis on loodud samast image'ist?
@@ -292,7 +292,7 @@ graph TB
 Git on kõigi kihtide all. Ilma Gitita on iga fail lihtsalt fail ühe inimese kettal.
 
 ??? question "Kontrolli ennast"
-    1. Firma tahab 10 serverisse nginx'i ja igasse serverisse Dockeri konteinerit. Milline tööriist teeb millise osa?
+    1. Ettevõte tahab 10 serverisse nginx'i ja igasse serverisse Dockeri konteinerit. Milline tööriist teeb millise osa?
     2. Miks on Dockerfile tabelis „sees imperatiivne, tulemus muutumatu“?
 
 ??? abstract "Kokkuvõte"
@@ -314,4 +314,4 @@ Git on kõigi kihtide all. Ilma Gitita on iga fail lihtsalt fail ühe inimese ke
     2. Kirjelda ühtlustamise tsükli iga sammu Docker Compose'i näitel.
     3. Mis juhtub käsitsi parandusega järgmisel Ansible'i käivitusel ja kuidas seda vältida?
     4. Kustutad playbook'ist ühe task'i. Mis juhtub serveris?
-    5. Firma tahab, et ühe serveri kaotusest taastumine ei võtaks rohkem kui tund. Mida soovitad?
+    5. Ettevõte tahab, et ühe serveri kaotusest taastumine ei võtaks rohkem kui tund. Mida soovitad?

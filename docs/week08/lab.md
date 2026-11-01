@@ -725,7 +725,7 @@ Oota kuni 5 minutit. Vasakul tekib uus käivitus. Ava see. Üleval on kirjas `St
 
 Vali **Manage Jenkins** → **Appearance**. Lõigus **Themes** vali `Dark` ja vajuta **Save**. Selle võimaluse lisas plugin `dark-theme`.
 
-Mõtle tagasi tabelile 8.7. GitHub Actionsis ei pidanud sa paigaldama serverit, plugin'eid ega Pythonit. Jenkinsis tegid kõike seda ise. Vastutasuks töötab Jenkins sinu võrgus ja seda saab seadistada nii, nagu firma vajab.
+Mõtle tagasi tabelile 8.7. GitHub Actionsis ei pidanud sa paigaldama serverit, plugin'eid ega Pythonit. Jenkinsis tegid kõike seda ise. Vastutasuks töötab Jenkins sinu võrgus ja seda saab seadistada nii, nagu ettevõte vajab.
 
 ## Osa 7 · Võrdle lahendusega
 

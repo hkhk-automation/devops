@@ -116,7 +116,7 @@ Lisa saladus repositooriumi seadetes: ava [**Settings → Secrets and variables 
 ??? success "Vastus"
     Ei jõua. Kui pull request tuleb fork'ist, ei anta saladusi (välja arvatud `GITHUB_TOKEN`) töövoole edasi. Nii ei saa võõras inimene pull request'iga saladusi välja lugeda.
 
-Anna saladus töövoole töö `stack` tasemel võtmega `env:`. Võti `env:` on töö all sama taandega kui `runs-on`, nii näevad muutujat kõik selle töö sammud. Väärtus on `${{ secrets.POSTGRES_PASSWORD }}`. Loengu [§5](lecture.md#5-toovoo-fail-rida-realt) on selle kohta näide.
+Anna saladus töövoole töö `stack` tasemel võtmega `env:`. Võti `env:` on töö all sama taandega kui `runs-on`, nii näevad muutujat kõik selle töö sammud. Väärtus on `${{ secrets.POSTGRES_PASSWORD }}`. Loengu [§5](lecture.md#5-toovoofail-rida-realt) on selle kohta näide.
 
 Compose loeb muutujaid shelli keskkonnast samamoodi nagu failist `.env`. Kui muutuja on mõlemas, kasutatakse shelli väärtust ([Compose: muutujate järjekord](https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/)). Muutuja `POSTGRES_DB` võib kirjutada otse võtme `env:` alla, sest andmebaasi nimi ei ole saladus.
 

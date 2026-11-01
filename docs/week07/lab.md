@@ -8,22 +8,22 @@ tags:
 
 # Praktikum: GitHub Actions CI
 
-Täna kirjutad N5 Flaski rakendusele testid ja paned GitHubi need iga push'i järel käivitama. Koodi kirjutad VS Code'is oma AlmaLinuxi virtuaalmasinas, testid käivituvad GitHubi runneris ja võtmete kirjelduse leiad [GitHub Actionsi teatmikust](../github-actions.md).
+Täna kirjutad N5 praktikumis loodud Flaski rakendusele testid ja paned GitHubi need iga push'i järel käivitama. Koodi kirjutad VS Code'is oma AlmaLinuxi virtuaalmasinas, testid käivituvad GitHubi runneris ja võtmete kirjelduse leiad [GitHub Actionsi teatmikust](../github-actions.md).
 
 **Edenemine:** laboritahvel <http://192.168.125.187:8091/> (VPN-iga).
 
 ??? abstract "Õpiväljundid"
 
     1. Oskad kirjutada Flaskile automaattesti ja käivitada selle enne push'i oma masinas.
-    2. Oskad koostada faili `.github/workflows/ci.yml` samm haaval ja kontrollida iga sammu tulemust.
-    3. Oskad leida Actionsi logist viie tüüpilise CI vea põhjuse: puuduv tööriist, puuduv kood, puuduv sõltuvus, ainult enda masinas olev teek ja konteineri viga.
-    4. Oskad eristada, kas punane käivitus tuleb koodist või töövoost.
+    2. Oskad koostada faili `.github/workflows/ci.yml` sammhaaval ja kontrollida iga sammu tulemust.
+    3. Oskad leida Actionsi logist viie tüüpilise CI-vea põhjused: puuduv tööriist, puuduv kood, puuduv sõltuvus, ainult enda masinas olev teek ja konteineri viga.
+    4. Oskad eristada, kas käivituse ebaõnnestumise põhjus on rakenduse koodis või töövoos.
     5. Oskad lisada CI haru `main` kaitsesse nii, et punase testiga pull request'i ei saa liita.
     6. Oskad kirjutada testi enne koodi.
 
 Rida **Ennusta** tähendab, et enne käsku mõtled läbi, mis juhtub. Vastus on kokkuvolditud plokis.
 
-Joonisel on see, mis praktikumi lõpuks valmis on.
+Joonis näitab, mis on praktikumi lõpuks valmis.
 
 <figure markdown="span">
   ![Vasakul õppija virtuaalmasin: Classroomi repositooriumis flask/app.py, test_app.py ja ci.yml, virtuaalkeskkonnas pytest, teegi requests näide ning GitLabi ja Jenkinsi võrdlus. git push viib GitHubi, kus pull request n07-ci käivitab Actionsis töö test (checkout, setup-python, pip install, pytest) ja selle järel töö konteiner (docker build, run, curl /health). Kui mõlemad on rohelised, on liitmine lubatud. Kui üks on punane, keelab haru main ruleset liitmise](../images/n07_labi_ylevaade.svg)
@@ -32,11 +32,11 @@ Joonisel on see, mis praktikumi lõpuks valmis on.
 
 ## Osa 0 · Repositoorium ja Pythoni keskkond
 
-Selles osas teed valmis repositooriumi ja Pythoni keskkonna, kus teste käivitada.
+Selles osas valmistad ette repositooriumi ja Pythoni keskkonna, kus teste käivitada.
 
 ### 0.1 Repositoorium
 
-Võta Classroom 50-s vastu ülesanne **Lab 07 - GitHub Actions CI** ([Classroom 50](https://classroom50.org/hkhk-automation/it24-automatiseerimine/assignments)). Selles repositooriumis on sul administraatori õigus. Seda on vaja osas 5, kus seadistad haru `main` kaitse, ja kodutöös, kus lisad saladuse. N8 jätkab sama koodiga uues repositooriumis.
+Võta Classroom 50-s vastu ülesanne **Lab 07 - GitHub Actions CI** ([Classroom 50](https://classroom50.org/hkhk-automation/it24-automatiseerimine/assignments)). Selles repositooriumis on sul administraatori õigused. Seda on vaja osas 5, kus seadistad haru `main` kaitse, ja kodutöös, kus lisad saladuse. N8 jätkab sama koodiga uues repositooriumis.
 
 Klooni repositoorium oma virtuaalmasinasse, tee uus haru `n07-ci` ja kopeeri sinna N5 kaust `flask`:
 
@@ -69,7 +69,7 @@ Käsk `curl` peab vastama `Tere konteinerist!` või sinu muudetud tervitusega.
 
 ### 0.3 Virtuaalkeskkond
 
-Testid käivituvad Pythonis konteinerist väljaspool. Et Flask ja pytest ei läheks süsteemi Pythonisse, tee projektile oma **virtuaalkeskkond** (venv). See on kaust `.venv`, kuhu paigaldatakse ainult selle projekti paketid. Kausta ei panda Giti, seepärast lisad selle faili `.gitignore`.
+Testid käivituvad Pythonis konteinerist väljaspool. Et Flaski ja pytest'i ei paigaldataks süsteemi Pythonisse, tee projektile oma **virtuaalkeskkond** (venv). See on kaust `.venv`, kuhu paigaldatakse ainult selle projekti paketid. Kausta ei panda Giti, seepärast lisad selle faili `.gitignore`.
 
 ```bash
 python3 -m venv .venv
@@ -78,13 +78,13 @@ pip install -r flask/requirements.txt pytest
 echo ".venv/" >> .gitignore
 ```
 
-Käsurea ette ilmub `(.venv)`. See tähendab, et käsud `python` ja `pip` kasutavad nüüd projekti virtuaalkeskkonda.
+Käsuviiba ette ilmub `(.venv)`. See tähendab, et käsud `python` ja `pip` kasutavad nüüd projekti virtuaalkeskkonda.
 
 ??? warning "Kui `python3 -m venv` annab vea `No module named venv` või `ensurepip`"
     AlmaLinuxis on Python olemas, aga mõnes virtuaalmasinas puudub pip. Paigalda see käsuga `sudo dnf install -y python3-pip` ja proovi uuesti.
 
 ??? warning "Kui uues terminalis tuleb viga `pytest: command not found`"
-    Virtuaalkeskkond kehtib ainult terminalis, kus käivitasid `source .venv/bin/activate`. Igas uues terminalis käivita see käsk uuesti. Kui VS Code küsib all paremal **Select interpreter**, vali `.venv`.
+    Virtuaalkeskkond kehtib ainult selles terminalis, kus käivitasid `source .venv/bin/activate`. Igas uues terminalis käivita see käsk uuesti. Kui VS Code küsib all paremal **Select interpreter**, vali `.venv`.
 
 ## Osa 1 · Esimene test oma masinas
 
@@ -213,7 +213,7 @@ git rm .github/workflows/github-actions-demo.yml
 
 Nüüd kirjutad töövoo, mida hakkad järgmistes osades laiendama. Esialgu teeb see ainult ühe `echo`. Nii näed enne testide lisamist, et töövoog käivitub.
 
-Loo VS Code'is fail `.github/workflows/ci.yml`. See on ainus koht juhendis, kus on terve fail. Edaspidi lisad sellele ridu ja iga uue rea juures on kirjas, mida see teeb. Loengu [§5](lecture.md#5-toovoo-fail-rida-realt) on peaaegu sama fail valmis kujul koos iga võtme selgitusega. Kui jääd mõne rea juures kahtlema, vaata sealt.
+Loo VS Code'is fail `.github/workflows/ci.yml`. Siin on sinu `ci.yml` algversioon tervikuna. Järgmistes osades lisad sellele ridu ja iga uue rea juures on selgitus, mida see teeb. Loengu [5. osas](lecture.md#5-toovoofail-rida-realt) on peaaegu sama fail valmis kujul koos iga võtme selgitusega. Kui jääd mõne rea juures kahtlema, vaata sealt.
 
 ```yaml
 name: CI
@@ -273,7 +273,7 @@ Ava töö logis kõige esimene samm **Set up job**. Sealt näed, mis masinas tö
 ??? question "Küsimus"
     Ühe `echo` käsu jaoks kulus kümmekond sekundit. Mis pidi enne juhtuma, et käsk saaks käivituda? Mis juhtub selle masinaga pärast käivituse lõppu?
 
-## Osa 3 · Runner on tühi: kolm viga järjest
+## Osa 3 · Runneris puudub projekti keskkond: kolm viga järjest
 
 GitHub käivitab iga töö jaoks uue runneri. Selles on ainult operatsioonisüsteem ja mõned põhitööriistad. Sinu koodi, Pythoni õiget versiooni ja pakette (pytest, Flask) seal ei ole.
 
@@ -303,7 +303,7 @@ Siin on uut tüüpi samm. Rida `uses:` käivitab **action'i**. Action on valmis 
 ??? success "Vastus"
     Parameeter on `python-version`. Kui see puudub, otsib action versiooni failist `.python-version`. Kui ka seda ei ole, kasutatakse runneris juba olevat Pythoni versiooni. Seepärast kirjutatakse versioon töövoogu alati välja.
 
-**Ennusta:** sinu masinas läbis `pytest flask -v` osas 1. Mis juhtub runneris?
+**Ennusta:** sinu masinas õnnestus `pytest flask -v` osas 1. Mis juhtub runneris?
 
 Salvesta muudatus ja saada see GitHubi:
 
@@ -312,7 +312,7 @@ git add .github/workflows/ci.yml && git commit -m "ci: pytest" && git push
 ```
 
 ??? success "Oodatav tulemus"
-    Käivitus on punane. Runneris ei ole pytest'i, sest seda ei ole keegi sinna paigaldanud. Vea täpse teate leiad järgmises sammus.
+    Käivitus on punane. Runneris ei ole pytest'i, sest seda ei ole keegi sinna paigaldanud. Täpse veateate leiad järgmises sammus.
 
 ### 3.1 Viga: tööriista ei ole
 
@@ -362,7 +362,7 @@ Runnerisse ei tule repositooriumi faile ise. Action [`actions/checkout`](https:/
 
 Sammu `ls -la` võid nüüd kustutada või alles jätta. Saada muudatus GitHubi.
 
-`actions/checkout` on esimene võõras kood, mis sinu runneris käivitub. Loengu [§9](lecture.md#9-toovoo-turvalisus) kirjeldab, mida võõra action'i juures kontrollida.
+Nii `actions/checkout` kui ka `actions/setup-python` käivitavad sinu runneris kellegi teise kirjutatud koodi. Loengu [9. osa](lecture.md#9-toovoo-turvalisus) kirjeldab, mida enne action'i kasutamist kontrollida.
 
 **Leia dokumentatsioonist:** leia lehelt [Secure use reference](https://docs.github.com/en/actions/reference/security/secure-use), mis on ainus viis kinnitada action nii, et see ei saa enam muutuda.
 
@@ -408,7 +408,7 @@ Võrdle oma tööd `test` järgmisega. Kui midagi erineb, paranda:
 ```
 
 ??? warning "Kui samm `checkout` või `setup-python` on punane"
-    Kontrolli kirjapilti: `actions/checkout@v7` koos märgiga `@` ja võtmega `uses:`. Võtmega `run:` see ei tööta. `with:` peab olema `uses:` suhtes kahe tühiku võrra sisse nihutatud.
+    Kontrolli kirjapilti: `actions/checkout@v7` koos märgiga `@` ja võtmega `uses:`. Võtmega `run:` see ei tööta. `with:` on samal taandel kui `uses:`. Selle alla kuuluv `python-version` on kahe tühiku võrra suurema taandega.
 
 Sama mustri (`setup-python`, `pip install`, `pytest`) leiad GitHubi ametlikust juhendist [Building and testing Python](https://docs.github.com/en/actions/tutorials/build-and-test-code/python). Sama töövoo saab ka mallina: vahekaardil **Actions** vajuta **New workflow** ja GitHub pakub Pythoni repositooriumile Pythoni malli.
 
@@ -420,11 +420,11 @@ Sama mustri (`setup-python`, `pip install`, `pytest`) leiad GitHubi ametlikust j
 ??? question "Küsimus"
     Vaata vahekaardil **Actions** käivituste ajalugu. Seal on kolm punast ja üks roheline käivitus ning iga punane parandati ühe reaga. Mis oli kõigi kolme vea ühine põhjus? Miks on hea, et CI on nii range?
 
-### 3.4 Käivitus uuesti
+### 3.4 Käivituse kordamine
 
 Kui käivitus kukkus põhjusel, mis ei ole sinu koodis (näiteks võrguühendus katkes), saab sama käivituse uuesti käivitada ilma uue commit'ita.
 
-**Leia dokumentatsioonist:** leia dokumentatsiooni osast How-tos jaotisest Manage workflow runs, kuidas käivitada uuesti ainult käivituse kukkunud tööd.
+**Leia dokumentatsioonist:** leia dokumentatsiooni osast How-tos jaotisest Manage workflow runs, kuidas käivitada uuesti ainult ebaõnnestunud tööd.
 
 ??? success "Vastus"
     Juhend on lehel [Re-run workflows and jobs](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/re-run-workflows-and-jobs). Käivituse lehel paremal üleval on menüü **Re-run jobs** ja selles valik **Re-run failed jobs**. Valik **Re-run all jobs** käivitab kõik tööd uuesti.
@@ -467,7 +467,7 @@ git add flask/app.py && git commit -m "feat: requests" && git push
     ```
 
 ??? question "Leia põhjus"
-    Sinu masinas test läbis, CI-s kukkus ja kood on mõlemas sama. Mis on erinev? Mis juhtuks, kui keegi ehitaks sellest koodist Docker image'i? Mis juhtuks tootmisserveris?
+    Sinu masinas test õnnestus, CI-s ebaõnnestus ja kood on mõlemas sama. Mis on erinev? Mis juhtuks, kui keegi ehitaks sellest koodist Dockeri image'i? Mis juhtuks tootmisserveris?
 
 CI leiab just selliseid vigu. Sinu virtuaalmasinasse koguneb aja jooksul pakette, mille paigaldamist sa ei mäleta. Runner alustab iga kord tühjast masinast ja paigaldab ainult selle, mis on repositooriumis kirjas.
 
@@ -572,7 +572,7 @@ Jaotises [Manage workflow runs](https://docs.github.com/en/actions/how-tos/manag
 
 ## Osa 6 · Konteineri kontroll CI-s
 
-Töö `test` kontrollib, kas kood töötab. Kood võib olla korras, aga konteinerist rakendus ei vasta, näiteks kui see kuulab ainult aadressil `127.0.0.1`. Selles osas lisad teise töö `konteiner`, mis ehitab image'i, käivitab konteineri ja küsib sellelt vastust. See on loengus kirjeldatud suitsutest.
+Töö `test` kontrollib, kas kood töötab. Kood võib olla korras, aga konteineris töötav rakendus ei vasta väljastpoolt tehtud päringutele, näiteks kui see kuulab ainult aadressil `127.0.0.1`. Selles osas lisad teise töö `konteiner`, mis ehitab image'i, käivitab konteineri ja küsib sellelt vastust. See on loengus kirjeldatud suitsutest.
 
 Lisa failis `ci.yml` võtme `jobs:` alla uus töö. See peab olema töö `test` kõrval samal taandetasemel, töö `test` sisse seda ei panda:
 
@@ -592,7 +592,7 @@ Uued read tähendavad järgmist:
 - [`needs: test`](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idneeds) paneb tööd järjekorda. Töö `konteiner` alustab alles siis, kui töö `test` on roheline. Katkise koodiga image'it ei ole mõtet ehitada.
 - Docker on runneris juba olemas ja seda ei pea paigaldama. Seda näed runneri tarkvara nimekirjast, mille leidsid osas 2.2.
 - `--retry` ([curl'i juhend](https://curl.se/docs/manpage.html#--retry)) kordab päringut kuni 10 korda. Käsk `docker run` lõpetab kohe, aga Flask vajab käivitumiseks veidi aega. Ilma kordamiseta küsiks `curl` mõnikord liiga vara ja test oleks vahel roheline, vahel punane.
-- `-f` paneb käsu `curl` lõpetama veakoodiga, kui HTTP vastus on viga (4xx või 5xx). Ilma selleta loetaks ka vastus `404` õnnestumiseks.
+- `-f` paneb käsu `curl` lõpetama veakoodiga, kui HTTP-vastus on viga (4xx või 5xx). Ilma selleta loetaks ka vastus `404` õnnestumiseks.
 
 **Leia dokumentatsioonist:** leia lehelt [Workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) jaotisest `jobs.<job_id>.needs`, mis juhtub töödega, millel ei ole võtit `needs`.
 
@@ -648,7 +648,7 @@ def test_health_vastab_ok():
     assert vastus.get_json() == {"status": "ok"}
 ```
 
-**Ennusta:** kas uus test läbib?
+**Ennusta:** kas uus test õnnestub?
 
 ```bash
 pytest flask -v
@@ -663,7 +663,7 @@ pytest flask -v
 
     Test kirjeldab aadressi, mida rakenduses veel ei ole.
 
-### 7.2 Test läbib
+### 7.2 Test õnnestub
 
 Lisa failis `flask/app.py` route'i `index` järele uus route. Flask teeb Pythoni sõnastikust ise JSON-vastuse.
 
@@ -679,13 +679,13 @@ Käivita testid uuesti:
 pytest flask -v
 ```
 
-Väljundi lõpus on `2 passed`. Saada muudatus GitHubi. Vahekaardil **Actions** on mõlemad tööd, `test` ja `konteiner`, rohelised. Sama route läbis kaks eri kontrolli: ühiktesti ja konteineri suitsutesti.
+Väljundi lõpus on `2 passed`. Saada muudatus GitHubi. Vahekaardil **Actions** on mõlemad tööd, `test` ja `konteiner`, rohelised. Aadressi `/health` kontrolliti nüüd kahel viisil: Flaski testkliendiga ühiktestis ja töötavas konteineris suitsutestiga.
 
 ### 7.3 Sinu test
 
 Kirjuta ise kolmas test. Kui küsida aadressi, mida rakenduses ei ole (näiteks `/olematu`), peab rakendus vastama koodiga `404`. Koodi ei pea selleks muutma, sest Flask vastab nii juba ise.
 
-??? warning "Kui test läbib kohe esimesel korral"
+??? warning "Kui test õnnestub kohe esimesel korral"
     Kontrolli, kas test üldse midagi kontrollib. Muuda see korraks meelega valeks (`== 200`), veendu, et test läheb punaseks, ja pane tagasi. Test, mis ei saa kunagi kukkuda, ei kaitse millegi eest.
 
 Käivita testid ja saada kõik muudatused GitHubi:
@@ -718,7 +718,7 @@ Suurim erinevus on masinas. GitHub Actions saab iga käivituse jaoks uue virtuaa
     Jenkinsi agent on sageli server, mis töötab kuude kaupa. Meenuta osa 4. Kui keegi käivitab Jenkinsi serveris korra `pip install requests`, mis juhtub järgmise kuu kõigi käivitustega? Kas Jenkins leiaks osa 4 vea?
 
 ??? note "Kontrollnimekiri"
-    Kui praktikum on tehtud, peaksid oskama järgmist ilma juhendita:
+    Enne esitamist kontrolli, et lahendus vastab järgmistele tingimustele ja oskad selle toimimist selgitada:
 
     - [ ] `pytest flask -v` sinu virtuaalmasinas näitab `3 passed`.
     - [ ] Failis `ci.yml` on kaks tööd, `test` ja `konteiner`, ning töös `konteiner` on `needs: test`.
@@ -731,7 +731,7 @@ Suurim erinevus on masinas. GitHub Actions saab iga käivituse jaoks uue virtuaa
 
 ## Töö esitamine
 
-Automaatkontroll vaatab haru `main`. Lisa faili `README.md` jaotis `## N7 CI`, kus on link ühele punasele ja ühele rohelisele käivitusele (aadressiriba vahekaardilt **Actions**) ning ühe lausega vastused:
+Automaatkontroll vaatab haru `main`. Lisa faili `README.md` jaotis `## N7 CI`, kus on link ühele punasele ja ühele rohelisele käivitusele ning ühe lausega vastused. Ava konkreetse käivituse leht ja kopeeri selle aadress brauseri aadressiribalt:
 
 1. Miks runneris puudus pytest, kuigi sinu virtuaalmasinas oli see olemas?
 2. Miks osa 4 viga sinu masinas ei paistnud?
@@ -774,7 +774,7 @@ Tulemuse näed Classroom 50-s.
               dockerfile: flask/Dockerfile
     ```
 
-    Töö läheb tõenäoliselt punaseks hoiatuse [`DL3013`](https://github.com/hadolint/hadolint/wiki/DL3013) tõttu (`pip install` ilma versioonideta). Kas parandad `Dockerfile`'i või lisad parameetri `failure-threshold: error`? Mida kumbki valik maksab?
+    Töö läheb tõenäoliselt punaseks hoiatuse [`DL3013`](https://github.com/hadolint/hadolint/wiki/DL3013) tõttu (`pip install` ilma versioonideta). Kas parandad `Dockerfile`'i või lisad parameetri `failure-threshold: error`? Millised on kummagi valiku tagajärjed?
 
 ??? example "2 · Mitu Pythoni versiooni"
     Uuri võtit [`strategy: matrix`](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstrategymatrix) ja näidet juhendis [Building and testing Python](https://docs.github.com/en/actions/tutorials/build-and-test-code/python). Käivita töö `test` korraga Pythoni versioonidega 3.11, 3.12 ja 3.13. Mitu tööd tekib vahekaardile **Actions**?

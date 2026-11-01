@@ -226,7 +226,7 @@ localhost ansible_connection=local
 
 ### INI või YAML: kaks vormingut
 
-Inventory't saab kirjutada kahes vormingus. Sobiv vorming sõltub keskkonna suurusest: väikeses firmas on mõni server, rahvusvahelises kontsernis sadu.
+Inventory't saab kirjutada kahes vormingus. Sobiv vorming sõltub keskkonna suurusest: väikeses ettevõttes on mõni server, rahvusvahelises kontsernis sadu.
 
 Väikese keskkonna jaoks piisab lihtsast **INI-vormingust**. Iga grupp on nurksulgudes pealkiri, mille alla loetled serverid:
 

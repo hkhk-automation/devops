@@ -256,13 +256,13 @@ jobs:
 
 Töö `konteiner` alustab alles siis, kui töö `test` on lõppenud roheliselt. Kui `test` kukub, jääb `konteiner` käivitamata ja on käivituse lehel hall (*skipped*). Katkise koodiga konteinerit ei ole mõtet ehitada. N8-s lisatakse samasse järjekorda kolmas töö, mis saadab image'i registrisse.
 
-## 5. Töövoo fail rida realt
+## 5. Töövoofail rida-realt
 
 Allpool on terve töövoofail. See on peaaegu sama fail, mille koostad praktikumis, ainult mõne lisavõtmega. Klõpsa koodi kõrval oleval numbril, et näha, mida rida teeb ja mis juhtub, kui see puudub.
 
 ### YAML-i reeglid
 
-Töövoo fail on kirjutatud YAML-is. Samas keeles on ka Ansible'i playbook'id ja reeglid on samad:
+Töövoofail on kirjutatud YAML-is. Samas keeles on ka Ansible'i playbook'id ja reeglid on samad:
 
 - Taane näitab, mis millegi sisse kuulub. Taandes kasutatakse ainult tühikuid, tavaliselt kaks tühikut taseme kohta. Tabulaatoriga taane annab vea.
 - Koolonile järgneb tühik. Rida `runs-on: ubuntu-latest` on õige, `runs-on:ubuntu-latest` on vale.
@@ -312,7 +312,7 @@ jobs: # (4)!
 7. `steps` all on töö sammud. Iga samm algab kriipsuga ja sammud tehakse järjest ülevalt alla.
 8. `name` sammu juures on sammu nimi logis. Kui see puudub, paneb GitHub nimeks käsu, näiteks `Run pytest flask -v`. Nimi ei ole kohustuslik, aga pikas töös aitab see logist õige samm üles leida.
 9. `uses` käivitab valmis action'i. Kuju on `omanik/nimi@versioon`, siin on see GitHubi enda action `checkout` versioon 7. Action'eid ja nende parameetreid leiad [GitHub Marketplace'ist](https://github.com/marketplace?type=actions). Iga action'i lehel on kirjas, mida see teeb ja mis parameetreid `with:` all saab anda.
-10. `with` annab action'ile parameetrid. See on võtme `uses` all kahe tühiku võrra suurema taandega. Kui `with` puudub, kasutab action vaikeväärtusi. `setup-python` kasutaks siis runneris juba olevat Pythoni versiooni.
+10. `with` annab action'ile parameetrid. Võti `with` on samal taandel kui `uses`, selle parameetrid (näiteks `python-version`) on kahe tühiku võrra suurema taandega. Kui `with` puudub, kasutab action vaikeväärtusi. `setup-python` kasutaks siis runneris juba olevat Pythoni versiooni.
 11. `run` käivitab Bashi käsu runneris. Üks samm on kas `uses` või `run`, mõlemat korraga samas sammus olla ei saa.
 12. `needs` paneb tööd järjekorda. Töö `konteiner` alustab alles siis, kui `test` on roheline. Ilma selleta käivituvad mõlemad tööd korraga ja image ehitatakse ka siis, kui testid kukuvad.
 13. Märk `|` tähendab mitmerealist teksti. Kõik järgmised read, millel on suurem taane, on üks Bashi skript, mis käivitatakse ühes sammus. Kui mõni käsk ebaõnnestub, on kogu samm punane.
@@ -334,7 +334,7 @@ Kõik võtmed ja nende võimalikud väärtused on [töövoo süntaksi juhendis](
 
 ### Kõige sagedasemad vead
 
-??? note "Tabel 7.6. Töövoo faili tüüpilised vead"
+??? note "Tabel 7.6. Töövoofaili tüüpilised vead"
     | Viga | Mida näed | Paranda |
     |---|---|---|
     | Fail on vales kaustas, näiteks `.github/workflow/` või `github/workflows/` | Vahekaardil **Actions** ei ole ühtegi käivitust | Kausta nimi on täpselt `.github/workflows/` |

@@ -505,10 +505,10 @@ Ava `https://hub.docker.com/r/<kasutaja>/minu-nginx`: image on avalik ja tag `v1
     | Docker Hub | `docker.io/kasutaja/app:v1` (lühidalt `kasutaja/app:v1`) | Avalikud image'id, vaikimisi valik |
     | GitHub Container Registry | `ghcr.io/kasutaja/app:v1` | Kood GitHubis, CI GitHub Actionsis |
     | Quay.io (Red Hat) | `quay.io/kasutaja/app:v1` | RHEL-i ja OpenShifti keskkonnad |
-    | Pilve registry'd | AWS ECR, Azure ACR, Google Artifact Registry | Firma rakendused pilves |
+    | Pilve registry'd | AWS ECR, Azure ACR, Google Artifact Registry | Ettevõte rakendused pilves |
     | Oma registry | `registry.firma.ee/app:v1` (`registry:2`, Harbor, GitLab) | Sisevõrk, privaatsed image'id |
 
-    Firmad hoiavad oma image'eid tavaliselt privaatses registry's, mitte avalikus Docker Hubis. Sama image'i `ghcr.io`-sse laadimine on lisaülesanne D.
+    Ettevõtted hoiavad oma image'eid tavaliselt privaatses registry's, mitte avalikus Docker Hubis. Sama image'i `ghcr.io`-sse laadimine on lisaülesanne D.
 
 Kontrolli, et image töötab ka mujal: kustuta kohalik koopia ja tõmba image tagasi:
 
