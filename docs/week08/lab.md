@@ -181,13 +181,13 @@ Konveier on nüüd roheline. Et seda ei peaks iga kord vahekaardilt **Actions** 
 
 **Ülesanne**
 
-1. Ava vahekaart **Actions** ja vali vasakult töövoog **CI/CD**.
+1. Ava vahekaardil **Actions** viimane roheline käivitus.
 2. Paremal üleval on nupp **⋯**. Vali **Create status badge**.
-3. Haruks vali `main`, sündmuseks `push`, ja vajuta **Copy status badge Markdown**.
+3. Jäta väljadele **Branch** ja **Event** vaikeväärtused (`Default branch` on `main`) ja vajuta **Copy status badge Markdown**.
 4. Kleebi kopeeritud rida README-s esimese pealkirja alla. Rida on kujul:
 
     ```markdown
-    [![CI/CD](https://github.com/hkhk-automation/<sinu-repo>/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/hkhk-automation/<sinu-repo>/actions/workflows/ci.yml)
+    [![CI/CD](https://github.com/hkhk-automation/<sinu-repo>/actions/workflows/ci.yml/badge.svg)](https://github.com/hkhk-automation/<sinu-repo>/actions/workflows/ci.yml)
     ```
 
 5. Salvesta muudatus ja saada see GitHubi:
