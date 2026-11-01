@@ -72,7 +72,7 @@ tofu version
 
 ??? warning "Kui paigaldus ei õnnestu"
     - `curl: (6) Could not resolve host`: nime lahendamine ebaõnnestus. Kontrolli eraldi võrguühendust (`ping -c 2 1.1.1.1`) ja DNS-i (`getent hosts get.opentofu.org`).
-    - Skript teatab GPG-võtme veast: salvesta täpne veateade ja proovi üks kord uuesti. Kui viga kordub, näita teadet õpetajale.
+    - Skript teatab GPG-võtme veast: salvesta täpne veateade ja proovi üks kord uuesti. Kui viga kordub, küsi õpetajalt abi ja näita veateadet.
 
 ### 1.4 API-token
 
