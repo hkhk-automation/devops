@@ -7,15 +7,11 @@ tags:
 
 # Loeng: serveri konfiguratsiooni automatiseerimine
 
-**Maht:** ~40 min iseseisvat lugemist, loe **enne** praktikumi
-
 See leht on mõeldud iseseisvaks lugemiseks. Loe see rahulikult läbi enne praktikumi. Tunnis käime põhiosa kiiremini üle, kuid siit leiad kõik koos näidetega lahti seletatuna ja saad lehte praktikumi ajal spikrina kasutada.
 
 **Praktikumiks 1 piisab põhiosast**: peatükid 1–8 (kuni esimese playbooki ja idempotentsuseni). Peatükid alates 9-ndast (muutujad põhjalikumalt, tingimused, tsüklid) on lisalugemine: loe need läbi, kuid esimeseks praktikumiks ei pea neid peast teadma.
 
----
-
-!!! abstract "Õpiväljundid"
+??? abstract "Õpiväljundid"
     Pärast seda materjali oskad:
 
     - selgitada, miks deklaratiivne lähenemine sobib serverite haldamiseks paremini kui käskude jada
@@ -26,17 +22,6 @@ See leht on mõeldud iseseisvaks lugemiseks. Loe see rahulikult läbi enne prakt
     - kirjutada lihtsa playbooki, mis paigaldab tarkvara ja käivitab teenuse
     - kasutada playbookis muutujat (`vars:`, `{{ }}`)
     - selgitada, millal on vaja `become`-i ja mida teeb proovikäivitus (`--check`)
-
----
-
-!!! info "Lisalugemine: teistsugune sissejuhatus"
-    Kui soovid sama teemat käsitleda teise nurga alt või lihtsama sissejuhatusega, vaata ka järgmisi materjale:
-
-    - [Ansible tutorial for beginners (Spacelift)](https://spacelift.io/blog/ansible-tutorial): selge ingliskeelne õpetus algajatele, mis jõuab esimese playbooki ja lihtsa muutujani.
-    - [Süsteemihalduse Ansible-labor (TÜ)](https://courses.cs.ut.ee/2022/sa/spring/Main/Ansible): Tartu Ülikooli kursuse materjal, kus ehitatakse esimene playbook localhostis (moodulid user, file ja get_url).
-    - [Ansible kasutamine (auul.pri.ee)](https://www.auul.pri.ee/wiki/Ansible_kasutamine): eestikeelne kogukonna wiki.
-
----
 
 ## 1. Probleem, mida Ansible lahendab
 
@@ -51,17 +36,16 @@ Käsitsi seadistamisel on kolm püsivat probleemi. **See ei skaleeru**: kümne s
 
 Ansible lahendab kõik kolm probleemi. Soovitud seisund kirjeldatakse **koodina üks kord** (millised paketid, milline konfiguratsioon, millised teenused), see kood pannakse Giti (nagu eelmisel nädalal) ja Ansible rakendab selle kõigil serveritel ühtemoodi. Ansible ei asenda Giti: Git hoiab faile, Ansible loeb neid ja viib serverid failides kirjeldatud seisundisse.
 
----
-
 ## 2. Mis Ansible on ja mis ta EI ole
 
-Ansible on avatud lähtekoodiga IT-automaatika platvorm. Seda kasutatakse konfiguratsioonihalduseks (serverite seadistamiseks), rakenduste paigaldamiseks, pilveressursside haldamiseks, võrguseadmete seadistamiseks ja mitme masina töö korraga orkestreerimiseks. Kasutusala on lai, kuid põhiidee on alati sama: kirjeldad, milline peab olema lõpptulemus, ja Ansible viib süsteemi sellesse seisundisse. Kõige lihtsamalt öeldes on Ansible programm, mis loeb kasutaja kirjutatud YAML-faile ja teeb nende järgi serverites muudatusi.[^docs]
+Ansible on avatud lähtekoodiga IT-automaatika platvorm. Seda kasutatakse konfiguratsioonihalduseks (serverite seadistamiseks), rakenduste paigaldamiseks, pilveressursside haldamiseks, võrguseadmete seadistamiseks ja mitme masina töö korraga orkestreerimiseks. Kasutusala on lai, kuid põhiidee on alati sama: kirjeldad, milline peab olema lõpptulemus, ja Ansible viib süsteemi sellesse seisundisse. Kõige lihtsamalt öeldes on Ansible programm, mis loeb kasutaja kirjutatud YAML-faile ja teeb nende järgi serverites muudatusi. Kõik mõisted ja moodulid on kirjeldatud [Ansible'i dokumentatsioonis](https://docs.ansible.com). Teise nurga alt selgitavad sama teemat ingliskeelne [Spacelift'i õpetus algajatele](https://spacelift.io/blog/ansible-tutorial) ja Tartu Ülikooli [süsteemihalduse kursuse Ansible'i peatükk](https://courses.cs.ut.ee/2022/sa/spring/Main/Ansible).
 
 Ansible **ei ole** operatsioonisüsteem, pilveteenus ega veebirakendus. Algajad ajavad selle sageli segamini. Ansible on tööriist, mis käivitatakse kusagil (sinu arvutis, CI/CD-runneris või eraldi automaatikaserveris) ja mis ühendub sealt hallatavate serveritega. Ansible ei ole veebiteenus, kuhu kasutaja sisse logib: käivitad Ansible'i käsu ja see teeb töö ära.
 
-Ansible'i lõi Michael DeHaan 2012. aastal. Tema eesmärk oli teha automatiseerimistööriist, mida oleks lihtne kasutusele võtta, millel oleks võimalikult vähe eeldusi ja mille seadistusi saaks inimene lugeda. Krüptilise programmeerimiskeele asemel pidi see olema midagi, mida oskab lugeda ka sügava programmeerimistaustata administraator. Red Hat ostis Ansible'i 2015. aastal, kuid projekt on endiselt avatud lähtekoodiga ja seda arendatakse koos kogukonnaga.
+??? info "Ansible'i taust"
+    Ansible'i lõi Michael DeHaan 2012. aastal. Tema eesmärk oli teha automatiseerimistööriist, mida oleks lihtne kasutusele võtta, millel oleks võimalikult vähe eeldusi ja mille seadistusi saaks inimene lugeda. Krüptilise programmeerimiskeele asemel pidi see olema midagi, mida oskab lugeda ka sügava programmeerimistaustata administraator. Red Hat ostis Ansible'i 2015. aastal, kuid projekt on endiselt avatud lähtekoodiga ja seda arendatakse koos kogukonnaga.
 
-!!! info "Ametlik projekt ja meie projekt"
+??? info "Ametlik projekt ja meie projekt"
     Kursusel on kaks eri asja, mida ei tohi omavahel segi ajada.
 
     **Ametlik projekt** asub aadressil <https://github.com/ansible/ansible>. Seal on Ansible'i enda lähtekood, dokumentatsioon ja arendus. Seda **me ei muuda**: see on tööriist, mida kasutame.
@@ -70,11 +54,9 @@ Ansible'i lõi Michael DeHaan 2012. aastal. Tema eesmärk oli teha automatiseeri
 
     Teisisõnu ei kirjuta me Ansible'it ümber. Kirjutame Ansible'i abil oma **infrastruktuuri kirjelduse** ehk failid, mis ütlevad, millised meie serverid peavad olema.
 
----
-
 ## 3. Kust Ansible tuleb: konfiguratsioonihalduse maastik
 
-Ansible ei ole esimene ega ainus tööriist, mis haldab servereid koodi abil. Enne seda olid juba olemas Puppet (2005) ja Chef (2009), tänapäeval kasutatakse ka Salti. Kõik need lahendavad sama probleemi (kuidas hoida paljusid servereid koodi järgi õiges seisundis), kuid Ansible levis kiiresti ühe konkreetse valiku tõttu: **see ei vaja hallataval serveril agenti**. Et mõista, miks see on oluline, tuleb teada kahe lähenemise erinevust.[^howansible]
+Ansible ei ole esimene ega ainus tööriist, mis haldab servereid koodi abil. Enne seda olid juba olemas Puppet (2005) ja Chef (2009), tänapäeval kasutatakse ka Salti. Kõik need lahendavad sama probleemi (kuidas hoida paljusid servereid koodi järgi õiges seisundis), kuid Ansible levis kiiresti ühe konkreetse valiku tõttu: **see ei vaja hallataval serveril agenti**. Et mõista, miks see on oluline, tuleb teada kahe lähenemise erinevust ([How Ansible works](https://www.ansible.com/overview/how-ansible-works)).
 
 **Pull-mudelis** (Puppet, Chef) töötab igas serveris väike agentprogramm, mis tuleb sinna eelnevalt paigaldada. Agent küsib perioodiliselt keskserverilt: "Milline on minu soovitud seisund?" ja rakendab selle kohapeal ise. Server tõmbab (pull) konfiguratsiooni endale. See töötab hästi, kuid enne mis tahes muud tööd tuleb igasse serverisse agent paigaldada ja seda hiljem hooldada.
 
@@ -96,19 +78,16 @@ graph LR
 
 Kumbki lähenemine ei ole absoluutselt parem, sest suurtes keskkondades on pull-mudelil omad eelised. Ansible'i madal sisenemislävi teeb selle siiski algajale ja väiksemale keskkonnale sobivaks. Järgmine tabel võtab erinevused kokku:
 
-| Omadus | Push (Ansible) | Pull (Puppet, Chef) |
-|---|---|---|
-| Agent serveril | Pole vaja | Paigalda ja hoia töös |
-| Ühendus | SSH (juba olemas) | Agent + keskserver |
-| Alustamise lävi | Madal: paigalda ühte masinasse | Kõrgem: seadista kogu taristu |
-| Keel | YAML (loetav) | Oma DSL (Ruby-põhine) |
-| Kust muudatus algab | Käivitatakse käsitsi või CI-st | Agent ise, ajakava järgi |
-
-*Tabel 3.1. Push- ja pull-mudeli võrdlus.*
+??? note "Push- ja pull-mudeli võrdlus"
+    | Omadus | Push (Ansible) | Pull (Puppet, Chef) |
+    |---|---|---|
+    | Agent serveril | Pole vaja | Paigalda ja hoia töös |
+    | Ühendus | SSH (juba olemas) | Agent + keskserver |
+    | Alustamise lävi | Madal: paigalda ühte masinasse | Kõrgem: seadista kogu taristu |
+    | Keel | YAML (loetav) | Oma DSL (Ruby-põhine) |
+    | Kust muudatus algab | Käivitatakse käsitsi või CI-st | Agent ise, ajakava järgi |
 
 Meie kursusel kasutame Ansible'it just seetõttu, et kõik vajalik on juba olemas: SSH-ühendus serveriga ja Python serveris. Rohkem pole vaja.
-
----
 
 ## 4. Deklaratiivne lähenemine
 
@@ -120,7 +99,7 @@ cp nginx.conf /etc/nginx/nginx.conf
 systemctl start nginx
 ```
 
-Ansible töötab teisiti. Sammude loetlemise asemel kirjeldad **lõppseisundit**: milline peab server pärast olema. Seda nimetatakse **deklaratiivseks** lähenemiseks:
+Ansible töötab teisiti. Sammude loetlemise asemel kirjeldad **lõppseisundit**: milline peab server pärast olema. See on **deklaratiivne** lähenemine:
 
 ```yaml
 - name: nginx on paigaldatud ja töötab
@@ -152,21 +131,18 @@ Pane tähele sõnastust. Käsu "paigalda nginx" asemel on kirjas "nginx `state: 
 
 Võtmesõna on `state` ja see kordub kõigis moodulites. Iga moodul tunneb veidi erinevaid väärtusi, kuid loogika on sama: kirjeldad, milline asi peab olema, ja tegevuse valib moodul ise:
 
-| Moodul | Levinud `state` väärtused | Tähendus |
-|---|---|---|
-| `apt` / `package` | `present`, `absent`, `latest` | olemas / eemaldatud / uusim versioon |
-| `service` | `started`, `stopped`, `restarted`, `reloaded` | käib / seisab / taaskäivita / laadi konfiguratsioon uuesti |
-| `file` | `file`, `absent`, `directory` | fail on olemas / kustutatud / kaust |
-
-*Tabel 3.2. `state` on deklaratiivse lähenemise tuum: kirjeldad seisundit, tegevuse valib moodul.*
+??? note "`state` väärtused moodulites"
+    | Moodul | Levinud `state` väärtused | Tähendus |
+    |---|---|---|
+    | `apt` / `package` | `present`, `absent`, `latest` | olemas / eemaldatud / uusim versioon |
+    | `service` | `started`, `stopped`, `restarted`, `reloaded` | käib / seisab / taaskäivita / laadi konfiguratsioon uuesti |
+    | `file` | `file`, `absent`, `directory` | fail on olemas / kustutatud / kaust |
 
 Deklaratiivse lähenemise eelis on see, et sama fail töötab erinevatest algseisunditest. Kui server on täiesti tühi, teeb Ansible kõik sammud. Kui osa on juba seadistatud, teeb see ainult puuduva osa. Kui kõik on juba korras, ei tee Ansible midagi. Serveri praegust seisundit ei pea teadma: piisab, kui kirjeldad, milline see peab olema, ja Ansible viib serveri sellesse seisundisse.
 
----
-
 ## 5. Idempotentsus: meeldetuletus
 
-Idempotentsust nägid juba N1-s: sama toimingut võib teha mitu korda ja tulemus jääb samaks. Ansible töötab just nii ja see tuleneb otse deklaratiivsusest: kuna moodul teab soovitud seisundit, kontrollib see enne tegutsemist, kas see seisund on juba saavutatud. Esimesel käivitamisel paigaldab Ansible nginx'i (`changed`), teisel näeb, et kõik on paigas, ega tee midagi (`ok`).[^idempotency]
+Idempotentsust nägid juba N1-s: sama toimingut võib teha mitu korda ja tulemus jääb samaks. Ansible töötab just nii ja see tuleneb otse deklaratiivsusest: kuna moodul teab soovitud seisundit, kontrollib see enne tegutsemist, kas see seisund on juba saavutatud. Esimesel käivitamisel paigaldab Ansible nginx'i (`changed`), teisel näeb, et kõik on paigas, ega tee midagi (`ok`). Mõiste definitsioon on [Ansible'i sõnastikus](https://docs.ansible.com/ansible/latest/reference_appendices/glossary.html).
 
 <figure markdown="span">
   ![Esimesel käivitusel changed=1, edasi changed=0](../images/n03_idempotentsus.svg)
@@ -174,8 +150,6 @@ Idempotentsust nägid juba N1-s: sama toimingut võib teha mitu korda ja tulemus
 </figure>
 
 N3 jaoks on üks oluline täpsustus, sest praktikumis puutud sellega kokku. Moodulid `shell:` ja `command:` lihtsalt käivitavad käsu ega tea, mida see muutis. Seetõttu raporteerivad nad **vaikimisi** iga kord `changed`, kui task'ile pole lisatud `changed_when`-tingimust ega parameetrit `creates` või `removes`. Selline task lõhub idempotentsuse: kui playbook käivitub 50 serveris cron'iga, ei ole enam võimalik eristada tegelikku muudatust mürast. Reegel: enne kui kirjutad `shell:`, kontrolli, kas sama tööd teeb mõni spetsiaalne moodul. Praktikumis teed selle vea meelega ja parandad selle ise.
-
----
 
 ## 6. Ansible arhitektuur ja inventory
 
@@ -217,15 +191,14 @@ Kui inventory asukohta ei ole määratud, otsib Ansible vaikimisi faili `/etc/an
 
 Hüüdnime järele saab kirjutada parameetreid, mis täpsustavad, kuidas Ansible selle serveriga ühendub. Enamikul neist on mõistlik vaikeväärtus, nii et tavaliselt piisab `ansible_host`-ist ja `ansible_user`-ist, kuid valikuid on rohkem:
 
-| Parameeter | Mille jaoks | Näide |
-|---|---|---|
-| `ansible_host` | serveri IP või DNS-nimi | `192.168.1.10` |
-| `ansible_connection` | ühendusviis | `ssh` (Linux), `winrm` (Windows), `local` (kohalik masin) |
-| `ansible_port` | SSH port (vaikimisi 22) | `2222` |
-| `ansible_user` | kasutaja, kellega sisse logida | `kasutaja`, `ubuntu` |
-| `ansible_password` | ühenduse parool, **väldi seda** | (vt turvamärkust) |
-
-*Tabel 3.3. Levinumad inventory parameetrid.*
+??? note "Levinumad inventory parameetrid"
+    | Parameeter | Mille jaoks | Näide |
+    |---|---|---|
+    | `ansible_host` | serveri IP või DNS-nimi | `192.168.1.10` |
+    | `ansible_connection` | ühendusviis | `ssh` (Linux), `winrm` (Windows), `local` (kohalik masin) |
+    | `ansible_port` | SSH port (vaikimisi 22) | `2222` |
+    | `ansible_user` | kasutaja, kellega sisse logida | `kasutaja`, `ubuntu` |
+    | `ansible_password` | ühenduse parool, **väldi seda** | (vt turvamärkust) |
 
 Mõni neist vajab selgitust. `ansible_connection` määrab ühendusviisi: Linuxi puhul SSH, Windowsi puhul WinRM. Kui väärtus on `local`, töötab Ansible otse kohalikus masinas ega ühendu kuhugi. See sobib katsetamiseks, kui eraldi serverit pole käepärast:
 
@@ -311,8 +284,6 @@ graph TB
 Vanem- ja lapsrühmale antakse eri seaded **muutujate** (group_vars) abil; selle teemani jõuame N4-s. Praegu piisab teadmisest, et rühm võib sisaldada teisi rühmi ja nii saab dubleerimist vältida.
 
 Inventory on nimekiri kõigist seadmetest, mida Ansible haldab. Kõik ülejäänu tugineb sellele, seega õpi see algusest peale selgeks.
-
----
 
 ## 7. YAML: keel, millel kõik playbookid põhinevad
 
@@ -427,8 +398,6 @@ Playbook **ongi** koostatud nendest struktuuridest, mis on üksteise sisse pandu
 
 Playbook on **play'de loend**, iga play on sõnastik, `tasks` on omakorda **sõnastike loend** ja mooduli parameetrid on jälle sõnastik. Kui YAML-i struktuur on selge, ei ole playbookis midagi uut: see koosneb tuttavatest osadest tuttavas järjekorras. VS Code näitab taande tühikuid ja märgib YAML-i vead kohe ära, seega hoia see praktikumis avatud.
 
----
-
 ## 8. Playbook, play, task, moodul
 
 Enne esimese playbooki kirjutamist teeme selgeks neli mõistet, mida algajad sageli segi ajavad. Need on pesastatud suuremast väiksemani ja kui erinevused on selged, loed iga playbooki palju kindlamalt.
@@ -473,7 +442,7 @@ Vaatame terviklikku playbooki, mis seadistab nginx'i veebiserveri, ja loeme sell
         enabled: true             # käivitub ka pärast reboot'i
 ```
 
-Kolm sidekriipsu (`---`) tähistavad YAML-dokumendi algust. Rida `- name:` annab play'le inimesele loetava nime, mis kuvatakse väljundis ja muudab `PLAY RECAP`-i lugemise palju lihtsamaks. `hosts: webservers` ütleb, et see play käivitub kõigis inventory grupi `webservers` serverites. `become: true` tähendab, et tööd tehakse `sudo` õigustega (sellest kohe lähemalt). `tasks:` all algavad tegevused ja iga task kasutab üht moodulit: `apt` paketihalduseks (`name: nginx`, `state: present` tähendab, et nginx peab olema paigaldatud) ja `service` teenuse käivitamiseks.[^gettingstarted]
+Kolm sidekriipsu (`---`) tähistavad YAML-dokumendi algust. Rida `- name:` annab play'le inimesele loetava nime, mis kuvatakse väljundis ja muudab `PLAY RECAP`-i lugemise palju lihtsamaks. `hosts: webservers` ütleb, et see play käivitub kõigis inventory grupi `webservers` serverites. `become: true` tähendab, et tööd tehakse `sudo` õigustega (sellest kohe lähemalt). `tasks:` all algavad tegevused ja iga task kasutab üht moodulit: `apt` paketihalduseks (`name: nginx`, `state: present` tähendab, et nginx peab olema paigaldatud) ja `service` teenuse käivitamiseks. Sama näite samm-sammult leiad juhendist [Getting started with Ansible](https://docs.ansible.com/ansible/latest/getting_started/).
 
 <figure markdown="span">
   ![Playbook = play; play sisaldab task'e; task kasutab moodulit](../images/n03_playbook_anatoomia.svg)
@@ -486,43 +455,39 @@ Siin tuleb kasuks see, mida YAML-ist juba tead. Playbook on **play'de loend** ja
 
 Moodul on Ansible'i valmis tegevus ja mooduleid on üle kolme tuhande. Neid ei pea pähe õppima: iga mooduli dokumentatsioonis on parameetrid ja näited. Alguses piisab vähestest moodulitest. Peamised on järgmised:
 
-| Moodul | Milleks |
-|---|---|
-| `ping` | kontrollib Ansible'i ühendust hostiga |
-| `apt` | paigaldab/eemaldab Debiani/Ubuntu pakette |
-| `dnf` | paigaldab/eemaldab RHEL/Fedora/Alma pakette |
-| `package` | üldisem paketimoodul (valib ise apt/dnf) |
-| `copy` | kopeerib faili kontroll-node'ist serverisse |
-| `template` | loob faili Jinja2 malli põhjal |
-| `service` | käivitab/peatab/taaskäivitab teenuse |
-| `user` | haldab Linuxi kasutajaid |
-| `file` | haldab faile, kaustu ja õigusi |
+??? note "Levinumad `ansible.builtin` moodulid"
+    | Moodul | Milleks |
+    |---|---|
+    | `ping` | kontrollib Ansible'i ühendust hostiga |
+    | `apt` | paigaldab/eemaldab Debiani/Ubuntu pakette |
+    | `dnf` | paigaldab/eemaldab RHEL/Fedora/Alma pakette |
+    | `package` | üldisem paketimoodul (valib ise apt/dnf) |
+    | `copy` | kopeerib faili kontroll-node'ist serverisse |
+    | `template` | loob faili Jinja2 malli põhjal |
+    | `service` | käivitab/peatab/taaskäivitab teenuse |
+    | `user` | haldab Linuxi kasutajaid |
+    | `file` | haldab faile, kaustu ja õigusi |
 
-*Tabel 3.4. Levinumad `ansible.builtin` moodulid.*
-
-Need baasmoodulid kuuluvad kollektsiooni `ansible.builtin` ja neid võib kirjutada kas täisnimega (`ansible.builtin.apt`) või lühidalt (`apt`). Täisnimi ehk **FQCN** (fully qualified collection name) näitab täpselt, millisest kollektsioonist moodul pärineb, ja just nii soovitab Ansible mooduleid tänapäeval kirjutada. Praktiline näide: vanemates juhendites kasutatakse RHEL-i ja Alma pakettide jaoks moodulit `yum`, kuid tänapäeval kasutatakse moodulit `ansible.builtin.dnf` (parameetrid on samad; moodul `yum` eemaldati ansible-core 2.17-s ja see suunatakse nüüd moodulile `dnf`). Kõik olemasolevad moodulid loetleb käsk `ansible-doc -l` ja üksiku mooduli dokumentatsiooni näitab `ansible-doc <nimi>`. Lisamooduleid saab paigaldada `ansible-galaxy` abil, kuid kursusel piisab baasmoodulitest kõigeks, mida teeme.[^modules]
+Need baasmoodulid kuuluvad kollektsiooni `ansible.builtin` ja neid võib kirjutada kas täisnimega (`ansible.builtin.apt`) või lühidalt (`apt`). Täisnimi ehk **FQCN** (fully qualified collection name) näitab täpselt, millisest kollektsioonist moodul pärineb, ja just nii soovitab Ansible mooduleid tänapäeval kirjutada. Praktiline näide: vanemates juhendites kasutatakse RHEL-i ja Alma pakettide jaoks moodulit `yum`, kuid tänapäeval kasutatakse moodulit `ansible.builtin.dnf` (parameetrid on samad; moodul `yum` eemaldati ansible-core 2.17-s ja see suunatakse nüüd moodulile `dnf`). Kõik olemasolevad moodulid loetleb käsk `ansible-doc -l` ja üksiku mooduli dokumentatsiooni näitab `ansible-doc <nimi>`. Lisamooduleid saab paigaldada `ansible-galaxy` abil, kuid kursusel piisab baasmoodulitest kõigeks, mida teeme. Baasmoodulite nimekiri on lehel [`ansible.builtin`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/).
 
 ### Ansible'i sõnavara ühe pilguga
 
 Kokkuvõtteks on siin kogu sõnavara, millega Ansible'i juures kokku puutud. Osa mõisteid õpid juba täna, osa alles hilisematel nädalatel; tabelis on näha, millal milline:
 
-| Mõiste | Millele vastab | Millal |
-|---|---|---|
-| Inventory | milliste serveritega räägime? | N3 |
-| Group | millised serverid on sama rolliga? | N3 |
-| Playbook | mida ja kellele teeme? | N3 |
-| Play | üks plokk, mis sihib hoste | N3 |
-| Task | üks tegevus play sees | N3 |
-| Module | valmis tööriist tegevuse tegemiseks | N3 |
-| Variable | muudetav väärtus (paketi nimi, port) | N3 |
-| Handler | tegevus, mis käivitub ainult muudatuse korral | N4 |
-| Template | Jinja2 mall dünaamilise faili loomiseks | N4 |
-| Role | korduvkasutatavaks organiseeritud sisu | N11 |
-| Collection | moodulite ja rollide pakett | N11 |
-
-*Tabel 3.5. Ansible mõisted ja kus neid kursusel käsitleme.*
-
----
+??? note "Ansible mõisted ja kus neid kursusel käsitleme"
+    | Mõiste | Millele vastab | Millal |
+    |---|---|---|
+    | Inventory | milliste serveritega räägime? | N3 |
+    | Group | millised serverid on sama rolliga? | N3 |
+    | Playbook | mida ja kellele teeme? | N3 |
+    | Play | üks plokk, mis sihib hoste | N3 |
+    | Task | üks tegevus play sees | N3 |
+    | Module | valmis tööriist tegevuse tegemiseks | N3 |
+    | Variable | muudetav väärtus (paketi nimi, port) | N3 |
+    | Handler | tegevus, mis käivitub ainult muudatuse korral | N4 |
+    | Template | Jinja2 mall dünaamilise faili loomiseks | N4 |
+    | Role | korduvkasutatavaks organiseeritud sisu | N11 |
+    | Collection | moodulite ja rollide pakett | N11 |
 
 ## 9. Muutujad: üks playbook, palju väärtusi
 
@@ -573,22 +538,22 @@ kasutaja:
 
 Kogu sõnastikule viitad kujul `{{ kasutaja }}`; üksiku väärtuse leiad võtme kaudu: `{{ kasutaja.nimi }}` annab `admin`.
 
-### Prioriteet: kes võidab, kui muutuja on määratud mitmes kohas
+### Milline väärtus kehtib, kui muutuja on mitmes kohas
 
 Sama muutuja võib olla korraga määratud mitmes kohas eri väärtustega. Milline neist kehtib? Ansible rakendab määranguid kindlas järjekorras ja hilisem kirjutab varasema üle. Kui grupp `web_servers` määrab `dns_server: 10.5.5.3`, aga hostile `web2` on määratud host-muutuja `dns_server: 10.5.5.4`, saab `web2` esmalt grupi väärtuse, kuid hosti väärtus kirjutab selle üle ja kehtima jääb **10.5.5.4**. Järjekord lihtsustatult madalaimast kõrgeimani:
 
-1. **rollide vaikimisi muutujad** (`roles/*/defaults/`), madalaim prioriteet
+1. **rollide vaikimisi muutujad** (`roles/*/defaults/`), kirjutatakse kõige kergemini üle
 2. **grupi muutujad** (`group_vars`)
 3. **hosti muutujad** (`host_vars`), kirjutavad üle grupi muutujad
 4. **play-taseme `vars:`**, kirjutavad üle mõlemad eelmised
-5. **extra-vars** (`-e` käsurealt), **kõrgeim prioriteet, kirjutab üle kõik muud**
+5. **extra-vars** (`-e` käsurealt), **kehtib alati ja kirjutab üle kõik muud**
 
 <figure markdown="span">
-  ![Prioriteedi redel: extra-vars ülemine võidab](../images/n03_muutujate_prioriteet.svg)
-  <figcaption>Joonis 3.9. Kui muutuja on määratud mitmes kohas, kehtib ülemine: extra-vars kirjutab üle kõik muud, rollide defaults on madalaima prioriteediga (Talvik, 2025).</figcaption>
+  ![Muutujate järjekord: extra-vars ülemine võidab](../images/n03_muutujate_prioriteet.svg)
+  <figcaption>Joonis 3.9. Kui muutuja on määratud mitmes kohas, kehtib ülemine: extra-vars kirjutab üle kõik muud, rollide defaults kirjutatakse kõige kergemini üle (Talvik, 2025).</figcaption>
 </figure>
 
-Rusikareegel: mida spetsiifilisem ja hilisem on määrang, seda kõrgem on selle prioriteet.
+Rusikareegel: mida spetsiifilisem ja hilisem on määrang, seda tõenäolisemalt see kehtib.
 
 ### `register`: salvesta ühe ülesande tulemus
 
@@ -622,9 +587,9 @@ Kuna host-muutuja on seotud oma hostiga, tekib küsimus, kuidas `web1` ülesanne
 
 ### Faktid: muutujad, mille Ansible ise kogub
 
-Seni oled kõik muutujad ise määranud, kuid osa muutujaid kogub Ansible ise. Neid nimetatakse **faktideks**. Kui playbook käivitub ja Ansible ühendub sihtmasinaga, kogub see kõigepealt hulga teavet: süsteemi kohta (arhitektuur, OS ja selle versioon, protsessor, mälu), võrgu kohta (liidesed, IP-aadressid, FQDN, MAC-aadressid), seadmete kohta (kettad, vaba ruum) ning ka kuupäeva ja kellaaja.
+Seni oled kõik muutujad ise määranud, kuid osa muutujaid kogub Ansible ise. Need on **faktid**. Kui playbook käivitub ja Ansible ühendub sihtmasinaga, kogub see kõigepealt hulga teavet: süsteemi kohta (arhitektuur, OS ja selle versioon, protsessor, mälu), võrgu kohta (liidesed, IP-aadressid, FQDN, MAC-aadressid), seadmete kohta (kettad, vaba ruum) ning ka kuupäeva ja kellaaja.
 
-Fakte kogub **moodul `setup`** ja see toimub automaatselt. Isegi kui playbookis on ainult üks task, näed väljundis kahte: esimene on "Gathering Facts" (mida sa ise ei kirjutanud), teine on sinu task.
+Fakte kogub moodul `setup` automaatselt. Isegi kui playbookis on ainult üks task, näed väljundis kahte: esimene on "Gathering Facts" (mida sa ise ei kirjutanud), teine on sinu task.
 
 Fakte saad vaadata, kui annad moodulile `debug` muutujaks `ansible_facts`:
 
@@ -647,17 +612,13 @@ Nüüd käivitub ainult sinu task ja fakte ei koguta. Sama käitumist juhib ka `
 
 Sellest piisab juba kohandatava playbooki kirjutamiseks. Muutujaid saab hoida ka **väljaspool** playbooki eraldi failides (`group_vars/`, `host_vars/`), et jagada sama väärtust mitme playbooki ja eri keskkondade (test/tootmine) vahel. Tundlikud väärtused (paroolid, API-võtmed) krüpteeritakse **Ansible Vaultiga**. Failipõhine korraldus ja Vault on **N4** (dünaamiline konfiguratsioon) teema.
 
----
-
 ## 10. Become: õiguste tõstmine
 
 Enamik serveri seadistamise toiminguid vajab root-õigusi: paketi paigaldamine, teenuse käivitamine, faili kirjutamine kataloogi `/etc`. Samas ei logi Ansible tavaliselt otse root-kasutajana sisse, sest root-kasutaja otse sisselogimine on turvakaalutlustel sageli keelatud. Selle asemel logitakse sisse tavakasutajana ja õigusi tõstetakse ainult siis, kui see on vajalik.
 
-Õigusi tõstab rida `become: true`, mis tähendab vaikimisi "kasuta sudo't". Selle võib lisada kogu play'le (nagu meie nginx'i näites, kus kõik ülesanded vajavad root-õigusi) või ühele task'ile, kui ainult see samm neid vajab. Kui midagi on vaja teha mõne muu kasutajana (näiteks `postgres`), on selleks eraldi `become_user`.[^become] See järgib **vähimate õiguste põhimõtet** (principle of least privilege): iga tegevus saab täpselt need õigused, mida see vajab, ja mitte rohkem. Root-õigused antakse ainult sinna, kus neid vaja on, ja tavatöö tehakse tavakasutajana.
+Õigusi tõstab rida `become: true`, mis tähendab vaikimisi "kasuta sudo't". Selle võib lisada kogu play'le (nagu meie nginx'i näites, kus kõik ülesanded vajavad root-õigusi) või ühele task'ile, kui ainult see samm neid vajab. Kui midagi on vaja teha mõne muu kasutajana (näiteks `postgres`), on selleks eraldi `become_user` ([privilege escalation](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_privilege_escalation.html)). See järgib **vähimate õiguste põhimõtet** (principle of least privilege): iga tegevus saab täpselt need õigused, mida see vajab, ja mitte rohkem. Root-õigused antakse ainult sinna, kus neid vaja on, ja tavatöö tehakse tavakasutajana.
 
 Kui `become` on puudu, annab Ansible näiteks vea `Permission denied` või `Failed to lock apt`, sest tavakasutajal ei ole õigust pakette paigaldada. Sellise vea korral kontrolli kõigepealt, kas task vajab root-õigusi ja kas `become` on sisse lülitatud. Praktikumis eemaldad `become`-i meelega, näed seda viga ja lisad rea tagasi.
-
----
 
 ## 11. Tingimused ja tsüklid: when ja loop
 
@@ -665,7 +626,7 @@ Seni käivituvad kõik task'id alati. Sageli on aga vaja, et task käivituks **a
 
 ### `when`: käivita ainult tingimusel
 
-Oletame, et soovid paigaldada nginx'i, kuid Debianil põhinevad süsteemid kasutavad paketihaldurit `apt` ning Red Hat ja Alma kasutavad `dnf`-i. Kahe eraldi playbooki asemel teed ühe, kus igal task'il on tingimus:
+Näiteks tuleb paigaldada nginx, kuid Debianil põhinevad süsteemid kasutavad paketihaldurit `apt` ning Red Hat ja Alma kasutavad `dnf`-i. Kahe eraldi playbooki asemel teed ühe, kus igal task'il on tingimus:
 
 ```yaml
 tasks:
@@ -682,18 +643,18 @@ tasks:
     when: ansible_os_family == "RedHat"
 ```
 
-Tingimus loeb fakti `ansible_os_family`, mille väärtus on OS-i perekond (`Debian`, `RedHat`, `Suse`). `apt`-task käivitub ainult Debiani perekonna süsteemides, `dnf`-task ainult Red Hati perekonna süsteemides; teine task jäetakse vahele (`skipped`).[^conditionals]
+Tingimus loeb fakti `ansible_os_family`, mille väärtus on OS-i perekond (`Debian`, `RedHat`, `Suse`). `apt`-task käivitub ainult Debiani perekonna süsteemides, `dnf`-task ainult Red Hati perekonna süsteemides; teine task jäetakse vahele (`skipped`). Kõik tingimuste võimalused on lehel [Conditionals](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_conditionals.html).
 
 <figure markdown="span">
   ![when hargneb fakti ansible_os_family järgi apt ja dnf vahel](../images/n03_when_haru.svg)
   <figcaption>Joonis 3.11. when laseb ühel playbookil hargneda fakti järgi: apt-task käivitub Debianil, dnf-task Red Hatil (Talvik, 2025).</figcaption>
 </figure>
 
-Paar üksikasja. Võrdlemiseks kasuta **kahte** võrdusmärki (`==`), mitte üht. Tingimusi saab kombineerida: `or` korral käivitub task, kui kehtib vähemalt üks tingimus (`ansible_os_family == "RedHat" or ansible_os_family == "Suse"`); `and` korral peavad kehtima mõlemad (`ansible_os_family == "Debian" and ansible_distribution_version == "22.04"`).
+Paar üksikasja. Võrdlemiseks kasuta kahte võrdusmärki (`==`), mitte üht. Tingimusi saab kombineerida: `or` korral käivitub task, kui kehtib vähemalt üks tingimus (`ansible_os_family == "RedHat" or ansible_os_family == "Suse"`); `and` korral peavad kehtima mõlemad (`ansible_os_family == "Debian" and ansible_distribution_version == "22.04"`).
 
 Üks märkus puudutab otseselt meie kursust: selle lihtsa paigalduse võiks kirjutada ka **ilma tingimuseta**, kasutades moodulit `ansible.builtin.package`, mis valib sihtmasinale õige paketihalduri (apt/dnf) ise. Siis ei ole harusid vaja. `when`-i tuleb siiski osata, sest seda on vaja kohe, kui tingimus on keerulisem kui OS-i tüüp.
 
-Millist fakti tingimuses kasutada? Kõige laiem on `ansible_os_family`, mis rühmitab distributsioonid perekondadesse (`Debian`, `RedHat`, `Windows`). Kasuta seda, kui task peab hõlmama kõiki Debiani- või Red Hati-tüüpi masinaid, sest see sobib kõige rohkematele süsteemidele. Täpsema tingimuse jaoks annab `ansible_distribution` konkreetse nime (`Ubuntu`, `AlmaLinux`), `ansible_distribution_major_version` peaversiooni (`24`, `9`) ja `ansible_architecture` protsessori arhitektuuri (`x86_64`). Enne tingimuste kirjutamist vaata, milliseid väärtusi server **tegelikult** annab: kas ad-hoc käsuga `ansible <host> -m setup`, mis kuvab kõik faktid, või lisa playbooki debug-task, mis kuvab `ansible_facts`. Nii ei pea oletama, milline on võtme täpne kuju. (Pea meeles: kui `gather_facts: false`, faktid puuduvad, seega ära kasuta fakte, mida pole kogutud.)
+Millist fakti tingimuses kasutada? Kõige laiem on `ansible_os_family`, mis rühmitab distributsioonid perekondadesse (`Debian`, `RedHat`, `Windows`). Kasuta seda, kui task peab hõlmama kõiki Debiani- või Red Hati-tüüpi masinaid, sest see sobib kõige rohkematele süsteemidele. Täpsema tingimuse jaoks annab `ansible_distribution` konkreetse nime (`Ubuntu`, `AlmaLinux`), `ansible_distribution_major_version` peaversiooni (`24`, `9`) ja `ansible_architecture` protsessori arhitektuuri (`x86_64`). Enne tingimuste kirjutamist vaata, milliseid väärtusi server tegelikult annab: kas ad-hoc käsuga `ansible <host> -m setup`, mis kuvab kõik faktid, või lisa playbooki debug-task, mis kuvab `ansible_facts`. Nii ei pea oletama, milline on võtme täpne kuju. (Pea meeles: kui `gather_facts: false`, faktid puuduvad, seega ära kasuta fakte, mida pole kogutud.)
 
 Mitu tingimust eraldi ridadel `when:` all tähendab sama mis nende ühendamine `and`-iga, kuid on loetavam:
 
@@ -705,7 +666,7 @@ Mitu tingimust eraldi ridadel `when:` all tähendab sama mis nende ühendamine `
 
 ### loop: korda sama task'i
 
-Oletame, et serverisse on vaja luua mitu kasutajat. Sama task'i kopeerimine iga kasutaja jaoks töötab, kuid on kohmakas ja dubleerimine teeb hoolduse tülikaks. Parem on üks task, mis käib kõik kasutajad läbi. Selleks on `loop`.
+Serverisse on vaja luua mitu kasutajat. Sama task'i kopeerimine iga kasutaja jaoks töötab, kuid on kohmakas ja dubleerimine teeb hoolduse tülikaks. Parem on üks task, mis käib kõik kasutajad läbi. Selleks on `loop`.
 
 `loop` käivitab sama task'i mitu korda ja salvestab iga kord jooksva väärtuse muutujasse `item`. Kasutajanime asemel kirjutad `{{ item }}`:
 
@@ -746,7 +707,7 @@ Vanemates juhendites kasutatakse `loop`-i asemel `with_items`-i. See teeb sama a
 
 ### `when` tsükli sees
 
-`when`-i saab kasutada ka koos loendiga. Oletame, et paketid on muutujas ja igal paketil on nimi ning lipp `required`:
+`when`-i saab kasutada ka koos loendiga. Järgmises näites on paketid muutujas ja igal paketil on nimi ning lipp `required`:
 
 ```yaml
 vars:
@@ -768,7 +729,7 @@ tasks:
 
 ### Tingimus eelmise task'i tulemuse põhjal
 
-`when`-i saab siduda ka `register`-iga (mida nägid muutujate juures). Oletame, et soovid kontrollida teenust ja anda teada, kui see ei tööta:
+`when`-i saab siduda ka `register`-iga (mida nägid muutujate juures). Järgmine näide kontrollib teenust ja annab teada, kui see ei tööta:
 
 ```yaml
 tasks:
@@ -804,11 +765,9 @@ Tüüpiline korduvkasutuse muster: enamik samme (pakettide paigaldamine, kataloo
 
 Tulemuseks on üks playbook, mida saab rakendada kõikjal, kuid mis käivitab teenuse ainult seal, kus see on ette nähtud. Faktid näitavad, milline on host, muutujad näitavad, mida soovid, ja `when` seob need kokku.
 
----
-
 ## 12. Töövoog: õige järjekord juba esimesest päevast
 
-Oletame, et on vaja paigaldada oluline uuendus sadadesse serveritesse. Kirjutad playbooki, oled sellega rahul ja käivitad selle kohe tootmises. Playbookis on aga väike viga, mis uuendamise asemel peatab teenuse igas serveris. Tulemuseks on pikk katkestus ja kiirustav töö, et kõik uuesti tööle saada. Selle vea oleks avastanud üks vahele jäänud samm: **kontroll**. Kui playbooki enne käivitamist kontrollida, tulevad vead välja ohutult ja enne tootmisse jõudmist. Seetõttu ei tohi playbooki käivitada põhimõttel "vaatame, mis juhtub", eriti tootmisserveris. Hea harjumus on järgida kindlat sammude järjekorda, mis annab enne tegelikke muudatusi kindluse:
+Vaja on paigaldada oluline uuendus sadadesse serveritesse. Kirjutad playbooki, oled sellega rahul ja käivitad selle kohe tootmises. Playbookis on aga väike viga, mis uuendamise asemel peatab teenuse igas serveris. Tulemuseks on pikk katkestus ja kiirustav töö, et kõik uuesti tööle saada. Selle vea oleks avastanud üks vahele jäänud samm: **kontroll**. Kui playbooki enne käivitamist kontrollida, tulevad vead välja ohutult ja enne tootmisse jõudmist. Seetõttu ei tohi playbooki käivitada põhimõttel "vaatame, mis juhtub", eriti tootmisserveris. Hea harjumus on järgida kindlat sammude järjekorda, mis annab enne tegelikke muudatusi kindluse:
 
 ```bash
 # 1. Kas Ansible näeb hoste?
@@ -843,17 +802,16 @@ Esimene samm, moodul `ping`, kontrollib, kas Ansible jõuab hostini. See ei ole 
 
 Ansible näitab iga ülesande olekut ja võtab lõpus kõik kokku jaotises `PLAY RECAP`. Olekuid tuleb osata lugeda:
 
-| Olek | Tähendus |
-|---|---|
-| `ok` | seisund oli juba õige, midagi ei tehtud |
-| `changed` | serveris muudeti midagi |
-| `failed` | ülesanne ebaõnnestus |
-| `skipped` | tingimus ei täitunud, ülesanne jäeti vahele |
-| `unreachable` | serverini ei jõutud (SSH katki, server maas) |
+??? note "`PLAY RECAP` olekud"
+    | Olek | Tähendus |
+    |---|---|
+    | `ok` | seisund oli juba õige, midagi ei tehtud |
+    | `changed` | serveris muudeti midagi |
+    | `failed` | ülesanne ebaõnnestus |
+    | `skipped` | tingimus ei täitunud, ülesanne jäeti vahele |
+    | `unreachable` | serverini ei jõutud (SSH katki, server maas) |
 
-*Tabel 3.6. `PLAY RECAP` loeb olekud kokku iga serveri kohta.*
-
-`--syntax-check` ja `--check` peaksid olema harjumus algusest peale, mitte ainult edasijõudnute teema. Enamik levinud mooduleid (`apt`, `copy`, `service`) toetab proovikäivitust täielikult, nii et plaani saab enne riskivabalt üle vaadata.[^checkmode] (Märkus: kõik moodulid ei toeta proovikäivitust ja sellised ülesanded jäetakse `--check`-i ajal vahele.)
+`--syntax-check` ja `--check` peaksid olema harjumus algusest peale, mitte ainult edasijõudnute teema. Enamik levinud mooduleid (`apt`, `copy`, `service`) toetab proovikäivitust täielikult, nii et plaani saab enne riskivabalt üle vaadata ([check mode](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_checkmode.html)). (Märkus: kõik moodulid ei toeta proovikäivitust ja sellised ülesanded jäetakse `--check`-i ajal vahele.)
 
 Võtmega `--diff` näed täpselt, mis muutuks. Näiteks konfiguratsioonifaili lisatav rida on märgitud plussmärgiga:
 
@@ -865,7 +823,7 @@ Vea korral osutab `--syntax-check` täpsele kohale: kui YAML-ist on koolon puudu
 
 ### ansible-lint: stiili ja kvaliteedi kontroll
 
-`--check` ja `--diff` kontrollivad, **mida** playbook teeb. `ansible-lint` kontrollib, **kuidas** see on kirjutatud. Mida rohkem playbooke koguneb, seda olulisem on, et need oleksid ühtlased ja loetavad, ning selleks ongi lint. See on käsureatööriist, mis loeb läbi playbookid, rollid ja kollektsioonid ning märgib ära vead, stiiliprobleemid ja kahtlased konstruktsioonid.
+`--check` ja `--diff` kontrollivad, mida playbook teeb. `ansible-lint` kontrollib, kuidas see on kirjutatud. Mida rohkem playbooke koguneb, seda olulisem on, et need oleksid ühtlased ja loetavad, ning selleks ongi lint. See on käsureatööriist, mis loeb läbi playbookid, rollid ja kollektsioonid ning märgib ära vead, stiiliprobleemid ja kahtlased konstruktsioonid.
 
 Käivita:
 
@@ -876,8 +834,6 @@ ansible-lint nginx.yml
 Lint väljastab iga probleemi kohta ühe rea koos failinime ja reanumbriga, nii et on kohe näha, kust viga otsida. Iga rida lõpeb reegli ID-ga, mis koosneb kategooriast ja nurksulgudes täpsustusest. Näiteks `yaml[indentation]` (ebaühtlane taane), `name[casing]` (task'i nimi peaks algama suurtähega), `name[missing]` (task'il pole nime), `command-instead-of-shell` (kasutasid `shell`-i seal, kus piisaks `command`-ist; `shell` on aeglasem ja seda tasub kasutada ainult siis, kui on vaja torusid või keskkonnamuutujate laiendamist). Kui `ansible-lint` probleeme ei leia, lõpetab see väljumiskoodiga 0 ja kokkuvõttes on näha 0 viga ja 0 hoiatust.
 
 Hea tava on lisada `ansible-lint` oma töövoogu, eriti CI-protsessi (N7). Siis kontrollitakse iga muudatust automaatselt samade reeglite järgi ja playbookid jäävad ka kasvades ühtlaseks.
-
----
 
 ## 13. Väike mugavus: `ansible.cfg`
 
@@ -896,9 +852,7 @@ ansible all -m ping           # leiab inventory ise
 ansible-playbook nginx.yml    # ilma -i liputa
 ```
 
-Rida `host_key_checking = False` jätab esimesel ühendumisel ära küsimuse "kas oled kindel? (yes/no)", mis praktikumis muidu iga uue serveri juures ette tuleb. `ansible.cfg`-l on palju rohkem valikuid ja sel failil võib olla mitu asukohta, millel on kindel prioriteedijärjekord; vaata viitelehte [Ansible seaded (ansible.cfg)](../ansible-config.md). Praegu piisab sellest ühest seadest.
-
----
+Rida `host_key_checking = False` jätab esimesel ühendumisel ära küsimuse "kas oled kindel? (yes/no)", mis praktikumis muidu iga uue serveri juures ette tuleb. `ansible.cfg`-l on palju rohkem valikuid ja sel failil võib olla mitu asukohta, mida Ansible loeb kindlas järjekorras ([Ansible'i seaded](../ansible-config.md)). Praegu piisab sellest ühest seadest.
 
 ## 14. Failistruktuur: milliseks repo aja jooksul kujuneb
 
@@ -927,8 +881,6 @@ ansible-lab/
 
 Ülejäänud kaustad (mallid, muutujad, rollid) lisanduvad nädalate kaupa, kui nende teemadeni jõuame. Nii püsib projekt korras ja on alati selge, kuhu mis kuulub.
 
----
-
 ## 15. Miks see tööl oluline on
 
 See ei ole ainult õppeülesanne: nii hallatakse servereid ka töökohtades. Suurtes veebiteenustes töötab tuhandeid nginx'i eksemplare ja iga kord, kui konfiguratsioon muutub, peab muudatus jõudma kõigisse serveritesse täpselt, kiiresti ja vigadeta. Käsitsi SSH kaudu ei ole see võimalik. Ansible'i playbook käivitub automaatselt CI/CD-pipeline'ist, annab iga kord sama tulemuse ja `git log` näitab, kes, mida ja millal muutis.
@@ -937,45 +889,19 @@ Süsteemiintegraatorid kasutavad Ansible'it klientide taristu seadistamisel just
 
 See on sama mõte nagu eelmisel nädalal Gitiga: käsitsi tehtud ja dokumenteerimata töö on alati haavatavam kui koodina kirja pandud töö. Erinevus on selles, et nüüd kirjeldatakse koodina rakenduse asemel **serveri enda seisundit**.
 
----
-
-## 16. Kuhu edasi
-
-Kõike ei pea kohe oskama, sest kursus on tervik. See, mida täna ei õpi, tuleb hiljem:
-
-- muutujate välisfailid (`group_vars`/`host_vars`) ja Jinja2 mallid, **N4**
-- handlers ja saladuste kaitse (`ansible-vault`), **N4**
-- korduvkasutatavad rollid ja kollektsioonid, **N11**
-- playbooki automaatne käivitamine CI/CD-st, **N7–N8**
-
----
-
 ## Kokkuvõte
 
-- **Ansible loeb YAML-faile ja viib serverid soovitud seisundisse**: see ei ole OS ega pilveteenus, see on tööriist, mis töötab sinu arvutis või CI-s
-- **Deklaratiivne** lähenemine kirjeldab lõppseisundit (`state:`), sammud valib Ansible ise
-- **Idempotentsus:** sama playbook annab sama tulemuse, ükskõik mitu korda seda käivitada. `ok` = seisund oli juba õige, `changed` = midagi muudeti
-- **`shell:`/`command:` raporteerivad vaikimisi iga kord `changed`**: eelista spetsiaalset moodulit või piira käitumist `creates`/`changed_when`-iga
-- **Push-mudel, agenti pole vaja:** kontroll-node saadab muudatused SSH kaudu, serveris on vaja ainult SSH-d ja Pythonit
-- **Neli mõistet:** playbook (fail) → play (`hosts`-plokk) → task (samm) → moodul (tööriist)
-- **YAML:** `võti: väärtus`, `-` tähistab loendi elementi, taane tehakse tühikutega (tabulaatorit ei kasutata)
-- **Inventory** rühmitab serverid; `hosts:` viitab grupile
-- **Muutujad:** `vars:` + `{{ }}`; prioriteet defaults < group_vars < host_vars < play < extra-vars; faktid tulevad automaatselt
-- **`become: true`** tõstab õigusi (vaikimisi sudo abil); ilma selleta tuleb sageli viga `Permission denied`
-- **`when` / `loop`:** tingimuslik ja korduv task
-- **Töövoog:** `ping` → `--syntax-check` → `--check` → run → `curl`
+??? abstract "Kokkuvõte"
+    - Ansible loeb YAML-faile ja rakendab serverites soovitud oleku. See on tööriist, mis töötab sinu arvutis või CI-s.
+    - Deklaratiivne lähenemine kirjeldab soovitud olekut (`state:`), sammud valib moodul.
+    - Idempotentsus: korduv käivitus ei muuda midagi. `ok` tähendab, et olek oli juba õige, `changed`, et midagi muudeti.
+    - `shell:` ja `command:` annavad vaikimisi iga kord `changed`. Eelista spetsiaalset moodulit või kasuta `creates`/`changed_when`.
+    - Push-mudel: kontroll-node ühendub SSH kaudu, serveris on vaja ainult SSH-d ja Pythonit.
+    - Playbook (fail) koosneb play'dest (`hosts`-plokk), play task'idest ja iga task kasutab üht moodulit.
+    - Muutujad: `vars:` ja `{{ }}`; milline väärtus kehtib: defaults < group_vars < host_vars < play < extra-vars.
+    - `become: true` käivitab ülesande `sudo` kaudu; ilma selleta tuleb sageli viga `Permission denied`.
+    - Töövoog: `ping` → `--syntax-check` → `--check` → käivitus → `curl`.
 
----
-
-[^docs]: Ansible dokumentatsioon. <https://docs.ansible.com>
-[^gettingstarted]: Ansible Getting Started. <https://docs.ansible.com/ansible/latest/getting_started/>
-[^modules]: `ansible.builtin` moodulite nimekiri. <https://docs.ansible.com/ansible/latest/collections/ansible/builtin/>
-[^idempotency]: Idempotentsus (Ansible glossary). <https://docs.ansible.com/ansible/latest/reference_appendices/glossary.html>
-[^howansible]: How Ansible works. <https://www.ansible.com/overview/how-ansible-works>
-[^become]: Privilege escalation: become. <https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_privilege_escalation.html>
-[^checkmode]: Check mode (proovikäivitus). <https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_checkmode.html>
-[^conditionals]: Conditionals ja loops. <https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_conditionals.html>
-
----
+    Muutujate failid, Jinja2 mallid, handler'id ja Vault on N4 teema, rollid N11 ja automaatne käivitus CI/CD-st N7–N8.
 
 *Järgmine: praktikumis kirjutad oma esimese playbooki task'i kaupa, rikud idempotentsuse meelega, parandad selle ja paigaldad nginx'i oma sihtmasinasse.*

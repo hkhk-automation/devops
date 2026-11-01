@@ -8,15 +8,11 @@ tags:
 
 # Loeng: dünaamiline konfiguratsioon ja saladuste kaitse
 
-**Maht:** ~40 min iseseisvat lugemist, loe **enne** praktikumit
-
 See leht on mõeldud iseseisvaks lugemiseks ja praktikumi ajal spikriks. Tunnis läbime põhiosa kiiremini.
 
 **Praktikumiks on vaja**: peatükid 1–5 ja 7.1–7.4 (välisfailid, mall, `template`, handler, Vault fail + parool). Ülejäänu (filtrite tabel, `encrypt_string`, vault ID-d, `no_log`) on lugemismaterjal: loe läbi, aga peast pole vaja teada.
 
----
-
-!!! abstract "Õpiväljundid"
+??? abstract "Õpiväljundid"
     Pärast seda materjali oskad:
 
     - selgitada, miks kõvakodeeritud väärtused playbookis on probleem
@@ -26,17 +22,6 @@ See leht on mõeldud iseseisvaks lugemiseks ja praktikumi ajal spikriks. Tunnis 
     - selgitada, millal handler käivitub ja millal mitte
     - krüpteerida faili või üksiku väärtuse Ansible Vault'iga ja anda parool käivitamisel
     - põhjendada, mis tohib olla Gitis ja mis mitte
-
----
-
-!!! info "Lisalugemine: teistsugune sissejuhatus"
-    Kui tahad sama teemat teise nurga alt, vaata ka:
-
-    - [How to Keep Your Playbooks Secure Using Ansible Vault (Spacelift)](https://dev.to/spacelift/how-to-keep-your-playbooks-secure-using-ansible-vault-3103), inglisekeelne Vault'i ülevaade: failid, üksikud muutujad, paroolide haldus
-    - [Templating (Jinja2), Ansible docs](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_templating.html), ametlik juhend, filtrid ja testid
-    - [Jinja2 Template Designer](https://jinja.palletsprojects.com/en/stable/templates/), Jinja2 süntaks täismahus
-
----
 
 ## 1. Probleem: kõvakodeeritud väärtused
 
@@ -76,13 +61,11 @@ graph LR
   <figcaption>Joonis 4.1. Playbook jääb samaks; väärtused, saladused ja mallid tulevad väljastpoolt (Talvik, 2026).</figcaption>
 </figure>
 
----
-
 ## 2. Muutujad välisfailidesse: group_vars ja host_vars
 
-Muutujate alused käisid läbi N3-s: tüübid, inline `vars:`, `{{ }}`, prioriteet, ulatus, erimuutujad ja faktid. Kui need on ähmased, loe [N3 ptk 9](../week03/lecture.md) enne edasiminekut üle.
+Muutujate alused käisid läbi N3-s: tüübid, inline `vars:`, `{{ }}`, milline väärtus kehtib, ulatus, erimuutujad ja faktid. Kui need on ähmased, loe [N3 ptk 9](../week03/lecture.md) enne edasiminekut üle.
 
-Inline `vars:` töötab, aga kui väärtus erineb keskkonniti, pead redigeerima playbooki ennast, ja just seda tahame vältida. Parem on väärtused tõsta eraldi failidesse, mida Ansible loeb **automaatselt**, ilma et playbookis neile viidataks.[^vars]
+Inline `vars:` töötab, aga kui väärtus erineb keskkonniti, pead redigeerima playbooki ennast, ja just seda tahame vältida. Parem on väärtused tõsta eraldi failidesse, mida Ansible loeb **automaatselt**, ilma et playbookis neile viidataks ([where to set variables](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html)).
 
 ### Kaks kausta, kaks tasandit
 
@@ -112,7 +95,7 @@ Kaust on vajalik siis, kui tahad hoida tavalised muutujad ja krüpteeritud salad
 </figure>
 
 !!! warning "Levinud viga"
-    `group_vars/vault.yml` **ei** tähenda "saladused kõigile". See tähendab "muutujad grupile nimega `vault`". Sellist gruppi pole, ja muutujad ei jõua kuhugi. Faili laadimisel viga ei tule; viga (`'x' is undefined`) tuleb alles siis, kui muutujat kasutatakse. Õige: `group_vars/all/vault.yml`.
+    `group_vars/vault.yml` ei tähenda "saladused kõigile". See tähendab "muutujad grupile nimega `vault`". Sellist gruppi pole, ja muutujad ei jõua kuhugi. Faili laadimisel viga ei tule; viga (`'x' is undefined`) tuleb alles siis, kui muutujat kasutatakse. Õige: `group_vars/all/vault.yml`.
 
 ### Näide meie kolme sõlmega
 
@@ -144,7 +127,7 @@ projekt/
     └── proxmox3.yml         # nginx_port: 8008
 ```
 
-`proxmox2` kuulub gruppidesse `all`, `web` ja `dev`. Kõik kolm faili loetakse, ja kui sama muutuja on mitmes, võidab **spetsiifilisem**: laps-grupp (`dev`) võidab vanem-grupi (`web`), mis võidab `all`-i. `host_vars` võidab kõik grupid. See on sama prioriteedireegel, mida nägid N3-s, aga nüüd failidena.
+`proxmox2` kuulub gruppidesse `all`, `web` ja `dev`. Kõik kolm faili loetakse, ja kui sama muutuja on mitmes, võidab **spetsiifilisem**: laps-grupp (`dev`) võidab vanem-grupi (`web`), mis võidab `all`-i. `host_vars` võidab kõik grupid. See on sama reegel, mida nägid N3-s, aga nüüd failidena.
 
 <figure markdown="span">
 ```mermaid
@@ -180,21 +163,18 @@ ansible-inventory -i inventory.ini --graph --vars       # grupid, hostid ja nend
 
 Esimene näitab lõplikku väärtust pärast kõigi failide liitmist. Kui seal on `LABOR`, aga ootasid `ARENDUS`, pole `dev.yml` loetud (vale nimi, vale koht või host pole grupis).
 
----
-
 ## 3. Jinja2: mallimootor
 
-`{{ }}` süntaks, mida N3-s kasutasid, ei ole Ansible'i leiutis. See on **Jinja2**, Pythoni mallimootor, mida kasutavad ka veebiraamistikud (nt Flask) HTML-lehtede genereerimiseks. Ansible kasutab Jinja2 igal pool, kus näed `{{ }}`: playbookis, inventory's, muutujate failides ja mallides.[^templating]
+`{{ }}` süntaks, mida N3-s kasutasid, ei ole Ansible'i leiutis. See on **Jinja2**, Pythoni mallimootor, mida kasutavad ka veebiraamistikud (nt Flask) HTML-lehtede genereerimiseks. Ansible kasutab Jinja2 igal pool, kus näed `{{ }}`: playbookis, inventory's, muutujate failides ja mallides. Ametlik juhend on [Templating (Jinja2)](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_templating.html), Jinja2 süntaks täismahus on [Template Designer Documentation](https://jinja.palletsprojects.com/en/stable/templates/) lehel.
 
 Mall on tavaline tekstifail, milles mõned kohad on märgitud. Jinja2 loeb malli, asendab märgitud kohad ja annab välja valmis teksti. Märgistusi on kolm:
 
-| Süntaks | Mis see on | Näide |
-|---|---|---|
-| `{{ ... }}` | **avaldis**: asendatakse väärtusega | `{{ inventory_hostname }}` |
-| `{% ... %}` | **lause**: loogika (tingimus, tsükkel), ise väljundisse ei jõua | `{% if naita_debug %}` |
-| `{# ... #}` | **kommentaar**: ei jõua väljundisse | `{# see on märkus #}` |
-
-*Tabel 4.1. Jinja2 kolm märgistust.*
+??? note "Jinja2 kolm märgistust"
+    | Süntaks | Mis see on | Näide |
+    |---|---|---|
+    | `{{ ... }}` | **avaldis**: asendatakse väärtusega | `{{ inventory_hostname }}` |
+    | `{% ... %}` | **lause**: loogika (tingimus, tsükkel), ise väljundisse ei jõua | `{% if naita_debug %}` |
+    | `{# ... #}` | **kommentaar**: ei jõua väljundisse | `{# see on märkus #}` |
 
 ### 3.1 Avaldis `{{ }}`
 
@@ -220,22 +200,23 @@ Filtreid saab ahelasse panna: `{{ nimi | lower | replace(' ', '-') }}` teeb `Mar
 
 Kasulikumad filtrid algajale:
 
-| Filter | Mida teeb | Näide → tulemus |
-|---|---|---|
-| `upper`, `lower`, `title` | suurtähed / väiketähed / iga sõna suure tähega | `'mari' \| title` → `Mari` |
-| `replace(a, b)` | asendab teksti | `'test.ee' \| replace('test.', '')` → `ee` |
-| `default(x)` | varuväärtus, kui muutuja puudub | `port \| default(80)` → `80` |
-| `length` | pikkus / elementide arv | `[1,2,3] \| length` → `3` |
-| `join(', ')` | loend tekstiks | `['a','b'] \| join(', ')` → `a, b` |
-| `min`, `max` | väikseim / suurim | `[3,1,2] \| max` → `3` |
-| `unique` | eemaldab kordused | `[1,1,2] \| unique` → `[1, 2]` |
-| `union`, `intersect`, `difference` | loendite hulgatehted | `[1,2] \| union([2,3])` → `[1, 2, 3]` |
-| `basename`, `dirname` | failitee osad | `'/etc/nginx/nginx.conf' \| basename` → `nginx.conf` |
-| `int`, `bool` | tüübiteisendus | `'8080' \| int` → `8080` |
+??? note "Sagedasemad filtrid"
+    | Filter | Mida teeb | Näide → tulemus |
+    |---|---|---|
+    | `upper`, `lower`, `title` | suurtähed / väiketähed / iga sõna suure tähega | `'mari' \| title` → `Mari` |
+    | `replace(a, b)` | asendab teksti | `'test.ee' \| replace('test.', '')` → `ee` |
+    | `default(x)` | varuväärtus, kui muutuja puudub | `port \| default(80)` → `80` |
+    | `length` | pikkus / elementide arv | `[1,2,3] \| length` → `3` |
+    | `join(', ')` | loend tekstiks | `['a','b'] \| join(', ')` → `a, b` |
+    | `min`, `max` | väikseim / suurim | `[3,1,2] \| max` → `3` |
+    | `unique` | eemaldab kordused | `[1,1,2] \| unique` → `[1, 2]` |
+    | `union`, `intersect`, `difference` | loendite hulgatehted | `[1,2] \| union([2,3])` → `[1, 2, 3]` |
+    | `basename`, `dirname` | failitee osad | `'/etc/nginx/nginx.conf' \| basename` → `nginx.conf` |
+    | `int`, `bool` | tüübiteisendus | `'8080' \| int` → `8080` |
 
-*Tabel 4.2. Filtrid, mida kohtad kõige sagedamini. Täisnimekiri on Ansible'i ja Jinja2 dokumentatsioonis.*[^filters]
+Täisnimekiri on lehel [Using filters to manipulate data](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_filters.html).
 
-`default` on levinud filter. Ilma selleta katkeb playbook, kui muutuja puudub (`'x' is undefined`). `default` teeb muutuja valikuliseks: kui keegi on väärtuse määranud, kasutatakse seda; kui mitte, varuväärtust. Tühja teksti või `false` väärtuse puhul `default(x)` varuväärtust **ei** kasuta; selleks on `default(x, true)`. See on hea vaikeväärtuste jaoks, aga **mitte** saladuste jaoks: kui parool puudub, peab playbook katkema, mitte vaikselt `default('admin')` kasutama.
+`default` on levinud filter. Ilma selleta katkeb playbook, kui muutuja puudub (`'x' is undefined`). `default` teeb muutuja valikuliseks: kui keegi on väärtuse määranud, kasutatakse seda; kui mitte, varuväärtust. Tühja teksti või `false` väärtuse puhul `default(x)` varuväärtust ei kasuta; selleks on `default(x, true)`. See on hea vaikeväärtuste jaoks, aga mitte saladuste jaoks: kui parool puudub, peab playbook katkema, mitte vaikselt `default('admin')` kasutama.
 
 ### 3.3 Tingimus `{% if %}`
 
@@ -307,13 +288,12 @@ graph LR
 
 ### 3.5 `loop` vs `{% for %}`: kumba kasutada
 
-| | `loop` (playbookis) | `{% for %}` (mallis) |
-|---|---|---|
-| Mida kordab | task'i | ridu failis |
-| Tulemus | mitu toimingut serveris | üks fail mitme reaga |
-| Näide | paigalda 3 paketti | 3 `server` rida ühes configis |
-
-*Tabel 4.3. Kui tahad üht faili, kasuta malli tsüklit; kui tahad mitut toimingut, kasuta `loop`-i.*
+??? note "`loop` ja `{% for %}` võrdlus"
+    | | `loop` (playbookis) | `{% for %}` (mallis) |
+    |---|---|---|
+    | Mida kordab | task'i | ridu failis |
+    | Tulemus | mitu toimingut serveris | üks fail mitme reaga |
+    | Näide | paigalda 3 paketti | 3 `server` rida ühes configis |
 
 ### 3.6 Tühjad read mallides
 
@@ -323,11 +303,9 @@ graph LR
 
 Sama mootor, kaks kohta. **Playbookis** kasutad peaaegu alati ainult `{{ }}`, ja kui väärtus algab sellega, peab see olema jutumärkides (`name: "{{ paketi_nimi }}"`), sest YAML loeb `{` sõnastiku algusena. **Mallis** (`.j2` fail) jutumärke vaja pole, sest see pole YAML, ja seal kasutad ka `{% %}` loogikat. Reegel: loogika kuulub malli, mitte playbooki. Kui playbook täitub `{% if %}` plokkidega, on see märk, et midagi peaks olema mallis või muutujate failis.
 
----
-
 ## 4. `template` moodul
 
-Mall jõuab serverisse `template` mooduliga. Välimuselt on see nagu `copy`:[^template]
+Mall jõuab serverisse `template` mooduliga. Välimuselt on see nagu `copy` ([mooduli dokumentatsioon](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html)):
 
 ```yaml
     - name: Pane leht üles
@@ -339,16 +317,15 @@ Mall jõuab serverisse `template` mooduliga. Välimuselt on see nagu `copy`:[^te
         mode: '0644'
 ```
 
-Vahe on selles, **kus** töö tehakse ja **mida** saadetakse:
+Vahe on selles, kus töö tehakse ja mida saadetakse:
 
-| | `copy` | `template` |
-|---|---|---|
-| Fail | saadetakse muutmata | Jinja2 töötleb **kontroll-node'is** |
-| `{{ }}` failis | jääb sõna-sõnalt | asendatakse väärtusega |
-| Sobib | pildid, staatilised failid, skriptid | konfiguratsioon, mis sõltub hostist või keskkonnast |
-| Faili lõpp | suvaline | tavaks `.j2` |
-
-*Tabel 4.4. Kui failis on `{{ }}`, on vaja `template`-it.*
+??? note "`copy` ja `template` võrdlus"
+    | | `copy` | `template` |
+    |---|---|---|
+    | Fail | saadetakse muutmata | Jinja2 töötleb **kontroll-node'is** |
+    | `{{ }}` failis | jääb sõna-sõnalt | asendatakse väärtusega |
+    | Sobib | pildid, staatilised failid, skriptid | konfiguratsioon, mis sõltub hostist või keskkonnast |
+    | Faili lõpp | suvaline | tavaks `.j2` |
 
 <figure markdown="span">
   ![copy viib faili muutmata, template renderdab iga hosti jaoks eraldi](../images/n04_copy_vs_template.svg)
@@ -365,7 +342,7 @@ Mall renderdatakse **kontroll-node'is** (kursusel sinu arvutis), iga hosti jaoks
 
 **`backup: true`**: enne ülekirjutamist teeb serverisse vanast failist ajatempliga koopia. Kui uus config ei tööta, on vana käepärast.
 
-**`validate`**: kontrollib renderdatud faili **enne**, kui see oma kohale pannakse. `%s` asendatakse ajutise faili teega. Kui kontroll ebaõnnestub, jääb vana fail puutumata ja task katkeb:
+**`validate`**: kontrollib renderdatud faili enne, kui see oma kohale pannakse. `%s` asendatakse ajutise faili teega. Kui kontroll ebaõnnestub, jääb vana fail puutumata ja task katkeb:
 
 ```yaml
     - name: SSH serveri seadistus
@@ -409,15 +386,13 @@ ansible-playbook -i inventory.ini nginx.yml --check --diff
 
 Näed täpselt, mis muutuks, ilma et midagi muutuks. Enne tootmist on see kohustuslik harjumus.
 
----
-
 ## 5. Handlers: taaskäivita ainult muudatuse korral
 
 Konfiguratsioonifaili muutmisest ei piisa. Nginx loeb oma configi käivitamisel. Kui fail muutub, peab teenus selle uuesti laadima. N3 `service` task (`state: started`) seda ei tee: teenus on juba käimas, seega `ok`, midagi ei juhtu.
 
-Lihtne lahendus oleks lisada task `state: restarted`. Aga see taaskäivitaks nginx-i **igal** käivitusel, ka siis, kui midagi ei muutunud. Iga taaskäivitus katkestab hetkeks teeninduse, ja `changed` oleks alati vähemalt 1. Idempotentsus kaoks.
+Lihtne lahendus oleks lisada task `state: restarted`. Aga see taaskäivitaks nginx-i igal käivitusel, ka siis, kui midagi ei muutunud. Iga taaskäivitus katkestab hetkeks teeninduse, ja `changed` oleks alati vähemalt 1. Idempotentsus kaoks.
 
-**Handler** on task, mis käivitub **ainult siis**, kui mõni teine task teda `notify`-ga kutsub **ja** see task oli `changed`:[^handlers]
+**Handler** on task, mis käivitub ainult siis, kui mõni teine task teda `notify`-ga kutsub **ja** see task oli `changed` ([Handlers](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_handlers.html)):
 
 ```yaml
   tasks:
@@ -450,13 +425,11 @@ graph LR
 Neli reeglit, mis handlerite puhul üllatavad:
 
 1. **Handler jookseb play lõpus**, mitte kohe pärast `notify`-d, vaid pärast kõiki task'e.
-2. **Üks kord**, isegi kui kolm task'i teda kutsusid. Kolm config-faili muutus → üks reload.
+2. Üks kord, isegi kui kolm task'i teda kutsusid. Kolm config-faili muutus → üks reload.
 3. **Ainult `changed` peale.** Kui lisad `notify` task'ile, mille fail on serveris juba õige, ei juhtu midagi: handlerit ei kutsuta. Praktikumis näed seda oma silmaga.
 4. **Kui play katkeb** mõnes hilisemas task'is, jäävad kutsutud handlerid sellel hostil käivitamata. Järgmisel korral on config-task `ok` ja handlerit ei tule. Teenus võib jääda vana configiga. Parandus: taaskäivita käsitsi või jooksuta `--force-handlers`.
 
 **`reloaded` või `restarted`?** `reloaded` laseb nginx-il configi uuesti lugeda ilma ühendusi katkestamata ja on konfiguratsioonimuutuse puhul eelistatud. `restarted` peatab ja käivitab teenuse uuesti ning on vajalik, kui muutus midagi, mida reload ei võta (nt uus moodul). Kõik teenused reload'i ei toeta; siis jääb ainult `restarted`.
-
----
 
 ## 6. Saladused: miks tavaline muutuja ei sobi
 
@@ -469,24 +442,21 @@ Gitiga on saladuste puhul kaks eriti halba omadust:
 
 Seega kehtib reegel: **selge tekstiga saladus ei jõua Giti kunagi**, ka mitte privaatsesse repositooriumisse. Kui jõudis, loe see lekkinuks ja vaheta parool välja. Kustutamine ei aita.
 
----
-
 ## 7. Ansible Vault
 
-**Ansible Vault** krüpteerib faili või üksiku väärtuse parooliga (AES256). Krüpteeritud faili võib Giti panna: ilma paroolita on see loetamatu. Käivitamisel annad parooli, Ansible dekrüpteerib sisu **mällu** ja kasutab muutujaid täpselt nagu tavalisi.[^vault]
+**Ansible Vault** krüpteerib faili või üksiku väärtuse parooliga (AES256). Krüpteeritud faili võib Giti panna: ilma paroolita on see loetamatu. Käivitamisel annad parooli, Ansible dekrüpteerib sisu **mällu** ja kasutab muutujaid täpselt nagu tavalisi. Ametlik juhend on [Protecting sensitive data with Ansible vault](https://docs.ansible.com/ansible/latest/vault_guide/index.html), lühem ingliskeelne ülevaade on [Spacelift'i artiklis](https://dev.to/spacelift/how-to-keep-your-playbooks-secure-using-ansible-vault-3103).
 
 ### 7.1 Terve fail: käsud
 
-| Käsk | Mida teeb |
-|---|---|
-| `ansible-vault create fail.yml` | loob uue krüpteeritud faili, avab redaktori |
-| `ansible-vault encrypt fail.yml` | krüpteerib olemasoleva selge faili |
-| `ansible-vault view fail.yml` | näitab sisu, faili ei muuda |
-| `ansible-vault edit fail.yml` | dekrüpteerib ajutiselt, avab redaktori, krüpteerib tagasi |
-| `ansible-vault decrypt fail.yml` | teeb failist jäädavalt selge teksti: harva vaja |
-| `ansible-vault rekey fail.yml` | vahetab parooli |
-
-*Tabel 4.5. Vault'i põhikäsud.*
+??? note "Vault'i põhikäsud"
+    | Käsk | Mida teeb |
+    |---|---|
+    | `ansible-vault create fail.yml` | loob uue krüpteeritud faili, avab redaktori |
+    | `ansible-vault encrypt fail.yml` | krüpteerib olemasoleva selge faili |
+    | `ansible-vault view fail.yml` | näitab sisu, faili ei muuda |
+    | `ansible-vault edit fail.yml` | dekrüpteerib ajutiselt, avab redaktori, krüpteerib tagasi |
+    | `ansible-vault decrypt fail.yml` | teeb failist jäädavalt selge teksti: harva vaja |
+    | `ansible-vault rekey fail.yml` | vahetab parooli |
 
 `create` ja `edit` avavad redaktori, mille määrab keskkonnamuutuja `EDITOR`. Kui see pole seatud, on vaikimisi `vi`. Algajale mugavam:
 
@@ -518,7 +488,7 @@ group_vars/
     └── vault.yml    # krüpteeritud: Gitis loetamatu
 ```
 
-Suuremates projektides on levinud veel üks harjumus. Kuna `vault.yml` sisu on nähtamatu, ei leia keegi `grep`-iga üles, kus muutuja `db_password` defineeritud on. Seetõttu pannakse krüpteeritud muutujatele eesliide `vault_` ja selges failis viidatakse neile:[^tips]
+Suuremates projektides on levinud veel üks harjumus. Kuna `vault.yml` sisu on nähtamatu, ei leia keegi `grep`-iga üles, kus muutuja `db_password` defineeritud on. Seetõttu pannakse krüpteeritud muutujatele eesliide `vault_` ja selges failis viidatakse neile ([Ansible tips and tricks](https://docs.ansible.com/ansible/latest/tips_tricks/ansible_tips_tricks.html)):
 
 ```yaml
 # group_vars/all/vault.yml (krüpteeritud)
@@ -633,8 +603,6 @@ Vault kaitseb saladust **Gitis**. Kolmes kohas on see ikkagi nähtav:
 
 **Parooli omaniku masinas.** `.vault_pass` on selge tekst. Kes pääseb su kasutajakontole, pääseb ka saladustele.
 
----
-
 ## 8. Miks tööl oluline
 
 Deploy-skripte kirjutav meeskond ei pane andmebaasi parooli otse repositooriumisse, ka mitte privaatsesse. Vault muudab selle reegli tööriistaks: konfiguratsioon, mallid ja krüpteeritud saladused elavad koos Gitis, läbivad sama Pull Request'i ülevaatuse ja sama ajaloo. Selget teksti ei näe keegi, kellel parooli pole.
@@ -643,32 +611,15 @@ Vault'i parool hoitakse Gitist eraldi: arendaja masinas failina või CI/CD süst
 
 Mallid lahendavad teise igapäevase probleemi. Kümne serveri kümme käsitsi muudetud configi erinevad aja jooksul alati: keegi parandas üht kiiresti SSH-ga ja unustas teised. Üks mall, muutujad failides ja `# Ansible managed` iga faili alguses tähendavad, et kõik serverid on kirjeldatud ühes kohas ja iga erinevus on muutujate failis nähtav.
 
----
-
 ## Kokkuvõte
 
-- **Väärtused välja:** `group_vars/<grupp>.yml` või `group_vars/<grupp>/` kaust; `host_vars/<host>.yml`; spetsiifilisem võidab, extra-vars võidab kõik
-- **`group_vars/vault.yml` ≠ "kõigile"**: see on grupp nimega `vault`. Õige: `group_vars/all/vault.yml`
-- **Kust väärtus tuli:** `ansible-inventory --host <host>`
-- **Jinja2:** `{{ }}` väärtus, `{% %}` loogika, `{# #}` kommentaar; filtrid `|`-ga, `default` valikuliste muutujate jaoks
-- **`{% for %}` mallis** kordab ridu ühes failis; **`loop`** kordab task'e
-- **`template`**, mitte `copy`, kui failis on `{{ }}`; renderdatakse kontroll-node'is; `validate`, `backup`, `# {{ ansible_managed }}`
-- **`--check --diff`** näitab faili muutust enne muutmist
-- **Handler** jookseb play lõpus, üks kord, ainult kui kutsuv task oli `changed`
-- **Vault** krüpteerib faili (`create/edit/view/rekey`) või väärtuse (`encrypt_string`)
-- **Parool:** `--ask-vault-pass`, `--vault-password-file`, `ansible.cfg`, keskkonnamuutuja; `.vault_pass` → `.gitignore` **enne** faili loomist
-- **Vault kaitseb Giti, mitte serverit ega logi**: `mode: '0600'` ja `no_log: true`
-
----
-
-[^vars]: Using variables, where to set variables. <https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html>
-[^templating]: Templating (Jinja2). <https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_templating.html>
-[^filters]: Using filters to manipulate data. <https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_filters.html>
-[^template]: `ansible.builtin.template` moodul. <https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html>
-[^handlers]: Handlers: running operations on change. <https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_handlers.html>
-[^vault]: Protecting sensitive data with Ansible vault. <https://docs.ansible.com/ansible/latest/vault_guide/index.html>
-[^tips]: Ansible tips and tricks, keep vaulted variables safely visible. <https://docs.ansible.com/ansible/latest/tips_tricks/ansible_tips_tricks.html>
-
----
+??? abstract "Kokkuvõte"
+    - Väärtused on failides `group_vars/<grupp>.yml` või kaustas `group_vars/<grupp>/` ja `host_vars/<host>.yml`. Spetsiifilisem võidab, extra-vars võidab kõik. Kust väärtus tuli, näitab `ansible-inventory --host <host>`.
+    - `group_vars/vault.yml` on grupp nimega `vault`. Kõigile kehtib `group_vars/all/vault.yml`.
+    - Jinja2: `{{ }}` väärtus, `{% %}` loogika, `{# #}` kommentaar, filtrid `|`-ga. `{% for %}` kordab ridu failis, `loop` kordab task'e.
+    - `template` on vaja, kui failis on `{{ }}`. Mall renderdatakse kontroll-node'is. `--check --diff` näitab muutust enne muutmist.
+    - Handler käivitub play lõpus, üks kord ja ainult siis, kui kutsuv task oli `changed`.
+    - Vault krüpteerib faili või väärtuse (`encrypt_string`). `.vault_pass` lisatakse `.gitignore`-i enne faili loomist.
+    - Vault kaitseb saladust Gitis, mitte serveris ega logis: seal aitavad `mode: '0600'` ja `no_log: true`.
 
 *Järgmine: praktikumis tõstad oma N3 `nginx.yml` väärtused välja, teed lehest malli, lisad handleri ja peidad saladuse Vault'i.*
