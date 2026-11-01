@@ -135,7 +135,7 @@ nav:
     - Kodutöö: week10/homework.md
 
   - N11 · Korduvkasutatav infrastruktuur:
-    - "Valik 1: Terraformi moodulid": week11/lab_terraform_modules.md
+    - "Valik 1: OpenTofu moodulid": week11/lab_terraform_modules.md
     - "Valik 2: Ansible rollid (loeng)": week11/lecture_ansible_roles.md
     - "Valik 2: Ansible rollid (praktikum)": week11/lab_ansible_roles.md
     - "Valik 2: Ansible rollid (kodutöö)": week11/homework_ansible_roles.md

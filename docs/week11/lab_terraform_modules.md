@@ -1,39 +1,58 @@
 ---
 tags:
-  - Terraform
+  - OpenTofu
   - Moodulid
   - Praktikum
 ---
 
-# Praktikum: Terraformi moodulid
+# Praktikum: OpenTofu moodulid
 
-Täna kirjutad HCL-i ise rida realt, lisad muutujad ja väljundid ning teed koodist mooduli, mida kutsud kaks korda. Töötsükkel `init`, `plan`, `apply`, `destroy` on seletatud [N10 loengus](../week10/lecture.md). Töötad oma arvutis VS Code'is, Terraform peab olema paigaldatud (`terraform -version`) ja provider `local` loob faile ainult sinu kettale, seega serverit ega kontot ei ole vaja.
+N10-s kirjeldasid ühe virtuaalmasina. Täna kirjutad HCL-i ise, lisad muutujad ja väljundid ning teed koodist mooduli, mida kutsud kaks korda. Provider `local` loob faile ainult kettale, seega Proxmoxi ega tokenit vaja ei ole. Töötsükkel `init`, `plan`, `apply`, `destroy` on seletatud [N10 loengus](../week10/lecture.md).
+
+**Edenemine:** laboritahvel <http://192.168.125.187:8091/> (VPN-iga).
 
 ??? abstract "Õpiväljundid"
-
-    Selle praktikumi lõpuks oskad:
+    Praktikumi lõpuks oskad:
 
     1. selgitada failide `main.tf`, `variables.tf` ja `outputs.tf` erinevust;
-    2. kirjutada nullist HCL-i, mis loob ressursi;
+    2. kirjutada HCL-i, mis loob ressursi;
     3. kasutada muutujaid (`var.nimi`) ja väljundeid (`output`);
-    4. koostada korduvkasutatava mooduli ja kutsuda seda mitu korda erinevate sisenditega.
+    4. teha koodist mooduli ja kutsuda seda mitu korda eri sisenditega;
+    5. viia ressursi moodulisse nii, et OpenTofu seda ei kustuta (`moved`).
 
-## Osa 1 · Esimene HCL nullist
+## Osa 1 · Esimene ressurss
 
-Kirjuta fail rida realt ise, nii jääb süntaks paremini meelde. HCL-i süntaks on kirjas dokumentatsioonis [Terraform Language](https://developer.hashicorp.com/terraform/language). Loo uus tühi kaust ja ava see VS Code'is:
+### 1.1 Töökaust
+
+Töötad masinas `proxmox1` VS Code'i kaudu, kuhu paigaldasid OpenTofu N10-s. Kontrolli:
 
 ```bash
-mkdir ~/terraform-lab11
-cd ~/terraform-lab11
-code .
+tofu version
 ```
 
-??? warning "Kui tuleb `terraform: command not found`"
-    Terraform ei ole PATH-is. Kontrolli käsuga `which terraform` ja paigalda Terraform, kui seda ei ole.
+Klooni oma Lab 11 repositoorium (link on Classroom 50-s) ja tee tööharu:
 
-### 1.1 Lihtsaim ressurss
+```bash
+git clone <sinu-repo-URL> ~/lab11-tofu && cd ~/lab11-tofu
+git switch -c n11-moodulid
+mkdir -p logid
+```
 
-Loo fail `main.tf` ja kirjuta see käsitsi (ära kopeeri):
+Kõik järgmised käsud käivitad kaustas `~/lab11-tofu`. Loo kohe fail `.gitignore`, et olekufail ja provider Giti ei läheks:
+
+```gitignore
+.terraform/
+*.tfstate
+*.tfstate.*
+tfplan
+```
+
+??? warning "Kui tuleb `tofu: command not found`"
+    OpenTofu ei ole selles masinas paigaldatud. Paigalda see [N10 praktikumi osa 1.3](../week10/lab.md) järgi.
+
+### 1.2 Lihtsaim ressurss
+
+Loo fail `main.tf` ja kirjuta see ise, ära kopeeri. Nii jääb süntaks paremini meelde ([OpenTofu keel](https://opentofu.org/docs/language/)):
 
 ```hcl
 terraform {
@@ -47,85 +66,58 @@ terraform {
 
 resource "local_file" "tervitus" {
   filename = "tervitus.txt"
-  content  = "Tere, Terraform!"
+  content  = "Tere, OpenTofu!"
 }
 ```
 
-Failis on ainult üks ressurss, muutujad ja väljundid tulevad hiljem. Ressursi `local_file` parameetrid on kirjas [provideri `local` dokumentatsioonis](https://registry.terraform.io/providers/hashicorp/local/latest/docs). Käsk `init` laadib provideri alla:
+Plokk `terraform` on sama nimega ka OpenTofus. Ressursi `local_file` parameetrid on [provideri `local` lehel](https://search.opentofu.org/provider/hashicorp/local/latest). Käsk `init` laadib provideri alla:
 
 ```bash
-terraform init
-ls -la
+tofu init
+ls -a
 ```
 
 ??? success "Oodatav tulemus"
-    Väljundis on `Terraform has been successfully initialized!` ning kaustas on uued `.terraform/` ja `.terraform.lock.hcl`.
+    Väljundis on `OpenTofu has been successfully initialized!` ning kaustas on `.terraform/` ja `.terraform.lock.hcl`.
 
 ??? warning "Kui tuleb `Failed to install provider`"
-    Kontrolli internetiühendust. `init` laadib provideri alla ainult esimesel korral. Kui viga jääb, kustuta `.terraform/` ja käivita `terraform init` uuesti.
+    Loe veateade läbi. Kui seal on `could not connect` või `timeout`, kontrolli võrku (`curl -sI https://registry.opentofu.org`). Kui seal on versioon, kontrolli rida `version`.
 
-??? question "Küsimus"
-    Mis on `.terraform/` ja `.terraform.lock.hcl` ning miks Terraform vajab neid enne `plan` käsku?
-
-### 1.2 Plan ja apply
-
-Käsk `plan` näitab, mida Terraform teeks, ja `apply` teeb muudatused. Kõigi käskude kirjeldus on lehel [CLI Commands](https://developer.hashicorp.com/terraform/cli/commands).
+### 1.3 Plaan ja loomine
 
 ```bash
-terraform plan
+tofu plan
 ```
 
-Rida `+ create` näitab, mida Terraform teeks. Käsk `plan` ei muuda veel midagi.
+Rida `+ create` näitab, mida OpenTofu teeks. `plan` ei muuda veel midagi.
 
 ```bash
-terraform apply
+tofu apply
 cat tervitus.txt
 ```
 
-Fail tekib alles siis, kui kinnitad käsu sõnaga `yes`.
-
-??? tip "Kinnituse vahelejätmine"
-    Korduval testimisel jätab `terraform apply -auto-approve` kinnituse vahele. Töös loetakse plaan enne kinnitamist alati läbi, sest kinnitus on viimane koht, kus vea saab kinni püüda.
+Fail tekib alles siis, kui kinnitad sõnaga `yes`.
 
 ??? question "Küsimus"
-    Mille poolest erineb ressurss `local_file` käsust `echo "tekst" > fail.txt`? Miks kasutada selleks Terraformi?
+    Mille poolest erineb ressurss `local_file` käsust `echo "tekst" > fail.txt`?
 
-### 1.3 Olekufail ja lahknevus
+### 1.4 Fail kustutatakse käsitsi
 
-Terraform salvestab olekufaili, mida ta on loonud. Vaata selle sisu:
-
-```bash
-cat terraform.tfstate
-```
-
-Olekufail on JSON. Olek ütleb, mis peaks olemas olema, ja `plan` võrdleb seda tegelikkusega. Tekita lahknevus:
+**Ennusta:** kustutad faili `tervitus.txt` käsitsi. Mida näitab järgmine plaan?
 
 ```bash
 rm tervitus.txt
-terraform plan
+tofu plan
 ```
 
-Terraform tahab faili taastada, sest olekufaili järgi peaks fail olemas olema. Taasta fail käsuga `apply`.
+??? success "Oodatav tulemus"
+    `1 to add`. Kood nõuab endiselt faili, seega tahab OpenTofu selle uuesti luua. Olekufail ütleb, et see fail on OpenTofu hallata.
 
-### 1.4 Destroy
-
-Käsk `destroy` kustutab kõik, mis on olekufailis:
-
-```bash
-terraform destroy
-```
-
-Kinnita sõnaga `yes` ja kontrolli, et fail kadus.
-
-??? warning "Kui `destroy` ei kustuta midagi"
-    Oled tõenäoliselt vales kaustas. `terraform.tfstate` peab olema samas kaustas, kus käsku käivitad.
-
-??? question "Küsimus"
-    Kaustas on fail, mida Terraform ei loonud. Kas `terraform destroy` kustutab selle? Miks?
+Loo fail uuesti käsuga `tofu apply`. Fail jääb alles kuni osa 5 lõpuni.
 
 ## Osa 2 · Muutujad
 
-Failinimi `"tervitus.txt"` on praegu koodi sisse kirjutatud. Teise nimega faili jaoks peaks koodi muutma. Muutuja eraldab sisendi konfiguratsioonist.
+Failinimi on praegu koodi sisse kirjutatud. Muutuja eraldab sisendi koodist.
 
 ### 2.1 Üks muutuja
 
@@ -139,36 +131,36 @@ variable "faili_nimi" {
 }
 ```
 
-Muuda faili `main.tf` ja asenda tekst viitega muutujale:
+Muuda failis `main.tf` ressurssi:
 
 ```hcl
 resource "local_file" "tervitus" {
   filename = var.faili_nimi
-  content  = "Tere, Terraform!"
+  content  = "Tere, OpenTofu!"
 }
 ```
 
-```bash
-terraform init && terraform plan
-```
-
-Vaikeväärtus `default` on sama mis enne, seega plaan ei näita muudatusi. Nii näed, et muutuja töötab.
-
-??? tip "Muutuja peab olema kasutusel"
-    Kui kirjutad ploki `variable`, aga ei kasuta failis `main.tf` viidet `var.faili_nimi`, jääb muutuja kasutuks. Kontrolli, et iga uus muutuja on kasutusel.
-
-### 2.2 Ülekirjutamine käsurealt
-
-Muutuja väärtuse saab anda ka käsurealt ja see kirjutab vaikeväärtuse üle:
+**Ennusta:** vaikeväärtus on sama, mis enne. Kas plaan näitab muudatusi?
 
 ```bash
-terraform plan -var="faili_nimi=proov.txt"
+tofu plan
 ```
+
+??? success "Oodatav tulemus"
+    `No changes.` Fail on olemas ja selle nimi ei muutunud.
+
+### 2.2 Väärtus käsurealt
+
+```bash
+tofu plan -var="faili_nimi=proov.txt"
+```
+
+Plaan näitab, et vana fail kustutatakse ja uus luuakse (`-/+`), sest uue nimega fail on uus ressurss. Ära seda plaani rakenda.
 
 ??? question "Küsimus"
-    Miks on `default` arenduses mugav, aga tootmises võib meeskond nõuda, et väärtus antakse alati eraldi?
+    Miks on `default` arenduses mugav, aga tootmises nõutakse tihti, et väärtus antakse alati eraldi?
 
-### 2.3 Teine muutuja: sisu
+### 2.3 Teine muutuja
 
 Lisa faili `variables.tf`:
 
@@ -176,98 +168,75 @@ Lisa faili `variables.tf`:
 variable "faili_sisu" {
   description = "Faili sisu"
   type        = string
-  default     = "Tere, Terraform!"
+  default     = "Tere, OpenTofu!"
 }
 ```
 
-Muuda faili `main.tf` ja rakenda muudatus:
-
-```hcl
-resource "local_file" "tervitus" {
-  filename = var.faili_nimi
-  content  = var.faili_sisu
-}
-```
+Muuda ressursis rida `content = var.faili_sisu` ja rakenda:
 
 ```bash
-terraform apply && cat tervitus.txt
+tofu apply
+cat tervitus.txt
 ```
 
-??? warning "Kui `plan` näitab lihtsa muudatuse asemel destroy ja create"
-    See on normaalne, kui `filename` muutub. Uue nimega fail on Terraformi jaoks uus ressurss.
-
 ??? warning "Kui tuleb `Unsupported argument`"
-    Atribuudi nimes on kirjaviga. Kontrolli nime ressursi `local_file` dokumentatsioonist.
+    Argumendi nimes on kirjaviga. Kontrolli nime ressursi `local_file` lehelt.
 
 ## Osa 3 · Väljundid
-
-Kui konfiguratsioon loob midagi, tahad tulemust näha ilma faile otsimata. Osades 4–5 annad väljundi väärtuse ka edasi.
-
-### 3.1 Esimene väljund
 
 Loo fail `outputs.tf`:
 
 ```hcl
 output "loodud_faili_nimi" {
-  description = "Loodud faili nimi"
-  value       = local_file.tervitus.filename
+  value = local_file.tervitus.filename
 }
-```
 
-```bash
-terraform apply
-terraform output loodud_faili_nimi
-```
-
-??? question "Küsimus"
-    Mida tähendavad viite `local_file.tervitus.filename` kolm osa? Kust need nimed tulevad, kui vaatad faili `main.tf`?
-
-### 3.2 Teine väljund: räsi
-
-Ressurss `local_file` arvutab ise atribuudi `content_md5`. Lisa faili `outputs.tf`:
-
-```hcl
 output "sisu_rasi" {
   value = local_file.tervitus.content_md5
 }
 ```
 
 ```bash
-terraform apply && terraform output sisu_rasi
+tofu apply
+tofu output
 ```
 
-??? warning "Kui tuleb `Unsupported attribute`"
-    Atribuudi nimi on vale (näiteks `content_hash`). Veateade näitab, millised atribuudid on olemas.
+??? question "Küsimus"
+    Mida tähendavad viite `local_file.tervitus.filename` kolm osa? Kust need nimed tulevad?
 
-??? warning "Kui tuleb `Reference to undeclared resource`"
-    Viitad millelegi, mida ei ole defineeritud, või on nimes kirjaviga.
+??? warning "Kui tuleb `Unsupported attribute`"
+    Atribuudi nimi on vale. Veateade näitab, millised atribuudid on olemas.
 
 ## Osa 4 · Moodul
 
-Praegu loob konfiguratsioon ühe tekstifaili. Kümne faili jaoks peaksid koodi kümme korda kopeerima. Moodul pakib loogika korduvkasutatavaks üksuseks, sarnaselt funktsiooniga. Moodulite koostamist näitab HashiCorpi õpetus [Build and use a local module](https://developer.hashicorp.com/terraform/tutorials/modules/module).
+Kümne faili jaoks peaksid ressursi kümme korda kopeerima. Moodul pakib koodi üheks osaks, mida saab mitu korda kutsuda, sarnaselt funktsiooniga ([moodulid](https://opentofu.org/docs/language/modules/)).
 
-### 4.1 Mooduli kaust
+### 4.1 Mooduli failid
 
-Moodul on eraldi kaustas:
+Selles projektis hoiame mooduleid kaustas `modules/`. Kus moodul asub, ütleb mooduli kutses rida `source`.
 
 ```bash
 mkdir -p modules/tekstifail
 ```
 
-Kaust `modules/<nimi>/` on Terraformi kokkulepe: juurkaust kutsub mooduleid ja alamkaustad on moodulid.
-
-### 4.2 Kood moodulisse
-
-Loo `modules/tekstifail/main.tf` (ilma plokita `terraform { required_providers }`, see jääb ainult juurkausta):
+Loo `modules/tekstifail/main.tf`. Moodul kirjutab ise üles, millist providerit ta vajab:
 
 ```hcl
+terraform {
+  required_providers {
+    local = {
+      source = "hashicorp/local"
+    }
+  }
+}
+
 resource "local_file" "see" {
   filename = var.faili_nimi
   content  = var.faili_sisu
 }
 ```
 
-Mooduli sisendid on failis `modules/tekstifail/variables.tf`:
+Mooduli sisendid `modules/tekstifail/variables.tf`:
 
 ```hcl
 variable "faili_nimi" {
@@ -276,13 +245,13 @@ variable "faili_nimi" {
 
 variable "faili_sisu" {
   type    = string
-  default = "Tere, Terraform!"
+  default = "Tere, OpenTofu!"
 }
 ```
 
-Muutujal `faili_nimi` ei ole vaikeväärtust, seega peab iga mooduli kutse failinime andma. Muidu kirjutaksid mitu kutset sama faili.
+Muutujal `faili_nimi` ei ole vaikeväärtust, seega peab iga kutse failinime andma.
 
-Mooduli väljundid on failis `modules/tekstifail/outputs.tf`:
+Mooduli väljundid `modules/tekstifail/outputs.tf`:
 
 ```hcl
 output "faili_nimi" {
@@ -294,20 +263,11 @@ output "sisu_rasi" {
 }
 ```
 
-### 4.3 Mooduli kutsumine juurkaustast
+### 4.2 Mooduli kutse
 
-Kirjuta juurkausta `main.tf` ümber nii, et see kutsub moodulit ressursi asemel:
+Muuda juurkausta `main.tf`: plokk `terraform` jääb, ressurss `local_file` asendub mooduli kutsega:
 
 ```hcl
-terraform {
-  required_providers {
-    local = {
-      source  = "hashicorp/local"
-      version = "~> 2.5"
-    }
-  }
-}
-
 module "tervitus" {
   source     = "./modules/tekstifail"
   faili_nimi = var.faili_nimi
@@ -315,7 +275,7 @@ module "tervitus" {
 }
 ```
 
-Muuda juurkausta `outputs.tf` nii, et see viitab moodulile:
+Muuda juurkausta `outputs.tf`:
 
 ```hcl
 output "loodud_faili_nimi" {
@@ -327,37 +287,45 @@ output "sisu_rasi" {
 }
 ```
 
-### 4.4 Testi
+### 4.3 Ressursi uus aadress
 
-Moodul tuleb `init` käsuga paigaldada enne plaani:
+**Ennusta:** fail `tervitus.txt` on olemas. Mida tahab OpenTofu teha, kui ressurss on nüüd mooduli sees?
 
 ```bash
-terraform init
-terraform plan
-terraform apply
+tofu init
+tofu plan
 ```
 
+??? success "Oodatav tulemus"
+    `1 to add, 0 to change, 1 to destroy`. OpenTofu näeb kahte eri ressurssi: vana aadress `local_file.tervitus` kaob ja uus `module.tervitus.local_file.see` luuakse. Ta kustutaks faili ja looks selle uuesti. Failiga pole see oluline, aga andmebaasiga oleks.
+
+Ära seda plaani rakenda. Ütle OpenTofule, et ressurss liikus. Lisa juurkausta `main.tf` lõppu plokk [`moved`](https://opentofu.org/docs/language/modules/develop/refactoring/):
+
+```hcl
+moved {
+  from = local_file.tervitus
+  to   = module.tervitus.local_file.see
+}
+```
+
+```bash
+tofu plan 2>&1 | tee logid/01-moved.txt
+tofu apply
+```
+
+??? success "Oodatav tulemus"
+    Plaanis on rida `has moved to module.tervitus.local_file.see` ja `0 to add, 0 to change, 0 to destroy`. Fail jääb puutumata.
+
 ??? warning "Kui tuleb `Module not installed`"
-    Iga kord, kui lisad või muudad plokki `module`, käivita `terraform init` uuesti. `init` on vajalik ka moodulite jaoks.
+    Pärast iga uue ploki `module` lisamist käivita `tofu init`.
 
-??? question "Küsimus"
-    Ava `terraform.tfstate`. Kuidas erineb ressursi nimi olekufailis (`module.tervitus.local_file.see`) varasemast (`local_file.tervitus`)?
-
-## Osa 5 · Moodul kaks korda
-
-Mooduli mõte on see, et üht koodi saab kasutada mitu korda.
+## Osa 5 · Sama moodul kaks korda
 
 ### 5.1 Teine kutse
 
-Kirjuta faili `main.tf` kaks plokki `module` erinevate nimedega:
+Lisa juurkausta `main.tf` teine kutse:
 
 ```hcl
-module "tervitus" {
-  source     = "./modules/tekstifail"
-  faili_nimi = var.faili_nimi
-  faili_sisu = var.faili_sisu
-}
-
 module "logi" {
   source     = "./modules/tekstifail"
   faili_nimi = "logi.txt"
@@ -365,59 +333,78 @@ module "logi" {
 }
 ```
 
-??? warning "Kui kaks moodulit kirjutavad sama faili"
-    Kui mõlemal kutsel on sama `faili_nimi`, kirjutab üks fail teise üle. Terraform ei keela seda plaani tasemel. Kontrolli, et iga kutse `faili_nimi` on erinev.
+Iga kutse peab andma erineva `faili_nimi`. Kui kahel kutsel on sama nimi, kirjutab üks fail teise üle ja OpenTofu seda ei keela.
 
 ### 5.2 Väljundid
 
-Kirjuta juurkausta faili `outputs.tf` väljund mõlema kutse jaoks:
+Juurkausta `outputs.tf` lõplik sisu on neli väljundit:
 
 ```hcl
-output "tervituse_fail" {
+output "loodud_faili_nimi" {
   value = module.tervitus.faili_nimi
+}
+
+output "sisu_rasi" {
+  value = module.tervitus.sisu_rasi
 }
 
 output "logi_fail" {
   value = module.logi.faili_nimi
 }
+
+output "logi_rasi" {
+  value = module.logi.sisu_rasi
+}
 ```
 
-### 5.3 Kogu tsükkel
-
-Käivita kogu tsükkel ja vaata, et failid tekivad ja kaovad:
+### 5.3 Kontroll ja kustutamine
 
 ```bash
-terraform init
-terraform plan
-terraform apply
+tofu init
+tofu validate
+tofu apply
+tofu output | tee logid/02-output.txt
+tofu plan 2>&1 | tee logid/03-plan-uuesti.txt
 ls *.txt
-cat tervitus.txt logi.txt
-terraform destroy
 ```
 
 ??? success "Oodatav tulemus"
-    `ls *.txt` näitab faile `tervitus.txt` ja `logi.txt`. Pärast `destroy` käsku on mõlemad failid kadunud.
+    Kaustas on `tervitus.txt` ja `logi.txt`. `tofu output` näitab nelja väljundit. Teine plaan näitab `No changes.`
+
+Lõpuks kustuta kõik, mida see konfiguratsioon haldab. Loe plaan enne `yes` kirjutamist läbi:
+
+```bash
+tofu destroy 2>&1 | tee logid/04-destroy.txt
+ls *.txt
+```
+
+??? success "Oodatav tulemus"
+    `Destroy complete! Resources: 2 destroyed.` Failid `tervitus.txt` ja `logi.txt` on kadunud. Kood, lukufail ja logid on alles.
 
 ??? question "Küsimus"
-    Kui homme tuleks luua kümme faili erinevate sisenditega, mis muutub failis `main.tf` ja mis jääb kaustas `modules/tekstifail/` samaks?
+    Kui homme tuleks luua kümme faili eri sisenditega, mis muutub juurkausta `main.tf` failis ja mis jääb kaustas `modules/tekstifail/` samaks?
 
-??? note "Kontrollnimekiri"
+## Töö esitamine
 
-    - Juurkaustas on `main.tf`, `variables.tf`, `outputs.tf` ja kaust `modules/tekstifail/` kolme failiga.
-    - `terraform validate` ei anna viga.
-    - `terraform plan` ei näita muudatusi, kui midagi ei ole muudetud.
-    - `apply` loob kahe mooduli kutsega kaks faili.
-    - `terraform output` näitab vähemalt nelja väljundit.
-    - `destroy` kustutab mõlemad failid ja `ls *.txt` ei leia midagi.
-    - Oskad selgitada, mille poolest `module "logi" {}` erineb otse ressursi kirjutamisest.
+Repositooriumis on juurkausta `main.tf`, `variables.tf`, `outputs.tf`, `.terraform.lock.hcl`, `.gitignore`, kaust `modules/tekstifail/` kolme failiga ja neli logi kaustas `logid/`. Faili `README.md` kirjuta kahe lausega, mis vahe on aadressidel `local_file.tervitus` ja `module.tervitus.local_file.see` ning miks oli vaja plokki `moved`.
+
+```bash
+tofu fmt -recursive
+git add .
+git status --short
+git commit -m "N11: moodul tekstifail, kaks kutset ja moved"
+git push -u origin n11-moodulid
+```
+
+Käsu `git status --short` väljundis ei tohi olla `.terraform/` ega `terraform.tfstate`. Ava pull request harusse `main` ja liida see. Tulemuse näed Classroom 50-s.
 
 ## Lisaülesanded
 
-??? example "1 · Tsükkel"
-    Uuri `for_each` ja `count` võimalusi ning loo viis faili ühe plokiga `module`.
+??? example "1 · Mitu faili ühe plokiga"
+    Uuri võtmeid [`for_each` ja `count`](https://opentofu.org/docs/language/meta-arguments/for_each/) ja loo viis faili ühe plokiga `module`.
 
-??? example "2 · Uus ressurss"
-    Uuri, milliseid ressursse provider `hashicorp/local` veel pakub, ja lisa moodulisse kausta loomine.
+??? example "2 · Fail alamkausta"
+    Pane mooduli kutses `faili_nimi = "valjund/logi.txt"`. Kas OpenTofu loob kausta `valjund/` ise? Leia ressursi `local_file` lehelt, millega määratakse faili ja kausta õigused (`file_permission`, `directory_permission`).
 
 ??? example "3 · Aheldamine"
-    Lisa kolmas kutse, mille `faili_sisu` sõltub teise mooduli väljundist (`module.logi.sisu_rasi`).
+    Lisa kolmas kutse, mille `faili_sisu` on teise mooduli väljund (`module.logi.sisu_rasi`). Mis järjekorras OpenTofu faile loob ja kust ta selle teab?

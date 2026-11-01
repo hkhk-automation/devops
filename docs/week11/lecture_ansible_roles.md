@@ -5,23 +5,23 @@ tags:
   - Konfiguratsioonihaldus
 ---
 
-# Loeng: Ansible rollid
+# Loeng: Ansible'i rollid
 
 Ühe teenuse seadistamiseks piisab ühest playbook'ist. Kui teenuseid on mitu, jagatakse töö rollideks ja playbook jääb loetavaks.
 
 ??? abstract "Õpiväljundid"
     Pärast loengut oskad:
 
-    - selgitada, mis on roll ja miks see on suurest playbook'ist parem ülesehitus;
+    - selgitada, mis on roll ja millal muudab rollideks jagamine playbook'i loetavamaks;
     - kirjeldada rolli standardset kaustastruktuuri;
     - selgitada, kuidas rolli playbook'ist käivitatakse (`roles:` ja `include_role`);
     - põhjendada, millal kasutada rolli ja millal piisab playbook'ist.
 
 ## 1. Playbook, mis kasvas suureks
 
-Lihtsas playbook'is on ülesanded, muutujad ja mallid ühes failis kõrvuti. Ühe nginx-serveri jaoks on selline fail loetav. Kui sama fail peab seadistama nginx'i, PostgreSQL'i, tulemüüri ja monitooringu, kasvab saja reaga fail viiesajaliseks. Kuu aja pärast ei leia lugeja enam, kus PostgreSQL'i osa lõpeb ja tulemüüri osa algab.
+Väikeses projektis on ülesanded ja muutujad ühes playbook'is ning mallid selle kõrval. Ühe nginx-serveri jaoks on selline fail loetav. Kui sama fail peab seadistama nginx'i, PostgreSQL'i, tulemüüri ja monitooringu, kasvab sajarealine fail viiesajarealiseks. Kuu aja pärast ei leia lugeja enam, kus PostgreSQL'i osa lõpeb ja tulemüüri osa algab.
 
-Rollid lahendavad selle probleemi. Roll koondab seotud ülesanded, muutujad, mallid, failid ja handlerid kindla kaustastruktuuri alla, mille Ansible ise ära tunneb. Üks roll paigaldab nginx'i, teine PostgreSQL'i, kolmas tulemüüri. Iga roll on eraldi üksus, mida saab taaskasutada ja jagada.
+Rollid lahendavad selle probleemi. Roll koondab seotud ülesanded, muutujad, mallid, failid ja handlerid kindlasse kaustastruktuuri, mille Ansible ise ära tunneb. Üks roll paigaldab nginx'i, teine PostgreSQL'i, kolmas tulemüüri. Iga roll on eraldi üksus, mida saab taaskasutada ja jagada.
 
 Kui serveripargis on kümneid teenuseid (rakendusserverid, andmebaasid, vahemälu, koormusjaoturid), ei kirjutata iga serveritüübi jaoks playbook'i nullist. Meeskond koostab rollide kogumi, kus iga roll seadistab ühe teenuse, ja playbook käivitab rollid sobivas järjekorras.
 
@@ -41,14 +41,14 @@ graph TD
 
 ## 2. Rolli struktuur
 
-Roll on kindlate nimedega kaustade kogum. Ansible loeb igast kaustast faili `main.yml` ja kausta nimi määrab, milleks faili kasutatakse. Kaustade täielik loetelu on Ansible'i dokumentatsioonis [Roles](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_reuse_roles.html).
+Roll on kindlate nimedega kaustade kogum. Kaustades `tasks/`, `defaults/` ja `handlers/` loeb Ansible faili `main.yml`. Kaustadest `templates/` ja `files/` võtab ta faili siis, kui ülesanne sellele nime järgi viitab. Kaustade täielik loetelu on Ansible'i dokumentatsioonis [Roles](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_reuse_roles.html).
 
 - `tasks/main.yml`: ülesannete loend (sama süntaks mis playbook'is).
-- `defaults/main.yml`: vaikeväärtused, mida kõik muud muutujad üle kirjutavad.
+- `defaults/main.yml`: vaikeväärtused, mida rolli kasutaja saab playbook'is või inventory's muuta.
 - `handlers/main.yml`: handlerid (näiteks `restart nginx` pärast konfiguratsioonifaili muutmist).
 - `templates/`: Jinja2 mallid (`.j2`).
 - `files/`: staatilised failid, mis kopeeritakse muutmata.
-- `vars/main.yml`: muutujad, mis kirjutavad üle peaaegu kõik teised väärtused; `meta/main.yml`: metaandmed (autor, litsents, sõltuvused).
+- `vars/main.yml`: rolli sisemised muutujad, mida kasutaja tavaliselt ei muuda; `meta/main.yml`: metaandmed (autor, litsents, sõltuvused).
 
 Roll ei pea sisaldama kõiki kaustu, piisab neist, mida on vaja. Näide nginx'i rollist:
 
@@ -61,7 +61,7 @@ roles/nginx/
 └── files/robots.txt
 ```
 
-Ansible leiab rolli kaustast ise malli `templates/nginx.conf.j2` ja käivitab ülesanded failist `tasks/main.yml`. Rolli kirjutaja kirjutab ainult failide sisu.
+Ansible leiab rolli kaustast ise malli `templates/nginx.conf.j2` ja käivitab ülesanded failist `tasks/main.yml`. Rolli autor kirjutab failide sisu ja ülesannetes ainult failide nimed.
 
 ## 3. `ansible-galaxy init`: skelett ühe käsuga
 
@@ -78,11 +78,11 @@ ansible-galaxy init --init-path roles/ nginx
 ```
 
 !!! warning
-    Kui sama nimega kaust on juba olemas, keeldub `init` seda üle kirjutamast. Võti `--force` asendab kausta, aga siis kaob kõik, mis kaustas oli. Ära kasuta `--force` harjumusest.
+    Kui sama nimega kaust on juba olemas, keeldub `init` seda üle kirjutamast. Võti `--force` kirjutab olemasolevad failid üle. Ära kasuta seda töötava rolli peal: salvesta töö enne Giti.
 
 ## 4. Rolli käivitamine: site.yml
 
-Roll hakkab tööle alles siis, kui playbook selle käivitab. Tavaliselt on projektis üks keskne `site.yml`, mis määrab, millised rollid millistele gruppidele rakenduvad:
+Roll hakkab tööle alles siis, kui playbook selle käivitab. Tavaliselt on projektis üks keskne `site.yml`, mis määrab, millised rollid millistele rühmadele rakenduvad:
 
 ```yaml
 # site.yml
@@ -124,12 +124,14 @@ Suur osa ülesandeid on standardsed (nginx, Docker, PostgreSQL) ja keegi on need
 ansible-galaxy role install geerlingguy.nginx
 ```
 
-Mitu rolli korraga paigaldatakse failiga `requirements.yml`. Versioonid on failis kirjas ja paigaldust saab korrata, sama mõttega nagu Pythoni `requirements.txt`:
+Projekti rollid kirjutatakse faili `requirements.yml`, sama põhimõtte järgi nagu Pythoni `requirements.txt`. Kui igal rollil on versioon, paigaldub järgmisel korral täpselt sama:
 
 ```yaml
-- name: geerlingguy.nginx
-- name: geerlingguy.postgresql
-  version: "3.2.0"
+roles:
+  - name: geerlingguy.nginx
+    version: "3.3.1"
+  - name: geerlingguy.postgresql
+    version: "4.3.0"
 ```
 
 ```bash
@@ -140,12 +142,13 @@ Enne kogukonna rolli kasutamist vaata, millal seda viimati uuendati ja kui palju
 
 Standardsete teenuste jaoks alusta Galaxy rollist ja kohanda seda muutujatega. Ettevõttele omase loogika (näiteks oma rakenduse paigalduse) jaoks kirjuta roll ise.
 
-Lehe käsud on kontrollitud Ansible core 2.17 versiooniga.
+Lehe käsud on kontrollitud ansible-core'i versiooniga 2.17.
 
 ??? abstract "Kokkuvõte"
     - Roll koondab ülesanded, muutujad, mallid ja handlerid kindlasse struktuuri ning teeb suure playbook'i loetavaks.
     - Standardkaustad on `tasks/`, `defaults/`, `handlers/`, `templates/`, `files/`, `vars/` ja `meta/`; piisab neist, mida on vaja.
     - `ansible-galaxy init` loob skeleti, sisu kirjutad ise.
     - Roll käivitatakse loendiga `roles:` või `include_role`/`import_role` abil; Ansible otsib rolle kaustast `roles/`.
-    - Playbook'i tasandil `vars:` kirjutab üle rolli `defaults/`.
+    - Playbook'i tasandil `vars:` on tähtsam kui rolli `defaults/`.
+    - Roll on korduvkasutatav osa, playbook määrab, millistele masinatele ja mis järjekorras rolle rakendatakse.
     - Galaxy pakub valmis rolle, aga kolmanda osapoole roll vaadatakse enne tootmist üle.

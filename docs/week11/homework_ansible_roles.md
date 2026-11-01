@@ -5,50 +5,57 @@ tags:
   - Kodutöö
 ---
 
-# Kodutöö: Ansible rollid
+# Kodutöö: Ansible'i rollid
 
-Praktikumi lõpuks on sul töötav nginx'i roll ja kodutöös lisad sellele handleri ja teise muutuja. Kodutöö on boonus.
+Praktikumis tegid nginx'i rolli, millel on mall ja handler. Kodutöös lisad rollile teise muutuja ja kontrollid, et handler käivitub ainult muutuse korral. Kodutöö on boonusülesanne.
 
-Tee kõik muudatused eraldi harus, sest töö esitatakse pull request'iga.
+Tee uus haru praktikumi harust:
 
-## Osa 1 · Handler
-
-Handler käivitub ainult siis, kui ülesanne midagi muutis. Nii taaskäivitatakse nginx ainult siis, kui konfiguratsioonifail muutus.
-
-Lisa failis `tasks/main.yml` malli ülesandele rida `notify`:
-
-```yaml
-- name: kopeeri nginx konfiguratsioon
-  ansible.builtin.template:
-    src: nginx.conf.j2
-    dest: /etc/nginx/nginx.conf
-  notify: restart nginx
+```bash
+cd ~/lab11
+git switch n11-rollid && git pull
+git switch -c n11-kodu
 ```
 
-Kirjuta handler faili `handlers/main.yml`:
+## Osa 1 · Teine muutuja
+
+Lisa faili `roles/nginx/defaults/main.yml` muutuja:
 
 ```yaml
-- name: restart nginx
-  ansible.builtin.service:
-    name: nginx
-    state: restarted
+nginx_server_name: localhost
 ```
 
-Käivita playbook kaks korda järjest. Handlerite kirjeldus on lehel [Handlers](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_handlers.html).
+Kasuta seda mallis `roles/nginx/templates/lab11.conf.j2` ploki `server` sees:
+
+```jinja2
+    server_name {{ nginx_server_name }};
+```
+
+## Osa 2 · Handler käivitub ainult muutuse korral
+
+Anna muutujale failis `site.yml` uus väärtus (rolli `vars:` all), näiteks `nginx_server_name: proxmox1.lab`. Käivita playbook kaks korda:
+
+```bash
+ansible-playbook -i inventory.ini site.yml | tee logid/k1-muutus.txt
+ansible-playbook -i inventory.ini site.yml | tee logid/k2-uuesti.txt
+ssh proxmox1 "grep server_name /etc/nginx/conf.d/lab11.conf"
+```
 
 ??? success "Oodatav tulemus"
-    Esimesel käivitusel, kui fail muutus, käivitub handler `restart nginx`. Teisel käivitusel fail ei muutu ja handlerit ei käivitata.
-
-## Osa 2 · Teine muutuja
-
-Failis `defaults/main.yml` on praegu `nginx_port`. Lisa sinna muutuja `nginx_server_name` (vaikimisi `localhost`) ja kasuta seda oma Jinja2 mallis.
+    Failis `k1-muutus.txt` on mall `changed` ja handler `laadi nginx uuesti` käivitus. Failis `k2-uuesti.txt` on `changed=0` ja handlerit pole. Sõlmes on failis rida `server_name proxmox1.lab;`.
 
 ## Osa 3 · Küsimus
 
-Kirjuta faili `vastus.md` 3–5 lauset: kuidas sarnaneb Ansible'i roll programmeerimise funktsioonile? Too üks konkreetne näide, kus roll on parem kui tavaline playbook.
+Kirjuta faili `vastus.md` 3–5 lauset: kuidas sarnaneb Ansible'i roll programmeerimise funktsioonile? Mis on rolli „parameetrid“ ja mis jääb rolli sisse?
 
 ## Töö esitamine
 
-Harus on handler, uus muutuja mallis ja fail `vastus.md`. Ava pull request haru `main` vastu, kirjuta kirjeldusse, mida muutsid ja miks, ning liida pull request (*Merged*).
+Harus on muudetud mall, uus muutuja, logid `k1-muutus.txt` ja `k2-uuesti.txt` ning fail `vastus.md`.
 
-Tulemuse näed Classroom 50-s.
+```bash
+git add roles site.yml logid vastus.md
+git commit -m "N11 kodutöö: nginx_server_name ja handler'i kontroll"
+git push -u origin n11-kodu
+```
+
+Ava pull request harusse `main`, kirjuta kirjeldusse, mida muutsid ja kuidas kontrollisid, ning liida see. Tulemuse näed Classroom 50-s.
