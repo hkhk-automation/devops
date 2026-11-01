@@ -393,7 +393,7 @@ Kui käivitus on punane, ava see vahekaardil **Actions**, vali punane töö ja a
 ??? warning "Kui töö on hall ja märgitud skipped"
     Töö tingimus `if` ei kehtinud või kukkus töö, mida `needs` ootab. Kontrolli võtmeid `if` ja `needs`.
 
-Kui logist ei piisa, käivita töö uuesti nupuga **Re-run jobs** ja vali **Enable debug logging**. Siis näitab logi iga sammu kohta rohkem ridu ([Enable debug logging](https://docs.github.com/en/actions/how-tos/monitor-workflows/enable-debug-logging)). Rohkem näiteid on lehel [Troubleshoot workflows](https://docs.github.com/en/actions/how-tos/troubleshoot-workflows). Vea leidmise järjekord (sümptom, hüpotees, tõend, parandus) on kirjeldatud [N8 loengus](week08/lecture.md#7-vea-leidmine-sumptom-hupotees-toend-parandus).
+Kui logist ei piisa, käivita töö uuesti nupuga **Re-run jobs** ja vali **Enable debug logging**. Siis näitab logi iga sammu kohta rohkem ridu ([Enable debug logging](https://docs.github.com/en/actions/how-tos/monitor-workflows/enable-debug-logging)). Rohkem näiteid on lehel [Troubleshoot workflows](https://docs.github.com/en/actions/how-tos/troubleshoot-workflows). Veaotsingu järjekord (sümptom, hüpotees, tõend, parandus) on kirjeldatud [N8 loengus](week08/lecture.md#7-veaotsing-sumptom-hupotees-toend-parandus).
 
 ## 7. Hind
 

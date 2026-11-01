@@ -16,8 +16,8 @@ N7 töövoog kontrollis iga muudatust: käivitas testid ja ehitas image'i. Kui k
     - selgitada, mis vahe on CI-l ja pideval tarnel
     - kirjeldada, mis on image'ite register ja kuidas on image'i nimi GHCR-is üles ehitatud
     - põhjendada, miks image saab tag'iks commit'i räsi
-    - anda töövoole täpselt need õigused, mida see vajab
-    - leida viga järjekorras: sümptom, hüpotees, tõend, parandus
+    - anda töövoole ainult need õigused, mida see vajab
+    - leida ja parandada viga sammudega sümptom, hüpotees, tõend, parandus
     - võrrelda GitHub Actionsit, GitLabi ja Jenkinsit ning nende litsentse
 
 ## 1. CI-st pideva tarneni
@@ -29,7 +29,7 @@ GitHub Actionsi põhimõisted on järgmised. **Töövoog** (workflow) on fail ka
   <figcaption>Joonis 8.1. Sündmus käivitab töövoo, töövoos on tööd, töös on sammud. `needs` paneb tööd järjekorda (Talvik, 2026).</figcaption>
 </figure>
 
-Automaatne tarne käib kolmes astmes. **CI** (continuous integration) kontrollib iga muudatust automaatselt: testid ja ehitus. **Pidev tarne** (continuous delivery) tähendab, et iga roheline muudatus on pakitud ja paigaldamiseks valmis, aga paigalduse käivitab inimene. **Pidev paigaldus** (continuous deployment) paigaldab ise ja inimest vahel ei ole.
+Automaatne tarne käib kolmes astmes. **CI** (continuous integration) kontrollib iga muudatust automaatselt: testid ja ehitus. **Pidev tarne** (continuous delivery) tähendab, et iga muudatus, mis läbis kontrollid (roheline muudatus), on pakitud ja paigaldamiseks valmis, aga paigalduse käivitab inimene. **Pidev paigaldus** (continuous deployment) paigaldab ka ise ja muudatus jõuab tootmisse ilma inimese kinnituseta.
 
 ??? note "Tabel 8.1. CI ja CD astmed"
     | Aste | Mida teeb | Millal |
@@ -64,7 +64,7 @@ Registrit on vaja, sest iga töö saab GitHubis uue tühja virtuaalmasina (runne
 
 **Register** on server, kus hoitakse image'eid. Käsk `docker push` saadab image'i registrisse. Käsk `docker pull` tõmbab selle sealt.
 
-Kõige tuntum register on Docker Hub. Täna kasutame **GHCR**-i (GitHub Container Registry, aadress `ghcr.io`). Kood ja konveier on juba GitHubis. Seepärast saab konveier GHCR-i sisse logida ilma eraldi paroolita ([GHCR dokumentatsioon](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)).
+Tuntuim register on Docker Hub. Täna kasutame registrit **GHCR** (GitHub Container Registry, aadress `ghcr.io`). Kood ja konveier on juba GitHubis. Seepärast saab konveier GHCR-i sisse logida ilma eraldi paroolita ([GHCR dokumentatsioon](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)).
 
 Image'i nimi GHCR-is on kolmeosaline:
 
@@ -75,9 +75,9 @@ ghcr.io/hkhk-automation/it24-automatiseerimine-lab-08-cd-ghcr-mtamm:3f2a9c1
 
 Sinu repositoorium on organisatsioonis `hkhk-automation`. Seega on omanik organisatsioon ja nimi on repositooriumi nimi. Konveier võtab selle muutujast `GITHUB_REPOSITORY`. Sinu nime ei pea faili kirjutama.
 
-Image'i nimes on lubatud ainult väiketähed. Repositooriumi nimes võib olla suurtähti, näiteks kasutajanimest. Siis annab `docker build` vea `repository name must be lowercase`. Seepärast teeb konveier nime enne kasutamist väiketähtedeks: `${GITHUB_REPOSITORY,,}`. Kaks koma on Bashi märk, mis muudab tähed väikesteks.
+Image'i nimes on lubatud ainult väiketähed. Repositooriumi nimes võib olla suurtähti, näiteks siis, kui see sisaldab kasutajanime. Siis annab `docker build` vea `repository name must be lowercase`. Seepärast teeb konveier nime enne kasutamist väiketähtedeks: `${GITHUB_REPOSITORY,,}`. Bashis muudab kaks koma `,,` muutuja väärtuse väiketähtedeks.
 
-Registrisse saadetud image'it nimetab GitHub **paketiks** (package). Pakett ja image on siin sama asi. Pakett on repositooriumi avalehel paremal, jaotises **Packages**. Kui repositoorium on privaatne, on ka pakett privaatne. Siis peab server enne tõmbamist sisse logima (§6).
+Registrisse saadetud image'it nimetab GitHub **paketiks** (package). Pakett ja image on siin sama asi. Pakett on repositooriumi avalehel paremal, jaotises **Packages**. Esimesel avaldamisel on pakett privaatne ja selle nähtavust saab muuta repositooriumist eraldi. Selles praktikumis jääb pakett privaatseks, seepärast peab server enne tõmbamist registrisse sisse logima (§6).
 
 Registreid on palju. Konveier logib igasse neist sisse veidi teisiti:
 
@@ -93,11 +93,11 @@ Pilveteenusesse (AWS, Azure) logib töövoog sisse **OIDC** abil. GitHub annab i
 
 ??? question "Kontrolli ennast"
     1. Repositooriumi nimi on `lab-MariTamm`. Mis juhtub, kui image'i nimeks saab `ghcr.io/hkhk-automation/lab-MariTamm`?
-    2. Miks ei pea konveieri failis olema sinu GitHubi kasutajanimi?
+    2. Miks ei pea töövoofailis olema sinu GitHubi kasutajanimi?
 
 ## 3. Tag'id: räsi ja `latest`
 
-**Tag** on image'i nimi pärast koolonit. Ühel image'il võib olla mitu tag'i. Tag'i saab hiljem teisele image'ile ümber tõsta.
+**Tag** on tähis image'i nime järel kooloni taga, näiteks `ghcr.io/kasutaja/app:3f2a9c1`. Ühel image'il võib olla mitu tag'i. Tag'i saab hiljem teisele image'ile ümber tõsta.
 
 ??? note "Tabel 8.3. Tag'id, mida N8 konveier kasutab"
     | Tag | Näide | Mida ütleb |
@@ -108,15 +108,15 @@ Pilveteenusesse (AWS, Azure) logib töövoog sisse **OIDC** abil. GitHub annab i
 
 Konveier paneb igale image'ile kaks tag'i: räsi ja `latest`. Räsi tuleb muutujast `GITHUB_SHA`. Kirjutis `${GITHUB_SHA::7}` võtab sellest seitse esimest märki. Sama lühiräsi näitab ka `git log --oneline`.
 
-Ainult `latest`-ist ei piisa. See ei ütle, mis versioon töötab. Kui kaks serverit tõmbasid `latest`-i eri päevadel, võib neis olla erinev kood. Räsi järgi tead täpselt, mis koodiga on tegu. Vanale versioonile tagasi minek tähendab vana räsiga image'i käivitamist.
+Ainult `latest`-ist ei piisa. See ei ütle, mis versioon töötab. Kui kaks serverit tõmbasid `latest`-i eri päevadel, võib neis olla erinev kood. Räsi järgi tead täpselt, mis koodiga on tegu. Eelmise versiooni juurde tagasi minek tähendab vana räsiga image'i käivitamist.
 
-Starteris on rakendusel uus aadress `/versioon`. Konveier annab ehitamisel räsi `Dockerfile`-ile. Nii ütleb töötav rakendus ise, mis commit'ist see on tehtud.
+Praktikumi algmaterjalis (starter) on rakendusel uus aadress `/versioon`. Konveier annab ehitamisel räsi `Dockerfile`-ile. Nii ütleb töötav rakendus ise, mis commit'ist see on tehtud.
 
 ## 4. Õigused: `GITHUB_TOKEN` ja `permissions`
 
 **Token** on parooli moodi võti, mida kasutab programm. Iga käivituse jaoks loob GitHub ajutise tokeni nimega `GITHUB_TOKEN`. See kehtib ainult käivituse ajal ja kaob pärast. Seda ei pea ise looma ega kuhugi salvestama ([GITHUB_TOKEN](https://docs.github.com/en/actions/tutorials/authenticate-with-github_token)).
 
-Tokeni vaikimisi õigused määrab organisatsioon. Organisatsioonis `hkhk-automation` saab token ainult lugeda. Registrisse kirjutamiseks peab töö õigust ise küsima. Seda tehakse võtmega `permissions` ([süntaks](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#permissions)):
+Tokeni vaikimisi õigused määrab organisatsioon. Organisatsioonis `hkhk-automation` saab token ainult lugeda. Registrisse kirjutamiseks peab töö õigust ise küsima. Õigus antakse võtmega `permissions` ([süntaks](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#permissions)):
 
 ```yaml
     permissions:
@@ -130,11 +130,11 @@ Tokeni vaikimisi õigused määrab organisatsioon. Organisatsioonis `hkhk-automa
 
 Iga töö logi esimene samm on **Set up job**. Selle all on lõik `GITHUB_TOKEN Permissions`. Sealt näed, mis õigused tokenil tegelikult olid.
 
-!!! warning "Saladus ei lähe töövoo faili"
+!!! warning "Saladus ei lähe töövoofaili"
     Tokeneid ja paroole ei kirjutata `.yml` faili. Git'i ajalugu jääb alles. Kord commit'itud saladust näeb ka pärast kustutamist.
 
 ??? question "Kontrolli ennast"
-    1. Sisselogimine GHCR-i õnnestub, aga `docker push` kukub sõnaga `denied`. Mida see tokeni kohta ütleb?
+    1. Sisselogimine GHCR-i õnnestub, aga `docker push` ebaõnnestub veaga `denied`. Mida see tokeni kohta ütleb?
     2. Miks ei anna me kõigile töödele `packages: write`?
 
 ## 5. Millal image ehitatakse
@@ -151,7 +151,7 @@ Sündmus on see, mis töövoo käivitab. `push` ilma piiranguta käivitab tööv
 
 ### Tingimus: `if`
 
-Pull request'i käivitus kasutab sama töövoogu. Töö `build-and-push` peab seal vahele jääma. Selleks on tööl tingimus. Muutuja `github.event_name` ütleb, mis sündmus töövoo käivitas: `push` või `pull_request` ([sündmused](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows)). Kui tingimus ei kehti, on töö hall ja selle juures on märge `skipped`.
+Pull request'i käivitus kasutab sama töövoogu. Töö `build-and-push` peab seal vahele jääma. Selleks lisatakse tööle tingimus. Muutuja `github.event_name` ütleb, mis sündmus töövoo käivitas: `push` või `pull_request` ([sündmused](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows)). Kui tingimus ei kehti, on töö hall ja selle juures on märge `skipped`.
 
 <figure markdown="span">
   ![Ülemine rida pull_request: test ja konteiner rohelised, build-and-push hall ja skipped, registrisse ei jõua midagi. Alumine rida push harusse main: test, konteiner ja build-and-push, mis saadab image'i GHCR-i. All read on: push: branches: [main], pull_request ja if: github.event_name == 'push'](../images/n08_pr_vs_main.svg)
@@ -180,11 +180,11 @@ Käsud `docker pull` ja `docker run` töötavad samamoodi nagu oma masinas. Võt
 
 ### Skript
 
-Käske saab iga kord käsitsi sisestada. Siis tuleb meeles pidada nime, tag'i, porti ja vana konteineri eemaldamist. Starteris on skript `server/paigalda.sh`, mis teeb need sammud alati samas järjekorras. N13-s käivitab sama sammu konveier ise.
+Käske saab iga kord käsitsi sisestada. Siis tuleb meeles pidada nime, tag'i, porti ja vana konteineri eemaldamist. Algmaterjalis on skript `server/paigalda.sh`, mis teeb need sammud alati samas järjekorras. N13-s käivitab sama sammu konveier ise.
 
 ### Keskkonnad: test ja tootmine
 
-Töökohas on sageli kaks või enam keskkonda. **Testkeskkond** (staging) on server, kus uus versioon enne kontrollitakse. **Tootmine** on server, mida kasutavad firma kliendid ja töötajad. GitHubis kirjeldatakse need **keskkondadena** (environments) ([keskkonnad](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments)). Paigaldustöö märgib, kuhu see paigaldab: `environment: tootmine`.
+Töökohas on sageli kaks või enam keskkonda. **Testkeskkond** (staging) on server, kus uut versiooni kontrollitakse enne tootmisse paigaldamist. **Tootmiskeskkond** (production) on server, mida kasutavad ettevõtte kliendid ja töötajad. GitHubis kirjeldatakse need **keskkondadena** (environments) ([keskkonnad](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments)). Paigaldustöös kirjutatakse sihtkeskkond võtmega `environment`, näiteks `environment: tootmine`.
 
 Keskkonnal võivad olla oma saladused. Tootmise parooli näeb ainult töö, mis paigaldab tootmisse. Keskkonnale saab lisada ka kinnitajad (required reviewers). Siis jääb töö ootama, kuni inimene vajutab nupule. Mõlemasse keskkonda läheb sama räsiga image ja tootmise jaoks midagi uuesti ei ehitata.
 
@@ -209,9 +209,9 @@ concurrency:
     1. Miks ei anna me serveri tokenile õigust `write:packages`, kuigi see lubaks ka lugeda?
     2. `docker ps` näitab pordiks `0.0.0.0:8088->80/tcp`. Rakendus kuulab pordil 5000. Mida vastab `curl localhost:8088`?
 
-## 7. Vea leidmine: sümptom, hüpotees, tõend, parandus
+## 7. Veaotsing: sümptom, hüpotees, tõend, parandus
 
-Praktikumi konveier on kirjutatud, aga katki. Kõige aeglasem viis on muuta ridu juhuslikult ja vaadata, kas läheb roheliseks. Kiirem on iga vea juures sama järjekord.
+Praktikumi konveier on kirjutatud, aga katki. Kõige aeglasem viis viga otsida on muuta ridu juhuslikult ja vaadata, kas läheb roheliseks. Kiirem on iga vea juures sama järjekord.
 
 <figure markdown="span">
   ![Neli kasti järjest: 1 Sümptom (punane töö, rida logis, curl vastus), 2 Hüpotees (mis võib olla põhjus, mis failis, mis real), 3 Tõend (Set up job, docker ps, logs), 4 Parandus (üks muudatus korraga, siis kontroll uuesti). Tõendist tagasi hüpoteesini katkendlik nool: kui tõend ei kinnita hüpoteesi, tee uus hüpotees](../images/n08_veaotsing.svg)
@@ -219,7 +219,7 @@ Praktikumi konveier on kirjutatud, aga katki. Kõige aeglasem viis on muuta ridu
 </figure>
 
 1. **Sümptom** on see, mida näed: punane töö, punane samm, rida logis. Loe veateade lõpuni. Tähtsaim sõna on tihti viimane.
-2. **Hüpotees** on oletus põhjuse kohta. Hea hüpotees ütleb ka koha: „tokenil pole kirjutamisõigust, fail `ci.yml`, töö `build-and-push`“.
+2. **Hüpotees** on oletus põhjuse kohta. Hea hüpotees nimetab ka vea võimaliku asukoha: „tokenil pole kirjutamisõigust, fail `ci.yml`, töö `build-and-push`“.
 3. **Tõend** on kontroll, mis oletuse kinnitab või ümber lükkab. Tee see enne, kui midagi muudad.
 4. **Parandus** on üks muudatus. Pärast seda vaata sama sümptomit uuesti.
 
@@ -236,9 +236,9 @@ Praktikumi konveier on kirjutatud, aga katki. Kõige aeglasem viis on muuta ridu
 
 Kõik vead ei tee konveierit punaseks. Kui katkine kood jõuab registrisse, on kõik tööd rohelised. Sellist viga näed ainult siis, kui kontrollid tulemust: mis on registris ja mis töötab serveris.
 
-### Viga issue'na
+### Vea kirjeldamine issue's
 
-Töökohas pannakse iga viga kirja **issue**'na: mida nähti, mis oli hüpotees ja mis oli tõend. Kui paranduse commit'i sõnumis on rida `Fixes #12`, sulgeb GitHub issue numbriga 12 siis, kui commit jõuab harusse `main`, ja lisab issue'le lingi sellele commit'ile ([issue sulgemine võtmesõnaga](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword)). Nii saab hiljem minna ahelat pidi: issue, commit'i räsi, image'i tag sama räsiga ja server, mis näitab seda räsi. Praktikumis teed iga vea kohta issue ja leiad räsi järgi vana versiooni üles (`git log --oneline`, `git show <räsi>`).
+Töökohas kirjeldatakse vead veakirjetena (**issue**): mida nähti, mis oli hüpotees ja mis oli tõend. Kui paranduse commit'i sõnumis on rida `Fixes #12`, sulgeb GitHub issue numbriga 12 siis, kui commit jõuab harusse `main`, ja lisab issue'le lingi sellele commit'ile ([issue sulgemine võtmesõnaga](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword)). Nii saab hiljem minna ahelat pidi: issue, commit'i räsi, image'i tag sama räsiga ja server, mis näitab seda räsi. Praktikumis teed iga vea kohta issue ja leiad räsi järgi vana versiooni üles (`git log --oneline`, `git show <räsi>`).
 
 ### Olekumärk
 
@@ -246,24 +246,24 @@ README algusesse saab panna olekumärgi (status badge): väikese pildi, mis näi
 
 ## 8. CI/CD tööriistad ja litsentsid
 
-GitHub Actions ei ole ainus CI/CD tööriist. Töökohas kohtad tõenäoliselt ka GitLabi või Jenkinsit. Mõisted on samad: konveier, sammud, järjekord, saladused. Erinevad koht, kus konveier töötab, ja see, kes seda haldab.
+GitHub Actions ei ole ainus CI/CD tööriist. Töökohas kohtad tõenäoliselt ka GitLabi või Jenkinsit. Mõisted on samad: konveier, sammud, järjekord, saladused. Erinevus on selles, kus konveier töötab ja kes seda haldab.
 
-**GitHub Actions** on GitHubi teenus. Konveier töötab GitHubi masinates (runner). Firma võib paigaldada runneri ka oma serverisse ([oma runner](https://docs.github.com/en/actions/concepts/runners/self-hosted-runners)). Siis töötab konveier firma võrgus, aga juhtimine jääb GitHubile.
+**GitHub Actions** on GitHubi teenus. Konveier töötab GitHubi masinates (runner). Ettevõte võib paigaldada runneri ka oma serverisse ([oma runner](https://docs.github.com/en/actions/concepts/runners/self-hosted-runners)). Siis töötab konveier ettevõtte võrgus, aga juhtimine jääb GitHubile.
 
 **GitLab** on terve platvorm ühes: Git'i hoidla, CI/CD, konteinerite register, ülesanded (issues) ja turvakontrollid. Seda saab kasutada teenusena aadressil gitlab.com või paigaldada oma serverisse ([paigaldus](https://docs.gitlab.com/install/)). Konveier on failis `.gitlab-ci.yml`.
 
-**Jenkins** on vanim neist kolmest. Projekt alustas 2004. aastal nime all Hudson. 2011. aastal tekkis vaidlus Oracle'iga nime pärast ja projekt nimetati ümber Jenkinsiks ([Jenkinsi projekt](https://www.jenkins.io/project/)). Jenkinsi paigaldad alati ise. Selle võimalused tulevad plugin'itest. Plugin'eid on üle kahe tuhande ([Jenkinsi plugin'id](https://plugins.jenkins.io/)).
+**Jenkins** on vanim neist kolmest. Projekt sai alguse 2004. aastal nime all Hudson. 2011. aastal tekkis vaidlus Oracle'iga nime pärast ja projekt nimetati ümber Jenkinsiks ([Jenkinsi projekt](https://www.jenkins.io/project/)). Jenkinsi paigaldad alati ise. Selle võimalused tulevad plugin'itest. Plugin'eid on üle kahe tuhande ([Jenkinsi plugin'id](https://plugins.jenkins.io/)).
 
-Jenkinsit kasutatakse endiselt palju, eriti suurtes firmades ja vanades süsteemides. Uutes projektides valitakse seda harvem. Server, plugin'id ja nende uuendused on firma enda hallata. Iga plugin on võimalik turvaauk ja vanad plugin'id ei pruugi uue versiooniga töötada. GitHub Actions ja gitlab.com hoiavad selle töö enda käes. Praktikumi osas 6 käivitad Jenkinsi ise ja näed, mida see haldamine tähendab.
+Jenkinsit kasutatakse endiselt palju, eriti suurtes ettevõtetes ja vanades süsteemides. Uutes projektides valitakse Jenkinsit harvem. Server, plugin'id ja nende uuendused on ettevõtte enda hallata. Iga plugin on võimalik turvaauk ja vanad plugin'id ei pruugi uue versiooniga töötada. GitHub Actionsi ja gitlab.com-i puhul teeb selle töö teenusepakkuja. Praktikumi osas 6 käivitad Jenkinsi ise ja näed, mida see haldamine tähendab.
 
-Jenkinsi konveier on repositooriumi failis `Jenkinsfile` ([Jenkinsfile'i süntaks](https://www.jenkins.io/doc/book/pipeline/syntax/)). Ülesehitus on sama mis töövoo failil, ainult nimed on teised: `pipeline` on terve konveier, `agent` ütleb, kus see töötab (nagu `runs-on`), `stages` ja `stage` on etapid (nagu tööd) ning `steps` on käsud. Jenkins ise oskab vähe. Git'i tugi, konveierid ja graafiline vaade tulevad **plugin'itest**, mis paigaldatakse Jenkinsi image'isse. GitHub teatab push'ist Jenkinsile **webhook**'iga: GitHub saadab Jenkinsi aadressile päringu. Kui Jenkins on VPN-i taga, ei jõua päring kohale. Siis kontrollib Jenkins ise repositooriumi kindla aja tagant (`pollSCM`).
+Jenkinsi konveier on repositooriumi failis `Jenkinsfile` ([Jenkinsfile'i süntaks](https://www.jenkins.io/doc/book/pipeline/syntax/)). Ülesehitus sarnaneb GitHub Actionsi töövoofailiga, ainult nimed on teised: `pipeline` on terve konveier, `agent` ütleb, kus see töötab (nagu `runs-on`), `stages` ja `stage` on etapid (nagu tööd) ning `steps` on käsud. Jenkins ise oskab vähe. Git'i tugi, konveierid ja graafiline vaade tulevad **plugin'itest**, mis paigaldatakse Jenkinsi image'isse. GitHub teatab push'ist Jenkinsile **webhook**'iga: GitHub saadab Jenkinsi aadressile päringu. Kui Jenkins on VPN-i taga, ei jõua päring kohale. Siis kontrollib Jenkins ise repositooriumi kindla aja tagant (`pollSCM`).
 
 ### Litsentsid
 
-**Litsents** ütleb, mida tarkvaraga tohib teha: kas seda tohib tasuta kasutada, muuta, oma serverisse paigaldada ja edasi müüa. Firma jaoks on see sama oluline kui tehnilised omadused.
+**Litsents** ütleb, mida tarkvaraga tohib teha: kas seda tohib tasuta kasutada, muuta, oma serverisse paigaldada ja edasi müüa. Ettevõtte jaoks on see sama oluline kui tehnilised omadused.
 
 ??? note "Tabel 8.5. CI/CD tööriistade litsentsid"
-    | Tööriist | Litsents | Mida see firmale tähendab |
+    | Tööriist | Litsents | Mida see ettevõttele tähendab |
     |---|---|---|
     | Jenkins | [MIT](https://github.com/jenkinsci/jenkins/blob/master/LICENSE.txt) | tohib tasuta kasutada, muuta ja edasi müüa |
     | GitLab Community Edition | [MIT](https://gitlab.com/gitlab-org/gitlab/-/blob/master/LICENSE) | nagu Jenkins: tasuta ja vaba |
@@ -281,7 +281,7 @@ Litsents võib ka muutuda. HashiCorp muutis 2023. aastal Terraformi litsentsi (T
     Litsentsi kõrval tuleb vaadata ka hinda. Leia vastused GitHubi dokumentatsioonist, lehelt [GitHub Actionsi arveldus](https://docs.github.com/en/billing/concepts/product-billing/github-actions), ja võrdle plaane lehel [github.com/pricing](https://github.com/pricing):
 
     1. Kas GitHubi runnerid on avalikus repositooriumis tasuta?
-    2. Kui palju kasutust on privaatse repositooriumi jaoks plaanis hinna sees? Mitu Linuxi minutit see umbes on?
+    2. Kui palju kasutust on privaatse repositooriumi jaoks plaanis hinna sees? Mitmele Linuxi runneri minutile see umbes vastab?
     3. Mis maksab üks Linuxi runneri minut?
     4. Kas oma runner (self-hosted) maksab midagi?
     5. Sinu konveier kestab umbes 2 minutit ja klassis on 15 õpilast. Igaüks teeb tunnis 20 push'i. Mitu minutit kulub ühe tunniga?
@@ -296,8 +296,8 @@ Litsents võib ka muutuda. HashiCorp muutis 2023. aastal Terraformi litsentsi (T
         Organisatsioon saab määrata kulude piiri (budget). Kooli organisatsioonis on piir 0 $: kui hinna sees olev kogus saab otsa, töövoogusid kuu lõpuni enam ei käivitata ja arvet ei tule.
 
 ??? question "Kontrolli ennast"
-    1. Firma tahab CI/CD-d, mis töötab ainult tema enda serverites ja on tasuta. Milliseid tabeli 8.5 tööriistu ta saab kasutada?
-    2. Mida peab firma Jenkinsi puhul ise tegema, mida GitHub Actionsi puhul teeb GitHub?
+    1. Ettevõte tahab CI/CD-d, mis töötab ainult tema enda serverites ja on tasuta. Milliseid tabeli 8.5 tööriistu ta saab kasutada?
+    2. Mida peab ettevõte Jenkinsi puhul ise tegema, mida GitHub Actionsi puhul teeb GitHub?
 
 ??? abstract "Kokkuvõte"
     | Mõiste | Lühidalt |
