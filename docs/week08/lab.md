@@ -9,16 +9,16 @@ tags:
 
 # Praktikum: katkine konveier korda
 
-Repositooriumis on Flaski rakendus, konveier, mis peaks image'i registrisse saatma, ja skript, mis peaks image'i serveris käivitama. Mõlemas on vead. Leiad ja parandad need ükshaaval. Töötad masinas `proxmox1`, mis on ühtlasi server.
+Repositooriumis on Flaski rakendus, konveier, mis peaks image'i registrisse saatma, ja skript, mis peaks image'i serveris käivitama. Nii konveieris kui ka skriptis on vead. Leiad ja parandad need ükshaaval. Töötad masinas `proxmox1`, mida kasutad ka rakenduse serverina.
 
 **Edenemine:** laboritahvel <http://192.168.125.187:8091/> (VPN-iga).
 
 ??? abstract "Õpiväljundid"
 
-    1. Oskad lugeda Actionsi logist, mis samm kukkus ja miks.
+    1. Oskad Actionsi logist leida, milline samm ebaõnnestus ja miks.
     2. Oskad anda tööle õiguse kirjutada GHCR-i ja põhjendada, miks ainult sellele tööle.
-    3. Oskad panna image'i ehituse testide järele ja jätta selle pull request'is vahele.
-    4. Oskad tõmmata privaatse image'i serverisse ja käivitada selle õige pordiga.
+    3. Oskad seadistada image'i ehituse nii, et see algab alles pärast edukaid teste ja jääb pull request'is vahele.
+    4. Oskad tõmmata privaatse image'i serverisse ja käivitada selle õige pordisuunamisega.
     5. Oskad käivitada sama konveieri Jenkinsis ja võrrelda seda GitHub Actionsiga.
 
 Iga vea juures teed neli sammu:
@@ -26,7 +26,7 @@ Iga vea juures teed neli sammu:
 1. **Sümptom:** vaata, mis on punane, ja loe logi viimased read.
 2. **Hüpotees:** kirjuta vea issue'sse, mis võiks olla põhjus.
 3. **Tõend:** kontrolli oletust enne, kui midagi muudad.
-4. **Paranda** ja **Kontrolli:** tee üks muudatus ja kontrolli uuesti. Commit'i sõnumisse lisa `Fixes #<issue number>`.
+4. **Parandus ja kontroll:** tee üks muudatus ja kontrolli tulemust uuesti. Commit'i sõnumisse lisa `Fixes #<issue number>`.
 
 Põhjus ja parandus on kokkuvolditud plokis. Ava see alles siis, kui oled ise proovinud.
 
@@ -52,7 +52,7 @@ Rakendusel on uus aadress `/versioon`. Ava `flask/Dockerfile` ja leia read `ARG 
 
 ### 1.2 Testid oma masinas
 
-Tee projektile virtuaalkeskkond (kaust `.venv`, kuhu paigaldatakse ainult selle projekti paketid) ja käivita testid:
+Loo projekti jaoks virtuaalkeskkond (kaust `.venv`, kuhu paigaldatakse ainult selle projekti paketid) ja käivita testid:
 
 ```bash
 python3 -m venv .venv
@@ -63,7 +63,7 @@ pytest flask -v
 
 **Kontrolli**
 
-Väljundi lõpus on `4 passed`. Neljas test kontrollib aadressi `/versioon`. Kui image'it ei ehitanud konveier, vastab see `kohalik`.
+Väljundi lõpus on `4 passed`. Neljas test kontrollib aadressi `/versioon`. Kui image'it ei ehitatud konveieris, on aadressi `/versioon` vastus `kohalik`.
 
 ### 1.3 Esimene push
 
@@ -79,21 +79,21 @@ Push harusse `main` käivitab konveieri. Ava repositooriumis vahekaart **Actions
 
 ### 1.4 Vigade issue'd
 
-Töökohas ei parandata viga ilma kirjeta. Iga viga saab **issue**: GitHubi kirje, kus on kirjas, mida nähti ja mis oli põhjus. Paranduse commit viitab issue'le. Hiljem näeb igaüks, milline commit millise vea parandas.
+Töökohas kirjeldatakse vead, et parandustest jääks jälg. Iga vea kohta luuakse **issue** ehk veakirje, kuhu pannakse kirja sümptom, hüpotees ja tõend. Paranduse commit viitab issue'le. Nii on hiljem näha, milline commit millise vea parandas.
 
 Repositooriumis on issue'de mall **Viga**. Iga vea juures toimi nii:
 
 1. Kui näed sümptomit, ava vahekaart **Issues** → **New issue** → **Viga**. Pealkirjaks kirjuta lühidalt, mida näed, näiteks `build-and-push: docker push denied`. Väljale **Sümptom** kopeeri rida logist.
-2. Sammus **Ennusta** kirjuta oma oletus väljale **Hüpotees**. Kui oled tõendi leidnud, täida väli **Tõend**.
-3. Pane paranduse commit'i sõnumisse teise reana `Fixes #<issue number>`. Issue number on pealkirja järel, näiteks `#2`:
+2. Kirjuta oma oletus väljale **Hüpotees**. Kui oled tõendi leidnud, täida väli **Tõend**.
+3. Lisa paranduse commit'i sõnumisse `Fixes #<issue number>`. Issue numbri näed pealkirja järel, näiteks `#2`:
 
     ```bash
     git commit -m "N8 viga 1: build-and-push saab kirjutada GHCR-i" -m "Fixes #2"
     ```
 
-Kui commit jõuab harusse `main`, sulgeb GitHub issue ise ja lisab sellele lingi commit'ile ([issue sulgemine commit'iga](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword)). Pull request'i puhul pane `Fixes #<number>` pull request'i kirjeldusse. Siis sulgub issue liitmisel. Pull request'id ja issue'd kasutavad sama numbrijada, seega ei ole issue numbrid alati järjest.
+Kui commit jõuab repositooriumi vaikeharusse (siin `main`), sulgeb GitHub issue ise ja lisab sellele lingi commit'ile ([issue sulgemine commit'iga](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword)). Pull request'i puhul pane `Fixes #<number>` pull request'i kirjeldusse. Siis sulgub issue liitmisel. Pull request'id ja issue'd kasutavad sama numbrijada, seega ei ole issue numbrid alati järjest.
 
-Juhendi commit'i käskudes on ainult esimene rida. Teise rea `-m "Fixes #<number>"` lisa ise.
+Juhendi commit'i käskudes on ainult sõnumi pealkiri. Lisa paranduse commit'ile ise teine `-m` argument: `-m "Fixes #<number>"`.
 
 ## Osa 2 · Viga 1: registrisse kirjutamine
 
@@ -121,7 +121,7 @@ Käivituse lehel on `test` ja `konteiner` rohelised. `build-and-push` on punane.
 
     Sõnastus võib erineda, aga sõna `denied` on alati. Lõigus `GITHUB_TOKEN Permissions` on `Packages: read`. Sisselogimine õnnestus, sest token kehtib. Kirjutada ei tohtinud, sest organisatsioonis on tokenil vaikimisi ainult lugemisõigus ([loengu §4](lecture.md#4-oigused-github_token-ja-permissions)).
 
-    Lisa tööle `build-and-push` õigused. Taane on sama mis real `runs-on`:
+    Lisa tööle `build-and-push` õigused. Kasuta sama taanet nagu real `runs-on`:
 
     ```yaml
       build-and-push:
@@ -181,7 +181,7 @@ Konveier on nüüd roheline. Et seda ei peaks iga kord vahekaardilt **Actions** 
 
 **Kontrolli**
 
-Ava repositooriumi avaleht. README all on roheline märk `CI/CD passing`. Märgil klõpsates avaneb töövoo käivituste nimekiri.
+Ava repositooriumi avaleht. README-s on roheline märk `CI/CD passing`. Märgil klõpsates avaneb töövoo käivituste nimekiri.
 
 Repositoorium on privaatne, seega näevad märki ainult need, kellel on repositooriumile ligipääs. Avalikus repositooriumis näeb seda igaüks.
 
@@ -216,7 +216,7 @@ git push
 ??? success "Põhjus ja parandus"
     `build-and-push` on roheline ja **Packages** all on uus räsi. `latest` näitab nüüd koodi, mille test kukkus. Skeemil on nool ainult `test` ja `konteiner` vahel. `build-and-push` alustas samal ajal kui `test`. Tööl puudub `needs`, seega ei oota see teisi ([loengu §5](lecture.md#5-millal-image-ehitatakse)).
 
-    Lisa tööle järjekord. `konteiner` ootab juba `test`-i, seega piisab `konteiner`-ist:
+    Määra töö sõltuvus võtmega `needs`. `konteiner` ootab juba `test`-i, seega piisab `konteiner`-ist:
 
     ```yaml
       build-and-push:
@@ -246,11 +246,11 @@ git commit -m "N8: tervitus tagasi"
 git push
 ```
 
-Kõik kolm tööd on rohelised ja järjest.
+Kõik kolm tööd on rohelised ja käivitusid õiges järjekorras.
 
 **Küsimus:** miks peab image'i ehitus testide järel ootama? (README küsimus 2 ja tabeli rida 2)
 
-## Osa 4 · Viga 3: pull request jõuab registrisse
+## Osa 4 · Viga 3: pull request'i kood jõuab registrisse
 
 Meeskonnas jõuab kood harusse `main` pull request'i kaudu. Pull request'i koodi pole keegi veel üle vaadanud. Seega ei tohi see registrisse jõuda. Kontrolli, kas see nii on.
 
@@ -262,7 +262,7 @@ Tee uus haru:
 git switch -c n08-tervitus
 ```
 
-Muuda failis `flask/app.py` tervitus kujule `Tere konteinerist, N8!`. Sõna `Tere` jääb alles, seega test läbib. Saada haru GitHubi:
+Muuda failis `flask/app.py` tervitus kujule `Tere konteinerist, N8!`. Sõna `Tere` jääb alles, seega test õnnestub. Saada haru GitHubi:
 
 ```bash
 pytest flask -v
@@ -426,7 +426,7 @@ docker ps --filter name=flask-cd
 docker logs flask-cd
 ```
 
-Vaata `docker ps` veergu PORTS. Vaata logis rida `Running on`. Mis port on kummaski?
+Vaata `docker ps` veergu PORTS. Vaata logis rida `Running on`. Millisele konteineri pordile suunab Docker liikluse ja millisel pordil kuulab Flask?
 
 ??? success "Põhjus ja parandus"
     `curl` annab `curl: (56) Recv failure: Connection reset by peer` või `curl: (52) Empty reply from server`.
@@ -519,7 +519,7 @@ git log --oneline -1
 
 **Kontrolli**
 
-`/versioon` vastus ja `git log --oneline -1` räsi on samad.
+Aadressi `/versioon` vastus ja käsu `git log --oneline -1` lühiräsi on samad.
 
 **Küsimus:** tootmises ilmus viga. Kuidas leiad räsi järgi, mis commit selle tõi ja millise issue parandus seda puudutab? Kuidas lähed eelmisele versioonile tagasi?
 
@@ -548,7 +548,7 @@ cat Jenkinsfile
     | [`pipeline-graph-view`](https://plugins.jenkins.io/pipeline-graph-view/) | näitab konveieri samme graafiliselt |
     | [`dark-theme`](https://plugins.jenkins.io/dark-theme/) | tume teema |
 
-`Jenkinsfile` on konveier. See on sama mõttega kui `ci.yml`, aga teises keeles ([Jenkinsfile'i süntaks](https://www.jenkins.io/doc/book/pipeline/syntax/)):
+`Jenkinsfile` kirjeldab konveierit. Selle eesmärk on sama mis failil `ci.yml`, aga süntaks on teine ([Jenkinsfile'i süntaks](https://www.jenkins.io/doc/book/pipeline/syntax/)):
 
 ??? note "Tabel 8.7. Sama konveier kahes tööriistas"
     | `ci.yml` (GitHub Actions) | `Jenkinsfile` (Jenkins) |
@@ -639,7 +639,7 @@ Vajuta vasakul **Build Now**.
 
 Käivitus on punane. Ava see ja vali **Pipeline Overview**. Plugin `pipeline-graph-view` näitab etappe graafiliselt. Etapp `test` on punane.
 
-**Hüpotees.** Samad testid läbisid sinu masinas ja GitHub Actionsis. Miks kukuvad need Jenkinsis? Kirjuta oletus issue väljale **Hüpotees**.
+**Hüpotees.** Samad testid õnnestusid sinu masinas ja GitHub Actionsis. Miks kukuvad need Jenkinsis? Kirjuta oletus issue väljale **Hüpotees**.
 
 **Tõend**
 
@@ -656,7 +656,7 @@ Käivitus on punane. Ava see ja vali **Pipeline Overview**. Plugin `pipeline-gra
 ??? success "Põhjus ja parandus"
     Logis on rida `python3: not found`. Masinas `proxmox1` Python on, Jenkinsi konteineris mitte. GitHub Actionsis paigaldas Pythoni action `setup-python`. Jenkinsis peab selle paigaldama see, kes Jenkinsit haldab.
 
-    Lisa failis `jenkins/Dockerfile` pärast rida `FROM` Pythoni paigaldus. Paigaldamiseks on vaja root'i õigusi. Pärast seda tuleb kasutaja `jenkins` tagasi, et Jenkins ei töötaks root'ina:
+    Lisa failis `jenkins/Dockerfile` pärast rida `FROM` Pythoni paigaldus. Paigaldamiseks on vaja root'i õigusi. Seejärel vahetatakse kasutaja tagasi `jenkins`-iks, et Jenkins ei töötaks root'ina:
 
     ```dockerfile
     FROM jenkins/jenkins:lts-jdk21
@@ -672,7 +672,7 @@ Käivitus on punane. Ava see ja vali **Pipeline Overview**. Plugin `pipeline-gra
 
 **Paranda**
 
-Image muutus. Ehita see uuesti ja tee konteiner uuesti. Seaded jäävad volume'isse alles:
+Image'i kirjeldus muutus. Ehita image uuesti ja loo konteiner uuesti. Seaded jäävad volume'isse alles:
 
 ```bash
 docker build -t minu-jenkins jenkins/
@@ -729,9 +729,9 @@ Mõtle tagasi tabelile 8.7. GitHub Actionsis ei pidanud sa paigaldama serverit, 
 
 ## Osa 7 · Võrdle lahendusega
 
-Kõik kuus parandust on nüüd sinu failides. Siin on need koos, nii nagu seda töökohas tehakse. Võrdle oma faile nendega. Kui midagi erineb, mõtle, kas sinu variant teeb sama asja. Näiteks `needs: [test, konteiner]` on samaväärne.
+Kõik kuus parandust on nüüd sinu failides. Allpool on parandatud failid tervikuna. Võrdle oma faile nendega. Kui midagi erineb, mõtle, kas sinu variant teeb sama asja. Näiteks `needs: [test, konteiner]` on samaväärne.
 
-Rea selgituse näed, kui klõpsad numbril koodi kõrval.
+Rea selgitust näed, kui klõpsad koodi kõrval oleval numbril.
 
 Praktikumis kirjutasime käsud ise, sest siis näed iga sammu eraldi logis. Töökohas kasutatakse sageli Dockeri ametlikke action'eid: koodi on vähem ja kihtide vahemälu teeb ehituse kiiremaks ([docker/build-push-action](https://github.com/docker/build-push-action)). Teisel vahelehel on sama töö `build-and-push` action'itega.
 
@@ -891,7 +891,7 @@ RUN jenkins-plugin-cli --plugins git workflow-aggregator pipeline-graph-view dar
 
 ## Töö esitamine
 
-Täida README-s vigade tabel ja vasta küsimustele 1–7. Sümptomi lahtrisse kopeeri rida logist või käsu väljundist, põhjus, parandus ja iga vastus on üks lühike lause.
+Täida README-s vigade tabel ja vasta küsimustele 1–7. Sümptomi lahtrisse kopeeri rida logist või käsu väljundist. Kirjelda iga vea põhjust ja parandust ühe lühikese lausega. Vasta ka igale küsimusele ühe lausega.
 
 ```bash
 git add README.md logid/server.txt
@@ -904,7 +904,7 @@ Tulemuse näed Classroom 50-s.
 
 ## Lisaülesanded
 
-??? example "A · Vähim õigus kogu failis (keskmine)"
+??? example "A · Vähima õiguse põhimõte kogu töövoos (keskmine)"
     Lisa faili `ci.yml` algusesse, enne rida `jobs:`, õigus, mis kehtib kõigile töödele:
 
     ```yaml
