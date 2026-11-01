@@ -89,8 +89,8 @@ nav:
 - Kursus:
   - Avaleht: index.md
   - Töökeskkond: kodulabor.md
-  - Ansible seaded (ansible.cfg): ansible-config.md
-  - GitHub Actions juhend: github-actions.md
+  - "Ansible'i seaded (ansible.cfg)": ansible-config.md
+  - GitHub Actionsi teatmik: github-actions.md
 
 - Nädalad:
   - N1 · Miks automatiseerimine?:

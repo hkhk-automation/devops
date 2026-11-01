@@ -5,15 +5,15 @@ tags:
 
 # Litsents
 
-Selle kursuse materjalid on litsentseeritud **Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)** litsentsi alusel.
+Selle kursuse materjalid on avaldatud **Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)** litsentsi alusel.
 
-!!! abstract "Lühidalt"
+??? abstract "Lühidalt"
     Kasuta, jaga ja muuda vabalt, kui viitad autorile, märgid ära tehtud muudatused ja jagad tuletatud materjali sama litsentsi all.
 
 ## Mida tohib
 
-- **Jagada**: kopeerida ja levitada mis tahes kandjal või formaadis.
-- **Kohandada**: remiksida, teisendada ja materjali edasi arendada, mis tahes eesmärgil.
+- **Jagada**: kopeerida ja levitada mis tahes kandjal või vormingus.
+- **Kohandada**: muuta ja edasi arendada, mis tahes eesmärgil.
 
 Autor ei saa neid õigusi tühistada, kui järgid litsentsi tingimusi.
 
@@ -25,13 +25,13 @@ Autor ei saa neid õigusi tühistada, kui järgid litsentsi tingimusi.
 
 ## Viitamise näidis
 
-> IT automatiseerimise kursus. Maria Talvik. CC BY-SA 4.0.
+> IT-automatiseerimise kursus. Maria Talvik. CC BY-SA 4.0.
 > Allikas: <https://github.com/hkhk-automation/devops>
 > Muudetud: [kuupäev], [lühikirjeldus, mida muutsid].
 
 ## Täistekst
 
-Ülalolev inimloetav kokkuvõte ei asenda litsentsi ennast.
+Litsents kehtib autori kirjutatud tekstidele ja joonistele. Viidatud välismaterjalidel, kolmandate osapoolte koodil ja piltidel võivad olla oma tingimused. See kokkuvõte ei asenda litsentsi ennast.
 
 - Kokkuvõte (deed): <https://creativecommons.org/licenses/by-sa/4.0/deed.et>
 - Juriidiline täistekst: <https://creativecommons.org/licenses/by-sa/4.0/legalcode>
