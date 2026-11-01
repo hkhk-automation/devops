@@ -9,7 +9,7 @@ tags:
 
 **Eeldused:** Loeng antud (teenus, võrk, volume, miks mitu konteinerit). Nädal 5 Flask + `Dockerfile` olemas. Kui midagi on segane, mine [tagasi loengusse](lecture.md). Siit edasi on ainult praktiline töö.
 
-**Keskkond:** sinu AlmaLinuxi VM, kus Docker on nädal 5 Osa 0 järgi paigaldatud. Kood ja käsud VS Code'is. `localhost` = VM, kus Docker jookseb.
+**Keskkond:** sinu AlmaLinuxi VM, kus Docker on nädal 5 Osa 0 järgi paigaldatud. Kood ja käsud VS Code'is. `localhost` = VM, kus Docker töötab.
 
 ??? abstract "Õpiväljundid"
 

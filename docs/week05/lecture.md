@@ -7,18 +7,13 @@ tags:
 
 # Loeng: rakenduse pakkimine ja ümberpaigutamine
 
-!!! example "Näidisstsenaarium"
-    Arendaja: "Aga minu masinas töötab."
-
-    Süsteemiadministraator, kes on seda lauset kuulnud sadu kordi: pikk vaikus.
-
-    Docker lõpetab selle vestluse: kui rakendus töötab sinu masinas, saadame sinu masina kaasa. Rakendus liigub koos kogu oma keskkonnaga, sama Python, samad teegid, kõik on sama.
+Sama kood võib arendaja masinas töötada ja serveris katki minna, sest keskkond on erinev: teine Pythoni versioon, teised teegid või teine OS. Konteiner lahendab selle nii, et rakendus liigub koos oma keskkonnaga ja käitub igas masinas ühtemoodi.
 
 ## 1. "Töötab minu masinas": mis probleem see on?
 
 Eelmistel nädalatel seadistasime Ansible'iga serverit: paketid, konfiguratsioon, teenused. Server on sellega korras, aga alles jääb teine probleem, rakendus ise.
 
-Tüüpiline lugu: arendaja kirjutab Pythoni rakenduse oma sülearvutis, kus on Python 3.11 ja kindlate versioonidega teegid. Kood läheb Giti ja sealt serverisse. Serveris on Python 3.9, mõned teegid on vanemad ja üks puudub üldse. Käivitamisel jookseb rakendus kokku veaga, mida arendaja oma masinas kunagi ei näinud.
+Tüüpiline lugu: arendaja kirjutab Pythoni rakenduse oma sülearvutis, kus on Python 3.11 ja kindlate versioonidega teegid. Kood läheb Giti ja sealt serverisse. Serveris on Python 3.9, mõned teegid on vanemad ja üks puudub üldse. Käivitamisel lõpetab rakendus töö veaga, mida arendaja oma masinas kunagi ei näinud.
 
 Probleem ei ole ainult Pythoni versioonis, erinevusi võib olla OS-is, keskkonnamuutujates ja failiõigustes. Iga selline erinevus on koht, kus "töötab minu masinas" muutub "ei tööta serveris".
 
@@ -26,11 +21,11 @@ Konteineri mõte: me ei kohanda serverit rakenduse järgi, vaid rakendus võtab 
 
 ## 2. Virtuaalmasin vs konteiner
 
-Füüsilise masina piirangud: üks server = üks OS = tavaliselt üks rakendus. Rakendus kasutab 10% protsessorist, ülejäänu seisab tühjalt, aga voolu ja ruumi võtab terve masin. Uue serveri saamine võtab nädalaid (ost, tarne, paigaldus). Riistvararike peatab kõik, mis selles masinas jookseb. Kui panna kaks rakendust samasse masinasse, segavad need teineteist (sama Python, samad pordid).
+Füüsilise masina piirangud: üks server = üks OS = tavaliselt üks rakendus. Rakendus kasutab 10% protsessorist, ülejäänu seisab tühjalt, aga voolu ja ruumi võtab terve masin. Uue serveri saamine võtab nädalaid (ost, tarne, paigaldus). Riistvararike peatab kõik, mis selles masinas töötab. Kui panna kaks rakendust samasse masinasse, segavad need teineteist (sama Python, samad pordid).
 
 **Virtualiseerimine** jagab ühe füüsilise masina mitmeks **virtuaalmasinaks (VM)**: igal VM-il on oma virtuaalne riistvara ja oma terve operatsioonisüsteem. Ressursse jagab hüperviisor (Proxmox, VMware, VirtualBox, Hyper-V). Ka sinu kooli AlmaLinuxi masin on Proxmoxi VM.
 
-Virtualiseerimise eelised: riistvara on täielikult kasutuses (kümned VM-id ühes serveris); VM-id on üksteisest isoleeritud, kui üks jookseb kokku, töötavad teised edasi; uue VM-i saab minutitega, mitte nädalatega; **snapshot** ja varukoopia enne riskantset muudatust; VM-i saab kolida teise füüsilisse serverisse (migratsioon); ühes masinas võivad olla eri OS-id (Windows ja Linux).
+Virtualiseerimise eelised: riistvara on täielikult kasutuses (kümned VM-id ühes serveris); VM-id on üksteisest isoleeritud, kui üks läheb katki, töötavad teised edasi; uue VM-i saab minutitega, mitte nädalatega; **snapshot** ja varukoopia enne riskantset muudatust; VM-i saab kolida teise füüsilisse serverisse (migratsioon); ühes masinas võivad olla eri OS-id (Windows ja Linux).
 
 **Konteiner** läheb sammu edasi: see ei too kaasa oma OS-i tuuma, vaid kasutab hosti Linuxi tuuma. Kaasas on ainult rakendus ja selle teegid. Eraldatuse tagab Linuxi tuum ise: namespaces annavad oma protsessid, võrgu ja failisüsteemi, cgroups piiravad protsessori- ja mälukasutust.
 
@@ -62,13 +57,13 @@ Konteinerite eelised on teisaldatavus (sama image töötab sülearvutis, serveri
     | Tugev turvaeraldus (eri kliendid, vaenulik kood) | VM | Eraldi tuum = väiksem rünnakupind |
     | Vana süsteem, terve server koos OS-iga | VM | See ei ole üks rakendus |
     | Veebirakendus, API, mikroteenused | Konteiner | Kiire, kerge, skaleeritav |
-    | CI/CD testid, puhas keskkond igaks jooksuks | Konteiner | Käivitub ja kaob sekunditega |
+    | CI/CD testid, puhas keskkond igaks käivituseks | Konteiner | Käivitub ja kaob sekunditega |
     | "Töötab minu masinas", arendus ja tootmine peavad olema samad | Konteiner | Sama image igal pool |
     | Õppelabor nagu meil | Mõlemad | Proxmoxi VM, selles Docker |
 
     *Tabel 5.2. VM-i ja konteineri kasutusjuhud (Talvik, 2026).*
 
-Need ei välista teineteist, praktikas jooksevad konteinerid VM-i sees. Täpselt nii on ka praktikumis: Docker töötab sinu Proxmoxi AlmaLinuxi VM-is, aga konteineris jookseb hoopis Ubuntu. Distributsioon on erinev, tuum sama.
+Need ei välista teineteist, praktikas töötavad konteinerid VM-i sees. Täpselt nii on ka praktikumis: Docker töötab sinu Proxmoxi AlmaLinuxi VM-is, aga konteineris töötab hoopis Ubuntu. Distributsioon on erinev, tuum sama.
 
 ??? question "Mõtle"
     Praktikumis näed `uname -r` väljundit nii VM-is kui konteineri sees. Ennusta: kas need on samad või erinevad? Miks?
@@ -166,7 +161,7 @@ graph LR
   <figcaption>Joonis 5.5. Ühest image'ist saab käivitada mitu identset konteinerit (Talvik, 2026).</figcaption>
 </figure>
 
-Kui konteiner jookseb kokku või sa kustutad selle, jääb image samaks, käivitad uue konteineri ja saad täpselt sama algseisu tagasi.
+Kui konteiner lõpetab veaga töö või sa kustutad selle, jääb image samaks, käivitad uue konteineri ja saad täpselt sama algseisu tagasi.
 
 ## 5. Dockerfile: kuidas image ehitatakse
 
@@ -204,7 +199,7 @@ docker ps                          # töötavad konteinerid
 docker stop <id>                   # peata
 docker rm <id>                     # kustuta peatatud konteiner
 docker logs <nimi>                 # konteineri väljund - esimene koht vigade otsimisel
-docker exec -it <nimi> bash        # shell jooksva konteineri sisse
+docker exec -it <nimi> bash        # shell töötava konteineri sisse
 docker run -it --rm ubuntu:24.04 bash  # interaktiivne ühekordne konteiner
 docker pull nginx:1.27             # tõmba image registry'st
 docker images / docker rmi <image> # image'id kettal / kustuta
@@ -244,7 +239,7 @@ Kui kirjutad lühikese nime, lisab Docker puuduvad osad ise: `nginx` = `docker.i
 `latest` ei tähenda "uusim": see on lihtsalt tag, mille Docker võtab, kui sa ise tag'i ei kirjuta. Täna on see üks versioon, kuu pärast teine: sama Dockerfile ehitab erineva image'i ja "töötab minu masinas" on tagasi. Reeglid:
 
 - **Tootmises alati konkreetne tag** (`nginx:1.27`), kriitilises kohas isegi digest (`@sha256:...`), tag'i saab teisele image'ile ümber tõsta, digest'i mitte.
-- **Oma image'ile pane versioon** (`v1`, `1.0.3`, Giti commit'i lühiräsi), siis tead täpselt, mis tootmises jookseb, ja saad vajaduse korral tagasi minna (`v2` on katki → `docker run ...:v1`).
+- **Oma image'ile pane versioon** (`v1`, `1.0.3`, Giti commit'i lühiräsi), siis tead täpselt, mis tootmises töötab, ja saad vajaduse korral tagasi minna (`v2` on katki → `docker run ...:v1`).
 - **Ümbersildistamine** (`docker tag minu-app:v2 minu-app:latest`) ei kopeeri midagi, `IMAGE ID` jääb samaks, lisandub uus nimi.
 
 Image'eid hoitakse registry's. Kõige tuntum on [Docker Hub](https://hub.docker.com): kui kirjutad `FROM nginx`, tuleb image sealt. Teised on näiteks GitHub Container Registry (`ghcr.io`), Quay.io (Red Hat) ja firmade oma registry'd. `docker pull` tõmbab image'i alla, `docker push` laadib selle üles (et jagada oma image'it meeskonnaga; vaja on `docker login`).
@@ -308,7 +303,7 @@ Allolev Dockerfile ehitab sama Flaski image'i nii, et rakendus töötab tavakasu
     FROM python:3.12-slim
 
     ARG APP_VERSION=1.0          # ainult ehitamise ajal: docker build --build-arg APP_VERSION=2.0
-    ENV APP_ENV=production       # kehtib ka jooksvas konteineris; üle kirjutatav: docker run -e APP_ENV=dev
+    ENV APP_ENV=production       # kehtib ka töötavas konteineris; üle kirjutatav: docker run -e APP_ENV=dev
 
     WORKDIR /app
     COPY requirements.txt .
@@ -316,12 +311,12 @@ Allolev Dockerfile ehitab sama Flaski image'i nii, et rakendus töötab tavakasu
     COPY . .
 
     RUN useradd --create-home appuser
-    USER appuser                 # sellest reast alates ei jookse käsud ega rakendus root'ina
+    USER appuser                 # sellest reast alates ei käivitata käske ega rakendust root'ina
 
     CMD ["python", "app.py"]
     ```
 
-Vaikimisi jookseb konteineris kõik root'ina. Kui rakenduses on turvaauk, saab ründaja konteineris root-õigused. `USER` vähendab võimalikku kahju.
+Vaikimisi töötab konteineris kõik root'ina. Kui rakenduses on turvaauk, saab ründaja konteineris root-õigused. `USER` vähendab võimalikku kahju.
 
 Turvareeglid, mis sobivad igale Dockerfile'ile:
 
@@ -392,7 +387,7 @@ Miks me kasutame Dockerit? See on valdkonnas levinuim tööriist, enamik juhende
 Kus konteinereid kasutatakse:
 
 - **Mikroteenused**: rakendus on jagatud väikesteks iseseisvateks teenusteks (kasutajad, maksed, otsing). Iga teenus on oma konteineris ning seda uuendatakse ja skaleeritakse eraldi.
-- **CI/CD**: iga test jookseb puhtas konteineris; sama image läheb testist tootmisse (N7).
+- **CI/CD**: iga test käivitatakse puhtas konteineris; sama image läheb testist tootmisse (N7).
 - **Pilve kolimine ja hübriidpilv**: sama image töötab oma serveris, AWS-is ja Azure'is; teenusepakkuja vahetamiseks ei pea rakendust ümber ehitama.
 - **Containers as a Service**: pilveteenus käitab sinu konteinereid ise (AWS ECS/Fargate, Azure Container Apps, Google Cloud Run).
 - **AI/ML**: mudel ja täpselt õiged teekide versioonid (CUDA, PyTorch) on ühes pakis.

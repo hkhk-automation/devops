@@ -794,7 +794,7 @@ podman run -d -p 80:80 docker.io/<kasutaja>/minu-nginx:v1
 Viimane käsk annab vea `rootlessport cannot expose privileged port 80`.
 
 ??? question "Leia põhjus"
-    1. Miks pole Podmanil deemonit ja mida see tähendab, kui konteineri protsess jookseb kokku?
+    1. Miks pole Podmanil deemonit ja mida see tähendab, kui konteineri protsess lõpetab veaga töö?
     2. `podman top` näitas konteineris kasutajat `root`, hostis aga sinu kasutajat, mis on rootless ja miks on see turvalisem kui Dockeri `docker` grupp?
     3. Miks ei saa tavakasutaja kasutada porti 80, aga porti 8080 saab? Kuidas Docker seda lubas?
     4. Miks küsis Podman registry't, aga Docker mitte?
@@ -843,7 +843,7 @@ README-s vasta vähemalt neile küsimustele: miks on `uname -r` konteineris ja V
 git add . && git commit -m "N5 Docker lab" && git push -u origin n05-docker
 ```
 
-Ava **Pull Request** `main`-i ja liida see (**Merge**), kui Actions on roheline. Automaatkontroll hindab haru `main`. Autograder ehitab sinu image'id ise ja kontrollib, et nginx näitab sinu `index.html`-i, `turve` ei jookse root'ina, Flask vastab, multi-stage image on väike ja sinu Docker Hubi image on avalikult kättesaadav. Tõendifailide käsitsi kirjutamisest pole kasu. Hinne tuleb kontrollidest 1–12 (85 punkti), sealhulgas README; kontroll „BOONUS 13. Kodutöö“ on vabatahtlik ja punkte ei anna.
+Ava **Pull Request** `main`-i ja liida see (**Merge**), kui Actions on roheline. Automaatkontroll hindab haru `main`. Autograder ehitab sinu image'id ise ja kontrollib, et nginx näitab sinu `index.html`-i, `turve` ei tööta root'ina, Flask vastab, multi-stage image on väike ja sinu Docker Hubi image on avalikult kättesaadav. Tõendifailide käsitsi kirjutamisest pole kasu. Hinne tuleb kontrollidest 1–12 (85 punkti), sealhulgas README; kontroll „BOONUS 13. Kodutöö“ on vabatahtlik ja punkte ei anna.
 
 ??? note "Kontrollnimekiri: kas oskad ilma juhendita?"
 
