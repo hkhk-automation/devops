@@ -7,19 +7,19 @@ tags:
   - Praktikum
 ---
 
-# Praktikum: tühjast repost meeskonnatööni
+# Praktikum: versioonihalduseta kaustast meeskonnatööni
 
-Täna teed versioonihaldusest väljas olnud monitooringu failidest kaitstud `main`-haruga GitHubi repositooriumi ja parandad skripti `monitor.sh` pull request'i kaudu. Repositoorium on sinu arvutis ja töö käib VS Code'is. Skripti käivitad sihtmärgil, milleks sobib mõni [töökeskkonna](../kodulabor.md) masin, kuhu pääsed SSH-ga.
+Täna teed versioonihaldusest väljas olnud monitooringufailidest kaitstud `main`-haruga GitHubi repositooriumi ja parandad skripti `monitor.sh` pull request'i kaudu. Repositoorium on sinu arvutis ja töö käib VS Code'is. Skripti käivitad sihtmärgil, milleks sobib mõni [töökeskkonna](../kodulabor.md) masin, kuhu pääsed SSH-ga.
 
 **Edenemine:** laboritahvel <http://192.168.125.187:8091/> (VPN-iga).
 
 ??? abstract "Õpiväljundid"
     Praktikumi lõpuks oskad:
 
-    1. luua repo algusest peale ja selgitada, miks repo on kaust `.git/` sinu masinas ja GitHub on selle koopia;
-    2. peatada saladuse `.gitignore`-i abil enne esimest push'i;
+    1. luua repositooriumi algusest peale ja selgitada, miks repositoorium on kaust `.git/` sinu masinas ja GitHub on selle koopia;
+    2. vältida `.gitignore`-i abil saladuse lisamist versioonihaldusse enne esimest push'i;
     3. kaitsta `main`-haru ja kontrollida, et reegel kehtib ka sinu enda kohta;
-    4. leida skripti käivitades nelja vea põhjuse. Iga viga annab eri tüüpi signaali (veateade, vaikne tõrge, õiguste viga, eksitav kontroll);
+    4. leida skripti käivitades nelja vea põhjused. Iga viga annab eri tüüpi signaali (veateade, vaikne tõrge, õiguste viga, kaudne kontroll);
     5. lahendada liitmiskonflikti ja selgitada, miks Git ei vali versiooni sinu eest.
 
 Õpetaja jagatud kaustas `marten-kraam` on paar skripti, `.env` fail andmebaasi parooliga ja monitooringu skript `monitor.sh`, mis kommentaari järgi "peaks töötama". Giti ajalugu kaustal ei ole. Skriptis on neli viga, mis tulevad välja skripti käivitades ükshaaval, ja igaüks neist annab endast märku erineval viisil.
@@ -144,12 +144,12 @@ git log --oneline
 
 Praegu saab igaüks, ka sina ise, teha push'i otse `main`-i ilma, et keegi muudatust üle vaataks. Haru kaitse lubab `main`-i muuta ainult pull request'i kaudu.
 
-Ava GitHubis **Settings → Branches → Add branch ruleset** (või **Add rule**). Seaded on kirjeldatud GitHubi juhendis [About protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches).
+Ava GitHubis **Settings → Branches → Add classic branch protection rule**. Seaded on kirjeldatud GitHubi juhendis [About protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches).
 
 - **Branch name pattern**: `main`;
 - **Require a pull request before merging**: sisse;
 - **Require approvals: 1**: sisse;
-- **Do not allow bypassing the above settings**: jäta välja, siis pääseb õpetaja vajaduse korral ligi.
+- **Do not allow bypassing the above settings**: sisse. Ilma selleta ei kehti reegel repositooriumi administraatorile, ka sinule. Õpetaja saab organisatsiooni omanikuna reeglit vajaduse korral muuta.
 
 Salvesta. Kontrolli reeglit ja proovi teadlikult teha push otse `main`-i:
 
@@ -166,9 +166,11 @@ git push origin main
 ??? question "Leia põhjus enne parandamist"
     Loe veateadet: eesliide `remote:` näitab, kes keeldus. Sinu masin lubas commit'i teha ja lokaalne ajalugu on olemas. Miks lokaalne Git seda ei takistanud? Kus reegel kehtib?
 
-Reegel peatas push'i, aga lokaalne commit on alles. Eemalda see:
+Reegel peatas push'i, aga lokaalne commit on alles. Eemalda see käsuga `git reset --hard`. See käsk kustutab ka kõik commit'imata muudatused jälgitavates failides, seega kontrolli enne, et sul pole muud tööd pooleli:
 
 ```bash
+git status
+git log --oneline -3
 git reset --hard origin/main
 git log --oneline
 ```
@@ -228,7 +230,10 @@ Monitooringuskript peab töötama serveris, seepärast kopeeri see sihtmärgile 
 scp monitor.sh <kasutaja>@<sihtmärk>:~/
 ssh <kasutaja>@<sihtmärk>
 bash monitor.sh
+exit
 ```
+
+Pärast `exit` oled tagasi oma arvutis. Parandused teed oma arvutis VS Code'is ja kopeerid faili uuesti sihtmärgile.
 
 ??? warning "Kui `scp` või `ssh` sihtmärgiga ühendust ei saa"
     Kontrolli 1. nädala SSH-ühendust käsuga `ssh <kasutaja>@<sihtmärk>`.
@@ -238,8 +243,8 @@ Loe skript läbi, kuid ära seda veel paranda.
 ??? example "Fail `monitor.sh` (algne versioon)"
     ```bash
     #!/bin/bash
-    # Märteni servermonitor v1.0
-    # kirjutatud reedel kell 16:55, varsti koju
+    # servermonitor v1.0
+    # kirjutatud kiiruga, testimata
     # peaks töötama
 
     SERVIIS=nginx
@@ -331,26 +336,33 @@ ssh <kasutaja>@<sihtmärk> "bash monitor.sh && cat ~/monitor.log"
 
 Nüüd teeb skript esimest korda seda, mida peab. Selles on siiski veel üks viga, mis avaldub ainult teatud olukorras.
 
-### 6.6 Viga 4: eksitav kontroll
+### 6.6 Viga 4: kaudne kontroll
 
-Tingimuses `[ $? = 0 ]` võrdleb `=` stringe, arvude võrdlemiseks on `-eq`. Enamasti on tulemus sama, kuid mitte alati. Kolm eelmist viga andsid endast märku veateate või puuduva tulemusega, see viga ei anna endast kunagi ise märku. Selliseid vigu leiab teadmiste või linteri abil.
+Skript kontrollib teenust kahes sammus: käivitab `systemctl status` ja vaatab siis järgmisel real eelmise käsu väljumiskoodi `$?`. Kui nende ridade vahele lisatakse kunagi mõni muu käsk, näiteks logirida, kontrollib `$?` hoopis seda käsku ja tulemus on vale. Kolm eelmist viga andsid endast märku veateate või puuduva tulemusega, see viga ei anna endast ise märku. Selliseid vigu leiab koodi lugedes või linteriga ([ShellCheck SC2181](https://www.shellcheck.net/wiki/SC2181)).
 
-Paranda kaks asja korraga:
+Paranda: kasuta käsku otse `if`-tingimuses ja pane muutujad jutumärkidesse. Asenda rida `systemctl status $SERVIIS` ja kogu `if`-plokk järgmisega:
 
-1. Asenda `[ $? = 0 ]` tingimusega `[ $? -eq 0 ]`.
-2. Lisa `set -e` kohe rea `#!/bin/bash` järele. Siis peatub skript esimese vea korral ega jätka tööd ([`set -e` kirjeldus](https://man7.org/linux/man-pages/man1/set.1p.html)).
+```bash
+if systemctl is-active --quiet "$SERVIIS"; then
+    echo "$KUUPÄEV - $SERVIIS töötab" >> "$LOG"
+else
+    echo "$KUUPÄEV - $SERVIIS EI tööta" >> "$LOG"
+fi
+```
+
+`systemctl is-active --quiet` ei prindi midagi ja annab ainult väljumiskoodi: 0, kui teenus töötab. Kopeeri fail sihtmärgile ja käivita: logis on jälle rida `nginx EI tööta`.
 
 ??? question "Mõtle"
-    Kui `set -e` oleks olnud skriptis algusest peale, millised neljast veast oleks skripti peatanud kohe sellel real, kus viga tekkis? Milline viga oleks jäänud märkamata ka `set -e`-ga?
+    Mõni skript algab reaga `set -e`, mis peatab skripti esimese ebaõnnestunud käsu juures ([`set -e` kirjeldus](https://man7.org/linux/man-pages/man1/set.1p.html)). Mis oleks juhtunud, kui `set -e` oleks olnud vanas skriptis, kus `systemctl status` oli eraldi real ja teenus ei töötanud? Miks `if`-tingimuses olev käsk skripti ei peata?
 
 ### 6.7 Commit: neli parandust ühes commit'is
 
-Vaata muudatus enne commit'i üle. Käsk `git diff` näitab, mida commit'i lähed salvestama:
+Vaata muudatus enne commit'i üle. Käsk `git diff` näitab, millised muudatused lähevad commit'i:
 
 ```bash
 git diff
 git add monitor.sh
-git commit -m "fix: systemctl, vaikne LOQ, logi koju, -eq + set -e"
+git commit -m "fix: systemctl, LOQ, logi koju, if systemctl is-active"
 git push -u origin fix/monitor-parandused
 ```
 
@@ -362,18 +374,20 @@ Töö käib [GitHub flow](https://docs.github.com/en/get-started/using-github/gi
 
 - Title: `Fix: monitor.sh parandused`
 - Description: vasta kirjelduses järgmistele küsimustele.
-    - Mis tüüpi oli iga neljast veast (veateade, vaikne tõrge, õiguste viga, eksitav kontroll)?
+    - Mis tüüpi oli iga neljast veast (veateade, vaikne tõrge, õiguste viga, kaudne kontroll)?
     - Milline viga oli tootmiskeskkonnas kõige ohtlikum ja miks?
     - Mis järjekorras vead välja tulid ja miks just selles järjekorras?
 
-Määra ülevaatajaks (reviewer) paariline. Ta avab sinu PR-i, vaatab vahekaarti **Files changed**, jätab ühe sisulise kommentaari ja vajutab **Approve**. Alles siis saad PR-i liita, sest haru kaitse nõuab ühte kinnitust. Ülevaatus on teine kontroll enne, kui muudatus jõuab `main`-i ja sealt tootmisse.
+Määra ülevaatajaks (reviewer) paariline. Ta avab sinu PR-i, vaatab vahekaarti **Files changed**, jätab ühe sisulise kommentaari ja vajutab **Approve**. Haru kaitse nõuab ühte kinnitust. Ära oma PR-i veel liida: järgmises osas kasutad seda konfliktikatses. Ülevaatus on teine kontroll enne, kui muudatus jõuab `main`-i ja sealt tootmisse.
 
 ??? warning "Kui liitmisnupp on hall"
     Kinnitus puudub. Paariline peab sinu PR-is vajutama **Approve**.
 
 ### 7.2 Liitmiskonflikt: kontrollitud katse
 
-Sinu ja paarilise PR muudavad sama rida. Kui üks PR on liidetud, näitab teine teadet *"This branch has conflicts."* Git ei vali versiooni sinu eest, valiku teed ise. Too `main`-i muudatused oma harusse:
+Konflikti tekitab paariline. Ta kloonib sinu repositooriumi, teeb haru `fix/teine-variant`, muudab failis `monitor.sh` sama `if`-rida teisiti (näiteks `if service "$SERVIIS" status > /dev/null; then`) ja avab pull request'i. Sina kinnitad ja liidad tema PR-i enne oma PR-i.
+
+Nüüd näitab sinu PR teadet *"This branch has conflicts."* Git ei vali versiooni sinu eest, valiku teed ise. Too `main`-i muudatused oma harusse:
 
 ```bash
 git switch main
@@ -386,25 +400,25 @@ Failis on nüüd mõlemad versioonid:
 
 ```
 <<<<<<< HEAD
-systemctl status $SERVIIS
+if systemctl is-active --quiet "$SERVIIS"; then
 =======
-service $SERVIIS status
+if service "$SERVIIS" status > /dev/null; then
 >>>>>>> main
 ```
 
 ??? question "Leia põhjus enne parandamist"
-    `<<<`, `===` ja `>>>` on Giti markerid. `HEAD` on sinu versioon, teisel pool on see, mis vahepeal `main`-i jõudis. Kumb rida on õige ja kuidas sa seda tead ilma arvamata? (Üht neist käivitasid just sihtmärgil.)
+    Read `<<<<<<<`, `=======` ja `>>>>>>>` on Giti konfliktimarkerid. `HEAD` on sinu versioon, teisel pool on see, mis vahepeal `main`-i jõudis. Kumb rida on õige ja kuidas sa seda tead ilma arvamata? (Üht neist käivitasid just sihtmärgil.)
 
 Jäta alles õige rida, kustuta markerid, kontrolli tulemust käsuga `git diff` ja lõpeta liitmine:
 
 ```bash
 git add monitor.sh
-git commit -m "resolve: merge konflikt monitor.sh"
+git commit -m "fix: lahenda monitor.sh liitmiskonflikt"
 git push
 ```
 
 ??? warning "Kui faili jäid markerid `<<<<<<<`"
-    Kustuta kõik `<<<`, `===` ja `>>>` read ning kontrolli tulemust käsuga `git diff`.
+    Kustuta kõik kolm markeririda ning kontrolli tulemust käsuga `git diff`.
 
 PR uueneb ja liitmise saab lõpetada. Vaata kogu ajalugu:
 
@@ -417,14 +431,14 @@ git log --oneline --graph
     Ajaloos on esimene commit, neli parandust, konflikti lahendus ja liitmine.
 
 ??? note "Kontrollnimekiri: oskad ilma juhendita"
-    - [ ] Repo on organisatsioonis `hkhk-automation` ja `git log --oneline` näitab kogu päeva tööd
+    - [ ] Repositoorium on organisatsioonis `hkhk-automation` ja `git log --oneline` näitab kogu päeva tööd
     - [ ] `.env` ei ole GitHubis, `.gitignore` takistab selle lisamist
     - [ ] `main` on kaitstud: otse tehtud push lükatakse tagasi ja tead, kes selle tagasi lükkab
     - [ ] Paarilisel on Write-õigus, õpetajal Admin-õigus ja oskad põhjendada mõlemat taset
-    - [ ] Oskad nimetada neli veatüüpi (veateade, vaikne tõrge, õiguste viga, eksitav kontroll) ja tuua igaühe kohta näite
+    - [ ] Oskad nimetada neli veatüüpi (veateade, vaikne tõrge, õiguste viga, kaudne kontroll) ja tuua igaühe kohta näite
     - [ ] `monitor.sh` töötab sihtmärgil ja kirjutab logi
     - [ ] Liitmiskonflikt on lokaalselt lahendatud ja valik on põhjendatud
-    - [ ] Ükski sinu commit-sõnum ei ole `asjad`
+    - [ ] Ükski sinu commit'i sõnum ei ole `asjad`
 
 ## Töö esitamine
 

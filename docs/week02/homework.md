@@ -7,9 +7,9 @@ tags:
   - Kodutöö
 ---
 
-# Kodutöö: ülevaatus mõlemalt poolt
+# Kodutöö: koodiülevaatus autori ja ülevaataja rollis
 
-Kodutöös teed paarilisega läbi kogu ülevaatuse ringi nii autori kui ka ülevaataja rollis, kasutades praktikumis loodud repositooriumeid `marten-monitor-<nimi>`. Kõik muudatused lähevad pull request'i kaudu, otse `main`-i midagi ei saadeta. Kodutöö on boonus.
+Kodutöös teed paarilisega läbi kogu ülevaatustsükli nii autori kui ka ülevaataja rollis, kasutades praktikumis loodud repositooriumeid `marten-monitor-<nimi>`. Kõik muudatused liidetakse harusse `main` pull request'i kaudu. Kodutöö on boonusülesanne.
 
 ## Osa 1 · Panus paarilise repositooriumisse
 
@@ -34,18 +34,18 @@ git commit -m "lisa: <konkreetne kirjeldus>"
 git push -u origin lisa/<sinu-nimi>-panus
 ```
 
-Ava paarilise repositooriumis PR ([pull request'i loomine](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)). Kirjelda description'is, mida ja miks muutsid. Määra ülevaatajaks (reviewer) repositooriumi omanik ehk paariline.
+Ava paarilise repositooriumis PR ([pull request'i loomine](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)). Kirjelda pull request'i kirjelduses (description), mida ja miks muutsid. Määra ülevaatajaks (reviewer) repositooriumi omanik ehk paariline.
 
 ## Osa 2 · Paarilise pull request'i ülevaatamine oma repositooriumis
 
-Paariline teeb sama sinu repositooriumis. Omanikuna vaata tema muudatus üle:
+Paariline teeb sama sinu repositooriumis. Vaata oma repositooriumis paarilise muudatused üle:
 
 - ava tema PR ja vahekaart **Files changed** ([kuidas ülevaatus GitHubis käib](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/about-pull-request-reviews));
 - kirjuta vähemalt üks sisuline kommentaar: mis on hästi tehtud ja mida võiks teha teisiti ("LGTM" üksi ei ole sisuline kommentaar);
 - kui muudatus on korras, vajuta **Approve** ja liida PR.
 
 ??? question "Mõtle"
-    Oma repositooriumis oled admin, paarilise repositooriumis on sul Write-õigus. Mida ei saa sa tema repositooriumis teha, mida saad oma repositooriumis? Miks on see hea?
+    Oma repositooriumis oled administraator, paarilise repositooriumis on sul Write-õigus. Mida ei saa sa tema repositooriumis teha, mida saad oma repositooriumis? Miks on see hea?
 
 ## Osa 3 · Konflikt teisest vaatenurgast
 
@@ -56,18 +56,18 @@ git switch main
 git pull origin main
 git switch <sinu-haru>
 git merge main
-# lahenda markerid, kontrolli git diff
+# lahenda konflikt ja eemalda konfliktimarkerid, kontrolli git diff
 git add .
-git commit -m "resolve: merge konflikt"
+git commit -m "fix: lahenda liitmiskonflikt"
 git push
 ```
 
-## Osa 4 · Iseseisev töövoog oma haru kaitse all
+## Osa 4 · Iseseisev muudatus kaitstud haruga repositooriumis
 
 Ka üksi töötades kehtib haru kaitse. Loo oma repositooriumis uus haru ja tee väike lisandus:
 
 - lisa fail `.github/CODEOWNERS`, mis nõuab `monitor.sh` muudatustele sinu ülevaatust ([faili süntaks](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners)), või
-- lisa veateate mall `.github/ISSUE_TEMPLATE/bug.md`.
+- lisa veakirje mall `.github/ISSUE_TEMPLATE/bug.md`.
 
 ```bash
 git switch -c lisa/codeowners
@@ -77,10 +77,10 @@ git commit -m "lisa: CODEOWNERS"
 git push -u origin lisa/codeowners
 ```
 
-Ava PR. GitHub ei luba oma pull request'i ise kinnitada, seega selgita description'is, miks see on erand, ja liida PR.
+Ava PR ja määra ülevaatajaks paariline. GitHub ei luba oma pull request'i ise kinnitada ja haru kaitse nõuab ühte kinnitust, seega liida PR pärast paarilise kinnitust.
 
 ## Töö esitamine
 
-Lisa GitHub Projecti kahe liidetud (Merged) pull request'i lingid: sinu panus paarilise repositooriumisse ja sinu enda lisandus. Link peab viima pull request'ile, repositooriumi link ei sobi.
+Lisa GitHub Projecti lingid kahele liidetud (Merged) pull request'ile: sinu panus paarilise repositooriumisse ja sinu enda lisandus. Link peab viima pull request'ile, repositooriumi link ei sobi.
 
 Tulemuse näed Classroom 50-s.
