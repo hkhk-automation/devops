@@ -26,7 +26,7 @@ Praktikumis parandad konveierit, milles on vead. Loengus on mõisted, mida vigad
 
 ## 1. CI-st pideva tarneni
 
-Meenuta N7 sõnu. **Töövoog** (workflow) on fail kaustas `.github/workflows/`. Töövoos on **tööd** (jobs), näiteks `test` ja `konteiner`. Igas töös on **sammud** (steps). Iga kord, kui töövoog käivitub, tekib vahekaardile **Actions** uus **käivitus** (run).
+GitHub Actionsi põhimõisted on järgmised. **Töövoog** (workflow) on fail kaustas `.github/workflows/`. Töövoos on **tööd** (jobs), näiteks `test` ja `konteiner`. Igas töös on **sammud** (steps). Iga kord, kui töövoog käivitub, tekib vahekaardile **Actions** uus **käivitus** (run).
 
 <figure markdown="span">
   ![Vasakul sündmused (on:): push harusse main, pull_request, schedule, workflow_dispatch. Sündmus käivitab töövoo .github/workflows/ci.yml. Töövoos on kolm tööd: test, konteiner ja build-and-push, nende vahel nooled needs. Iga töö all on sammud, näiteks checkout, docker build, docker push. Paremal märkus: ilma needs'ita käivituvad kõik tööd korraga](../images/n08_moisted.svg)
