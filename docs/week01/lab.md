@@ -16,20 +16,20 @@ Täna seadistad töökeskkonna, mida kasutad kogu kursuse jooksul. Sinu arvutist
     Praktikumi lõpuks oskad:
 
     1. selgitada, kuidas SSH-võtmepaar töötab ja miks saab ilma paroolita sisse logida;
-    2. kopeerida ühe võtme kõigisse kolme sõlme ja seadistada failis `~/.ssh/config` nimega hostid;
+    2. kopeerida ühe võtme kõigisse kolme sõlme ja määrata failis `~/.ssh/config` ühenduste lühinimed;
     3. ühenduda ühe käsuga (`ssh proxmox1`) igasse sõlme ilma paroolita;
     4. ühenduda vajaduse korral sõlmega VS Code Remote-SSH abil;
-    5. seadistada oma arvutis Ansible'i kontrolleri ja saada moodulilt `ansible.builtin.ping` vastuse `pong` kõigilt kolmelt sõlmelt.
+    5. seadistada oma arvuti Ansible'i juhtsõlmeks ja saada moodulilt `ansible.builtin.ping` vastus `pong` kõigilt kolmelt sõlmelt.
 
-Praktikum on tehtud, kui käsud `ssh proxmox1`, `ssh proxmox2` ja `ssh proxmox3` töötavad ilma serveri parooli küsimata ning käsk `ansible -i inventory.ini all -m ansible.builtin.ping` tagastab kolm korda `pong`.
+Esitamiseks peavad töötama SSH- ja Ansible'i ühendused: käsud `ssh proxmox1`, `ssh proxmox2` ja `ssh proxmox3` töötavad ilma serveri parooli küsimata ning käsk `ansible -i inventory.ini all -m ansible.builtin.ping` tagastab kolm korda `pong`. Lisaks tee vähemalt kaks osa 8 ülesannet ja üks osa 9 katse ning esita osas „Töö esitamine“ loetletud tõendid. VS Code Remote-SSH (osa 4) on valikuline.
 
-**Sõlm** on Proxmoxis loodud virtuaalmasin või konteiner. Hüperviisor ise ei ole sõlm. Kolm sõlme on õpetaja juba ette loonud ja need on sinu töö- ja testkeskkond.
+Selles juhendis nimetame **sõlmedeks** sinu kolme hallatavat virtuaalmasinat. Nimed `proxmox1`, `proxmox2` ja `proxmox3` tähistavad neid masinaid, mitte Proxmoxi hüperviisorit. Kolm sõlme on õpetaja juba ette loonud ja need on sinu töö- ja testkeskkond.
 
 <figure markdown="span">
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'primaryColor':'#ede7f6','primaryBorderColor':'#5e35b1','primaryTextColor':'#212121','lineColor':'#7e57c2'}}}%%
 graph LR
-    subgraph SA[Sinu arvuti = kontroller]
+    subgraph SA[Sinu arvuti = juhtsõlm]
         VSC["VS Code · SSH-võti<br/>Git · Ansible"]
     end
     subgraph PX["Proxmox - sinu pool (vmbr0)"]
@@ -44,10 +44,10 @@ graph LR
     VSC -. "git push (n2)" .-> GH
     GH -. "deploy (n7-8)" .-> N1
 ```
-  <figcaption>Joonis 1.1. Sinu arvutist (kontrollerist) ühendutakse sama SSH-võtmega kolme Proxmoxi sõlme. Git ja Ansible asuvad sinu arvutis, sõlmed on SSH-sihtmärgid. Täna lood ühenduse, ülejäänud osad lisanduvad järgmistel nädalatel (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 1.1. Sinu arvutist (juhtsõlmest) ühendutakse sama SSH-võtmega kolme Proxmoxi sõlme. Git ja Ansible asuvad sinu arvutis, sõlmed on SSH-sihtmärgid. Täna lood ühenduse, ülejäänud osad lisanduvad järgmistel nädalatel (Talvik, 2026).</figcaption>
 </figure>
 
-Giti repositoorium, Ansible'i failid ja GitHubi ligipääs on sinu arvutis, mis on kursusel **kontroller**. Proxmoxi sõlmedega ainult ühendutakse ja neist ei tehta push'i. Üks ja sama SSH-võti kopeeritakse kõigisse sõlmedesse ning Ansible kasutab sedasama võtit.
+Giti repositoorium, Ansible'i failid ja GitHubi ligipääs on sinu arvutis, mis on kursusel **juhtsõlm** (control node). Proxmoxi sõlmedega ainult ühendutakse ja neist ei tehta push'i. Üks ja sama SSH-võti kopeeritakse kõigisse sõlmedesse ning Ansible kasutab sedasama võtit.
 
 Kursuse jooksul lisanduvad sõlmedele uued kihid. Ansible seadistab sõlmed ja paigaldab neile Dockeri (N3–N4), Docker käitab rakendust (N5–N6) ja GitHub Actions juurutab rakenduse (N7–N8). N10–N11 õpid OpenTofuga samasuguseid sõlmi ise kirjeldama ja looma, ning lõpuprojektis (N13) paned kõik osad kokku.
 
@@ -65,7 +65,7 @@ mkdir -p logid
 
 ## Osa 1 · Kolm masinat: nimeta ja leia IP-aadress
 
-Õpetaja annab sulle kolm Proxmoxi sõlme, mis on bridged-võrgus ja millest igaühel on oma IP-aadress. Selge hostinimi näitab hiljem igas käsus, millises masinas oled. Logi igasse sõlme sisse Proxmoxi konsoolis, anna sõlmele nimi ja leia selle IP-aadress:
+Õpetaja annab sulle kolm Proxmoxi sõlme, mis on võrgusilla (bridge) kaudu laborivõrgus ja millest igaühel on oma IP-aadress. Selge hostinimi näitab hiljem igas käsus, millises masinas oled. Logi igasse sõlme sisse Proxmoxi konsoolis, anna sõlmele nimi ja leia selle IP-aadress:
 
 ```bash
 sudo hostnamectl set-hostname proxmox1   # anna selge nimi (teises proxmox2, kolmandas proxmox3)
@@ -91,14 +91,14 @@ ls -l ~/.ssh/kursus_ed25519 ~/.ssh/kursus_ed25519.pub             # privaat jä�
 
 Käsu võtmed on kirjas [`ssh-keygen` manuaalis](https://man.openbsd.org/ssh-keygen).
 
-Võtmele on soovitatav määrata salafraas (passphrase). Kui määrad selle, lisa võti pärast loomist SSH-agenti käsuga `ssh-add ~/.ssh/kursus_ed25519`. Siis ei küsita salafraasi iga kord.
+Võtmele on soovitatav määrata paroolifraas (passphrase). Kui määrad selle, lisa võti pärast loomist SSH-agenti käsuga `ssh-add ~/.ssh/kursus_ed25519`. Siis ei küsita paroolifraasi iga kord.
 
 ## Osa 3 · Sama sisselogimine kõigisse kolme masinasse
 
 Avalik võti tuleb kopeerida igasse sõlme. Esimesel korral küsib `ssh-copy-id` sõlme kasutaja parooli, edaspidi enam mitte:
 
 ```bash
-ssh-copy-id -i ~/.ssh/kursus_ed25519.pub <kasutaja>@<proxmox1-IP>   # vii SAMA võti (esmakord parooliga)
+ssh-copy-id -i ~/.ssh/kursus_ed25519.pub <kasutaja>@<proxmox1-IP>   # vii SAMA võti (esimesel korral kasutajakonto parooliga)
 ssh-copy-id -i ~/.ssh/kursus_ed25519.pub <kasutaja>@<proxmox2-IP>
 ssh-copy-id -i ~/.ssh/kursus_ed25519.pub <kasutaja>@<proxmox3-IP>
 ```
@@ -124,27 +124,27 @@ Host proxmox3
     IdentityFile ~/.ssh/kursus_ed25519
 ```
 
-Logi nüüd igasse sõlme sisse nime kaudu:
+Kontrolli nüüd igat sõlme nime kaudu. Iga käsk logib sisse, käivitab sõlmes `hostname` ja tuleb tagasi sinu arvutisse:
 
 ```bash
-ssh proxmox1    # logi sisse nime kaudu, ilma paroolita (hostname näitab masinat)
-ssh proxmox2
-ssh proxmox3
+ssh proxmox1 hostname
+ssh proxmox2 hostname
+ssh proxmox3 hostname
 ```
 
 ??? success "Oodatav tulemus"
-    Ükski sõlm ei küsi serveri kasutajakonto parooli. Kui määrasid võtmele salafraasi, võib SSH küsida salafraasi. See on normaalne ja `ssh-agent` jätab salafraasi seansi ajaks meelde.
+    Ükski sõlm ei küsi serveri kasutajakonto parooli. Kui määrasid võtmele paroolifraasi, võib SSH küsida paroolifraasi. See on normaalne ja `ssh-agent` jätab paroolifraasi seansi ajaks meelde.
 
 ??? warning "Kui `ssh proxmoxN` ei õnnestu"
     Käivita `ssh -vvv proxmox1`, väljund näitab, millises sammus ühendus katkeb.
 
     | Sümptom | Lahendus |
     |---|---|
-    | `Connection refused` | Sõlmes ei tööta SSH-teenus: `sudo systemctl enable --now ssh` |
+    | `Connection refused` | Sõlmes ei tööta SSH-teenus: `sudo systemctl enable --now sshd` |
     | `Permission denied (publickey)` | Käivita `ssh-copy-id` uuesti ja kontrolli sõlmes õigusi: `chmod 700 ~/.ssh`, `chmod 600 ~/.ssh/authorized_keys` |
     | Server keeldub ühendusest, põhjus pole selge | Vaata sõlme konsoolis logi: `sudo journalctl -u sshd -e` |
 
-Tee ekraanipilt, kus on näha kolm `ssh proxmoxN` sisselogimist ja käsu `hostname` väljund ning et parooli ei küsitud. Ekraanipilt läheb esitamisel faili `toend.png`.
+Tee ekraanipilt, kus on näha kolm `ssh proxmoxN hostname` käsku ja nende väljund ning et parooli ei küsitud. Ekraanipilt läheb esitamisel faili `toend.png`.
 
 ## Osa 4 · VS Code Remote-SSH sõlme uurimiseks
 
@@ -157,6 +157,8 @@ Remote-SSH avab VS Code'is sõlme failisüsteemi, nii et saad sõlme faile vaada
 
 ??? warning "Kui VS Code jääb ühendumisel kinni"
     Vajuta `F1`, vali **Remote-SSH: Kill VS Code Server on Host** ja ühendu uuesti.
+
+Sulge seejärel kaugühendus (**File → Close Remote Connection**) ja ava uuesti kohalik projektikaust `lab01`. Järgmised Giti ja Ansible'i käsud käivitad oma arvutis, mitte sõlmes `proxmox1`.
 
 ## Osa 5 · Giti seadistamine (sinu arvutis)
 
@@ -194,12 +196,12 @@ Käsud `ping` ja `nc` näitavad, kas paketid jõuavad sõlmeni. Käsk `ssh $h ho
 
 Kui sudo küsib parooli, saab sõlme siiski hallata. Sel juhul saab Ansible'ile parooli anda võtmega `--ask-become-pass`.
 
-## Osa 7 · Ansible'i kontrolleri seadistamine (sinu arvutis)
+## Osa 7 · Ansible'i juhtsõlme seadistamine (sinu arvutis)
 
-Ansible paigaldatakse ainult kontrollerisse, sõlmedes piisab Pythonist. Windowsis Ansible otse ei tööta, seega kasuta Linuxit või WSL2-te ([Ansible'i paigaldamine](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)):
+Ansible paigaldatakse ainult juhtsõlme, sõlmedes piisab Pythonist. Windowsis Ansible otse ei tööta, seega kasuta Linuxit või WSL2 Ubuntut ([Ansible'i paigaldamine](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)):
 
 ```bash
-sudo apt update && sudo apt install -y ansible   # ainult kontrolleris
+sudo apt update && sudo apt install -y ansible   # ainult juhtsõlmes
 ansible --version
 ```
 
@@ -220,7 +222,7 @@ ansible -i inventory.ini all -m ansible.builtin.ping | tee logid/ansible-ping.tx
 ```
 
 ??? success "Oodatav tulemus"
-    Iga sõlm vastab `"ping": "pong"`. Ansible kasutab sama SSH-ühendust, kasutajanimi (`User`) ja võti võetakse failist `~/.ssh/config`. Nii jõuab kontroller ühe võtmega kõigi sõlmedeni.
+    Iga sõlm vastab `"ping": "pong"`. Ansible kasutab sama SSH-ühendust, kasutajanimi (`User`) ja võti võetakse failist `~/.ssh/config`. Nii jõuab juhtsõlm ühe võtmega kõigi sõlmedeni.
 
 ??? warning "Kui mõni sõlm ei vasta"
     Lisa käsule võti `-vvv`. Väljundist on näha, kas viga on SSH-ühenduses või Pythonis.
@@ -249,7 +251,7 @@ Lisa faili `~/.ssh/config` uus host (näiteks teise pordi või kasutaja jaoks) j
 
 ### D. ssh-agent ja ControlMaster
 
-Seadista SSH-agent nii, et salafraasi ei küsitaks. Uuri, mida teeb konfiguratsioonifailis seade `ControlMaster auto` (Linuxis ja macOS-is; Windowsi SSH-klient seda ei toeta).
+Seadista SSH-agent nii, et paroolifraasi ei küsitaks. Uuri, mida teeb konfiguratsioonifailis seade `ControlMaster auto` (Linuxis ja macOS-is; Windowsi SSH-klient seda ei toeta).
 
 ??? question "Mõtle valitud ülesannete kohta"
     - Mille poolest on tsükkel (A) parem kui sama käsu käsitsi kolm korda käivitamine? Mille poolest on see halvem kui Ansible?
@@ -274,13 +276,13 @@ Leia väljundist kolm sammu. Esmalt loob **võtmevahetus** (KEX, näiteks curve2
 ??? question "Mõtle"
     Mis kaitseb sinu privaatvõtit isegi siis, kui keegi kogu liiklust pealt kuulab?
 
-### 9.2 known_hosts ja MITM (võltsserver)
+### 9.2 known_hosts: serveri võtme meeldejätmine
 
-Esimesel ühendusel salvestas SSH serveri hostivõtme faili `~/.ssh/known_hosts`. See kaitseb võltsserveri (man-in-the-middle) eest: kui hostivõti muutub, SSH hoiatab ja keeldub ühendumast. Vaata kirjet ja simuleeri seejärel muutust:
+Esimesel ühendusel salvestas SSH serveri hostivõtme faili `~/.ssh/known_hosts`. See kaitseb võltsserveri (man-in-the-middle) eest: kui hostivõti muutub, SSH hoiatab ja keeldub ühendumast. Vaata salvestatud kirjet, eemalda see ja jälgi, kuidas SSH küsib järgmisel ühendusel serveri võtme kinnitamist. Selles katses serveri võtit ei muudeta:
 
 ```bash
 ssh-keygen -F <proxmox1-IP>              # näita proxmox1 host-key kirjet
-ssh-keygen -R <proxmox1-IP>              # eemalda kirje (nagu server oleks taasehitatud)
+ssh-keygen -R <proxmox1-IP>              # eemalda kirje (nagu server oleks uuesti paigaldatud)
 ssh proxmox1                             # SSH küsib host-key uuesti kinnitada
 ```
 
@@ -309,7 +311,7 @@ Kui õpetaja ütleb, et klassis on eraldi bastion-masin, proovi **ProxyJump** v�
 ??? note "Kontrollnimekiri"
     - [ ] oskad selgitada, kuidas võtmepaar töötab ja miks parooli pole vaja
     - [ ] üks võti on kopeeritud kõigisse sõlmedesse ja `ssh proxmox1/2/3` ühendub ilma paroolita
-    - [ ] VS Code Remote-SSH töötab (`hostname` näitab õiget masinat)
+    - [ ] (valikuline) VS Code Remote-SSH töötab (`hostname` näitab õiget masinat)
     - [ ] `git config --global --list` näitab sinu nime ja e-posti (sinu arvutis)
     - [ ] `ansible -i inventory.ini all -m ansible.builtin.ping` tagastab `pong` kõigilt kolmelt sõlmelt
     - [ ] tegid vähemalt kaks osa 8 ülesannet
@@ -342,7 +344,7 @@ Tulemuse näed Classroom 50-s.
     ```bash
     ping -c1 github.com                                       # DNS + ICMP
     nc -zv github.com 443                                     # TCP HTTPS-porti
-    git ls-remote https://github.com/<kasutaja>/<repo>.git    # kas git jõuab repo-ni
+    git ls-remote https://github.com/<kasutaja>/<repo>.git    # kas git jõuab repositooriumini
     ```
 
     Käsk [`git ls-remote`](https://git-scm.com/docs/git-ls-remote) pärib repositooriumi andmed ilma seda kloonimata. Iga test kontrollib erinevat asja, seega tõlgenda tulemusi eraldi.
@@ -356,7 +358,7 @@ Tulemuse näed Classroom 50-s.
 
         Erista kaht veatüüpi. Võrguviga (`Could not resolve host`, timeout) tähendab, et sõlm ei jõua GitHubini. Autentimisviga (401/403) tähendab, et võrk töötab, aga repositooriumile puuduvad õigused.
 
-        Kui sõlm ei jõua GitHubini, tehakse kogu töö Gitiga sinu arvutis (kontrolleris).
+        Kui sõlm ei jõua GitHubini, tehakse kogu töö Gitiga sinu arvutis (juhtsõlmes).
 
 ??? example "2 · Serveri turvamine"
     !!! warning "Enne muutmist"
@@ -373,7 +375,7 @@ Tulemuse näed Classroom 50-s.
     Kontrolli konfiguratsioonifaili süntaksit ja taaskäivita SSH-teenus:
 
     ```bash
-    sudo sshd -t && sudo systemctl restart ssh     # kontrolli süntaks enne restart'i
+    sudo sshd -t && sudo systemctl restart sshd    # kontrolli enne taaskäivitamist süntaksit
     ```
 
     Ära sulge töötavat seanssi enne, kui uus võtmega ühendus töötab. Kontrolli ka õigusi: `chmod 700 ~/.ssh`, `chmod 600 ~/.ssh/authorized_keys`.
