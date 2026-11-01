@@ -8,7 +8,7 @@ tags:
 
 # Loeng: automaatne ehitamine ja levitamine (CD)
 
-N7 konveier kontrollis iga muudatust: käivitas testid ja ehitas image'i. Kui käivitus lõppes, kadus image koos runneriga. Täna jõuab image registrisse ja sealt serverisse, praktikumis parandad konveierit, milles on vead.
+N7 töövoog kontrollis iga muudatust: käivitas testid ja ehitas image'i. Kui käivitus lõppes, kadus image koos runneriga. Täna jõuab image registrisse ja sealt serverisse. Praktikumis parandad töövoogu, milles on vead.
 
 ??? abstract "Õpiväljundid"
     Pärast loengut ja praktikumi oskad:
@@ -22,7 +22,7 @@ N7 konveier kontrollis iga muudatust: käivitas testid ja ehitas image'i. Kui k�
 
 ## 1. CI-st pideva tarneni
 
-GitHub Actionsi põhimõisted on järgmised. **Töövoog** (workflow) on fail kaustas `.github/workflows/`. Töövoos on **tööd** (jobs), näiteks `test` ja `konteiner`. Igas töös on **sammud** (steps). Iga kord, kui töövoog käivitub, tekib vahekaardile **Actions** uus **käivitus** (run).
+GitHub Actionsi põhimõisted on järgmised. **Töövoog** (workflow) on fail kaustas `.github/workflows/`. Töövoos on **tööd** (jobs), näiteks `test` ja `konteiner`. Igas töös on **sammud** (steps). Iga kord, kui töövoog käivitub, tekib vahekaardile **Actions** uus **käivitus** (run). **Konveier** (pipeline) on üldisem mõiste: kõik automaatsed sammud muudatusest kuni valmis tulemuseni. GitHub Actionsis kirjeldab konveierit üks või mitu töövoogu.
 
 <figure markdown="span">
   ![Vasakul sündmused (on:): push harusse main, pull_request, schedule, workflow_dispatch. Sündmus käivitab töövoo .github/workflows/ci.yml. Töövoos on kolm tööd: test, konteiner ja build-and-push, nende vahel nooled needs. Iga töö all on sammud, näiteks checkout, docker build, docker push. Paremal märkus: ilma needs'ita käivituvad kõik tööd korraga](../images/n08_moisted.svg)
@@ -77,7 +77,7 @@ Sinu repositoorium on organisatsioonis `hkhk-automation`. Seega on omanik organi
 
 Image'i nimes on lubatud ainult väiketähed. Repositooriumi nimes võib olla suurtähti, näiteks kasutajanimest. Siis annab `docker build` vea `repository name must be lowercase`. Seepärast teeb konveier nime enne kasutamist väiketähtedeks: `${GITHUB_REPOSITORY,,}`. Kaks koma on Bashi märk, mis muudab tähed väikesteks.
 
-GitHub nimetab image'it **paketiks** (package). Pakett on repositooriumi avalehel paremal, jaotises **Packages**. Kui repositoorium on privaatne, on ka pakett privaatne. Siis peab server enne tõmbamist sisse logima (§6).
+Registrisse saadetud image'it nimetab GitHub **paketiks** (package). Pakett ja image on siin sama asi. Pakett on repositooriumi avalehel paremal, jaotises **Packages**. Kui repositoorium on privaatne, on ka pakett privaatne. Siis peab server enne tõmbamist sisse logima (§6).
 
 Registreid on palju. Konveier logib igasse neist sisse veidi teisiti:
 
@@ -89,7 +89,7 @@ Registreid on palju. Konveier logib igasse neist sisse veidi teisiti:
     | [AWS ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html) | Amazon | IAM-roll [OIDC kaudu](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws), siis [`amazon-ecr-login`](https://github.com/aws-actions/amazon-ecr-login) | serverid töötavad AWS-is |
     | [GitLab Container Registry](https://docs.gitlab.com/user/packages/container_registry/build_and_push_images/) | GitLab | muutujad `CI_REGISTRY_USER` ja `CI_REGISTRY_PASSWORD`, mille GitLab annab igale tööle | kood ja konveier on GitLabis |
 
-**OIDC** tähendab, et konveier ei hoia AWS-i parooli üldse. GitHub annab käivitusele lühiajalise tõendi ja AWS vahetab selle ajutiste õiguste vastu. Põhimõte on sama mis `GITHUB_TOKEN`-il: ajutine võti on parem kui püsiv saladus.
+Pilveteenusesse (AWS, Azure) logib töövoog sisse **OIDC** abil. GitHub annab igale käivitusele lühiajalise tõendi. Pilv vahetab selle ajutiste õiguste vastu ja püsivat parooli GitHubi saladustes ei hoita. Põhimõte on sama mis `GITHUB_TOKEN`-il.
 
 ??? question "Kontrolli ennast"
     1. Repositooriumi nimi on `lab-MariTamm`. Mis juhtub, kui image'i nimeks saab `ghcr.io/hkhk-automation/lab-MariTamm`?
@@ -160,7 +160,7 @@ Pull request'i käivitus kasutab sama töövoogu. Töö `build-and-push` peab se
 
 ### Failide filter: `paths`
 
-Vahel pole mõtet image'it ehitada, kui muutus ainult README. Võti `paths` käivitab töövoo ainult siis, kui muutusid kindlad failid ([`paths` süntaks](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#onpushpull_requestpull_request_targetpathspaths-ignore)). Näiteks `paths: ["flask/**", ".github/workflows/ci.yml"]` jätab README muudatused vahele. Ettevaatust: kui pull request'i kohustuslik kontroll jääb filtri tõttu käivitamata, jääb see ootele ja liita ei saa.
+Vahel pole mõtet image'it ehitada, kui muutus ainult README. Võti `paths` käivitab töövoo ainult siis, kui muutusid kindlad failid ([`paths` süntaks](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#onpushpull_requestpull_request_targetpathspaths-ignore)). Näiteks `paths: ["flask/**", ".github/workflows/ci.yml"]` jätab README muudatused vahele. Ettevaatust: kui pull request'i kohustuslik kontroll jääb filtri tõttu käivitamata, jääb see ootele ja liita ei saa. Seepärast pane `paths` ainult sellele töövoole, mis ehitab image'i. Testide töövoog, mida pull request nõuab, käivitub alati.
 
 ??? question "Kontrolli ennast"
     1. Saadad GitHubi haru `n08-tervitus` ja avad pull request'i. Töövoos on `push:` ilma harudeta ja `pull_request:`. Mitu käivitust tekib?
@@ -195,7 +195,15 @@ Keskkonnal võivad olla oma saladused. Tootmise parooli näeb ainult töö, mis 
 
 Siin on näha ka pideva tarne ja pideva paigalduse vahe (tabel 8.1). Kui tootmise ees on kinnitus, on tegu pideva tarnega. Kui kinnitust pole ja iga roheline muudatus läheb kohe tootmisse, on tegu pideva paigaldusega. Praktikumis keskkondi ei seadista.
 
-Paigalduse juures kasutatakse veel kahte võimalust ([pidev paigaldus GitHub Actionsiga](https://docs.github.com/en/actions/get-started/continuous-deployment)). Võti `concurrency` lubab korraga ainult ühe paigalduse: kui kaks muudatust tulevad järjest, ei paigalda kaks käivitust samal ajal samasse serverisse. Pilveteenusesse (AWS, Azure) saab konveier sisse logida **OIDC** abil. Siis saab konveier iga käivituse jaoks lühiajalise loa ja pilve parooli GitHubi saladustes ei hoita.
+N13-s paigaldab töövoog ise ja siis on keskkonnast kasu: tootmise ees saab nõuda kinnitust.
+
+Kui kaks muudatust tulevad järjest, võivad kaks käivitust paigaldada samal ajal samasse serverisse. Võti `concurrency` lubab korraga ainult ühe paigalduse ([pidev paigaldus GitHub Actionsiga](https://docs.github.com/en/actions/get-started/continuous-deployment)):
+
+```yaml
+concurrency:
+  group: paigaldus-tootmine   # sama grupi käivitused ootavad üksteist
+  cancel-in-progress: false   # pooleli paigaldust ei katkestata
+```
 
 ??? question "Kontrolli ennast"
     1. Miks ei anna me serveri tokenile õigust `write:packages`, kuigi see lubaks ka lugeda?
@@ -244,7 +252,7 @@ GitHub Actions ei ole ainus CI/CD tööriist. Töökohas kohtad tõenäoliselt k
 
 **GitLab** on terve platvorm ühes: Git'i hoidla, CI/CD, konteinerite register, ülesanded (issues) ja turvakontrollid. Seda saab kasutada teenusena aadressil gitlab.com või paigaldada oma serverisse ([paigaldus](https://docs.gitlab.com/install/)). Konveier on failis `.gitlab-ci.yml`.
 
-**Jenkins** on vanim neist kolmest. Projekt alustas 2004. aastal nime all Hudson. 2011. aastal tekkis vaidlus Oracle'iga nime pärast ja projekt nimetati ümber Jenkinsiks ([ajalugu](https://en.wikipedia.org/wiki/Jenkins_(software))). Jenkinsi paigaldad alati ise. Selle võimalused tulevad plugin'itest. Plugin'eid on üle kahe tuhande ([Jenkinsi plugin'id](https://plugins.jenkins.io/)).
+**Jenkins** on vanim neist kolmest. Projekt alustas 2004. aastal nime all Hudson. 2011. aastal tekkis vaidlus Oracle'iga nime pärast ja projekt nimetati ümber Jenkinsiks ([Jenkinsi projekt](https://www.jenkins.io/project/)). Jenkinsi paigaldad alati ise. Selle võimalused tulevad plugin'itest. Plugin'eid on üle kahe tuhande ([Jenkinsi plugin'id](https://plugins.jenkins.io/)).
 
 Jenkinsit kasutatakse endiselt palju, eriti suurtes firmades ja vanades süsteemides. Uutes projektides valitakse seda harvem. Server, plugin'id ja nende uuendused on firma enda hallata. Iga plugin on võimalik turvaauk ja vanad plugin'id ei pruugi uue versiooniga töötada. GitHub Actions ja gitlab.com hoiavad selle töö enda käes. Praktikumi osas 6 käivitad Jenkinsi ise ja näed, mida see haldamine tähendab.
 
