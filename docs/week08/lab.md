@@ -19,19 +19,6 @@ Töötad masinas `proxmox1` VS Code'i kaudu nagu N7-s. Serveri rollis on samuti 
 
 **Teatmik:** [GitHub Actions juhend](../github-actions.md)
 
-| Osa | Töö | Aeg |
-|---|---|---|
-| 1 | Ettevalmistus ja issue'de mall | 15 min |
-| 2 | Viga 1: registrisse kirjutamine | 15 min |
-| 3 | Viga 2: katkine kood jõuab registrisse | 20 min |
-| 4 | Viga 3: pull request jõuab registrisse | 25 min |
-| 5 | Vead 4 ja 5: server, tagasi vanale versioonile | 45 min |
-| 6 | Sama konveier Jenkinsis, viga 6 | 45 min |
-| 7 | Korrektne lahendus | 5 min |
-| 8 | Töö esitamine | 10 min |
-
-*Tabel 8.6. Praktikumi osad. Koos vahetunniga kokku 3 h 15 min.*
-
 Iga vea juures on samad sammud samas järjekorras ([loengu §7](lecture.md#7-vea-leidmine-sumptom-hupotees-toend-parandus)):
 
 - **Sümptom:** mida näed. See võib olla punane töö, rida logis või käsu väljund.
@@ -40,8 +27,6 @@ Iga vea juures on samad sammud samas järjekorras ([loengu §7](lecture.md#7-vea
 - **Paranda** ja **Kontrolli:** tee üks muudatus ja vaata sama sümptomit uuesti. Põhjus ja parandus on kokkuvolditud plokis. Ava see alles siis, kui oled ise proovinud.
 - **Küsimus:** kirjuta README-sse üks lause ja vigade tabelisse üks rida.
 - **Issue:** iga vea kohta on repositooriumis issue (samm 1.4). Paranduse commit sulgeb selle.
-
-Kõik vead teed iseseisvalt.
 
 ??? abstract "Õpiväljundid"
 
@@ -585,7 +570,7 @@ cat Jenkinsfile
 | [`pipeline-graph-view`](https://plugins.jenkins.io/pipeline-graph-view/) | näitab konveieri samme graafiliselt |
 | [`dark-theme`](https://plugins.jenkins.io/dark-theme/) | tume teema |
 
-*Tabel 8.7. Plugin'id failis `jenkins/Dockerfile`.*
+*Tabel 8.6. Plugin'id failis `jenkins/Dockerfile`.*
 
 `Jenkinsfile` on konveier. See on sama mõttega kui `ci.yml`, aga teises keeles ([Jenkinsfile'i süntaks](https://www.jenkins.io/doc/book/pipeline/syntax/)):
 
@@ -597,7 +582,7 @@ cat Jenkinsfile
 | `needs: test` | etapid käivad järjest, kirjutatud järjekorras |
 | `on: push` | `pollSCM`: Jenkins küsib ise, kas on uus commit (samm 6.6) |
 
-*Tabel 8.8. Sama konveier kahes tööriistas.*
+*Tabel 8.7. Sama konveier kahes tööriistas.*
 
 ### 6.2 Jenkins käima
 
@@ -630,7 +615,7 @@ docker run -d --name jenkins --restart unless-stopped \
 | `-v /var/run/docker.sock:...` | Jenkins saab kasutada masina Dockerit, et ehitada image'it |
 | `--group-add ...` | Jenkinsi kasutaja saab õiguse Dockeri soklit kasutada |
 
-*Tabel 8.9. Jenkinsi konteineri võtmed.*
+*Tabel 8.8. Jenkinsi konteineri võtmed.*
 
 **Kontrolli**
 
@@ -766,7 +751,7 @@ Oota kuni 5 minutit. Vasakul tekib uus käivitus. Ava see. Üleval on kirjas `St
 
 Vali **Manage Jenkins** → **Appearance**. Lõigus **Themes** vali `Dark` ja vajuta **Save**. Selle võimaluse lisas plugin `dark-theme`.
 
-Mõtle tagasi tabelile 8.8. GitHub Actionsis ei pidanud sa paigaldama serverit, plugin'eid ega Pythonit. Jenkinsis tegid kõike seda ise. Vastutasuks töötab Jenkins sinu võrgus ja seda saab seadistada nii, nagu firma vajab.
+Mõtle tagasi tabelile 8.7. GitHub Actionsis ei pidanud sa paigaldama serverit, plugin'eid ega Pythonit. Jenkinsis tegid kõike seda ise. Vastutasuks töötab Jenkins sinu võrgus ja seda saab seadistada nii, nagu firma vajab.
 
 ---
 
@@ -906,7 +891,7 @@ curl localhost:8088/versioon
 | `--restart unless-stopped` | konteiner käivitub uuesti ka pärast masina taaskäivitust |
 | `-p 8088:5000` | serveri port 8088 läheb konteineri porti 5000, kus Flask kuulab |
 
-*Tabel 8.10. Serveri skripti read.*
+*Tabel 8.9. Serveri skripti read.*
 
 Jenkinsi image (viga 6):
 

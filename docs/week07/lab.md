@@ -34,23 +34,6 @@ Praktikumis on kahte tüüpi küsimusi:
 
 - **Leia dokumentatsioonist:** küsimus, millele leiad vastuse GitHubi dokumentatsioonist. Tavaliselt on lehe link küsimuse juures. Mõne küsimuse juures on ainult dokumentatsiooni osa nimi ja lehe leiad ise. Vastus on kokkuvolditud plokis **Vastus**. Dokumentatsiooni osad on kirjeldatud loengu [§6](lecture.md#6-kust-leida-vastus-github-actionsi-dokumentatsioon).
 
-Kõik osad teed iseseisvalt.
-
-| Osa | Töö |
-|---|---|
-| 0 | Repositoorium ja Pythoni keskkond |
-| 1 | Esimene test oma masinas |
-| 2 | Esimene töövoog |
-| 3 | Runner on tühi: kolm viga järjest |
-| 4 | Teek, mis on ainult sinu masinas |
-| 5 | Pull request ja haru `main` kaitse |
-| 6 | Konteineri kontroll CI-s |
-| 7 | Test enne koodi |
-| 8 | Sama konveier teistes tööriistades |
-| 9 | Töö esitamine |
-
-*Tabel 7.10. Praktikumi osad.*
-
 Joonisel on kõik, mis praktikumi lõpuks valmis on. Kui kaotad järje, vaata siit, millise osa juures oled.
 
 <figure markdown="span">

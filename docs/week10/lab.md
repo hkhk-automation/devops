@@ -14,19 +14,7 @@ Töötad oma esimeses AlmaLinuxi masinas (`proxmox1`) VS Code'i kaudu nagu N7-s.
 
 **Edenemine:** laboritahvel <http://192.168.125.187:8091/> (VPN-iga).
 
-| Osa | Töö | Aeg |
-|---|---|---|
-| 1 | Ettevalmistus: repositoorium, OpenTofu, API token | 30 min |
-| 2 | Esimene masin: `init`, `plan`, `apply` | 40 min |
-| 3 | Teine plaan ja mälu muutmine | 20 min |
-| 4 | Ennustus 1: masin kustutatakse käsitsi | 20 min |
-| 5 | Ennustus 2: kirjeldus eemaldatakse failist | 15 min |
-| 6 | Olekufail ja `destroy` | 15 min |
-| 7 | Töö esitamine | 10 min |
-
-*Tabel 10.6. Praktikumi osad.*
-
-Mõnes sammus on rida **Ennusta**. Enne käsu käivitamist ütle naabrile, mida arvad juhtuvat. Kirja seda panema ei pea. Vastus on sammu all kokkuvolditud plokis.
+Mõnes sammus on rida **Ennusta**. Enne käsu käivitamist mõtle läbi, mis juhtub. Vastus on sammu all kokkuvolditud plokis.
 
 ??? abstract "Õpiväljundid"
 
@@ -180,7 +168,7 @@ Iga atribuudi täpse tähenduse leiad provideri dokumentatsioonist: [proxmox_vir
 | `stop_on_destroy` | kustutamisel lülitatakse masin kohe välja, OpenTofu ei oota korrektset seiskamist |
 | `output "ip"` | `ipv4_addresses` on iga võrguliidese aadresside nimekiri. Esimene liides on `lo` (127.0.0.1), seega on masina IP teise liidese (`[1]`) esimene aadress (`[0]`) |
 
-*Tabel 10.7. Atribuudid failis `vm.tf`.*
+*Tabel 10.6. Atribuudid failis `vm.tf`.*
 
 ### 2.2 Provideri allalaadimine
 
