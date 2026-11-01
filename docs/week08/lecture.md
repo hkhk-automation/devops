@@ -283,6 +283,24 @@ GitLab kasutab mudelit **open core**. Põhiosa on avatud (Community Edition, MIT
 
 Litsents võib ka muutuda. N10-s nägid, et HashiCorp muutis 2023. aastal Terraformi litsentsi. Uus litsents BSL ei luba Terraformi kasutada HashiCorpiga konkureerivas tootes ([HashiCorpi teade](https://www.hashicorp.com/blog/hashicorp-adopts-business-source-license)). Kogukond jätkas viimase vaba versiooniga ja nii tekkis OpenTofu. Seega tasub enne tööriista valimist vaadata ka litsentsi ja seda, kes projekti juhib.
 
+??? question "Kui palju GitHub Actions maksab?"
+    Litsentsi kõrval tuleb vaadata ka hinda. Leia vastused GitHubi dokumentatsioonist, lehelt [GitHub Actionsi arveldus](https://docs.github.com/en/billing/concepts/product-billing/github-actions), ja võrdle plaane lehel [github.com/pricing](https://github.com/pricing):
+
+    1. Kas GitHubi runnerid on avalikus repositooriumis tasuta?
+    2. Kui palju kasutust on privaatse repositooriumi jaoks plaanis hinna sees? Mitu Linuxi minutit see umbes on?
+    3. Mis maksab üks Linuxi runneri minut?
+    4. Kas oma runner (self-hosted) maksab midagi?
+    5. Sinu konveier kestab umbes 2 minutit ja klassis on 15 õpilast. Igaüks teeb tunnis 20 push'i. Mitu minutit kulub ühe tunniga?
+
+    ??? success "Vastused"
+        1. Jah. Tavalised GitHubi runnerid on avalikus repositooriumis tasuta ja ei vähenda hinna sees olevat kogust.
+        2. Hinna sees on summa dollarites: Free plaanis 12 $, Team plaanis 18 $. Linuxi hinnaga teeb see umbes 2000 ja 3000 minutit kuus. Lisaks on artefaktide ja pakettide hoidmiseks 500 MB (Free) või 2 GB (Team).
+        3. 0,006 $ minut (Linux, 2 tuuma). Windows ja macOS on kallimad.
+        4. Ei. Oma runneri minutid on tasuta. Maksad ainult oma serveri eest.
+        5. 15 × 20 × 2 = 600 minutit. Viie sellise tunniga saavad Team plaani minutid otsa.
+
+        Organisatsioon saab määrata kulude piiri (budget). Kooli organisatsioonis on piir 0 $: kui hinna sees olev kogus saab otsa, töövoogusid kuu lõpuni enam ei käivitata ja arvet ei tule.
+
 ??? question "Kontrolli ennast"
     1. Firma tahab CI/CD-d, mis töötab ainult tema enda serverites ja on tasuta. Milliseid tabeli 8.5 tööriistu ta saab kasutada?
     2. Mida peab firma Jenkinsi puhul ise tegema, mida GitHub Actionsi puhul teeb GitHub?
