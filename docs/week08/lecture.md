@@ -201,6 +201,8 @@ Keskkonnal võivad olla oma saladused. Tootmise parooli näeb ainult töö, mis 
 
 Siin on näha ka pideva tarne ja pideva paigalduse vahe (tabel 8.1). Kui tootmise ees on kinnitus, on tegu pideva tarnega. Kui kinnitust pole ja iga roheline muudatus läheb kohe tootmisse, on tegu pideva paigaldusega. Praktikumis keskkondi ei seadista.
 
+Paigalduse juures kasutatakse veel kahte võimalust ([pidev paigaldus GitHub Actionsiga](https://docs.github.com/en/actions/get-started/continuous-deployment)). Võti `concurrency` lubab korraga ainult ühe paigalduse: kui kaks muudatust tulevad järjest, ei paigalda kaks käivitust samal ajal samasse serverisse. Pilveteenusesse (AWS, Azure) saab konveier sisse logida **OIDC** abil. Siis ei hoita pilve parooli GitHubi saladustes, vaid konveier saab iga käivituse jaoks lühiajalise loa.
+
 ??? question "Kontrolli ennast"
     1. Miks ei anna me serveri tokenile õigust `write:packages`, kuigi see lubaks ka lugeda?
     2. `docker ps` näitab pordiks `0.0.0.0:8088->80/tcp`. Rakendus kuulab pordil 5000. Mida vastab `curl localhost:8088`?
