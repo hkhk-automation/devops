@@ -418,7 +418,11 @@ Võrdle veergu PORTS ja logi rida `Running on`. Mis port on kummaski?
 ??? success "Põhjus ja parandus"
     `curl` annab `curl: (56) Recv failure: Connection reset by peer` või `curl: (52) Empty reply from server`. Sama sümptomit nägid N5 Osa 10-s. `docker ps` näitab `0.0.0.0:8088->80/tcp`, aga logis on `Running on http://...:5000`. Skript suunab serveri pordi 8088 konteineri porti 80, kus keegi ei kuula. Flask kuulab konteineris pordil 5000.
 
-    Paranda failis `server/paigalda.sh` real `docker run` pordi suunamine: `-p 8088:5000`.
+    Paranda failis `server/paigalda.sh` rida `docker run`:
+
+    ```bash
+    docker run -d --name flask-cd --restart unless-stopped -p 8088:5000 "$IMAGE:$TAG"
+    ```
 
 **Kontrolli**
 
@@ -496,6 +500,101 @@ Töö on esitatud, kui kõik muudatused on `main` harus GitHubis. Automaatkontro
     - `pytest kukub`: tervitus failis `flask/app.py` peab sisaldama sõna `Tere` (osa 3).
     - `logid/server.txt viimane rida peab olema /versioon vastus`: skript lõpetas veaga. Paranda see ja käivita uuesti käsuga `tee` (samm 5.3).
     - `Vigade tabelis ja küsimustes on N vastust puudu`: README-s on `_vastus_` alles.
+
+---
+
+## Osa 7 · Korrektne workflow
+
+Kõik viis parandust on nüüd sinu failides. Siin on need koos ühes terviklahenduses, nii nagu seda töökohas tehakse. Võrdle oma faili `.github/workflows/ci.yml` sellega. Kui midagi erineb, mõtle, kas sinu variant teeb sama asja (näiteks `needs: [test, konteiner]` on samaväärne) või on seal veel viga.
+
+Numbrile koodi kõrval klõpsates näed selle rea selgitust.
+
+```yaml
+name: CI/CD
+
+on:
+  push:
+    branches: [main] # (1)!
+  pull_request: # (2)!
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install -r flask/requirements.txt pytest
+      - run: pytest flask -v
+
+  konteiner:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: docker build -t flask-app ./flask
+      - run: docker run -d -p 5000:5000 --name flask1 flask-app
+      - run: curl -fsS --retry 10 --retry-all-errors --retry-delay 1 localhost:5000/health
+      - if: failure()
+        run: docker logs flask1
+
+  build-and-push:
+    needs: konteiner # (3)!
+    if: github.event_name == 'push' # (4)!
+    runs-on: ubuntu-latest
+    permissions: # (5)!
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Image'i nimi ja versioon
+        run: |
+          echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV" # (6)!
+          echo "VERSIOON=${GITHUB_SHA::7}" >> "$GITHUB_ENV" # (7)!
+      - name: Ehita image
+        run: >
+          docker build
+          --build-arg VERSIOON=$VERSIOON
+          --label org.opencontainers.image.source=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY
+          -t "$IMAGE:$VERSIOON" -t "$IMAGE:latest"
+          ./flask # (8)!
+      - name: Logi GHCR-i sisse
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }} # (9)!
+        run: echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+      - name: Saada image GHCR-i
+        run: docker push --all-tags "$IMAGE" # (10)!
+```
+
+1.  Push käivitab workflow'i ainult harus `main`. Teiste harude push'id ei ehita image'it (viga 3).
+2.  Pull request'is käivituvad testid. N7 lukk vajab neid enne liitmist.
+3.  Image ehitatakse alles siis, kui `konteiner` on roheline. `konteiner` ootab omakorda `test`-i (viga 2).
+4.  Pull request'i käivituses jääb job vahele (`skipped`). Registrisse jõuab ainult liidetud kood (viga 3).
+5.  Kirjutamisõigus registrisse ainult sellele job'ile. `contents: read` on vajalik, et `actions/checkout` saaks koodi lugeda (viga 1).
+6.  Image'i nimes on lubatud ainult väiketähed. `,,` teeb repositooriumi nime väiketähtedeks.
+7.  Commit'i lühiräsi: tag, mis ütleb täpselt, mis koodist image tehti.
+8.  Kaks tag'i samale image'ile: räsi ja `latest`. `--build-arg` annab rakendusele versiooni, silt seob paketi repositooriumiga.
+9.  Ajutine token, mis kehtib ainult selle käivituse ajal. Faili ei kirjutata ühtegi saladust.
+10. Saadab registrisse mõlemad tag'id.
+
+Serveris tehakse üks kord sisselogimine ja iga paigaldus on üks käsk:
+
+```bash
+docker login ghcr.io -u <sinu-github-kasutaja>   # token õigusega read:packages (viga 4)
+bash server/paigalda.sh                          # docker pull ja docker run -p 8088:5000 (viga 5)
+curl localhost:8088/versioon
+```
+
+| Rida skriptis `server/paigalda.sh` | Miks |
+|---|---|
+| `IMAGE="ghcr.io/hkhk-automation/${REPO,,}"` | sama nimi, mille pipeline andis, väiketähtedega |
+| `docker pull "$IMAGE:$TAG"` | server ei ehita, ta tõmbab registrist valmis image'i |
+| `docker rm -f flask-cd` | vana konteiner eemaldatakse enne uue käivitamist |
+| `--restart unless-stopped` | konteiner käivitub uuesti ka pärast serveri taaskäivitust |
+| `-p 8088:5000` | serveri port 8088 suunatakse konteineri porti 5000, kus Flask kuulab |
+
+*Tabel 8.4. Serveri skripti read.*
 
 ---
 
