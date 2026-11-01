@@ -9,7 +9,7 @@ tags:
 
 # Praktikum: katkine konveier korda
 
-N7 lõpus kontrollis konveier koodi ja konteinerit. Tänases repositooriumis on sama kood. Kolleeg on lisanud konveierile kolmanda töö `build-and-push`. See peaks saatma image'i registrisse GHCR. Ta on kirjutanud ka skripti, mis peaks image'i serveris käivitama. Mõlemas on vigu.
+N7 lõpus kontrollis konveier koodi ja konteinerit. Tänases repositooriumis on sama kood ja konveieris on kolmas töö `build-and-push`, mis peaks saatma image'i registrisse GHCR. Lisaks on skript, mis peaks image'i serveris käivitama. Mõlemas on vigu.
 
 Leiad ja parandad vead ükshaaval. Lõpus näitab server sama versiooni, mis on registris. Viimases osas käivitad sama konveieri Jenkinsis.
 
@@ -200,7 +200,7 @@ Repositoorium on privaatne, seega näevad märki ainult need, kellel on reposito
 
 ## Osa 3 · Viga 2: katkine kood jõuab registrisse
 
-Konveier on nüüd roheline. Kontrolli, kas registrisse jõuab ainult testitud kood. Kolleeg muudab tervitust ja ei käivita teste.
+Konveier on nüüd roheline. Kontrolli, kas registrisse jõuab ainult testitud kood. Muuda tervitust ja ära käivita teste.
 
 **Ülesanne**
 

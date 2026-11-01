@@ -12,7 +12,7 @@ tags:
 
 N7-s kontrollis GitHub Actions iga muudatust. Konveier käivitas testid ja ehitas image'i. Kui käivitus lõppes, kadus image koos runneriga. Täna jõuab image registrisse ja sealt serverisse.
 
-Praktikumis saad konveieri, mille kolleeg on juba kirjutanud. Selles on vead. Loengus on need mõisted, mida vigade leidmiseks vaja läheb.
+Praktikumis parandad konveierit, milles on vead. Loengus on mõisted, mida vigade leidmiseks vaja läheb.
 
 ??? abstract "Õpiväljundid"
     Pärast loengut ja praktikumi oskad:

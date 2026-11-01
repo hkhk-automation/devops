@@ -9,7 +9,7 @@ tags:
 
 # Kodutöö: oma failid konveierisse
 
-Praktikumis said konveieri, mille kolleeg oli kirjutanud. Kodutöös paned konveierisse oma failid: `Dockerfile` N5-st, Compose'i faili N6-st ja Ansible'i playbook'i N4-st. Reeglid on samad mis praktikumis:
+Praktikumis parandasid valmis konveierit. Kodutöös paned konveierisse oma failid: `Dockerfile` N5-st, Compose'i faili N6-st ja Ansible'i playbook'i N4-st. Reeglid on samad mis praktikumis:
 
 - registrisse kirjutab ainult töö, millel on `permissions: packages: write`;
 - image ehitatakse alles pärast kontrolli (`needs`);
@@ -213,7 +213,7 @@ Kui konveieri töö `ansible` kontrollib ka faili `paigalda.yml`, lisa sinna sam
 
 ## Lisaülesanne · Väljalase tag'iga
 
-**Väljalase** (release) on versioon, mille inimene märgib, näiteks `v1.0.0`. Git'is tehakse see tag'iga ([Git'i tag'id](https://git-scm.com/book/en/v2/Git-Basics-Tagging)). Starteri failis `kodutoo/release.yml` on kolleegi töövoog, mis peaks väljalaske ehitama. Selles on kolm viga.
+**Väljalase** (release) on versioon, mille inimene märgib, näiteks `v1.0.0`. Git'is tehakse see tag'iga ([Git'i tag'id](https://git-scm.com/book/en/v2/Git-Basics-Tagging)). Starteri failis `kodutoo/release.yml` on töövoog, mis peaks väljalaske ehitama. Selles on kolm viga.
 
 Kopeeri fail õigesse kausta ja saada GitHubi. Siis märgi viimane commit versiooniks:
 
