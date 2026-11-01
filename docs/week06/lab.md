@@ -7,7 +7,7 @@ tags:
 
 # Praktikum: Docker Compose
 
-Täna paned kokku kolme teenusega stacki (Flask, PostgreSQL ja nginx) ühe teenuse kaupa. Töö käib sinu AlmaLinuxi VM-is, kuhu paigaldasid Dockeri [N5 praktikumi osas 0](../week05/lab.md#osa-0-docker-vm-i-peale); `localhost` tähendab seda VM-i.
+Täna paned kokku kolme teenusega stacki (Flask, PostgreSQL ja nginx) ühe teenuse kaupa. Töö käib sinu AlmaLinuxi VM-is, kuhu paigaldasid Dockeri [N5 praktikumi osas 0](../week05/lab.md#osa-0-dockeri-paigaldamine-virtuaalmasinasse); `localhost` tähendab seda VM-i.
 
 **Edenemine:** laboritahvel <http://192.168.125.187:8091/> (VPN-iga).
 

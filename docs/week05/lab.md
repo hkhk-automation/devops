@@ -13,13 +13,13 @@ Täna ehitad Dockeriga image'i, käivitad sellest konteinereid, saadad image'i D
 
 ??? abstract "Õpiväljundid"
 
-    Praktikumi lõpuks sa:
+    Praktikumi lõpuks oskad:
 
-    1. Ehitad töötava image'i ja käivitad konteineri ilma juhendisse vaatamata
-    2. Leiad tüüpiliste Dockeri vigade põhjuse veateate järgi
-    3. Selgitad, miks uus build ei uuenda töötavat konteinerit, ja parandad olukorra
-    4. Kasutad vigade otsimiseks `docker ps` ja `docker logs` väljundit
-    5. Taastad puhta oleku pärast vigu
+    1. ehitada töötava image'i ja käivitada konteineri ilma juhendisse vaatamata;
+    2. leida tüüpiliste Dockeri vigade põhjuse veateate järgi;
+    3. selgitada, miks image'i uuesti ehitamine ei uuenda töötavat konteinerit, ja olukorra parandada;
+    4. kasutada vigade otsimiseks käskude `docker ps` ja `docker logs` väljundit;
+    5. eemaldada katsete käigus loodud konteinerid ja taastada lähteolukorra.
 
 <figure markdown="span">
   ![Sinu arvutist SSH ja brauser Alma VM 1-sse, kus Docker käitab konteinereid web1 8080, web2 8081, turve, flask1 5000, multistage 8084, bind 8083 ja volume'i andmed; image läheb push'iga Docker Hubi ja sealt pull'iga Alma VM 2-sse, kus Podman käitab sama image'i](../images/n05_labi_ylevaade.svg)
@@ -28,7 +28,7 @@ Täna ehitad Dockeriga image'i, käivitad sellest konteinereid, saadad image'i D
 
 Rida **Ennusta** tähendab, et enne käsku mõtled läbi, mis juhtub. Vastus on kokkuvolditud plokis.
 
-## Osa 0 · Docker VM-i peale
+## Osa 0 · Dockeri paigaldamine virtuaalmasinasse
 
 Osa lõpuks: `docker run --rm hello-world` näitab `Hello from Docker!`.
 
@@ -45,7 +45,7 @@ sudo systemctl enable --now docker
 sudo usermod -aG docker $USER
 ```
 
-Logi välja ja SSH-ga uuesti sisse: grupi muudatus hakkab kehtima alles uues sessioonis. Kontrolli:
+Logi välja ja SSH-ga uuesti sisse: rühma muudatus hakkab kehtima alles uues sisselogimisseansis. Kontrolli:
 
 ```bash
 docker version
@@ -66,7 +66,7 @@ ls -l /var/run/docker.sock
 ```
 
 ??? question "Leia põhjus"
-    Miks näitab `docker version` kahte versiooni? Kellele kuulub `docker.sock` ja millisele grupile? Seosta vastus [loengu joonisega Dockeri arhitektuurist](lecture.md#3-kuidas-docker-sees-tootab): miks annab `usermod -aG docker` sisuliselt root-õigused?
+    Miks näitab `docker version` kahte versiooni? Millisele kasutajale ja rühmale kuulub `docker.sock`? Seosta vastus [loengu joonisega Dockeri arhitektuurist](lecture.md#3-kuidas-docker-sees-tootab): miks annab `usermod -aG docker` sisuliselt root-õigused?
 
 ??? tip "Tee sama Ansible'iga"
     Sama saab teha playbook'iga: Dockeri repositooriumi jaoks `yum_repository` või `get_url`, pakettide jaoks moodul `dnf`, moodul `user` parameetritega `groups: docker, append: true` ja moodul `service` parameetritega `state: started, enabled: true`. Nii saad Dockeri igasse serverisse ühe käsuga: Ansible haldab serverit, Docker rakendust.
@@ -80,7 +80,7 @@ Osa lõpuks: VS Code'i vasakul ribal on konteinerite ikoon ja seal on näha imag
 
 1. VS Code'is on sul juba laiendus **Remote - SSH** (N1). Ühenda VM-iga (`F1` → *Remote-SSH: Connect to Host*).
 2. VM-iga ühendatud aknas ava Extensions ja paigalda [Container Tools](https://code.visualstudio.com/docs/containers/overview) (`ms-azuretools.vscode-containers`, Microsoft; varem kandis nime "Docker"). Vajuta *Install in SSH: ...*, sest laiendus peab töötama VM-is, kus on Docker.
-3. Vasakule ribale tekib konteinerite ikoon. Seal näed image'eid ja konteinereid, saad vaadata logisid (*View Logs*), minna konteineri sisse (*Attach Shell*), konteinereid peatada ja kustutada. `Dockerfile`-is pakub laiendus automaatset lõpetamist ja märgib vead.
+3. Vasakule ribale tekib konteinerite ikoon. Seal näed image'eid ja konteinereid, saad vaadata logisid (*View Logs*), minna konteineri sisse (*Attach Shell*), konteinereid peatada ja kustutada. `Dockerfile`-is pakub laiendus kooditäiendusi ja märgib vead.
 
 Kui laiendus näitab viga `permission denied`, on põhjus sama mis eespool: VS Code'i SSH-sessioon algas enne `usermod`-i. Vali `F1` → *Remote-SSH: Kill VS Code Server on Host* ja ühenda uuesti.
 
@@ -92,7 +92,7 @@ Osa lõpuks: `docker login` ütleb `Login Succeeded`.
 
 Docker Hub on image'ide hoidla, kust tulevad `ubuntu`, `nginx` ja `python` ning kuhu laadid osas 9 üles oma image'i.
 
-1. Ava [Docker Hubi registreerimisleht](https://hub.docker.com/signup). Vali tasuta *Personal* konto. Kirjuta kasutajanimi väikeste tähtedega, see tuleb image'i nimesse (`kasutaja/minu-nginx`).
+1. Ava [Docker Hubi registreerimisleht](https://hub.docker.com/signup). Vali tasuta *Personal* konto. Kirjuta kasutajanimi väiketähtedega, see tuleb image'i nimesse (`kasutaja/minu-nginx`).
 2. Docker Hubis vali: profiil → **Account settings → Personal access tokens → Generate new token**. Nimeks pane `alma-vm`, õigusteks **Read & Write**. Kopeeri token kohe, seda näidatakse ainult üks kord.
 3. Logi VM-is sisse tokeniga (parooli asemel):
 
@@ -140,7 +140,7 @@ Mine konteinerisse interaktiivselt:
 docker run -it --rm ubuntu:24.04 bash
 ```
 
-Oled nüüd konteineris (käsurea viip muutus). Proovi:
+Oled nüüd konteineris (käsuviip muutus). Proovi:
 
 ```bash
 cat /etc/os-release
@@ -162,7 +162,7 @@ docker ps -a
 
 ## Osa 1 · Alus: töötav image
 
-Osa lõpuks: `curl localhost:8080` näitab nginx-i tervituslehte.
+Osa lõpuks: `curl localhost:8080` näitab nginx'i tervituslehte.
 
 Klooni oma Classroom 50 repositoorium (`lab-05-...`), loo haru ja kaustad:
 
@@ -172,7 +172,7 @@ git switch -c n05-docker
 mkdir -p nginx logid && cd nginx
 ```
 
-Kõik nginx-i failid tulevad kausta `nginx/`.
+Kõik nginx'i failid tulevad kausta `nginx/`.
 
 Loo fail `Dockerfile` (täpselt selle nimega). Edaspidi lisad sellele ridu ükshaaval. Kõik Dockerfile'i käsud on kirjas [Dockerfile'i juhendis](https://docs.docker.com/reference/dockerfile/).
 
@@ -190,14 +190,14 @@ docker run -d -p 8080:80 --name web1 minu-nginx
 curl localhost:8080
 ```
 
-`curl` näitab nginx-i tervituslehte. Kui ei näita, paranda see enne edasiminekut.
+`curl` näitab nginx'i tervituslehte. Kui ei näita, paranda see enne edasiminekut.
 
 ??? warning "Kui `curl` annab vea `Connection refused`"
     Kontrolli `docker ps`. Kui `web1` seal pole, näitab `docker logs web1`, miks. Kui konteiner töötab, vaata, kas käsus oli `-p 8080:80`.
 
 ## Osa 2 · Viga ja selle põhjus
 
-Osa lõpuks: build läbib, sest Dockerfile'is on `-y`.
+Osa lõpuks: image'i ehitamine õnnestub, sest Dockerfile'is on `-y`.
 
 Nüüd teed meelega levinud vea. Lisa paigaldusse teine pakett (`curl`), aga jäta `-y` teadlikult ära. Muuda keskmine rida selliseks:
 
@@ -214,7 +214,7 @@ docker build -t minu-nginx .
 apt küsib `Do you want to continue? [Y/n]`, katkestab (`Abort.`) ja build lõpeb veaga `exit code: 1`.
 
 ??? question "Leia põhjus enne parandamist"
-    Miks töötab sama `apt install nginx curl` sinu enda terminalis, aga Dockeri build'is mitte? Mis vahe on interaktiivsel terminalil ja build-keskkonnal?
+    Miks töötab sama `apt install nginx curl` sinu enda terminalis, aga image'i ehitamisel mitte? Mis vahe on interaktiivsel terminalil ja ehituskeskkonnal?
 
 Paranda: pane `-y` tagasi. `-y` vastab kõigile küsimustele jah, sest build-keskkonnas pole kedagi, kes vastaks:
 
@@ -234,7 +234,7 @@ Nüüd build õnnestub. Dockerfile'is kasuta `apt install` käsuga alati `-y`.
 
 Osa lõpuks: uus image on ehitatud (leht on veel vana, see on meelega nii).
 
-Praegu näitab nginx vaikimisi lehte. Pane sinna oma leht: loo kausta `nginx/` fail `index.html`:
+Praegu näitab nginx vaikimisi lehte. Asenda see oma lehega: loo kausta `nginx/` fail `index.html`:
 
 ```html
 <h1>Versioon 1</h1>
@@ -258,7 +258,7 @@ curl localhost:8080
 ??? success "Oodatav tulemus"
     `curl` näitab ikka vana lehte. Põhjuse leiad osas 4.
 
-## Osa 4 · Uus build ei uuenda konteinerit
+## Osa 4 · Image'i uuesti ehitamine ei uuenda konteinerit
 
 Osa lõpuks: `curl localhost:8080` näitab `Versioon 1`.
 
@@ -272,7 +272,7 @@ docker images
 `docker ps` näitab, et `web1` töötab. `docker images` näitab, et `minu-nginx` on äsja ehitatud (vaata veergu `CREATED`).
 
 ??? question "Leia põhjus"
-    `web1` käivitati 1. osas vanast image'ist. `docker build` tegi uue image'i, aga töötavat konteinerit see ei muutnud. Konteiner jääb selle image'i külge, millest see käivitati. Miks Docker konteinerit automaatselt ei uuenda? (Vihje: mis juhtuks tootmises, kui katkine image uuendaks kõik konteinerid ise?)
+    `web1` käivitati 1. osas vanast image'ist. `docker build` tegi uue image'i, aga töötavat konteinerit see ei muutnud. Image'i uuesti ehitamine ei muuda olemasolevat konteinerit. Uue image'i kasutamiseks tuleb luua uus konteiner. Miks Docker konteinerit automaatselt ei uuenda? (Vihje: mis juhtuks tootmises, kui katkine image uuendaks kõik konteinerid ise?)
 
 Paranda olukord: peata ja kustuta vana konteiner ning käivita uus.
 
@@ -306,7 +306,7 @@ sequenceDiagram
 
 Osa lõpuks: kaks konteinerit töötavad portidel `8080` ja `8081`, tõend on failis `logid/docker-ps.txt`.
 
-Proovi käivitada teine konteiner samast image'ist, sama pordiga:
+Proovi käivitada teine konteiner samast image'ist sama hostipordiga:
 
 ```bash
 docker run -d -p 8080:80 --name web2 minu-nginx
@@ -317,9 +317,11 @@ Saad vea `port is already allocated`.
 ??? question "Leia põhjus"
     `web1` kasutab juba porti 8080. Kaks konteinerit ei saa kasutada sama hosti porti. Mis on lahendus, kui tahad, et mõlemad töötaksid korraga? (Vihje: kumb number `-p X:80` sees on hosti port?)
 
-Paranda: anna `web2`-le teine hosti port:
+Ebaõnnestunud katse lõi konteineri `web2`, aga ei käivitanud seda. Käsk `docker ps -a` näitab seda olekus `Created`. Kustuta see ja anna `web2`-le teine hosti port:
 
 ```bash
+docker ps -a
+docker rm web2
 docker run -d -p 8081:80 --name web2 minu-nginx
 curl localhost:8081
 ```
@@ -363,7 +365,7 @@ docker logs web3
 ```
 
 ??? question "Leia põhjus"
-    Ilma `daemon off;` läheb nginx taustale ja põhiprotsess (PID 1) lõpeb kohe. Konteiner töötab täpselt nii kaua kui selle põhiprotsess. Protsess lõppes, seega lõppes ka konteiner. Mida teeb `daemon off;`, et konteiner jääks tööle?
+    Ilma `daemon off;` läheb nginx taustale ja põhiprotsess (PID 1) lõpeb kohe. Konteiner töötab täpselt nii kaua kui selle põhiprotsess. Kui konteineri põhiprotsess lõpetab töö, peatub ka konteiner. Mida teeb `daemon off;`, et konteiner jääks tööle?
 
 <figure markdown="span">
 ```mermaid
@@ -429,11 +431,11 @@ docker image prune -f   # eemaldab varasematest build'idest jäänud nimeta (<no
 ??? warning "Kui `docker rmi` annab vea `image is being used`"
     Sellest image'ist käivitatud konteiner on veel olemas (ka peatatuna). Vaata `docker ps -a`, eemalda konteiner käsuga `docker rm <nimi>` ja proovi uuesti.
 
-## Osa 8 · Seadistatav ja mitte-root image
+## Osa 8 · Seadistatav image tavakasutajaga
 
 Osa lõpuks: väljundis on `olen appuser`, tõend on failis `logid/turve.txt`.
 
-Loo uus kaust, et see ei läheks nginx-i failidega segamini:
+Loo uus kaust, et see ei läheks nginx'i failidega segamini:
 
 ```bash
 cd .. && mkdir turve && cd turve
@@ -478,11 +480,11 @@ Kustuta image ja mine tagasi repositooriumi juurkausta:
 docker rmi turve && cd ..
 ```
 
-## Osa 9 · Avalda oma image Docker Hubi
+## Osa 9 · Avalda oma image Docker Hubis
 
 Osa lõpuks: sinu image on Docker Hubis näha ja `docker run kasutaja/minu-nginx:v1` töötab.
 
-Ehita nginx-i image uuesti (osas 7 kustutasid selle) ja anna sellele Docker Hubi nimi koos tag'iga:
+Ehita nginx'i image uuesti (osas 7 kustutasid selle) ja anna sellele Docker Hubi nimi koos tag'iga:
 
 ```bash
 cd nginx
@@ -498,17 +500,17 @@ Ava `https://hub.docker.com/r/<kasutaja>/minu-nginx`: image on avalik ja tag `v1
     Image'i nimes pole sinu Docker Hubi kasutajanime või sa pole sisse loginud. Kontrolli nime (`docker images`), vajaduse korral tee uuesti `docker tag minu-nginx <kasutaja>/minu-nginx:v1` ja `docker login`.
 
 ??? info "Docker Hub pole ainus koht"
-    Registry on server, kus hoitakse image'eid. Docker Hub on vaikimisi valik, aga `tag` ja `push` töötavad kõigiga ühtemoodi, muutub ainult nime algus:
+    **Register** (registry) on server, kus hoitakse image'eid. Docker Hub on vaikimisi valik, aga `tag` ja `push` töötavad kõigiga ühtemoodi, muutub ainult nime algus:
 
-    | Registry | Nimi | Kus kasutatakse |
+    | Register | Nimi | Kus kasutatakse |
     |---|---|---|
     | Docker Hub | `docker.io/kasutaja/app:v1` (lühidalt `kasutaja/app:v1`) | Avalikud image'id, vaikimisi valik |
     | GitHub Container Registry | `ghcr.io/kasutaja/app:v1` | Kood GitHubis, CI GitHub Actionsis |
     | Quay.io (Red Hat) | `quay.io/kasutaja/app:v1` | RHEL-i ja OpenShifti keskkonnad |
-    | Pilve registry'd | AWS ECR, Azure ACR, Google Artifact Registry | Ettevõte rakendused pilves |
-    | Oma registry | `registry.firma.ee/app:v1` (`registry:2`, Harbor, GitLab) | Sisevõrk, privaatsed image'id |
+    | Pilveteenuste registrid | AWS ECR, Azure ACR, Google Artifact Registry | Ettevõtte rakendused pilves |
+    | Oma register | `registry.firma.ee/app:v1` (`registry:2`, Harbor, GitLab) | Sisevõrk, privaatsed image'id |
 
-    Ettevõtted hoiavad oma image'eid tavaliselt privaatses registry's, mitte avalikus Docker Hubis. Sama image'i `ghcr.io`-sse laadimine on lisaülesanne D.
+    Ettevõtted hoiavad oma image'eid tavaliselt privaatses registris, mitte avalikus Docker Hubis. Sama image'i `ghcr.io`-sse laadimine on lisaülesanne D.
 
 Kontrolli, et image töötab ka mujal: kustuta kohalik koopia ja tõmba image tagasi:
 
@@ -528,7 +530,7 @@ cd ..
 
 Osa lõpuks: `curl localhost:5000` näitab `Tere konteinerist!`.
 
-Seni pakkisid valmis nginx-i. Nüüd pakid oma koodi. Loo repositooriumi juurkausta kaust `flask`:
+Seni pakkisid valmis nginx'i. Nüüd pakid image'isse oma rakenduse koodi. Loo repositooriumi juurkausta kaust `flask`:
 
 ```bash
 mkdir flask && cd flask
@@ -613,11 +615,11 @@ docker stop flask1 && docker rm flask1
 cd ..
 ```
 
-## Osa 12 · Multi-stage build: väike lõppimage
+## Osa 12 · Mitmeetapiline ehitamine (multi-stage build): väike lõppimage
 
 Osa lõpuks: `curl localhost:8084` näitab sinu `leht.md` sisu ja image on väiksem kui 100 MB.
 
-Lehe ehitamiseks on vaja tööriistu (Python ja teegid), aga lehe serveerimiseks ainult nginx-i. Tootmise image'is pole Pythonit vaja.
+Lehe ehitamiseks on vaja tööriistu (Python ja teegid), aga lehe serveerimiseks ainult nginx'i. Tootmise image'is pole Pythonit vaja.
 
 ```bash
 mkdir multistage && cd multistage
@@ -628,10 +630,10 @@ mkdir multistage && cd multistage
 ```markdown
 # Minu multi-stage leht
 
-See leht ehitati Pythoni konteineris, aga serveerib nginx.
+See leht ehitati Pythoni konteineris, aga seda serveerib nginx.
 ```
 
-Dockerfile'is on kaks etappi. Esimene teeb Pythoniga Markdownist HTML-i, teine kopeerib valmis faili nginx-i image'isse:
+Dockerfile'is on kaks etappi. Esimene teeb Pythoniga Markdownist HTML-i, teine kopeerib valmis faili nginx'i image'isse:
 
 ??? example "Fail `Dockerfile`"
 
@@ -669,7 +671,7 @@ cd ..
 
 Osa lõpuks: kui muudad faili VM-is, muutub leht kohe; failis `logid/volume.txt` on kaks rida.
 
-Konteiner on ajutine, kirjutatav kiht kaob `rm`-iga. Andmete alleshoidmiseks on kaks viisi.
+Konteiner on ajutine: selle kirjutatav kiht kustutatakse koos konteineriga. Andmete alleshoidmiseks on kaks viisi.
 
 **Bind mount**: VM-i kaust ühendatakse otse konteinerisse (arenduses: muudad faili ja leht muutub kohe, uut build'i pole vaja):
 
@@ -755,9 +757,9 @@ Viimane käsk annab vea `rootlessport cannot expose privileged port 80`.
     1. Miks pole Podmanil deemonit ja mida see tähendab, kui konteineri protsess lõpetab veaga töö?
     2. `podman top` näitas konteineris kasutajat `root`, hostis aga sinu kasutajat. Mis on rootless ja miks on see turvalisem kui Dockeri `docker` grupp?
     3. Miks ei saa tavakasutaja kasutada porti 80, aga porti 8080 saab? Kuidas Docker seda lubas?
-    4. Miks küsis Podman registry't, aga Docker mitte?
+    4. Miks küsis Podman registrit, aga Docker mitte?
 
-Kopeeri tõend esimesse VM-i (kus on sinu repo):
+Kopeeri tõend esimesse VM-i (kus asub sinu repositoorium):
 
 ```bash
 exit                                       # tagasi esimesse VM-i
@@ -769,7 +771,7 @@ scp <teine-vm>:podman-ps.txt logid/podman.txt
 
 ??? note "Kontrollnimekiri"
 
-    - [ ] Ehitad töötava nginx-i image'i nullist, mälu järgi
+    - [ ] Ehitad töötava nginx'i image'i nullist, mälu järgi
     - [ ] Selgitad, miks vajab `apt install` Dockerfile'is `-y`-d
     - [ ] Kui uus build ei muuda töötavat konteinerit, tead, et vaja on `stop`, `rm` ja `run`
     - [ ] `port is already allocated`: tead põhjust ja lahendust
@@ -777,7 +779,7 @@ scp <teine-vm>:podman-ps.txt logid/podman.txt
     - [ ] Oskad teha `docker ps -a` tühjaks
     - [ ] Selgitad, miks konteineris on sama `uname -r` kui VM-is
     - [ ] Kasutad konkreetset tag'i (`ubuntu:24.04`) ja tead, miks `latest` ei sobi
-    - [ ] Oskad panna image'i töötama mitte-root kasutajana (`USER`)
+    - [ ] Oskad panna image'i töötama tavakasutajana (`USER`)
     - [ ] Flask vastab konteineris ja tead, miks `127.0.0.1` ei tööta
     - [ ] Dockerfile'is on harva muutuvad read üleval ja tihti muutuvad all
     - [ ] Multi-stage: ehitustööriistad ei jõua lõppimage'isse
@@ -787,7 +789,14 @@ scp <teine-vm>:podman-ps.txt logid/podman.txt
 
 ## Töö esitamine
 
-Töö on harus `n05-docker`. Kirjuta repositooriumi `README.md`-sse vastused (vähemalt 150 sõna): miks on `uname -r` konteineris ja VM-is sama (osa 0.3), miks uus build ei uuendanud `web1`-te (osa 4), miks konteiner lõpetas töö ilma `daemon off;`-ta (osa 6), miks Flask vajas `0.0.0.0` (osa 10), miks `bind` andis vea 403 (osa 13) ning kaks erinevust Dockeri ja Podmani vahel, mida ise nägid (osa 14).
+Töö on harus `n05-docker`. Kirjuta repositooriumi faili `README.md` vähemalt 150 sõna pikkune selgitus, milles vastad järgmistele küsimustele:
+
+1. Miks on käsu `uname -r` väljund konteineris ja virtuaalmasinas sama (osa 0.3)?
+2. Miks image'i uuesti ehitamine ei uuendanud konteinerit `web1` (osa 4)?
+3. Miks lõpetas konteiner töö, kui `daemon off;` puudus (osa 6)?
+4. Miks vajas Flask aadressi `0.0.0.0` (osa 10)?
+5. Miks andis bind mount'iga katse vastuse `403` (osa 13)?
+6. Milliseid kahte erinevust Dockeri ja Podmani vahel ise märkasid (osa 14)?
 
 ```bash
 git add . && git commit -m "N5 Docker lab" && git push -u origin n05-docker
@@ -798,7 +807,7 @@ Ava pull request harusse `main` ja liida see (**Merge**). Tulemuse näed Classro
 ??? note "Failid repositooriumis"
     ```text
     lab05/
-    ├── README.md            # vastused praktikumi ??? küsimustele (min 150 sõna)
+    ├── README.md            # vastused esitamise küsimustele (min 150 sõna)
     ├── nginx/
     │   ├── Dockerfile       # lõppseis: ubuntu:24.04, -y, daemon off;
     │   └── index.html
@@ -823,10 +832,10 @@ Ava pull request harusse `main` ja liida see (**Merge**). Tulemuse näed Classro
 ## Lisaülesanded
 
 ??? example "A · `docker exec`"
-    Mine töötava `web1` sisse (`docker exec -it web1 bash`) ja muuda käsitsi faili `/var/www/html/index.html`. Tee `docker stop web1` ja `docker start web1`. Kas muudatus säilis? Aga pärast `rm` ja `run`? Selgita vahet.
+    Käivita oma nginx'i image'ist uuesti konteiner `web1` (`docker run -d -p 8080:80 --name web1 minu-nginx`). Mine selle sisse (`docker exec -it web1 bash`) ja muuda käsitsi faili `/var/www/html/index.html`. Tee `docker stop web1` ja `docker start web1`. Kas muudatus säilis? Aga pärast `rm` ja `run`? Selgita vahet.
 
 ??? example "B · `--no-cache`"
-    Ehita käsuga `docker build --no-cache -t minu-nginx .`. Miks on see aeglasem? Millal seda vaja on?
+    Liigu kausta `nginx/` ja ehita image ilma vahemäluta: `docker build --no-cache -t minu-nginx .`. Miks on see aeglasem? Millal seda vaja on?
 
 ??? example "C · Image failina teise VM-i"
     Tee `docker tag minu-nginx minu-nginx:v1` ja vaata `docker images` (kas IMAGE ID on sama?). Seejärel salvesta image failiks käsuga `docker save -o nginx.tar minu-nginx:v1`, kopeeri fail `scp`-ga oma teise Alma VM-i (osa 14) ja laadi see seal käsuga `podman load -i nginx.tar`. Käivita konteiner. Osas 9 tegid sama Docker Hubi kaudu, see on failipõhine variant suletud võrgu jaoks.
