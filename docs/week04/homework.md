@@ -7,15 +7,13 @@ tags:
 
 # Kodutöö: dev ja prod keskkonnad
 
-**Eeldused:** N4 praktikum tehtud: `bash kontroll.sh` testid 1–6 on läbitud.
+Praktikumis kehtisid muutujad kõigile hostidele ühtemoodi (`group_vars/all/`). Töökohas on dev ja prod erinevad: dev-serveril on debug-info nähtav, prod-serveril mitte. Selles kodutöös tekitad selle erinevuse ainult muutujatega, `nginx.yml`-i muutmata. Kodutöö on boonus.
 
-## Ülesanne
+Kasutad kahte ülejäänud sõlme: `proxmox2` on dev ja `proxmox3` on prod.
 
-Praegu kehtivad muutujad kõigile hostidele ühtemoodi (`group_vars/all/`). Töökohas on dev ja prod erinevad, dev-serveril on debug-info nähtav, prod-serveril mitte. Tekita see erinevus ainult muutujatega, `nginx.yml`-i puutumata.
+## Osa 1 · Grupid inventory's
 
-Kasutad oma kahte ülejäänud sõlme: `proxmox2` = dev, `proxmox3` = prod.
-
-**Samm 1, inventory: grupid grupi sees**
+Lisa inventory'sse grupid `dev` ja `prod` ning tee need grupi `web` alamgruppideks:
 
 ```ini
 [web]
@@ -32,20 +30,23 @@ dev
 prod
 ```
 
-`[web:children]` teeb `dev` ja `prod` grupi `web` alamgruppideks (vanem-laps, N3 loeng). Playbooki `hosts: web` jõuab nüüd kõigi kolmeni, playbooki ei muuda.
+`[web:children]` teeb grupid `dev` ja `prod` grupi `web` alamgruppideks. Playbooki rida `hosts: web` hõlmab nüüd kõiki kolme sõlme ja playbooki muuta pole vaja.
 
-**Samm 2, vaikeväärtused kõigile**
+??? warning "Kui tuleb `no hosts matched`"
+    Kontrolli, et `[web:children]` all on grupinimed (`dev`), mitte hostinimed (`proxmox2`).
 
-Lisa `group_vars/all/main.yml`-i:
+## Osa 2 · Vaikeväärtused kõigile
+
+Lisa `group_vars/all/main.yml`-i väärtused, mis kehtivad, kui grupp neid üle ei kirjuta:
 
 ```yaml
 keskkond_nimi: LABOR
 naita_debug: false
 ```
 
-**Samm 3, grupi-spetsiifilised muutujad**
+## Osa 3 · Grupi muutujad
 
-`group_vars/dev.yml`:
+Loo kummalegi grupile oma fail. `group_vars/dev.yml`:
 
 ```yaml
 keskkond_nimi: ARENDUS
@@ -59,12 +60,11 @@ keskkond_nimi: PRODUKTSIOON
 naita_debug: false
 ```
 
-!!! tip
-    Muutujate nimedes ainult ladina tähed, numbrid ja `_`: mitte `ä`, `õ`, `ü`. Ansible ei pruugi neid muutujanimena aktsepteerida.
+Muutujate nimedes kasuta ainult ladina tähti, numbreid ja alakriipsu `_`. Täpitähti Ansible muutuja nimes ei luba.
 
-**Samm 4, mall**
+## Osa 4 · Mall
 
-Lisa `templates/index.html.j2`-sse:
+Lisa `templates/index.html.j2`-sse keskkonna nimi ja debug-rida, mis on lehel ainult siis, kui `naita_debug` on tõene:
 
 ```html
 <p>Keskkond: {{ keskkond_nimi }}</p>
@@ -73,7 +73,9 @@ Lisa `templates/index.html.j2`-sse:
 {% endif %}
 ```
 
-**Samm 5, käivita ja salvesta tõendid**
+## Osa 5 · Käivitamine ja tõendid
+
+Käivita playbook ja salvesta mõlema sõlme leht:
 
 ```bash
 ansible-playbook -i inventory.ini nginx.yml --vault-password-file .vault_pass
@@ -81,27 +83,28 @@ ssh proxmox2 "curl -s localhost" > logid/dev.html
 ssh proxmox3 "curl -s localhost" > logid/prod.html
 ```
 
-`dev.html` näitab ARENDUS + debug-rida, `prod.html` PRODUKTSIOON ilma debug'ita, `proxmox1` LABOR.
+??? success "Oodatav tulemus"
+    `dev.html` näitab keskkonda ARENDUS ja debug-rida, `prod.html` näitab PRODUKTSIOON ilma debug-reata ja `proxmox1` näitab LABOR.
 
-??? question "Mõtle"
-    `proxmox2` kuulub nii gruppi `all` (LABOR) kui `dev` (ARENDUS). Miks võitis ARENDUS? Mis juhtuks, kui lisaksid `host_vars/proxmox2.yml` kolmanda väärtusega?
+??? question "Kontrolli ennast"
+    1. `proxmox2` kuulub nii gruppi `all` (LABOR) kui ka `dev` (ARENDUS). Miks kehtib ARENDUS? Mis juhtuks, kui lisaksid faili `host_vars/proxmox2.yml` kolmanda väärtusega?
+    2. Kolm serverit, üks playbook ja üks mall. Kus peaks keskkonnast sõltuv info Ansible'i projektis olema ja kus mitte?
 
-??? question "Mõtle"
-    Kolm serverit, üks playbook, üks mall. Kus peaks keskkonnaspetsiifiline info hea Ansible projekti struktuuris elama, ja kus mitte?
-
-??? warning "Kui tuleb `no hosts matched`"
-    Kontrolli, et `[web:children]` all on grupinimed (`dev`), mitte hostinimed (`proxmox2`).
-
-## Esitamine
-
-1. Käivita uuesti midagi muutmata ja uuenda praktikumi tõendid (`logid/play_recap.txt`, `leht.html`, `pais.txt`): `changed=0` kõigil kolmel sõlmel.
-2. `bash kontroll.sh`: kõik 7 testi on läbitud.
-3. Commit samasse haru `n04-vault`, push. Kui PR on veel avatud, uueneb see ise. Kui praktikumi PR on juba liidetud, ava samast harust uus PR `main` vastu.
-4. Liida PR `main`-i (**Merge**). Automaatkontroll hindab haru `main`, seega kodutöö läheb arvesse alles pärast merge'i.
+Lõpuks käivita playbook uuesti midagi muutmata ja uuenda praktikumi tõendid (`logid/play_recap.txt`, `leht.html`, `pais.txt`). Tulemus peab olema `changed=0` kõigil kolmel sõlmel ja `bash kontroll.sh` peab näitama kõiki 7 testi läbituna.
 
 ??? note "Kontrollnimekiri"
-    - [ ] `[web:children]` sisaldab `dev` ja `prod`
+    - [ ] `[web:children]` sisaldab gruppe `dev` ja `prod`
     - [ ] `group_vars/dev.yml` ja `group_vars/prod.yml` erinevad
-    - [ ] `logid/dev.html` → ARENDUS + debug, `logid/prod.html` → PRODUKTSIOON, debug'ita
+    - [ ] `logid/dev.html` näitab ARENDUS ja debug-rida, `logid/prod.html` näitab PRODUKTSIOON ilma debug-reata
     - [ ] `nginx.yml` jäi muutmata
-    - [ ] `bash kontroll.sh` kõik testid on läbitud
+    - [ ] `bash kontroll.sh` näitab kõiki teste läbituna
+
+## Töö esitamine
+
+Töö on harus `n04-vault`: tee commit ja saada see GitHubi. Kui praktikumi pull request on veel avatud, uueneb see ise; kui see on juba liidetud, ava samast harust uus pull request ja liida see harusse `main`.
+
+```bash
+git add -A && git commit -m "Kodutöö: dev ja prod keskkonnad" && git push
+```
+
+Faili `.vault_pass` repositooriumi ei panda. Tulemuse näed Classroom 50-s.

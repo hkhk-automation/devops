@@ -8,7 +8,7 @@ tags:
 
 Fail `ansible.cfg` sisaldab Ansible'i seadeid ja asub samas kaustas, kus on playbook. Kui käivitad Ansible'i sellest kaustast, loeb Ansible seaded sealt ise ja võtit `-i inventory.ini` ei pea iga käsu järele kirjutama.
 
-## Meie kursuse fail
+## Kursuse fail
 
 N3 ja N4 praktikumis piisab kahest reast. Fail läheb koos playbookiga Giti:
 
@@ -33,7 +33,7 @@ Ansible otsib konfiguratsioonifaili selles järjekorras:
 3. `~/.ansible.cfg` kodukaustas;
 4. `/etc/ansible/ansible.cfg`.
 
-Kasutatakse esimest leitud faili, teisi faile Ansible ei loe ega liida kokku. Üksiku seade saab muuta ka keskkonnamuutujaga, mille nimi on seade nimi suurtähtedega ja eesliitega `ANSIBLE_` (näiteks `ANSIBLE_GATHERING=explicit`). See kehtib faili väärtuse asemel.
+Kasutatakse esimest leitud faili, teisi faile Ansible ei loe ega liida kokku. Üksikut seadet saab muuta ka keskkonnamuutujaga, mille nimi on seade nimi suurtähtedega ja eesliitega `ANSIBLE_` (näiteks `ANSIBLE_GATHERING=explicit`). See kehtib faili väärtuse asemel.
 
 ## Kuidas kontrollida
 

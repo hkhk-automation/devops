@@ -13,7 +13,7 @@
     </marker>
   </defs>
 
-  <text x="450" y="32" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">copy vs template</text>
+  <text x="450" y="32" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">copy ja template</text>
 
   <!-- COPY -->
   <rect x="30" y="60" width="390" height="370" rx="14" fill="url(#cp)" stroke="#ffa726" stroke-width="2"/>

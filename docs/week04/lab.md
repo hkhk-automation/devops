@@ -3,58 +3,47 @@ tags:
   - Ansible
   - Jinja2
   - Turvalisus
+  - Praktikum
 ---
 
 # Praktikum: muutujad, Jinja2 ja Vault
 
-**Eeldused:** Loeng loetud (välisfailid, Jinja2, handlers, Vault). N3 praktikum tehtud, töötav `nginx.yml` (`package` + `service` + `copy`). Kui midagi on ebaselge, loe [loeng](lecture.md) üle.
+Täna ehitad N3 playbook'i edasi: väärtused lähevad muutujatesse, leht tehakse mallist, parool läheb krüpteeritud faili ja lõpus lisad ise teise teenuse. Kontroll-node on sinu arvuti (kodus sobib ka WSL2 või virtuaalmasin), sihtmärk on `proxmox1` ja mõisted on [loengus](lecture.md).
 
-**Kontroll-node:** sinu arvuti, kogu töö VS Code'is.
-**Sihtmärk:** `proxmox1` (nagu N3). Kodus sobib ka WSL2/VM.
+**Edenemine:** laboritahvel <http://192.168.125.187:8091/> (VPN-iga).
 
 ??? abstract "Õpiväljundid"
 
     Selle praktikumi lõpuks sa:
 
     1. Tõstad kõvakodeeritud väärtused `group_vars`-i
-    2. Kirjutad Jinja2 malli ja tead, miks `template:` ≠ `copy:`
-    3. Paned handleri teenust uuesti laadima ainult siis, kui config muutus
+    2. Kirjutad Jinja2 malli ja tead, miks moodul `copy` seda ei töötle
+    3. Paned handleri teenust uuesti laadima ainult siis, kui konfiguratsioonifail muutus
     4. Krüpteerid saladuse Vault'iga ja käivitad playbooki sellega
     5. Leiad veateate järgi vigade põhjuse (jutumärgid, undefined variable, mall ei asendu, no vault secrets)
     6. Ennustad enne käivitamist, mis muutub (`--check --diff`), ja selgitad, miks handler mõnikord ei käivitu
-    7. Lisad ise uue teenuse (pakett + mall + teenus + handler) ilma samm-sammulise juhiseta
-    8. Leiad vea põhjuse ainult veateate ja tööriistade abil
-    9. Leiad Ansible'i ametlikust dokumentatsioonist mooduli, parameetri, lubatud väärtused ja näite
-    10. Praktiseerid Gitti: töötad harul, teed mõttekaid commit'e, võtad muudatuse `git revert`-iga tagasi ja teed paarilise PR-ile review'd
+    7. Lisad ise uue teenuse (pakett, mall, teenus ja handler) ilma samm-sammulise juhiseta
+    8. Leiad Ansible'i ametlikust dokumentatsioonist mooduli, parameetri, lubatud väärtused ja näite
+    9. Kasutad Giti: töötad harul, teed sisukaid commit'e, võtad muudatuse `git revert`-iga tagasi ja vaatad üle paarilise pull request'i
 
-!!! example "Näidisstsenaarium: Märten, kolmas vaatus"
-    Märteni nginx töötab nüüd Ansible'iga, aga playbookis on kõik kõvasti kirjas: paketi nimi, lehe tekst, päise väärtus. Sõlmi tuleb juurde ja igaühel peab olema oma leht. Lisaks tahab Märten, et rakenduse andmebaasi parool oleks samas repos kui ülejäänud konfiguratsioon, aga mitte selge tekstina.
+??? note "Failid repositooriumis praktikumi lõpus"
+    ```
+    lab04/
+    ├── inventory.ini
+    ├── nginx.yml
+    ├── group_vars/
+    │   └── all/
+    │       ├── main.yml        # tavalised muutujad
+    │       └── vault.yml       # krüpteeritud saladus
+    ├── templates/
+    │   ├── index.html.j2
+    │   ├── hallatud.conf.j2
+    │   └── chrony-hallatud.conf.j2   # Osa 11
+    ├── logid/
+    └── kontroll.sh
+    ```
 
-    Sina teed nii, et playbook jääb samaks ja muutub ainult see, mis on väljaspool (muutujad, mallid, krüpteeritud saladus). Lõpus lisad ise uue teenuse ja tuled toime vigadega, mida keegi sulle ette ei ütle.
-
-Ehitad N3 playbook'i edasi samm-sammult. Alguses on juhend täpne, lõpus teed ise.
-
-Lõpuks näeb su repo välja nii:
-
-```
-lab04/
-├── inventory.ini
-├── nginx.yml
-├── group_vars/
-│   └── all/
-│       ├── main.yml        # tavalised muutujad
-│       └── vault.yml       # krüpteeritud saladus
-├── templates/
-│   ├── index.html.j2
-│   ├── hallatud.conf.j2
-│   └── chrony-hallatud.conf.j2   # Osa 11
-├── logid/
-└── kontroll.sh
-```
-
-## Enne alustamist: pilt peas
-
-Kogu praktikum on selle ühe pildi kohta. Kui käsud lähevad segaseks, tule siia tagasi.
+Playbook, muutujad ja mallid on eraldi failides ja Ansible paneb need käivitamisel kokku.
 
 <figure markdown="span">
 ```mermaid
@@ -73,23 +62,23 @@ graph LR
     end
     ANS -->|"SSH: valmis failid"| N["proxmox1<br/>nginx, chrony"]
 ```
-  <figcaption>Joonis 1. Kolm asja on lahus: MIDA teha (playbook), MIS väärtustega (group_vars, vault) ja MIS KUJUGA (mall). Ansible paneb need kokku sinu arvutis ja saadab sõlme juba valmis tulemuse (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 1. Eraldi on see, mida teha (playbook), milliste väärtustega (group_vars, vault) ja millise kujuga failid (mall). Ansible paneb need kokku sinu arvutis ja saadab sõlme valmis tulemuse (Talvik, 2026).</figcaption>
 </figure>
 
-**Miks lahus?** Kui väärtus on otse playbookis, pead iga muudatuse jaoks playbooki muutma. Kui väärtus on eraldi failis, jääb playbook samaks ja muutub ainult see üks fail. Sellepärast on selle nädala teema "mis on väljaspool playbooki".
+Kui väärtus on otse playbookis, tuleb iga muudatuse jaoks playbooki muuta. Kui väärtus on eraldi failis, jääb playbook samaks ja muutub ainult see fail.
 
-**Analoogia: kirjaliitmine Wordis.** Mall on kiri "Lp. `{{ nimi }}`", `group_vars` on nimekiri, kust nimed tulevad, ja `ansible-playbook` on nupp "Liida", see teeb igale valmis kirja. Sõlme jõuab ainult valmis kiri, mitte mall.
+Sama põhimõte on Wordi kirjakoostes: mall on kiri „Lp `{{ nimi }}`“, `group_vars` on nimekiri ja `ansible-playbook` teeb igale saajale valmis kirja. Sõlme jõuab ainult valmis kiri.
 
 ??? info "Sõnastik"
     | Mõiste | Tähendus |
     |---|---|
     | Playbook | nimekiri "mida teha" (`nginx.yml`) |
     | Inventory | nimekiri "kus teha" (`inventory.ini`) |
-    | Muutuja | silt + väärtus, nt `paketi_nimi` = `nginx` |
+    | Muutuja | nimi ja väärtus, näiteks `paketi_nimi` = `nginx` |
     | `group_vars/` | kaust, kust Ansible muutujaid ise loeb |
-    | Mall (`.j2`) | fail, kus on augud `{{ }}`; Ansible täidab augud väärtustega |
-    | Handler | task, mis käib ainult siis, kui keegi teda kutsub ja midagi muutus |
-    | Vault | lukk faili peal; võti on parool |
+    | Mall (`.j2`) | fail, milles on kohad `{{ }}`; Ansible asendab need väärtustega |
+    | Handler | task, mis käivitub ainult siis, kui mõni task kutsub seda `notify`-ga ja see task oli `changed` |
+    | Vault | Ansible'i tööriist, mis krüpteerib faili parooliga |
     | `changed` / `ok` | Ansible tegi muudatuse / asi oli juba õige |
     | Idempotentsus | sama käivitus teist korda ei muuda enam midagi |
 
@@ -100,7 +89,7 @@ graph LR
     | `ssh proxmox1 "curl -s localhost"` | jutumärkides olev käsk käivitub sõlmes, tulemus tuleb sinu terminali |
 
 ??? info "Ühe käsu anatoomia"
-    Praktikumi lõpus käivitad selliseid käske. Iga osa käsus tähendab midagi:
+    Praktikumi lõpus on käsud sellised:
 
     ```bash
     ansible-playbook -i inventory.ini nginx.yml --vault-password-file .vault_pass --check --diff
@@ -111,7 +100,7 @@ graph LR
     | `ansible-playbook` | käivita playbook |
     | `-i inventory.ini` | kuhu: sõlmede nimekiri |
     | `nginx.yml` | mida teha |
-    | `--vault-password-file .vault_pass` | Vault parool on selles failis (muidu küsiks) |
+    | `--vault-password-file .vault_pass` | Vault'i parool on selles failis (muidu küsitakse) |
     | `--check` | kuivkäivitus: ära muuda midagi |
     | `--diff` | näita, mis failides muutuks |
 
@@ -136,21 +125,20 @@ graph LR
     | `unreachable` | sõlmeni ei jõutud (SSH) |
     | `skipped` | task jäeti vahele |
 
-**Idempotentne käivitus on see, kus `changed=0`.** Praktikumis taotled seda peaaegu igal sammul.
+Kui teine käivitus annab `changed=0`, on playbook idempotentne. Praktikumis kontrollid seda peaaegu igal sammul.
 
-!!! tip "Ei saa aru? Mine trepist üles"
-    1. Loe osa alguses olev plokk „Kuidas see töötab?“ ja vaata joonist.
+!!! tip "Kui jääd hätta"
+    1. Loe osa juures olevat plokki „Kuidas see töötab?“ ja vaata joonist.
     2. **Ennusta**, mis juhtub, ja alles siis käivita. Kui ennustus ja tulemus erinevad, uuri, miks.
     3. Ava Ansible'i ametlik dokumentatsioon ja otsi mooduli täisnime järgi (nt `ansible.builtin.service`). Vaata parameetreid, lubatud väärtusi ja näiteid.
-    4. Küsi AI-lt selgitust, mitte valmis lahendust: kopeeri talle veateade, oma fail ja link dokumentatsioonile, mille juba läbi vaatasid, ning küsi "miks see viga tekib ja milline rida selle põhjustab?".
+    4. Küsi AI-lt selgitust: anna talle veateade, oma fail ja link dokumentatsioonile, mille juba läbi vaatasid, ning küsi, miks see viga tekib ja milline rida selle põhjustab.
     5. Küsi õpetajalt.
 
-!!! warning "Käskude pimesi kopeerimine ei õpeta"
-    Osa 11 (iseseisev teenus) ja Osa 12 (vigade otsimine) on tehtud nii, et neid ei saa "kopeerida". Seal on vaja mõista, kuidas playbook töötab. Kui oled seni käske lihtsalt kopeerinud, siis just nendes osades tuleb see välja, parem harjuta aru saamist juba nüüd.
+Rida **Ennusta** tähendab, et enne käsku mõtled läbi, mis juhtub. Vastus on kokkuvolditud plokis.
 
 ## Osa 0 · Töövoog: kuhu muudatused lähevad
 
-Kõik muudatused lähevad oma harule `n04-vault`, mitte otse `main`-i. `main` jääb puutumata, kuni PR on vaadatud. Tee see enne esimest muudatust.
+Kõik muudatused lähevad harule `n04-vault`. Haru `main` jääb puutumata, kuni pull request on üle vaadatud. Loo haru enne esimest muudatust.
 
 <figure markdown="span">
 ```mermaid
@@ -163,10 +151,10 @@ graph LR
     R -->|"automaatselt"| K["Actions:<br/>kontroll"]
     R -->|"Pull Request"| M["main"]
 ```
-  <figcaption>Joonis 2. Töö liigub harule, mitte `main`-ile: muuda, commit, push, alles lõpus PR (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 2. Muudatused lähevad harule `n04-vault` ja jõuavad `main`-i alles pull request'iga praktikumi lõpus (Talvik, 2026).</figcaption>
 </figure>
 
-1. Klooni oma Classroomi repo ja ava kaust VS Code'is. Kõik käsud käivitad selles kaustas, sinu arvutis.
+1. Aktsepteeri Classroom 50 ülesanne, klooni repositoorium ja ava kaust VS Code'is. Kõik käsud käivitad selles kaustas oma arvutis.
 2. Loo haru ja kontrolli, et oled selle peal:
 
 ```bash
@@ -176,7 +164,7 @@ git branch --show-current
 
 Teine käsk peab vastama `n04-vault`. Kui vastab `main`, ära muuda midagi enne, kui haru on olemas.
 
-3. Tee commit pärast iga osa (Osa 3, 5, 8, 10, 11), et sul oleks alati koht, kuhu tagasi minna:
+3. Tee commit pärast osasid 3, 5, 8, 10 ja 11, et saaksid vajadusel eelmise versiooni juurde tagasi minna:
 
 ```bash
 git add -A
@@ -184,9 +172,9 @@ git status
 git commit -m "Osa 3: muutujad group_vars-i"
 ```
 
-`git status` näitab, mis commitisse läheb. Enne kui commit'id, vaata, et seal poleks `.vault_pass` (see tuleb alles Osa 8-s, ja kõigepealt `.gitignore`).
+`git status` näitab, mis commit'i läheb. Seal ei tohi olla faili `.vault_pass` (see tekib osas 8 ja enne seda lisad selle `.gitignore`-i).
 
-Commit-sõnum kirjeldab, mis muutus, kujul `Osa 3: muutujad group_vars-i`. Sõnumid nagu `asjad`, `veelkord` või `test` ei räägi ajaloost midagi. Praktikumi lõpus peab `git log --oneline` lugema sinu töö loona.
+Commit'i sõnum kirjeldab muudatust, näiteks `Osa 3: muutujad group_vars-i`. Sõnumid `asjad`, `veelkord` ja `test` ei ütle, mis muutus. Praktikumi lõpus peab `git log --oneline` näitama, mida ja mis järjekorras tegid.
 
 ??? note "Git-käsud"
     | Käsk | Mida see teeb |
@@ -200,37 +188,37 @@ Commit-sõnum kirjeldab, mis muutus, kujul `Osa 3: muutujad group_vars-i`. Sõnu
     | `git revert HEAD` | teeb uue commit'i, mis tühistab viimase commit'i |
     | `git push` | saadab commit'id GitHubi |
 
-4. Push'i haru pärast esimest commit'i ja siis iga kord, kui oled osa lõpetanud:
+4. Saada haru GitHubi pärast esimest commit'i ja seejärel pärast iga osa:
 
 ```bash
 git push -u origin n04-vault
 ```
 
-Iga push käivitab GitHubis automaatse kontrolli (Actions). Kui see on alguses punane, on see normaalne: tööd on veel vähe.
+Iga push käivitab GitHubis automaatkontrolli (Actions). Alguses on tulemus punane, sest töö on pooleli.
 
-5. Praktikumi lõpus avad **Pull Request** `n04-vault` → `main` (vt "Esitamine").
+5. Praktikumi lõpus avad pull request'i harust `n04-vault` harusse `main` (vt [Töö esitamine](#too-esitamine)).
 
 !!! warning "Tegid juba commit'i `main`-il?"
-    Ära paanitse. Loo haru sealt, kus oled, ja tõsta `main` tagasi:
+    Loo haru sealt, kus oled, ja vii `main` tagasi GitHubi versioonile:
 
     ```bash
     git switch -c n04-vault
     git branch -f main origin/main
     ```
 
-    Su commit jääb harule `n04-vault`, `main` on jälle sama mis GitHubis.
+    Commit jääb harule `n04-vault` ja `main` on jälle sama mis GitHubis.
 
-## Osa 1 · Setup
+## Osa 1 · Algseis
 
-Aktsepteeri Classroom'i ülesanne, klooni repo, ava VS Code'is. Starteris on juba `nginx.yml` N3 lõppseisus (`package` + `service` + `copy`) ja `index.html`. Kui sul on oma töötav N3 versioon, võid selle asemele kopeerida. Käivita:
+Starteris on N3 lõpu `nginx.yml` (`package`, `service` ja `copy`) ja `index.html`. Kui sul on oma töötav N3 versioon, võid selle asemele kopeerida. Kontrolli, et playbook töötab:
 
 ```bash
 ansible-playbook -i inventory.ini nginx.yml
 ```
 
-`changed=0`? Edasi. Ei käivitu? Paranda enne: see praktikum ehitab otse selle peale.
+Tulemus peab olema `changed=0`. Kui playbook ei tööta, paranda see enne, sest järgmised osad muudavad sama faili.
 
-## Osa 2 · Hardcode → muutuja
+## Osa 2 · Kõvakodeeritud väärtus muutujaks
 
 Paketi nimi on otse task'i sees. Lisa play-tasandile `vars:` plokk (`hosts:` ja `become:` kõrvale):
 
@@ -239,7 +227,7 @@ Paketi nimi on otse task'i sees. Lisa play-tasandile `vars:` plokk (`hosts:` ja 
     paketi_nimi: nginx
 ```
 
-Ja task'is, meelega ilma jutumärkideta:
+Kasuta muutujat task'is, meelega ilma jutumärkideta:
 
 ```yaml
     - name: Paigalda nginx pakett
@@ -248,23 +236,25 @@ Ja task'is, meelega ilma jutumärkideta:
         state: present
 ```
 
+Käivita playbook:
+
 ```bash
 ansible-playbook -i inventory.ini nginx.yml
 ```
 
-**Viga:** `We could be wrong, but this one looks like it might be an issue with missing quotes`.
+Ansible annab vea `We could be wrong, but this one looks like it might be an issue with missing quotes`.
 
 ??? question "Leia põhjus enne parandamist"
-    YAML-is tähendab `{` sõnastiku algust. Kui väärtus algab `{{`-ga, arvab YAML, et see on sõnastik. Mis teeb talle selgeks, et see on tekst?
+    YAML-is tähendab `{` sõnastiku algust. Kui väärtus algab `{{`-ga, loeb YAML seda sõnastikuna. Mis näitab, et väärtus on tekst?
 
-**Paranda:** `name: "{{ paketi_nimi }}"`. Käivita: `changed=0`, sama tulemus. Väärtus on nüüd loogikast eraldi.
+Paranda rida: `name: "{{ paketi_nimi }}"`. Käivita uuesti: tulemus on `changed=0`, sest serveris ei muutunud midagi. Paketi nimi on nüüd task'ist eraldi.
 
 ## Osa 3 · Muutuja välisfaili: undefined variable
 
 **Dokumentatsioon:** [Using variables](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html)
 
-!!! info "Kuidas see töötab?"
-    Muutuja on **silt + väärtus**, nagu kontaktiraamatus nimi ja number. Playbook ütleb "paigalda pakett `{{ paketi_nimi }}`", see on silt. Väärtus (`nginx`) elab eraldi failis. Ansible loeb `group_vars/all/main.yml` ise, playbookis pole sellele faili viidet, ja asendab sildi väärtusega.
+??? info "Kuidas see töötab?"
+    Muutujal on nimi ja väärtus. Playbookis on ainult nimi: `{{ paketi_nimi }}`. Väärtus `nginx` on failis `group_vars/all/main.yml`. Ansible loeb selle faili ise, ilma et playbookis sellele viidataks, ja asendab nime väärtusega.
 
 <figure markdown="span">
 ```mermaid
@@ -272,12 +262,12 @@ ansible-playbook -i inventory.ini nginx.yml
 graph LR
     GV["group_vars/all/main.yml<br/>paketi_nimi: nginx"] -->|"Ansible loeb ise"| A(["Ansible"])
     PB["nginx.yml<br/>name: '{{ paketi_nimi }}'"] --> A
-    A -->|"asendab sildi väärtusega"| R["sõlm saab:<br/>paigalda 'nginx'"]
+    A -->|"asendab nime väärtusega"| R["sõlm saab:<br/>paigalda 'nginx'"]
 ```
-  <figcaption>Joonis 3. Playbookis on ainult silt; väärtus tuleb failist, mida Ansible leiab kausta nime järgi (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 3. Playbookis on ainult muutuja nimi; väärtus tuleb failist, mida Ansible leiab kausta nime järgi (Talvik, 2026).</figcaption>
 </figure>
 
-Just sellepärast on kausta ja faili nimi nii tähtis: Ansible ei otsi "kõiki YAML-e", vaid kausta `group_vars/` inventory kõrvalt. Vale nimi = fail jääb lugemata, ja viga tuleb alles siis, kui silti vaja on.
+Seetõttu peab kausta ja faili nimi olema täpne. Ansible otsib kausta `group_vars/` inventory kõrvalt. Kui nimi on vale, jääb fail lugemata ja viga tuleb alles siis, kui muutujat kasutatakse.
 
 Tõsta väärtused playbookist välja. Loo kaust ja fail (`inventory.ini` kõrvale):
 
@@ -294,32 +284,32 @@ omaniku_nimi: Mari Maasikas     # sinu tegelik nimi
 
 Kustuta `vars:` plokk playbookist. Nüüd tee meelega viga: nimeta muutuja failis valesti (`pakett_nimi`) või pane kaust vale nimega (`vars/all/`). Käivita.
 
-**Viga:** `'paketi_nimi' is undefined`.
+Ansible annab vea `'paketi_nimi' is undefined`.
 
 ??? question "Leia põhjus"
-    Ansible otsib `group_vars/`-i inventory (või playbooki) kõrvalt, ja kausta `all/` sisu kehtib kõigile hostidele. Nimi peab tähthaaval klappima. Kaks võimalikku põhjust: kumb on sinul?
+    Ansible otsib `group_vars/`-i inventory (või playbooki) kõrvalt, ja kausta `all/` sisu kehtib kõigile hostidele. Nimi peab tähthaaval klappima. Põhjusi on kaks. Kumb neist on sinu failides?
 
-Ära arva, küsi Ansible'ilt. Vaata, mida ta sinu hostile tegelikult näeb:
+Vaata, milliseid muutujaid Ansible sinu hostile loeb:
 
 ```bash
 ansible-inventory -i inventory.ini --host proxmox1
 ```
 
-Kas `paketi_nimi` on väljundis? Kui pole, siis Ansible faili ei lugenud. See on esimene käsk, mida "undefined variable" puhul käivitada, kiirem kui failide vahtimine.
+Kas `paketi_nimi` on väljundis? Kui pole, jäi fail lugemata. Vea `undefined variable` korral käivita see käsk esimesena.
 
-**Paranda** ja käivita: `changed=0`. Käivita `ansible-inventory` uuesti ja veendu, et muutuja on nüüd olemas.
+Paranda viga ja käivita playbook: tulemus on `changed=0`. Käivita `ansible-inventory` uuesti ja veendu, et muutuja on nüüd olemas.
 
-!!! tip "Miks kaust `all/`, mitte fail `all.yml`?"
+!!! tip "Kaust `all/` või fail `all.yml`"
     Mõlemad töötavad. Kaust lubab grupil hoida mitut faili. Osa 6-s lisad sinna krüpteeritud `vault.yml`.
 
     Kui paneksid selle `group_vars/vault.yml`-ks, loeks Ansible seda grupi nimega `vault` muutujateks. Sellist gruppi pole ja saladus ei jõuaks kuhugi.
 
-## Osa 4 · Template vs copy: miks `{{ }}` ei asendu
+## Osa 4 · `template` ja `copy`: miks `{{ }}` ei asendu
 
 **Dokumentatsioon:** [`ansible.builtin.template`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html), [Templating (Jinja2)](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_templating.html)
 
-!!! info "Kuidas see töötab?"
-    `copy` on nagu faili manusena saatmine: sisu jääb muutmata, ka `{{ }}` jääb kirja. `template` on kirjaliitmine: Ansible täidab augud väärtustega kontroll-node'is (kursusel sinu arvutis) ja saadab sõlme juba valmis teksti. Sõlmes ei ole Jinja2-t vaja.
+??? info "Kuidas see töötab?"
+    `copy` saadab faili muutmata, nii et ka `{{ }}` jääb faili. `template` asendab `{{ }}` väärtustega kontroll-node'is (kursusel sinu arvutis) ja saadab sõlme valmis teksti. Sõlmes ei ole Jinja2-t vaja.
 
 <figure markdown="span">
 ```mermaid
@@ -333,10 +323,10 @@ graph LR
         R -->|"saadab VALMIS teksti"| S2["sõlm:<br/>Mari"]
     end
 ```
-  <figcaption>Joonis 4. Sama mall, kaks moodulit. Ainult `template` täidab augud (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 4. Sama mall, kaks moodulit. Ainult `template` asendab `{{ }}` väärtustega (Talvik, 2026).</figcaption>
 </figure>
 
-N3-s oli `index.html` staatiline. Tee sellest mall `templates/index.html.j2`:
+Starteri `index.html` on staatiline. Tee sellest mall `templates/index.html.j2`:
 
 ```html
 <h1>Ansible töötab: {{ omaniku_nimi }}</h1>
@@ -353,24 +343,24 @@ Muuda ainult `src` rida, moodul jääb meelega `copy`:
         mode: '0644'
 ```
 
-!!! example "Ennusta enne käivitamist"
-    Mis tekst on lehel pärast käivitust? Mitu task'i on `changed`? Kontrolli oma ennustust alles pärast käivitamist.
+**Ennusta:** mis tekst on lehel pärast käivitust ja mitu task'i on `changed`?
 
 ```bash
 ansible-playbook -i inventory.ini nginx.yml
 ssh proxmox1 "curl -s localhost"
 ```
 
-Lehel on sõna-sõnalt `{{ omaniku_nimi }}`. Kas ennustasid nii?
+??? success "Oodatav tulemus"
+    Lehel on sõna-sõnalt `{{ omaniku_nimi }}`.
 
 ??? question "Leia põhjus"
     `copy` viib faili muutmata. Kes `{{ }}` asendab ja mis moodulis?
 
-**Paranda:** `ansible.builtin.copy` → `ansible.builtin.template`. Käivita ja tee `curl` uuesti: nüüd on lehel su nimi ja `proxmox1`. `inventory_hostname` väärtust sa kuskile ei kirjutanud, see on erimuutuja (N3).
+Paranda: vaheta moodul `ansible.builtin.copy` mooduliks `ansible.builtin.template`. Käivita playbook ja tee `curl` uuesti: nüüd on lehel sinu nimi ja `proxmox1`. Muutujat `inventory_hostname` sa kuhugi ei kirjutanud. See on Ansible'i erimuutuja, milles on hosti nimi inventory's.
 
 ## Osa 5 · Handler: laadi nginx uuesti ainult muudatuse korral
 
-Lisa serverile konfiguratsioonifail, mis paneb igale vastusele päise. Mall `templates/hallatud.conf.j2`:
+Lisa serverile konfiguratsioonifail, mis lisab igale vastusele päise. Mall `templates/hallatud.conf.j2`:
 
 ```nginx
 add_header X-Hallatud "ansible-{{ inventory_hostname }}";
@@ -391,12 +381,12 @@ ansible-playbook -i inventory.ini nginx.yml
 ssh proxmox1 "curl -sI localhost"
 ```
 
-Task oli `changed`, fail on sõlmes, aga `X-Hallatud` päist vastuses pole.
+Task oli `changed` ja fail on sõlmes, aga vastuses pole päist `X-Hallatud`.
 
 ??? question "Leia põhjus"
-    Nginx loeb konfiguratsiooni käivitamisel. Fail muutus, teenus sellest ei tea. `service` task ütleb `state: started`, aga ta on juba started, seega ei tee midagi. Mis peab juhtuma pärast config muutust?
+    Nginx loeb konfiguratsiooni käivitamisel. Fail muutus, aga töötav teenus seda uuesti ei loe. Task `service` väärtusega `state: started` ei tee midagi, sest teenus juba töötab. Mis peab juhtuma pärast konfiguratsioonifaili muutust?
 
-**Paranda**: lisa task'ile `notify` ja playbooki lõppu `handlers:` (`tasks:`-iga samal tasemel):
+Paranda: lisa task'ile `notify` ja playbooki lõppu `handlers:` (`tasks:`-iga samal tasemel):
 
 ```yaml
       notify: Laadi nginx uuesti
@@ -408,20 +398,20 @@ Task oli `changed`, fail on sõlmes, aga `X-Hallatud` päist vastuses pole.
         state: reloaded
 ```
 
-!!! example "Ennusta enne käivitamist"
-    Sa lisasid just `notify` ja handleri. Kas päis ilmub sellel käivitusel?
+**Ennusta:** kas päis ilmub järgmisel käivitusel, kui `notify` ja handler on nüüd olemas?
 
-`notify` ei käivita handlerit tagantjärele: handler läheb järjekorda ainult siis, kui task on selle käivituse ajal `changed`.
+Käivita playbook ja vaata päist.
 
-Käivita. Päist ikka pole.
+??? success "Oodatav tulemus"
+    Päist ikka pole.
 
 ??? question "Leia põhjus: miks ikka mitte?"
-    Vaata task'i olekut: `ok`, mitte `changed`. Fail oli juba eelmisest käivitusest paigas. Millal handler käivitub?
+    Vaata task'i olekut: see on `ok`. Fail oli juba eelmisest käivitusest paigas. Millal handler käivitub?
 
-**Paranda:** muuda mallis väärtust (nt `"ansible-{{ inventory_hostname }}-v2"`), käivita. Task `changed` → handler käivitub play lõpus → `curl -sI localhost` näitab `X-Hallatud`. Käivita veel kord: task `ok`, handlerit ei kutsuta, nginx jääb rahule.
+Paranda: muuda mallis väärtust (näiteks `"ansible-{{ inventory_hostname }}-v2"`) ja käivita playbook. Task on `changed`, handler käivitub play lõpus ja `curl -sI localhost` näitab päist `X-Hallatud`. Käivita veel kord: task on `ok`, handlerit ei kutsuta ja nginx-i uuesti ei laadita.
 
-!!! info "Kuidas see töötab?"
-    Nginx loeb oma seadistuse ainult käivitamisel. Kui muudad faili, töötab nginx edasi vana seadistusega, kuni keegi ütleb "loe uuesti". `notify` on märge "see fail muutus, nginx tuleb uuesti laadida". **Handler** on see tegevus ise, ja ta käib ühe korra play lõpus, ainult siis, kui märge tehti.
+??? info "Kuidas see töötab?"
+    Nginx loeb oma seadistuse ainult käivitamisel. Kui fail muutub, töötab nginx edasi vana seadistusega, kuni teenus uuesti laaditakse. `notify` märgib, et fail muutus ja nginx tuleb uuesti laadida. **Handler** on task, mis teeb uuesti laadimise. See käivitub üks kord play lõpus ja ainult siis, kui märge on tehtud.
 
 <figure markdown="span">
 ```mermaid
@@ -436,24 +426,24 @@ sequenceDiagram
     Note over P: play lõpp
     P->>N: handler: reload nginx
 ```
-  <figcaption>Joonis 5. Handler ei käi kohe, vaid play lõpus, ja ainult siis, kui teda kutsunud task oli changed (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 5. Handler käivitub play lõpus ja ainult siis, kui teda kutsunud task oli `changed` (Talvik, 2026).</figcaption>
 </figure>
 
 ??? note "Kolm olukorda handleri käivitumise kohta"
     | Olukord | Task | Handler | Päis uueneb? |
     |---|---|---|---|
-    | Fail muutus, play läbis | `changed` | käib (play lõpus) | jah |
-    | Fail oli juba õige | `ok` | ei käi | pole vaja, on juba õige |
-    | Fail muutus, aga play katkes hiljem | `changed` | ei käi | ei (vt Osa 10) |
+    | Fail muutus, play lõppes edukalt | `changed` | käivitub (play lõpus) | jah |
+    | Fail oli juba õige | `ok` | ei käivitu | pole vaja, on juba õige |
+    | Fail muutus, aga play katkes hiljem | `changed` | ei käivitu | ei (vt osa 10) |
 
-### Ametlik dokumentatsioon: ära arva
+### Lubatud väärtused dokumentatsioonist
 
-Kui Ansible ütleb `value of state must be one of: ...`, ära otsi vastust ainult sellest praktikumist.
+Kui Ansible annab vea `value of state must be one of: ...`, on lubatud väärtused mooduli dokumentatsioonis.
 
 1. Ava [`ansible.builtin.service`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/service_module.html) dokumentatsioon ja leia parameeter `state`.
 2. Kirjuta üles kõik lubatud `state` väärtused.
 3. Leia, milline neist sobib nginx-i konfiguratsiooni muutuse rakendamiseks ilma teenust peatamata.
-4. Loo fail `logid/dokumendid.txt` ja lisa sinna rida:
+4. Loo fail `logid/dokumendid.txt` ja lisa sinna read:
 
 ```text
 Moodul: ansible.builtin.service
@@ -463,13 +453,13 @@ Valik: reloaded
 Põhjus: nginx peab pärast konfiguratsiooni muutumist seadistuse uuesti sisse lugema.
 ```
 
-Selle faili täidad praktikumi jooksul juurde (Osa 11 ja Osa 12). Vaata ka: [Handlers](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_handlers.html).
+Osades 11 ja 12 lisad sellesse faili veel ridu. Vaata ka: [Handlers](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_handlers.html).
 
 ## Osa 6 · Vault: saladuse krüpteerimine
 
 **Dokumentatsioon:** [Protecting sensitive data with Ansible vault](https://docs.ansible.com/ansible/latest/vault_guide/index.html)
 
-Vault'iga on kolm eri asja. Krüpteeritud fail `vault.yml` võib olla Gitis, sest ilma paroolita seda avada ei saa. Parool ei lähe Giti. Fail `.vault_pass` hoiab parooli, et seda ei peaks iga kord trükkima, ja ka see ei lähe Giti.
+Vault'i juures tuleb eristada krüpteeritud faili, parooli ja paroolifaili. Krüpteeritud fail `vault.yml` võib olla Gitis, sest ilma paroolita seda avada ei saa. Vault'i parool ja fail `.vault_pass`, milles parool on, Giti ei lähe. Faili on vaja, et parooli ei peaks iga kord sisestama.
 
 <figure markdown="span">
 ```mermaid
@@ -479,48 +469,48 @@ graph LR
         V["vault.yml<br/>KRÜPTEERITUD<br/>sees: db_password"]
     end
     subgraph L["Ainult sinu arvuti"]
-        K[".vault_pass<br/>Vault parool<br/>(võti)"]
+        K[".vault_pass<br/>Vault'i parool"]
     end
     V --> A(["ansible-playbook"])
     K --> A
     A -->|"avab MÄLUS"| M["db_password<br/>on kasutatav"]
     M -->|"mall"| S["sõlm: leht"]
 ```
-  <figcaption>Joonis 6. Kast Gitis, võti sinu arvutis. Ansible dekrüpteerib Vaulti sisu käivituse ajal mälus. Kui saladus satub mallist tehtud faili, on see sõlmes selge tekstina (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 6. Krüpteeritud fail on Gitis ja parool sinu arvutis. Ansible dekrüpteerib Vault'i sisu käivituse ajal mälus. Kui saladus satub mallist tehtud faili, on see sõlmes selge tekstina (Talvik, 2026).</figcaption>
 </figure>
 
-??? note "`db_password` ja Vault parool on kaks eri asja"
-    | | Mis see on | Kus elab | Gitis? |
+??? note "`db_password` ja Vault'i parool on kaks eri asja"
+    | | Mis see on | Kus see on | Gitis? |
     |---|---|---|---|
     | `db_password` = `SuperSalajane123` | rakenduse saladus | `vault.yml` sees | jah, aga krüpteeritult |
-    | Vault parool | võti, mille sa Osa 6-s välja mõtled | sinu peas ja `.vault_pass` | ei |
-    | `.vault_pass` | fail, mille sees on Vault parool | sinu arvuti | ei (`.gitignore`) |
+    | Vault'i parool | parool, mille mõtled välja osas 6 | sinu peas ja `.vault_pass` | ei |
+    | `.vault_pass` | fail, milles on Vault'i parool | sinu arvuti | ei (`.gitignore`) |
 
-`ansible-vault` avab redaktori. Vaikimisi on see `vi`. Vali parem:
+`ansible-vault` avab redaktori, vaikimisi `vi`. Vali mugavam:
 
 ```bash
 export EDITOR=nano        # või: export EDITOR="code --wait"
 ```
 
-Loo krüpteeritud fail. Ansible küsib Vault parooli. Mõtle see välja ja jäta meelde:
+Loo krüpteeritud fail. Ansible küsib Vault'i parooli: mõtle see välja ja jäta meelde.
 
 ```bash
 ansible-vault create group_vars/all/vault.yml
 ```
 
-Redaktoris:
+Kirjuta redaktoris:
 
 ```yaml
 db_password: SuperSalajane123
 ```
 
-Salvesta, sulge. Vaata:
+Salvesta, sulge redaktor ja vaata faili sisu:
 
 ```bash
 cat group_vars/all/vault.yml
 ```
 
-`$ANSIBLE_VAULT;1.1;AES256` ja numbrid, mitte su parool. Lisa `index.html.j2` lõppu (parooli ennast lehele ei pane, ainult kontroll, kas muutuja jõudis kohale):
+Failis on rida `$ANSIBLE_VAULT;1.1;AES256` ja numbrid, saladust ennast näha pole. Lisa `index.html.j2` lõppu rida, mis näitab, kas muutuja jõudis kohale (saladust ennast lehele ei panda):
 
 ```html
 <p>Saladus laetud: {{ db_password is defined }}</p>
@@ -534,12 +524,12 @@ Käivita nagu seni:
 ansible-playbook -i inventory.ini nginx.yml
 ```
 
-**Viga:** `Attempting to decrypt but no vault secrets found`.
+Ansible annab vea `Attempting to decrypt but no vault secrets found`.
 
 ??? question "Leia põhjus"
-    Ansible leidis `group_vars/all/vault.yml`, aga see on krüpteeritud ja sa ei andnud parooli. Mis lipp käsule puudu?
+    Ansible leidis `group_vars/all/vault.yml`, aga see on krüpteeritud ja sa ei andnud parooli. Milline lipp on käsust puudu?
 
-**Paranda:**
+Paranda käsk:
 
 ```bash
 ansible-playbook -i inventory.ini nginx.yml --ask-vault-pass
@@ -549,24 +539,24 @@ ssh proxmox1 "curl -s localhost"
 Leht näitab `Saladus laetud: True`.
 
 !!! warning
-    Vault'il pole "unustasin parooli" nuppu. Vale parooliga tuleb `Decryption failed`; kui õige parool on kadunud, ei saa faili enam avada ja tuleb luua uus.
+    Vale parooliga tuleb viga `Decryption failed`. Kui parool on kadunud, ei saa faili enam avada ja tuleb luua uus.
 
-## Osa 8 · Vault parool faili, mitte Gitti
+## Osa 8 · Vault'i parool faili
 
-`--ask-vault-pass` iga kord on tüütu ja CI/CD ei saa parooli trükkida. Pane see faili, aga kõigepealt `.gitignore`:
+Parooli iga kord sisestamine on tüütu ja CI/CD ei saa seda teha. Pane parool faili, aga lisa faili nimi enne `.gitignore`-i:
 
 ```bash
 echo ".vault_pass" >> .gitignore
-echo "<sinu Vault parool>" > .vault_pass
+echo "<sinu Vault'i parool>" > .vault_pass
 chmod 600 .vault_pass
 git status
 ```
 
-Kirjuta `.vault_pass`-i parool, mille Osa 6-s välja mõtlesid (see, mida Ansible `create` ajal küsis), mitte `SuperSalajane123`, mis on `vault.yml`-i sees olev saladus.
+Faili `.vault_pass` läheb parool, mille mõtlesid välja osas 6 (Ansible küsis seda `create` ajal). `SuperSalajane123` on `vault.yml` sees olev saladus ja see siia ei käi.
 
-`git status` ei tohi `.vault_pass`-i näidata. Näitab? `.gitignore` rida on vale. Paranda enne edasi minekut.
+`git status` ei tohi faili `.vault_pass` näidata. Kui näitab, on `.gitignore` rida vale ja see tuleb enne edasiminekut parandada.
 
-Küsi Gitilt, miks ta faili ignoreerib:
+Kontrolli, milline `.gitignore` rida faili välja jätab:
 
 ```bash
 git check-ignore -v .vault_pass
@@ -578,18 +568,18 @@ Väljund näitab `.gitignore` faili, rea numbri ja mustri. Kui väljundit pole, 
 ansible-playbook -i inventory.ini nginx.yml --vault-password-file .vault_pass
 ```
 
-Läbib küsimata.
+Playbook töötab parooli küsimata.
 
 ??? question "Mõtle"
     `vault.yml` võib Gitis olla, `.vault_pass` mitte. Miks? Ja kui `.vault_pass` kord commititakse ja siis kustutatakse, kas see on siis turvaline?
 
-Sellest hetkest kasuta kõigis käskudes `--vault-password-file .vault_pass`.
+Edaspidi lisa kõigile käskudele `--vault-password-file .vault_pass`.
 
 ## Osa 9 · Kuivkäivitus: ennusta ja kontrolli
 
 **Dokumentatsioon:** [Validating tasks: check mode and diff mode](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_checkmode.html)
 
-Seni käivitasid ja vaatasid pärast, mis juhtus. Tootmises tahad teada enne. Loengust tead `--check --diff`; nüüd kasuta seda.
+Seni nägid tulemust alles pärast käivitamist. Tootmises on vaja enne teada, mis muutub. Selleks on lipud `--check` (kuivkäivitus, sõlme ei muudeta) ja `--diff` (näitab failide muudatusi).
 
 <figure markdown="span">
 ```mermaid
@@ -599,7 +589,7 @@ graph LR
     C -->|"jah"| S["Ansible arvutab, mis muutuks<br/>--diff näitab erinevust<br/>sõlm jääb SAMAKS"]
     C -->|"ei"| R["Ansible muudab sõlme"]
 ```
-  <figcaption>Joonis 7. `--check` ütleb, mis juhtuks, aga ei muuda midagi; ilma selleta muudab Ansible sõlme (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 7. `--check` näitab, mis muutuks, aga sõlme ei muuda. Ilma selleta muudab Ansible sõlme (Talvik, 2026).</figcaption>
 </figure>
 
 1. Muuda `group_vars/all/main.yml`-is `omaniku_nimi` väärtust (lisa lõppu ` (test)`).
@@ -616,22 +606,22 @@ ansible-playbook -i inventory.ini nginx.yml --vault-password-file .vault_pass --
 ssh proxmox1 "curl -s localhost"
 ```
 
-5. Muuda nimi tagasi õigeks ja käivita `changed=0` seisuni.
+5. Muuda nimi tagasi. Kuna `--check` sõlme ei muutnud, annab tavaline käivitus nüüd `changed=0`.
 
 ??? question "Mõtle"
-    Sa pole veel midagi tootmisse saatnud, aga diff näitas sulle täpselt, mis muutuks. Millal oleks see päästnud sind tootmisserveris?
+    Diff näitas täpselt, mis muutuks, ilma et sõlmes midagi muutunud oleks. Millises olukorras aitaks see tootmisserveris vea ära hoida?
 
 !!! warning "Mida Vault ei kaitse"
-    Proovi: `ansible-inventory -i inventory.ini --host proxmox1 --vault-password-file .vault_pass`. Mida sa näed `db_password` kohal? Mida see tähendab, kui keegi jagab su terminali ekraani või `--diff` väljund läheb CI logisse?
+    Käivita `ansible-inventory -i inventory.ini --host proxmox1 --vault-password-file .vault_pass`. Mida näed `db_password` kohal? Mida see tähendab, kui jagad terminali ekraani või `--diff` väljund läheb CI logisse?
 
-    Kui Vaulti väärtus satub renderdatavasse faili, võib see tulla nähtavale `--diff` väljundis. `no_log: true` piirab task'i väljundit, aga ei kata kõiki kohti; ära jaga sellist väljundit ega saada seda kaitsmata logidesse.
+    Kui Vault'i väärtus satub renderdatavasse faili, võib see tulla nähtavale `--diff` väljundis. `no_log: true` peidab task'i väljundi, aga kõiki kohti see ei kaitse. Seetõttu ära jaga sellist väljundit ega saada seda kaitsmata logidesse.
 
 ## Osa 10 · Katkine play: handler ei käivitu
 
-Loengus (ptk 5, reegel 4) oli väide: *kui play katkeb, jäävad kutsutud handlerid käivitamata.* Uskumise asemel tee nii.
+Kui play katkeb, jäävad kutsutud handlerid käivitamata. Selles osas kontrollid seda ise.
 
-!!! info "Kuidas see töötab?"
-    Kui task ebaõnnestub, lõpetab Ansible selle sõlme töö ära, ka ootel olevad handlerid jäävad tegemata. Fail on sõlmes juba uus, aga nginx töötab vana seadistusega. Järgmisel korral on fail "juba õige" (`ok`), seega Ansible ei arva, et midagi tuleks teha. Viga ei ole enam nähtav, aga probleem on alles.
+??? info "Kuidas see töötab?"
+    Kui task ebaõnnestub, lõpetab Ansible selle sõlme töö ja ka ootel olevad handlerid jäävad käivitamata. Fail on sõlmes juba uus, aga nginx töötab vana seadistusega. Järgmisel käivitusel on fail juba õige (`ok`) ja handlerit ei kutsuta. Veateadet enam ei tule, aga nginx töötab ikka vana seadistusega.
 
 <figure markdown="span">
 ```mermaid
@@ -644,38 +634,43 @@ sequenceDiagram
     Note over P: notify: handler ootab
     P->>N: task "Meelega katki"
     N-->>P: FAILED
-    Note over P,N: play katkeb, handler EI käivitu<br/>nginx töötab vana configiga
+    Note over P,N: play katkeb, handler EI käivitu<br/>nginx töötab vana seadistusega
     Note over P,N: järgmisel korral template = ok,<br/>handlerit ei kutsuta
 ```
-  <figcaption>Joonis 8. Katkine play jätab sõlme poolikusse seisu ja järgmine käivitus seda ei märka (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 8. Kui play katkeb, jääb sõlm poolikusse olekusse ja järgmine käivitus seda ei märka (Talvik, 2026).</figcaption>
 </figure>
 
-**1. Tee play katki.** Lisa `tasks:` lõppu task, mis alati ebaõnnestub:
+Tee play meelega katki: lisa `tasks:` lõppu task, mis alati ebaõnnestub.
 
 ```yaml
     - name: Meelega katki
       ansible.builtin.command: /bin/false
 ```
 
-**2. Muuda mallis** `hallatud.conf.j2` väärtust (nt `-v3`) ja ennusta: kas päis uueneb? Käivita, siis `curl -sI localhost`.
+Muuda mallis `hallatud.conf.j2` väärtust (näiteks `-v3`).
 
-Play katkes (`failed=1`), template task oli `changed`, aga `RUNNING HANDLER` ridu pole ja päis on vana.
+**Ennusta:** kas päis uueneb?
 
-**3. Eemalda "Meelega katki" task ja käivita uuesti.** Template on nüüd `ok` (fail on juba sõlmes), seega handlerit ei kutsuta. Vaata päist.
+Käivita playbook ja seejärel `ssh proxmox1 "curl -sI localhost"`.
+
+??? success "Oodatav tulemus"
+    Play katkes (`failed=1`), template task oli `changed`, aga ridu `RUNNING HANDLER` pole ja päis on vana.
+
+Eemalda task „Meelega katki“ ja käivita playbook uuesti. Template on nüüd `ok`, sest fail on juba sõlmes, ja handlerit ei kutsuta. Vaata päist.
 
 ??? question "Leia põhjus"
     Päis on ikka vana, vigu pole, kõik `ok`. Kus on vana väärtus ja miks Ansible ei tea, et midagi on valesti? Kuidas seda tootmises märgata?
 
-**4. Paranda kahel viisil:**
+Olukorra saab parandada kahel viisil:
 
-- **Käsitsi:** `ssh proxmox1 "sudo systemctl reload nginx"`, nüüd on päis õige.
-- **Ennetavalt:** pane "Meelega katki" task tagasi, muuda väärtust (`-v4`) ja käivita lipuga `--force-handlers`. Handler käivitub ka siis, kui play katkeb. Lipp ei tee katkist task'i edukaks ega kõrvalda vea põhjust: ta käivitab ainult juba järjekorda pandud handlerid.
+- Käsitsi: `ssh proxmox1 "sudo systemctl reload nginx"`. Pärast seda on päis õige.
+- Ennetavalt: pane task „Meelega katki“ tagasi, muuda väärtust (`-v4`) ja käivita playbook lipuga `--force-handlers`. Siis käivitub handler ka katkenud play korral. Lipp ei paranda katkist task'i, see käivitab ainult järjekorras olevad handlerid.
 
 ```bash
 ansible-playbook -i inventory.ini nginx.yml --vault-password-file .vault_pass --force-handlers
 ```
 
-**5. Git-harjutus: võta katkine seis tagasi.** Praegu on playbookis "Meelega katki" task. Ära kustuta seda käsitsi, vaid võta tagasi Gitiga:
+Playbookis on jälle task „Meelega katki“. Seekord ära kustuta seda käsitsi, võta muudatus tagasi Gitiga:
 
 ```bash
 git add -A
@@ -684,9 +679,9 @@ git revert HEAD --no-edit
 git log --oneline
 ```
 
-`git revert` ei kustuta ajalugu. Ta teeb uue commit'i, mis tühistab eelmise, nii et näed ajaloos nii katse kui ka tagasivõtmise. `git restore` seevastu tühistab ainult muudatused, mida sa pole veel commit'inud.
+`git revert` ei kustuta ajalugu. See teeb uue commit'i, mis tühistab eelmise, nii et ajaloos on näha nii katse kui ka tagasivõtmine. `git restore` tühistab ainult muudatused, mida pole veel commit'itud.
 
-Käivita playbook, kuni `changed=0`.
+Käivita playbook, kuni tulemus on `changed=0`.
 
 ??? question "Mõtle"
     Millal kasutad `git restore .` ja millal `git revert`? Mis juhtub sinu ajalooga, kui kasutaksid `git reset --hard` ja oleksid juba `push`-inud?
@@ -695,12 +690,12 @@ Käivita playbook, kuni `changed=0`.
 
 **Dokumentatsioon:** [`ansible.builtin.service`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/service_module.html), [chrony](https://chrony-project.org/documentation.html)
 
-Siiani sa juhendit järgisid. Nüüd kirjutad ise. Kasuta sama mustrit, mis nginx-iga: pakett → mall → teenus → handler.
+Selles osas kirjutad playbooki osa ise. Kasuta sama mustrit nagu nginx-iga: pakett, mall, teenus ja handler.
 
-Ülesanne on lisada sõlmele chrony (kellasünkroniseerimine). Kellad peavad klappima: logid, TLS ja ka Vault'i töövood lähevad segi, kui sõlmede kellad lähevad lahku.
+Lisa sõlmele chrony, mis sünkroniseerib kella. Kui sõlmede kellad lähevad lahku, ei klapi logide ajad ja TLS-sertifikaatide kontroll võib ebaõnnestuda.
 
-!!! info "Kuidas see töötab?"
-    Sul on mitu serverit ja iga kohta läheb üks rida. Käsitsi kirjutaks need mällu, mall aga kordab rida ise. `{% for %}` on nagu "tee see rida iga nimekirja elemendi kohta". Lisad nimekirja uue serveri, ja config saab uue rea ilma malli muutmata.
+??? info "Kuidas see töötab?"
+    Chrony konfiguratsioonis on iga NTP serveri jaoks üks rida. `{% for %}` kordab rida iga loendi elemendi kohta. Kui lisad loendisse uue serveri, tekib konfiguratsioonifaili uus rida ilma malli muutmata.
 
 <figure markdown="span">
 ```mermaid
@@ -710,42 +705,42 @@ graph LR
     M["mall:<br/>for server in ntp_serverid<br/>server {{ server }} iburst"] --> J(["Jinja2<br/>kordab rida<br/>iga serveri kohta"])
     J --> O["sõlmes hallatud.conf:<br/>server 0.ee.pool.ntp.org iburst<br/>server 1.ee.pool.ntp.org iburst"]
 ```
-  <figcaption>Joonis 9. Loend + mall = üks rida iga elemendi kohta. Loend muutub, mall mitte (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 9. Mall teeb loendi igast elemendist ühe rea. Loend muutub, mall jääb samaks (Talvik, 2026).</figcaption>
 </figure>
 
-**Nõuded** (oled valmis, kui):
+Osa on valmis, kui:
 
-- [ ] `chrony` pakett on paigaldatud ja teenus `chronyd` käib ja on lubatud (`enabled`)
-- [ ] NTP serverite loend on muutuja `group_vars/all/main.yml`-is (`ntp_serverid`, vähemalt 2 serverit), mitte playbookis
-- [ ] Config on mall (`templates/chrony-hallatud.conf.j2`), mis kasutab `{% for %}` tsüklit serverite jaoks ja alustab rida `# {{ ansible_managed }}`
-- [ ] Muudatuse korral taaskäivitatakse `chronyd` handleriga, mitte igal käivitusel
+- [ ] `chrony` pakett on paigaldatud ja teenus `chronyd` töötab ning on lubatud (`enabled`)
+- [ ] NTP serverite loend on muutujas `ntp_serverid` failis `group_vars/all/main.yml` (vähemalt 2 serverit)
+- [ ] Konfiguratsioonifail on mall (`templates/chrony-hallatud.conf.j2`), mis kasutab `{% for %}` tsüklit serverite jaoks ja alustab rida `# {{ ansible_managed }}`
+- [ ] Muudatuse korral taaskäivitab `chronyd` handler
 - [ ] Teine käivitus annab `changed=0`
 - [ ] `ssh proxmox1 "chronyc sources"` näitab sinu seadistatud NTP allikaid
 
-Enne alustamist uuri sõlme (ära eelda, vaata):
+Enne alustamist vaata, mis sõlmes juba on:
 
 ```bash
 ssh proxmox1 "systemctl is-active chronyd; grep -n confdir /etc/chrony.conf; ls /etc/chrony.d"
 ```
 
-Sa kasutad kausta `/etc/chrony.d/`. Kui `confdir` rida puudub, anna õpetajale teada.
+Lisafail läheb kausta `/etc/chrony.d/`. Kui `confdir` rida puudub, küsi õpetajalt abi.
 
 !!! warning "Kaks nime"
-    Pakett on `chrony`, aga teenus on `chronyd`. Nii on paljude asjadega: pakett ja teenus ei pea sama nime kandma. 
+    Pakett on `chrony`, aga teenus on `chronyd`. Paketi ja teenuse nimi on sageli erinev.
 
 !!! example "Uuri ise: `reloaded` või `restarted`?"
     1. Ava `ansible.builtin.service` dokumentatsioon ja vaata, milliseid `state` väärtusi saad kasutada.
-    2. Uuri sõlmes, kas `chronyd` oskab konfiguratsiooni uuesti laadida: `ssh proxmox1 "systemctl show chronyd -p CanReload"`. Kaks eri küsimust: mida oskab Ansible küsida ja mida oskab teenus ise teha?
+    2. Uuri sõlmes, kas `chronyd` oskab konfiguratsiooni uuesti laadida: `ssh proxmox1 "systemctl show chronyd -p CanReload"`. Dokumentatsioon näitab, mida Ansible'i moodul lubab, ja `CanReload` näitab, kas teenus oskab konfiguratsiooni uuesti lugeda.
     3. Lisa `logid/dokumendid.txt` faili, kumba valid ja miks.
 
 ??? tip "Vihje 1: muutuja"
     Loend YAML-is: `ntp_serverid:` ja selle all `- 0.ee.pool.ntp.org`, `- 1.ee.pool.ntp.org`. Mallis: `{% for server in ntp_serverid %}` … `{% endfor %}`.
 
 ??? tip "Vihje 2: mall"
-    Chrony config rida on `server <nimi> iburst`. Mallis kordub see üks rida iga serveri kohta.
+    Chrony konfiguratsioonifaili rida on `server <nimi> iburst`. Mallis kordub see üks rida iga serveri kohta.
 
 ??? tip "Vihje 3: kontroll"
-    Kui teed enne teist käivitust midagi muutmata, peab `changed=0` olema. Kui lisad kolmanda serveri, peavad muutuma ainult mall-task ja handler; nginx task'id jäävad `ok`.
+    Kui käivitad playbooki teist korda midagi muutmata, peab tulemus olema `changed=0`. Kui lisad kolmanda serveri, muutub ainult chrony malli task ja käivitub handler; nginx-i task'id jäävad `ok`.
 
 ??? success "Näidislahendus: vaata alles pärast oma katset"
     `group_vars/all/main.yml`:
@@ -796,16 +791,16 @@ Sa kasutad kausta `/etc/chrony.d/`. Kui `confdir` rida puudub, anna õpetajale t
             state: restarted
     ```
 
-**Kontrolli end:** lisa kolmas server `ntp_serverid` loendisse, käivita ja vaata `PLAY RECAP`-i. Muutus ainult see, mis pidi? Seejärel käivita uuesti: `changed=0`.
+Kontrolli tulemust: lisa kolmas server loendisse `ntp_serverid`, käivita playbook ja vaata `PLAY RECAP`-i. Kas muutus ainult see, mis pidi? Seejärel käivita uuesti: tulemus peab olema `changed=0`.
 
 ??? question "Mõtle"
-    Sa kirjutasid teise teenuse ja playbooki struktuur ei muutunud. Lisandusid ainult task'id, üks mall ja üks muutuja. Mis oleks juhtunud, kui serverite loend oleks olnud otse mallis? Kus siis muudaksid seda kümne sõlme jaoks?
+    Teise teenuse lisamisel playbooki ülesehitus ei muutunud: lisandusid task'id, üks mall ja üks muutuja. Mis oleks juhtunud, kui serverite loend oleks otse mallis? Kus muudaksid seda kümne sõlme jaoks?
 
 ## Osa 12 · Vigade otsimine
 
-Seni tekitasid vigu juhendi järgi ja teadsid, mida oodata. Töös seda ei tea. Selles osas valid vea menüüst ise, ennustad enne käivitamist, mis juhtub, ja otsid põhjuse ainult veateate ja tööriistade abil.
+Seni tekitasid vigu juhendi järgi ja teadsid, mida oodata. Töökohas veateadet ette ei tea. Selles osas valid vea ise, ennustad enne käivitamist, mis juhtub, ja otsid põhjuse veateate ja tööriistade abil.
 
-**Põhjuse otsimise plaan**: kui midagi on valesti, ära hakka juhuslikult muutma. Mine seda puud mööda:
+Kui midagi on valesti, ära muuda faile juhuslikult. Otsi põhjust selle skeemi järgi:
 
 <figure markdown="span">
 ```mermaid
@@ -819,20 +814,20 @@ graph TD
     F -->|"ei"| G["notify või handler puudu<br/>või play katkes"]
     F -->|"jah"| H["Vaata faili sõlmes:<br/>ssh proxmox1 cat ..."]
 ```
-  <figcaption>Joonis 10. Esimene küsimus on alati: kas Ansible ütles midagi? Alles siis vaata, mis task'i olek oli (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 10. Kõigepealt vaata, kas Ansible andis veateate. Alles siis vaata task'i olekut (Talvik, 2026).</figcaption>
 </figure>
 
-**Reeglid**
+Tee nii:
 
-1. Enne alustamist commit'i oma töö harul `n04-vault` (`git add -A && git commit -m "töötav"`; `.vault_pass` ei lähe commitisse). Nii saad iga vea järel töö käsuga `git restore .` taastada.
-2. Vali menüüst kolm viga. Enne iga vea tegemist ennusta, mis veateade tuleb või mida lehel näed.
+1. Enne alustamist tee harul `n04-vault` commit (`git add -A && git commit -m "töötav"`; `.vault_pass` commit'i ei lähe). Nii saad pärast iga viga töö käsuga `git restore .` taastada.
+2. Vali tabelist kolm viga. Enne iga vea tegemist ennusta, mis veateade tuleb või mida lehel näed.
 3. Tee viga, käivita playbook ja võrdle tulemust ennustusega. Põhjust otsi veateate, `--check --diff`, `ansible-inventory --host` ja `git diff` abil. Vähemalt ühe vea puhul leia vastus ametlikust dokumentatsioonist ja lisa link faili `logid/dokumendid.txt`.
 4. Taasta töö käsuga `git restore .` ja võta järgmine viga.
 
-??? note "Vigade menüü"
-    Enne iga viga muuda mallis `hallatud.conf.j2` väärtust (`-v5`), et task oleks `changed` ja `notify`-vead ilmneksid.
+??? note "Valitavad vead"
+    Enne iga viga muuda mallis `hallatud.conf.j2` väärtust (`-v5`), et task oleks `changed` ja `notify` vead tuleksid nähtavale.
 
-    | # | Mida murda | Mida näed |
+    | # | Mida muuta | Mida näed |
     |---|---|---|
     | 1 | `notify:` nimi kirjaveaga (`Laadi nginx uuseti`) | `The requested handler ... was not found` |
     | 2 | Tõsta `vault.yml` kausta `group_vars/` (`all/` väljast) | `Saladus laetud: False`, viga puudub |
@@ -842,12 +837,12 @@ graph TD
     | 6 | Eemalda `notify:` täielikult | Vigu pole, aga päis ei uuene (vaikne viga) |
 
 !!! tip "Kui päis ikka ei uuene pärast parandust"
-    Tea, miks (Osa 10): kui fail jõudis sõlme juba eelmisel katsel, on template nüüd `ok` ja handlerit ei kutsuta. Muuda väärtust uuesti (`-v6`).
+    Kui fail jõudis sõlme juba eelmisel katsel, on template nüüd `ok` ja handlerit ei kutsuta (vt osa 10). Muuda väärtust uuesti (`-v6`).
 
 ??? question "Mõtle pärast"
     Milline viga oli kõige raskem leida ja miks? Mis oli esimene asi, mida kontrollisid? Mis oleks selle teinud kiiremaks?
 
-Enne edasi minekut käivita `git status`: kõik peab olema puhas (või ainult sinu Osa 11 muudatused). Käivita playbook, kuni `changed=0`.
+Enne edasiminekut käivita `git status`: muudatusi ei tohi olla, välja arvatud osa 11 omad. Käivita playbook, kuni tulemus on `changed=0`.
 
 ## Osa 13 · Tõendid ja kontroll
 
@@ -859,12 +854,12 @@ graph LR
     T --> A["bash kontroll.sh<br/>sinu arvutis"]
     T -->|"push"| G["GitHub Actions<br/>sama skript"]
     A -.->|"sama tulemus"| G
-    G --> S["punktid Classroomis"]
+    G --> S["tulemus Classroom 50-s"]
 ```
-  <figcaption>Joonis 11. GitHub ei pääse sinu sõlmeni, seega tõendid (`logid/`) toodad sinu arvutis sõlme käskudega; kontroll loeb ainult neid faile (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 11. GitHub ei pääse sinu sõlmeni. Seetõttu salvestad tõendid sinu arvutis kausta `logid/` ja kontroll loeb ainult neid faile (Talvik, 2026).</figcaption>
 </figure>
 
-Viimane käivitus, midagi muutmata: `changed=0`. Salvesta tõendid:
+Käivita playbook viimast korda midagi muutmata (`changed=0`) ja salvesta tõendid:
 
 ```bash
 mkdir -p logid
@@ -880,40 +875,7 @@ Käivita sama kontroll, mis GitHubis:
 bash kontroll.sh
 ```
 
-Testid 1–6 peavad olema läbitud. Test 7 on kodutöö.
-
-??? note "Kontrollnimekiri"
-    - [ ] Playbookis pole kõvakodeeritud väärtusi, need on `group_vars/all/main.yml`-is
-    - [ ] "undefined variable" puhul käivitad kohe `ansible-inventory --host`
-    - [ ] Tead, miks mall vajab `template`, mitte `copy`
-    - [ ] Selgitad, miks handler ei käivitunud, kui task oli `ok`
-    - [ ] Ennustad enne käivitamist `--check --diff` abil, mis muutub
-    - [ ] Selgitad, mis juhtub handleriga, kui play katkeb, ja kuidas seda parandada
-    - [ ] Lisasid ise teise teenuse (pakett + mall + teenus + handler) ilma juhendita
-    - [ ] Leidsid menüüst valitud vea põhjuse veateate ja tööriistade abil
-    - [ ] Leiad mooduli parameetri ja lubatud väärtused ametlikust dokumentatsioonist ning oled need kirja pannud (`logid/dokumendid.txt`)
-    - [ ] `vault.yml` on krüpteeritud, `.vault_pass` on `.gitignore`-is
-    - [ ] `bash kontroll.sh` testid 1–6 on läbitud
-
-## Lisaülesanded
-
-??? example "1 · Kolm sõlme"
-    lisa `[web]` alla `proxmox2` ja `proxmox3`. Kas iga leht näitab oma serveri nime?
-
-??? example "2 · Saladus diff'is"
-    tee mall `templates/rakendus.env.j2` (`DB_PASSWORD={{ db_password }}`), pane sõlme `/etc/rakendus.env` (`mode: '0600'`, `owner: root`). Käivita `--check --diff`. Näed parooli? Lisa task'ile `no_log: true` ja käivita uuesti. Mis muutus? Miks on see CI logide jaoks oluline?
-
-??? example "3 · `backup`"
-    lisa `backup: true` `hallatud.conf` task'ile, muuda väärtust ja vaata sõlmes `ls /etc/nginx/conf.d/`. Mis faile näed? Miks ei jää varukoopia nginx-i poolt loetavaks?
-
-??? example "4 · Filtrid"
-    kasuta lehel `{{ omaniku_nimi | upper }}` ja `{{ keskkond_nimi | default('LABOR') }}`. Mis juhtub, kui `keskkond_nimi` pole kuskil määratud, kui `default` on ja kui pole?
-
-??? example "5 · Parooli vahetus"
-    `ansible-vault rekey group_vars/all/vault.yml`. Mis juhtub vana `.vault_pass`-iga?
-
-??? example "6 · `encrypt_string`"
-    krüpteeri `db_password` üksik väärtus ja pane `main.yml`-i. Mis on eelis ja puudus võrreldes eraldi `vault.yml`-iga? *(Ära seda esita: `kontroll.sh` test 2 nõuab `db_password:` ainult `vault.yml`-is. Tee eraldi harul.)*
+Testid 1–6 peavad olema läbitud, test 7 kontrollib kodutööd.
 
 ??? warning "Tüüpilised vead"
     | Veateade | Põhjus | Lahendus |
@@ -921,29 +883,54 @@ Testid 1–6 peavad olema läbitud. Test 7 on kodutöö.
     | `might be an issue with missing quotes` | Väärtus algab `{{`-ga ilma jutumärkideta | `"{{ x }}"` |
     | `'x' is undefined` | `group_vars/` vales kohas või nimi ei klapi | `ansible-inventory --host`; kaust `inventory.ini` kõrvale, nimi täpselt |
     | Leht näitab `{{ muutuja }}` | `copy`, mitte `template` | `ansible.builtin.template` |
-    | Config muutus, teenus ei tea | `notify` puudu või task oli `ok` | `notify` + `handlers:`; handler käib ainult `changed` peale |
-    | Handlerit ei käivitatud, kuigi config muutus | Eelmine käivitus katkes enne handlerit | Käsitsi `reload` või `--force-handlers` |
+    | Konfiguratsioonifail muutus, teenus ei laadi seda | `notify` puudu või task oli `ok` | `notify` ja `handlers:`; handler käivitub ainult `changed` korral |
+    | Handlerit ei käivitatud, kuigi fail muutus | Eelmine käivitus katkes enne handlerit | Käsitsi `reload` või `--force-handlers` |
     | `The requested handler ... was not found` | `notify` nimi ≠ handleri `name` | Nimed tähthaaval samaks |
     | `value of state must be one of: ...` | Vale `state` väärtus (`reload` ≠ `reloaded`) | Vaata mooduli dokumentatsiooni |
     | `Destination directory ... does not exist` | `dest` tee kirjaviga | Kontrolli tee sõlmes (`ssh ... ls`) |
     | `no vault secrets found` | Krüpteeritud fail, parooli ei antud | `--ask-vault-pass` / `--vault-password-file` |
-    | `Decryption failed` | Vale Vault parool | Õige parool; vale parooliga pole taastatav |
+    | `Decryption failed` | Vale Vault'i parool | Kasuta õiget parooli; ilma selleta faili avada ei saa |
     | `Saladus laetud: False` | `vault.yml` ei ole `group_vars/all/` all | Tõsta `group_vars/all/vault.yml` |
 
-## Esitamine
+??? note "Kontrollnimekiri"
+    - [ ] Playbookis pole kõvakodeeritud väärtusi, need on `group_vars/all/main.yml`-is
+    - [ ] "undefined variable" puhul käivitad kohe `ansible-inventory --host`
+    - [ ] Tead, miks mall vajab moodulit `template`
+    - [ ] Selgitad, miks handler ei käivitunud, kui task oli `ok`
+    - [ ] Ennustad enne käivitamist `--check --diff` abil, mis muutub
+    - [ ] Selgitad, mis juhtub handleriga, kui play katkeb, ja kuidas seda parandada
+    - [ ] Lisasid ise teise teenuse (pakett, mall, teenus ja handler) ilma juhendita
+    - [ ] Leidsid tabelist valitud vea põhjuse veateate ja tööriistade abil
+    - [ ] Leiad mooduli parameetri ja lubatud väärtused ametlikust dokumentatsioonist ning oled need kirja pannud (`logid/dokumendid.txt`)
+    - [ ] `vault.yml` on krüpteeritud, `.vault_pass` on `.gitignore`-is
+    - [ ] `bash kontroll.sh` testid 1–6 on läbitud
 
-1. Kontrolli, et oled harul `n04-vault` (`git branch --show-current`, Osa 0)
-2. Commit: `nginx.yml`, `inventory.ini`, `group_vars/`, `templates/`, `logid/`, `.gitignore`. Mitte `.vault_pass`
-3. `bash kontroll.sh` → testid 1–6 on läbitud
-4. `git push -u origin n04-vault`, ava **Pull Request** `main` vastu, Actions roheline
-5. Kodutöö lisad samasse PR-i ([kodutöö](homework.md)). PR-i link GitHub Projecti.
-6. **Git-harjutus: review.** Ava oma paarilise PR, vaata sakki **Files changed** ja kirjuta vähemalt ühe rea peale kommentaar (nt "miks siin on `reloaded`, mitte `restarted`?"). Vali lõpus **Approve** või **Request changes**. Sinu PR-il teeb sama teine.
-7. Pärast ülevaatust liida PR `main`-i (**Merge**). Automaatkontroll hindab haru `main`, seega tulemus tuleb alles pärast merge'i.
+## Töö esitamine
 
-!!! example "Enne PR-i kontrolli"
-    ```bash
-    git log --oneline
-    ```
-    Kas iga rida ütleb, mis muutus? Kas on vähemalt 5 mõttekat commit'i? Kui sõnum on `asjad`, ei ole veel hilja: `git rebase -i` on hilisem teema, aga uued commit'id kirjuta korralikult.
+Töö on harus `n04-vault`: saada see GitHubi, ava pull request harusse `main` ja lisa selle link GitHub Projecti. Kodutöö lisad samasse pull request'i ([kodutöö](homework.md)).
 
-*Järgmine: N5, rakenduse pakkimine ja ümberpaigutamine (Docker).*
+```bash
+git push -u origin n04-vault
+```
+
+Vaata üle paarilise pull request: sakis **Files changed** kirjuta vähemalt ühe rea juurde kommentaar ja vali **Approve** või **Request changes**. Pärast ülevaatust liida oma pull request (**Merge**), sest automaatkontroll vaatab haru `main`. Faili `.vault_pass` repositooriumi ei panda. Tulemuse näed Classroom 50-s.
+
+## Lisaülesanded
+
+??? example "1 · Kolm sõlme"
+    Lisa `[web]` alla `proxmox2` ja `proxmox3`. Kas iga leht näitab oma serveri nime?
+
+??? example "2 · Saladus diff'is"
+    Tee mall `templates/rakendus.env.j2` (`DB_PASSWORD={{ db_password }}`), pane sõlme `/etc/rakendus.env` (`mode: '0600'`, `owner: root`). Käivita `--check --diff`. Näed parooli? Lisa task'ile `no_log: true` ja käivita uuesti. Mis muutus? Miks on see CI logide jaoks oluline?
+
+??? example "3 · `backup`"
+    Lisa `hallatud.conf` task'ile `backup: true`, muuda väärtust ja vaata sõlmes `ls /etc/nginx/conf.d/`. Mis faile näed? Miks ei jää varukoopia nginx-i poolt loetavaks?
+
+??? example "4 · Filtrid"
+    Kasuta lehel `{{ omaniku_nimi | upper }}` ja `{{ keskkond_nimi | default('LABOR') }}`. Mis juhtub, kui `keskkond_nimi` pole kuskil määratud, kui `default` on ja kui pole?
+
+??? example "5 · Parooli vahetus"
+    `ansible-vault rekey group_vars/all/vault.yml`. Mis juhtub vana `.vault_pass`-iga?
+
+??? example "6 · `encrypt_string`"
+    Krüpteeri `db_password` üksiku väärtusena ja pane `main.yml`-i. Mis on eelis ja puudus võrreldes eraldi `vault.yml`-iga? Tee see eraldi harul, sest automaatkontroll otsib `db_password` rida failist `vault.yml`.
