@@ -49,9 +49,19 @@ graph LR
 
 Giti repositoorium, Ansible'i failid ja GitHubi ligipääs on sinu arvutis, mis on kursusel **kontroller**. Proxmoxi sõlmedega ainult ühendutakse ja neist ei tehta push'i. Üks ja sama SSH-võti kopeeritakse kõigisse sõlmedesse ning Ansible kasutab sedasama võtit.
 
-Kursuse jooksul lisanduvad sõlmedele uued kihid. Ansible seadistab sõlmed ja paigaldab neile Dockeri (N3–N4), Docker käitab rakendust (N5–N6) ja GitHub Actions juurutab rakenduse (N7–N8). N10–N11 õpid Terraformiga samasuguseid sõlmi ise kirjeldama ja looma, ning lõpuprojektis (N13) paned kõik osad kokku.
+Kursuse jooksul lisanduvad sõlmedele uued kihid. Ansible seadistab sõlmed ja paigaldab neile Dockeri (N3–N4), Docker käitab rakendust (N5–N6) ja GitHub Actions juurutab rakenduse (N7–N8). N10–N11 õpid OpenTofuga samasuguseid sõlmi ise kirjeldama ja looma, ning lõpuprojektis (N13) paned kõik osad kokku.
 
 Käskudes on `<kasutaja>` sõlme kasutajanimi ning `<proxmox1-IP>`, `<proxmox2-IP>` ja `<proxmox3-IP>` on sõlmede IP-aadressid, mille annab õpetaja. Asenda need oma väärtustega.
+
+Kõik käsud on Bashi käsud. Windowsis tee kogu praktikum WSL2 Ubuntus, sest osas 7 vajab Ansible Linuxit ([WSL-i paigaldamine](https://learn.microsoft.com/en-us/windows/wsl/install)).
+
+Võta Classroom 50-s ülesanne vastu ja klooni repositoorium. Logid ja inventari teed selle repositooriumi kausta:
+
+```bash
+git clone <sinu-repo-URL> lab01     # URL on sinu repositooriumi lehel GitHubis
+cd lab01
+mkdir -p logid
+```
 
 ## Osa 1 · Kolm masinat: nimeta ja leia IP-aadress
 
@@ -93,7 +103,7 @@ ssh-copy-id -i ~/.ssh/kursus_ed25519.pub <kasutaja>@<proxmox2-IP>
 ssh-copy-id -i ~/.ssh/kursus_ed25519.pub <kasutaja>@<proxmox3-IP>
 ```
 
-Windowsi PowerShellis käsku `ssh-copy-id` ei ole. Sel juhul kopeeri võti juhendi [SSH-võti PowerShellist Linuxi serveritesse](ssh-powershell.md) järgi.
+WSL2 Ubuntus on `ssh-copy-id` olemas. Kui teed SSH-i siiski Windowsi PowerShellis, kus seda käsku ei ole, kopeeri võti juhendi [SSH-võtme lisamine Linuxi serverisse PowerShelli kaudu](ssh-powershell.md) järgi.
 
 IP-aadresse ja kasutajanime ei pea iga kord sisse trükkima, kui anname sõlmedele failis `~/.ssh/config` nimed ([`ssh_config`](https://man.openbsd.org/ssh_config)):
 
@@ -132,7 +142,7 @@ ssh proxmox3
     |---|---|
     | `Connection refused` | Sõlmes ei tööta SSH-teenus: `sudo systemctl enable --now ssh` |
     | `Permission denied (publickey)` | Käivita `ssh-copy-id` uuesti ja kontrolli sõlmes õigusi: `chmod 700 ~/.ssh`, `chmod 600 ~/.ssh/authorized_keys` |
-    | Server keeldub ühendusest, põhjus pole selge | Vaata sõlme konsoolis logi: `sudo journalctl -u ssh -e` |
+    | Server keeldub ühendusest, põhjus pole selge | Vaata sõlme konsoolis logi: `sudo journalctl -u sshd -e` |
 
 Tee ekraanipilt, kus on näha kolm `ssh proxmoxN` sisselogimist ja käsu `hostname` väljund ning et parooli ei küsitud. Ekraanipilt läheb esitamisel faili `toend.png`.
 
@@ -308,7 +318,7 @@ Kui õpetaja ütleb, et klassis on eraldi bastion-masin, proovi **ProxyJump** v�
 
 ## Töö esitamine
 
-Repositoorium tekib, kui võtad vastu õpetaja jagatud Classroom 50 kutselingi. Lisa sinna logid, inventar, ekraanipilt ja README-s lühike vastus küsimusele, kuidas SSH-võtmepaar töötab. Privaatvõtit (`~/.ssh/kursus_ed25519`) ära commit'i, olemasolev `.gitignore` välistab selle.
+Lisa repositooriumi logid, inventar, ekraanipilt ja README-s lühike vastus küsimusele, kuidas SSH-võtmepaar töötab. Privaatvõtit (`~/.ssh/kursus_ed25519`) ära commit'i, olemasolev `.gitignore` välistab selle.
 
 ??? note "Failid repositooriumis"
     - `README.md`: sinu nimi ja lühike vastus küsimusele, kuidas SSH-võtmepaar töötab ja miks saab sisse logida ilma paroolita.
@@ -317,8 +327,6 @@ Repositoorium tekib, kui võtad vastu õpetaja jagatud Classroom 50 kutselingi. 
     - `toend.png`: ekraanipilt kolmest `ssh proxmoxN` sisselogimisest ilma paroolita.
 
 ```bash
-git clone <sinu-repo-URL>       # URL on su assignment-repo lehelt GitHubis
-cd <repo>
 git add .
 git commit -m "Lab 01: keskkond valmis, SSH kolme sõlme"
 git push

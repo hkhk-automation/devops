@@ -13,19 +13,19 @@ tags:
     Tunni lõpuks oskad selgitada järgmist:
 
     1. mis on automatiseerimine (arvuti teeb korduvat ja selgete reeglitega tööd alati ühtemoodi);
-    2. miks käsitsi tehtud töö ei skaleeru;
+    2. miks käsitsi tehtud töö muutub mahu kasvades aeglaseks ja veaohtlikuks;
     3. millal automatiseerida ja millal mitte;
     4. mille poolest erineb käsitsi tehtud töö koodiga tehtud tööst;
     5. mida tähendavad **idempotentsus** ning **deklaratiivne ja imperatiivne** lähenemine;
-    6. kuidas Git, Ansible, Docker, CI/CD ja Terraform aitavad teenuse arendusest tootmiskeskkonda viia.
+    6. kuidas Git, Ansible, Docker, CI/CD ja OpenTofu aitavad teenust arendada ja tootmiskeskkonda paigaldada.
 
-## 1. Kus käsitsi tehtud töö katki läheb
+## 1. Kus käsitsi tehtud töö ebaõnnestub
 
 Uus veebilehe versioon töötab arendaja arvutis ja testid õnnestuvad. Serverisse kopeerib selle administraator käsitsi. Ta teeb seda iga kord veidi erinevalt, sest juhend on ainult tema peas. Kui üks seadistus jääb tegemata, lakkab veebipood töötamast.
 
 Kood oli korras, valesti läks **protsess**: viis, kuidas kood serverisse jõuab. Failide kopeerimine, seadistamine ja taaskäivitus sõltusid ühe inimese mälust. Arvuti teeb samad sammud iga kord ühtemoodi ega unusta ühtegi.
 
-Lahendus on protsess, mis on kirjas koodina. Seda koodi saab üle vaadata ja see käib iga kord samamoodi.
+Lahendus on protsess, mis on kirjas koodina. Seda koodi saab üle vaadata ja see täidetakse iga kord samade reeglite järgi.
 
 ??? question "Kontrolli ennast"
     1. Kood töötas arendaja arvutis. Miks veebipood siiski lakkas töötamast?
@@ -38,14 +38,14 @@ Lahendus on protsess, mis on kirjas koodina. Seda koodi saab üle vaadata ja see
 
 - kordamine: sama tööd tuleb teha ikka ja jälle;
 - unustamine: mõni samm jääb tegemata;
-- erinevused: serverite seadistus hakkab aja jooksul üksteisest erinema;
+- erinevused: serverite seadistused hakkavad aja jooksul üksteisest erinema;
 - sõltuvus ühest inimesest: protsess on ühe inimese peas ja kirja panemata;
 - väsimus: väsinud inimene teeb rohkem vigu.
 
-Käsitöö ei skaleeru, sest inimene ei suuda sama tegevust sada korda täpselt ühtemoodi korrata. Arvuti suudab.
+Käsitsi tehtav töö muutub mahu kasvades ajamahukaks ning erinevuste ja eksimuste tõenäosus kasvab. Inimene ei suuda sama tegevust sada korda täpselt ühtemoodi korrata, arvuti suudab.
 
 ??? question "Kontrolli ennast"
-    1. Miks saab ühte serverit hallata käsitsi, aga sadat serverit mitte?
+    1. Miks muutub saja serveri käsitsi haldamine aeglaseks ja veaohtlikuks?
     2. Mida tähendab, et serverite seadistus hakkab üksteisest erinema?
     3. Miks on riskantne, kui protsessi tunneb ainult üks inimene?
 
@@ -134,7 +134,7 @@ Ansible'iga kirjeldatakse soovitud olek ühes failis ja see rakendub kõigile se
             name: nginx
             state: present
             update_cache: true
-        - name: nginx tootab ja kaivitub buutimisel
+        - name: nginx töötab ja käivitub süsteemi käivitamisel
           ansible.builtin.service:
             name: nginx
             state: started
@@ -150,9 +150,9 @@ Erinevused on koondatud tabelisse 5.1.
     | Tulemus võib serveriti erineda | Soovitud olek on kõigis serverites sama |
     | Teadmine on inimese peas | Teadmine on failis ja Giti ajaloos |
     | Vea leidmine sõltub mälust | Muudatusi saab üle vaadata ja võrrelda |
-    | Kordamine tähendab uut käsitööd | Sama konfiguratsiooni saab uuesti käivitada |
+    | Kordamine tähendab uut käsitööd | Sama konfiguratsiooni saab uuesti rakendada |
 
-Sama fail sobib nii kolme kui ka kolmesaja serveri jaoks, muuta tuleb ainult serverite nimekirja (inventari). Sellepärast õpitakse kursusel Giti, Ansible'it, Dockerit, CI/CD-d ja Terraformi.
+Sama fail sobib nii kolme kui ka kolmesaja serveri jaoks, muuta tuleb ainult serverite nimekirja (inventari). Sellepärast õpitakse kursusel Giti, Ansible'it, Dockerit, CI/CD-d ja OpenTofut.
 
 ??? question "Kontrolli ennast"
     1. Nimeta käsitsi tehtud versiooni kolm probleemi.
@@ -168,14 +168,14 @@ echo "x" >> fail    # EI ole idempotentne: iga käivitus lisab rea
 echo "x" > fail     # ON idempotentne: iga käivitus annab sama tulemuse
 ```
 
-Esimene käsk lisab igal käivitusel faili uue rea, teine kirjutab faili sisu üle. Hea automaatika on idempotentne: kui käivitad seda kümme korda, on süsteemi olek ikka sama ja midagi ei lähe katki.
+Esimene käsk lisab igal käivitusel faili uue rea, teine kirjutab faili sisu üle. Hea automaatika on idempotentne: kui soovitud olek on saavutatud, ei muuda sama toimingu kordamine süsteemi olekut. See ei tähenda, et toiming oleks igas olukorras ohutu: näiteks faili ülekirjutamine võib eemaldada vajaliku sisu.
 
 Ansible on üles ehitatud just sellele põhimõttele. Playbook'is kirjeldatakse näiteks, et teenus peab olema käivitatud. Kui teenus juba töötab, ei tee Ansible midagi, ja kui ei tööta, käivitab Ansible selle. Selline kirjeldus, mis ütleb, milline süsteem peab olema, on **soovitud olek**.
 
 ??? question "Kontrolli ennast"
     1. Mida tähendab idempotentne?
     2. Miks `echo >>` ei ole idempotentne, aga `echo >` on?
-    3. Miks võib Ansible'i playbook'i julgelt uuesti käivitada?
+    3. Millistel tingimustel ei tee Ansible'i playbook'i korduv käivitamine uusi muudatusi?
 
 ## 7. Deklaratiivne ja imperatiivne lähenemine
 
@@ -200,11 +200,11 @@ Automatiseerimine ei lahenda ainult tehnilist probleemi. Kui arendaja kirjutab k
 
 Lühidalt:
 
-- enne DevOpsi töötasid arendus (**Dev**) ja käitus (**Ops**) sageli teineteisest eraldi;
+- traditsioonilises töökorralduses töötasid arendus (**Dev**) ja käitus (**Ops**) sageli teineteisest eraldi;
 - arendus soovis muudatusi kiiresti välja anda, käitus soovis stabiilsust;
 - kui arendus andis valmis koodi lihtsalt käitusele üle („viskas üle müüri“), olid väljalasked aeglased ja riskantsed ning vigade korral otsiti süüdlast;
 - DevOps ühendab koostöö, jagatud vastutuse, automatiseerimise, mõõtmise ja teadmiste jagamise;
-- DevOps ei ole üks tööriist, eraldi tiim ega ametinimetus.
+- DevOps ei tähenda üksnes tööriista, tiimi või ametinimetust. Selle keskmes on arenduse ja käituse koostöö, ühine vastutus ning kiire tagasiside.
 
 DevOpsi päritolu, CAMS-mudel, SRE, platvormi-inseneeria ja teised Ops-valdkonnad on lehe lõpus jaotises [Taust ja edasijõudnutele](#taust-ja-edasijoudnutele).
 
@@ -219,7 +219,7 @@ DevOpsi päritolu, CAMS-mudel, SRE, platvormi-inseneeria ja teised Ops-valdkonna
 
 IaC ning automatiseeritud ja üle vaadatud juurutus oleksid osas 1 kirjeldatud vea tõenäosust tunduvalt vähendanud. Ka automaatikas võib olla vigu, kuid siis on viga nähtav ja korratav ega ole peidus ühe inimese mälus.
 
-Kursuse tööriistad moodustavad ühe tarneahela:
+Kursuse tööriistad tulevad selles järjekorras ja igaüks lahendab oma osa:
 
 <figure markdown="span">
 ```mermaid
@@ -227,21 +227,21 @@ Kursuse tööriistad moodustavad ühe tarneahela:
 graph LR
     A[Kood] -->|Git| B[Meeskonnatöö]
     B -->|Ansible| C[Server soovitud olekus]
-    C -->|Docker| D[Töötab kõikjal]
+    C -->|Docker| D[Rakendus koos sõltuvustega]
     D -->|GitHub Actions| E[Testid + juurutus]
-    E -->|Terraform| F[Infra koodis]
+    E -->|OpenTofu| F[Taristu koodis]
 ```
-  <figcaption>Joonis 9.1. Kursuse tööriistad ühe tarneahela osadena (Talvik, 2025).</figcaption>
+  <figcaption>Joonis 9.1. Kursuse õpiteekond: versioonihaldusest taristu automatiseerimiseni (Talvik, 2025).</figcaption>
 </figure>
 
 ??? note "Tabel 9.1. Kursuse tööriistad ja nädalad"
-    | Tööriist | Millist käsitöö probleemi lahendab | Kursuses |
+    | Tööriist | Millist käsitöö probleemi lahendab | Kursusel |
     |---|---|---|
     | Git | Kes muutis, mida ja millal | Nädal 2 |
-    | Ansible | Sama seadistus paljudes masinates | Nädal 3-4 |
-    | Docker | Rakendus käivitub igal pool ühtemoodi („minu arvutis töötas“) | Nädal 5-6 |
-    | GitHub Actions | Testimine ja juurutus ei sõltu kellegi õhtusest käsitööst | Nädal 7-8 |
-    | Terraform | Ka infrastruktuur on kirjeldatud, üle vaadatud ja korratav | Nädal 10-11 |
+    | Ansible | Sama seadistus paljudes masinates | Nädalad 3–4 |
+    | Docker | Rakendus käivitub igal pool ühtemoodi („minu arvutis töötas“) | Nädalad 5–6 |
+    | GitHub Actions | Testimine ja juurutus ei sõltu kellegi õhtusest käsitööst | Nädalad 7–8 |
+    | OpenTofu ja Terraform | Ka taristu on kirjeldatud, üle vaadatud ja korratav | Nädalad 10–11 |
 
 13. nädalal ehitad kogu ahela ise.
 
@@ -257,7 +257,7 @@ graph LR
     |---|---|
     | Automatiseerimine | Arvuti teeb korduvat tööd reeglite järgi ja alati ühtemoodi |
     | Miks käsitöö ei skaleeru | Kordamine, unustamine, erinevused, sõltuvus ühest inimesest, väsimus |
-    | Kolme korra reegel | Kui toiming on paar korda kordunud, tasub see automatiseerida |
+    | Kolme korra reegel | Korduva toimingu puhul tasub hinnata automatiseerimise kasu, kulu ja riske |
     | Automatiseeritud viga | Viga levib kiiremini ja suuremas mahus, seega tuleb protsess enne korda teha |
     | Idempotentsus | Sama toiming mitu korda järjest annab sama tulemuse |
     | Deklaratiivne | Kirjeldatakse soovitud olekut |
@@ -265,7 +265,7 @@ graph LR
     | IaC | Infrastruktuur koodina |
 
 ??? question "Lõplik kontroll: kolm põhiküsimust"
-    1. Miks käsitsi tehtud IT-töö ei skaleeru?
+    1. Miks muutub käsitsi tehtud IT-töö mahu kasvades aeglaseks ja veaohtlikuks?
     2. Miks automatiseerimine ei ole lihtsalt „kiirem käsitöö“?
     3. Kuidas viivad Git, Ansible, Docker ja CI/CD teenuse arendusest tootmiskeskkonda?
 
@@ -296,11 +296,11 @@ Neist teemadest on lihtsam aru saada pärast seda, kui juurutus, konveier, konfi
     | Müüt | Miks see ei pea paika |
     |---|---|
     | ametinimetus („DevOps engineer“) | Nimetus tähistab liikumist; „arendaja ja süsteemiadministraator ühe palga eest“ ei skaleeru |
-    | eraldi tiim | Uus „DevOpsi tiim“ tekitab kahe eraldatud tiimi kõrvale kolmanda |
+    | eraldi tiim | Eraldi tiim ei lahenda koostööprobleemi, kui vastutus ja töökorraldus jäävad killustatuks |
     | tööriistad | Tööriistad aitavad põhimõtteid rakendada, kuid ei defineeri DevOpsi |
     | automatiseerimine | Automatiseerimine on tulemus; ilma koostöökultuurita tehakse vigu lihtsalt kiiremini |
     | üks õige viis | Teise ettevõtte praktikate pime kopeerimine tekitab taas eraldatud tiime |
-    | poole vähem inimesi sama töö jaoks | DevOpsi eesmärk on kvaliteet ja kiirus. Palgakulu see ei vähenda |
+    | poole vähem inimesi sama töö jaoks | DevOpsi eesmärk on kvaliteet ja kiirus, mitte töötajate arvu vähendamine |
 
     *Tabel. DevOpsi müüdid (Davis & Daniels, 2016).*
 
@@ -335,7 +335,7 @@ Neist teemadest on lihtsam aru saada pärast seda, kui juurutus, konveier, konfi
 
     Liide `-Ops` ei tähenda automaatselt uut ametit, tiimi ega tööriista. Tavaliselt tähendab see, et samu põhimõtteid (koostöö, automatiseerimine, mõõtmine, tagasiside) rakendatakse teises valdkonnas.
 
-    DevSecOps ei ole DevOpsi järgmine versioon. See tähendab DevOpsi põhimõtete rakendamist turvalisusele: turvalisus on tarneahela osa algusest peale ega ole ainult kontroll lõpus. Näiteks skannitakse konveieris sõltuvusi ja otsitakse koodi sattunud salasõnu (secret'eid).
+    DevSecOps ei ole DevOpsi järgmine versioon. See tähendab DevOpsi põhimõtete rakendamist turvalisusele: turvalisus on tarneahela osa algusest peale ega ole ainult kontroll lõpus. Näiteks skannitakse konveieris sõltuvusi ja otsitakse koodi sattunud saladusi, näiteks paroole ja tokeneid.
 
 ??? info "DevOps, SRE ja platvormi-inseneeria"
     | Distsipliin | Mis see on | Põhimõisted |
@@ -353,9 +353,9 @@ Neist teemadest on lihtsam aru saada pärast seda, kui juurutus, konveier, konfi
     - **SLO** on eesmärk, näiteks 99,9% päringutest õnnestub.
     - **Veaeelarve** on 100% ja SLO vahe ehk lubatud ebaõnnestumiste osa.
 
-    Näide: SLO on 99,9% kuus. Kuus on umbes 30 päeva ehk 43 200 minutit, seega on veaeelarve 0,1% × 43 200 ehk umbes 43 minutit kuus. Nii kaua tohib teenus kuu jooksul maas olla.
+    Näide: mõõdame teenuse kättesaadavust aja järgi. SLO on 99,9% 30 päeva jooksul. 30 päeva on 43 200 minutit, seega on veaeelarve 0,1% × 43 200 ehk umbes 43 minutit. Nii kaua tohib teenus kuu jooksul maas olla. Kui SLO mõõdab õnnestunud päringuid, loetakse veaeelarvet ebaõnnestunud päringutes, mitte minutites.
 
-    Kui veaeelarve on ära kasutatud, peatatakse uute funktsioonide väljalase ja tiim tegeleb stabiilsusega. Võrdluseks: 99% korral on veaeelarve umbes 7,2 tundi kuus, 99,99% korral umbes 4,3 minutit. Iga lisanduv üheksa muudab nõude kümme korda rangemaks ja kallimaks.
+    Kui veaeelarve on ära kasutatud, peatatakse uute funktsioonide väljalase ja tiim tegeleb stabiilsusega. Võrdluseks: 99% korral on veaeelarve umbes 7,2 tundi kuus, 99,99% korral umbes 4,3 minutit. Iga lisanduv üheksa vähendab lubatud ebaõnnestumisi kümme korda ja nõuab tavaliselt rohkem tööd.
 
 ??? info "AIOps, MLOps ja agentne AIOps"
     **AIOps** (AI for IT Operations) tähendab masinõppe rakendamist käituse andmetele. Lahendatav probleem on **häireväsimus**: kui häireid on liiga palju, jääb kõige olulisem neist teiste vahele ja rikke lahendamine võtab kauem aega (MTTR kasvab). AIOpsil on kolm etappi: andmete kogumine ja puhastamine, masinõpe ja analüüs (anomaaliad, algpõhjuse analüüs ehk RCA) ning automaatne reageerimine ([Red Hat: What is AIOps](https://www.redhat.com/en/topics/ai/what-is-aiops)).
@@ -367,7 +367,7 @@ Neist teemadest on lihtsam aru saada pärast seda, kui juurutus, konveier, konfi
     AIOps, MLOps ja agentne AIOps ei ole järjestikused küpsusastmed. Need on paralleelsed lähenemised.
 
 ??? info "Automatiseerimine ei lahenda kõike"
-    Automatiseerimine ilma protsessi mõistmata suurendab riski. Käsitsi tehtud viga mõjutab ühte serverit, automatiseeritud viga mõjutab kõiki servereid korraga.
+    Automatiseerimine ilma protsessi mõistmata suurendab riski. Sama vigane muudatus võib automaatikaga jõuda kiiresti paljudesse serveritesse. Seepärast katsetatakse muudatusi enne ja rakendatakse neid alguses väiksemale osale.
 
     Näide lennundusest: 2013. aastal tabas Asiana Airlinesi lend 214 San Francisco lennujaamas maandumisel kaldakindlustust. Üks põhjus oli see, et piloodid usaldasid automaatikat, mille tööd nad täielikult ei mõistnud. James Reason on kirjeldanud, et automaatika loojad tekitasid tahtmatult uusi ja tõsisemaid veatüüpe. Automatiseeri alles siis, kui mõistad protsessi. Vaata ka [XKCD 1205](https://xkcd.com/1205).
 
@@ -388,7 +388,7 @@ Neist teemadest on lihtsam aru saada pärast seda, kui juurutus, konveier, konfi
     - **Ansible:** deklaratiivne konfiguratsioonihalduse tööriist, mis töötab üle SSH.
     - **Blameless:** töökultuur, kus rikke järel uuritakse süsteemi ega otsita süüdlast.
     - **CAMS:** Culture, Automation, Measurement, Sharing.
-    - **CI/CD:** koodi automaatne testimine (CI) ja juurutamine (CD).
+    - **CI/CD:** iga muudatuse automaatne kontroll (CI) ning pidev tarne või pidev paigaldus (CD).
     - **Deklaratiivne:** kirjeldatakse soovitud olekut.
     - **Deploy (juurutus):** koodi viimine serverisse.
     - **DevOps:** töökultuur ja põhimõtted, mis ühendavad arenduse ja käituse.
@@ -408,6 +408,6 @@ Neist teemadest on lihtsam aru saada pärast seda, kui juurutus, konveier, konfi
     - **SecOps:** turvalisuse lõimimine käitusse ja arendusse.
     - **SLI / SLO:** mõõdik ja eesmärk.
     - **SRE:** Google'ist alguse saanud töökindluse inseneeria.
-    - **Terraform:** deklaratiivne IaC tööriist.
+    - **Terraform, OpenTofu:** deklaratiivsed IaC tööriistad (OpenTofu on Terraformi avatud lähtekoodiga haru).
     - **Toil:** korduv käsitsi tehtav töö, mis ei loo püsivat väärtust.
     - **Veaeelarve:** lubatud ebaõnnestumiste osa, 100% ja SLO vahe.
