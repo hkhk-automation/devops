@@ -7,7 +7,7 @@ tags:
 
 # Praktikum: Docker
 
-**Eeldused:** loeng on läbitud (image ≠ konteiner, Dockerfile, build/run). Kui midagi on segane, mine [tagasi loengusse](lecture.md). Siit edasi on ainult praktiline töö, teooriat ei korrata.
+**Eeldused:** loeng on läbitud (image ≠ konteiner, Dockerfile, build/run). Kui midagi on segane, mine [tagasi loengusse](lecture.md).
 
 **Keskkond:** sinu kooli AlmaLinuxi VM (Proxmox), SSH ja VS Code. `localhost` tähendab VM-i, kus Docker töötab. Brauseris ava `http://<VM-IP>:8080`.
 
@@ -23,39 +23,12 @@ Kodutöös paigaldab Ansible sinu Docker Hubi image'i serverisse.
     4. Kasutad vigade otsimiseks `docker ps` ja `docker logs` väljundit
     5. Taastad puhta seisu pärast seda, kui oled ise midagi katki teinud
 
-## Mida sa täna ehitad
-
-Vaata enne alustamist seda pilti. Praktikumi lõpuks on sul kõik see olemas ja töötab. Kui kaotad järje, tule siia tagasi ja vaata, millise kasti juures sa oled.
+Täna ehitad Dockeriga image'i, käivitad sellest konteinereid, saadad image'i Docker Hubi ja käivitad selle teises masinas Podmaniga.
 
 <figure markdown="span">
   ![Sinu arvutist SSH ja brauser Alma VM 1-sse, kus Docker käitab konteinereid web1 8080, web2 8081, turve, flask1 5000, multistage 8084, bind 8083 ja volume'i andmed; image läheb push'iga Docker Hubi ja sealt pull'iga Alma VM 2-sse, kus Podman käitab sama image'i](../images/n05_labi_ylevaade.svg)
   <figcaption>Joonis 5.9. Praktikumi tervikpilt: üks image liigub sinu VM-ist Docker Hubi ja sealt teise VM-i. Iga kast on üks praktikumi osa (Talvik, 2026).</figcaption>
 </figure>
-
-Teekond, neli plokki:
-
-<figure markdown="span">
-```mermaid
-%%{init: {'theme':'base','themeVariables':{'primaryColor':'#ede7f6','primaryBorderColor':'#5e35b1','primaryTextColor':'#212121','lineColor':'#7e57c2'}}}%%
-graph LR
-    subgraph A[1 · Ettevalmistus]
-      A0[0 Docker] --> A1[0.2 VS Code] --> A2[0.3 Docker Hub] --> A3[0.5 Tag'id]
-    end
-    subgraph B[2 · Esimene image]
-      B1[1–2 build] --> B2[3–4 uus build] --> B3[5–7 vead + koristus]
-    end
-    subgraph C[3 · Turvaline ja jagatud]
-      C1[8 USER] --> C2[9 push Hubi]
-    end
-    subgraph D[4 · Tegelik rakendus]
-      D1[10 Flask] --> D2[11 kihid] --> D3[12 multi-stage] --> D4[13 andmed] --> D5[14 Podman]
-    end
-    A --> B --> C --> D
-```
-  <figcaption>Joonis 5.10. Praktikumi järjekord. Iga ploki lõpuks peab midagi töötama, enne seda ära järgmise plokiga alusta (Talvik, 2026).</figcaption>
-</figure>
-
-Sa ei kopeeri valmis lahendust, sa ehitad, teed meelega vigu ja saad aru, miks need tekivad. Iga samm lisab ainult ühe uue asja. Kui tahad tervet faili korraga kopeerida, siis see praktikum pole selleks mõeldud.
 
 ## Osa 0 · Docker VM-i peale
 

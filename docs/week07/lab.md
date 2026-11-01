@@ -34,7 +34,7 @@ Praktikumis on kahte tüüpi küsimusi:
 
 - **Leia dokumentatsioonist:** küsimus, millele leiad vastuse GitHubi dokumentatsioonist. Tavaliselt on lehe link küsimuse juures. Mõne küsimuse juures on ainult dokumentatsiooni osa nimi ja lehe leiad ise. Vastus on kokkuvolditud plokis **Vastus**. Dokumentatsiooni osad on kirjeldatud loengu [§6](lecture.md#6-kust-leida-vastus-github-actionsi-dokumentatsioon).
 
-Joonisel on kõik, mis praktikumi lõpuks valmis on. Kui kaotad järje, vaata siit, millise osa juures oled.
+Joonisel on see, mis praktikumi lõpuks valmis on.
 
 <figure markdown="span">
   ![Vasakul õppija virtuaalmasin: Classroomi repositooriumis flask/app.py, test_app.py ja ci.yml, virtuaalkeskkonnas pytest, teegi requests näide ning GitLabi ja Jenkinsi võrdlus. git push viib GitHubi, kus pull request n07-ci käivitab Actionsis töö test (checkout, setup-python, pip install, pytest) ja selle järel töö konteiner (docker build, run, curl /health). Kui mõlemad on rohelised, on liitmine lubatud. Kui üks on punane, keelab haru main ruleset liitmise](../images/n07_labi_ylevaade.svg)

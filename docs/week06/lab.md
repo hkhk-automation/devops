@@ -21,8 +21,6 @@ tags:
     4. Selgitad miks andmed lähevad volume'i, mitte konteinerisse: ja tõestad seda
     5. Taastad puhta seisu ise tehtud sasi järel
 
-Sa ei kopeeri valmis `docker-compose.yml`-i. Sa ehitad selle teenus haaval, lõhud igal võtmekohal meelega, ja saad aru miks. Tervet faili näed üks kord: edasi ainult "lisa see teenus" / "lisa need read".
-
 ## Osa 1 · Baas: üks teenus
 
 Tee uus kaust ja kopeeri sinna nädal 5 Flaski rakendus (`app.py`, `requirements.txt`, `Dockerfile`) nimega `app`. Käivita, et see ikka töötab:
