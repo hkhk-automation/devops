@@ -39,7 +39,7 @@
     <rect x="650" y="315" width="200" height="110" rx="8" fill="#ede7f6"/>
     <text x="664" y="340">1 checkout</text><text x="664" y="362">2 docker build</text><text x="664" y="384">3 docker login</text><text x="664" y="406">4 docker push</text>
   </g>
-  <text x="450" y="450" text-anchor="middle" font-size="12" fill="#616161">sammud (steps) käivad töö sees järjest; uses: on valmis action, run: on käsk</text>
+  <text x="450" y="450" text-anchor="middle" font-size="12" fill="#616161">sammud käivituvad töö sees järjest; uses: on valmis action, run: on käsk</text>
 
   <rect x="520" y="70" width="360" height="115" rx="10" fill="#fff8e1" stroke="#ffb300"/>
   <text x="540" y="96" font-size="14" font-weight="700" fill="#e65100">Ilma needs'ita</text>

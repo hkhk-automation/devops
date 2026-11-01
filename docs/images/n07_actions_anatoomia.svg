@@ -2,7 +2,7 @@
   <defs>
     <marker id="a7" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#7e57c2"/></marker>
   </defs>
-  <text x="480" y="30" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">GitHub Actions anatoomia, mis rida mida tähendab</text>
+  <text x="480" y="30" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">GitHub Actionsi osad: mida iga rida tähendab</text>
 
   <!-- YAML -->
   <rect x="20" y="52" width="400" height="448" rx="12" fill="#263238"/>
@@ -38,33 +38,33 @@
   <!-- legend / meaning -->
   <g font-size="13">
     <rect x="450" y="88" width="490" height="76" rx="10" fill="#fff3e0" stroke="#ffa726" stroke-width="2"/>
-    <text x="466" y="112" font-weight="700" fill="#e65100">Event (trigger), millal?</text>
+    <text x="466" y="112" font-weight="700" fill="#e65100">Sündmus: millal?</text>
     <text x="466" y="132" font-size="12" fill="#bf360c">push, pull_request, ajastus (schedule), käsitsi (workflow_dispatch)</text>
-    <text x="466" y="150" font-size="12" fill="#bf360c">Üks repo võib sisaldada mitut workflow'd.</text>
+    <text x="466" y="150" font-size="12" fill="#bf360c">Repositooriumis võib olla mitu töövoogu.</text>
 
     <rect x="450" y="176" width="490" height="76" rx="10" fill="#ede7f6" stroke="#7e57c2" stroke-width="2"/>
-    <text x="466" y="200" font-weight="700" fill="#311b92">Job, sammude rühm ühel masinal</text>
-    <text x="466" y="220" font-size="12" fill="#5e35b1">Job'id jooksevad vaikimisi paralleelselt, igaüks oma masinas.</text>
+    <text x="466" y="200" font-weight="700" fill="#311b92">Töö: sammude rühm ühes masinas</text>
+    <text x="466" y="220" font-size="12" fill="#5e35b1">Tööd käivituvad vaikimisi korraga, igaüks oma masinas.</text>
     <text x="466" y="238" font-size="12" fill="#5e35b1">needs: paneb need järjekorda.</text>
 
     <rect x="450" y="264" width="490" height="60" rx="10" fill="#e3f2fd" stroke="#1e88e5" stroke-width="2"/>
-    <text x="466" y="288" font-weight="700" fill="#0d47a1">Runner, masin, kus job jookseb</text>
+    <text x="466" y="288" font-weight="700" fill="#0d47a1">Runner: masin, kus töö käivitub</text>
     <text x="466" y="308" font-size="12" fill="#1565c0">GitHubi värske VM (Linux, Windows, macOS) või sinu enda server</text>
 
     <rect x="450" y="336" width="236" height="104" rx="10" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
-    <text x="466" y="360" font-weight="700" fill="#1b5e20">Step: uses</text>
+    <text x="466" y="360" font-weight="700" fill="#1b5e20">Samm: uses</text>
     <text x="466" y="380" font-size="12" fill="#2e7d32">valmis action</text>
     <text x="466" y="398" font-size="12" fill="#2e7d32">kellegi teise kood,</text>
     <text x="466" y="416" font-size="12" fill="#2e7d32">Marketplace'ist</text>
 
     <rect x="704" y="336" width="236" height="104" rx="10" fill="#ffebee" stroke="#e53935" stroke-width="2"/>
-    <text x="720" y="360" font-weight="700" fill="#b71c1c">Step: run</text>
-    <text x="720" y="380" font-size="12" fill="#c62828">tavaline bash-käsk,</text>
+    <text x="720" y="360" font-weight="700" fill="#b71c1c">Samm: run</text>
+    <text x="720" y="380" font-size="12" fill="#c62828">tavaline Bashi käsk,</text>
     <text x="720" y="398" font-size="12" fill="#c62828">sama mis sinu terminalis</text>
-    <text x="720" y="416" font-size="12" fill="#c62828">exit code ≠ 0 → punane</text>
+    <text x="720" y="416" font-size="12" fill="#c62828">väljumiskood ≠ 0: punane</text>
 
-    <text x="695" y="486" text-anchor="middle" font-size="13" font-weight="700" fill="#4527a0">Event → Workflow → Job(id) → Runner → Step(id)</text>
-    <text x="695" y="506" text-anchor="middle" font-size="12" fill="#5e35b1">sammud ühes job'is jagavad sama masinat ja faile</text>
+    <text x="695" y="486" text-anchor="middle" font-size="13" font-weight="700" fill="#4527a0">sündmus → töövoog → töö → runner → samm</text>
+    <text x="695" y="506" text-anchor="middle" font-size="12" fill="#5e35b1">ühe töö sammud kasutavad sama masinat ja faile</text>
   </g>
   <g stroke="#7e57c2" stroke-width="1.5" stroke-dasharray="4 3" fill="none">
     <path d="M412,147 L446,126"/>

@@ -7,11 +7,9 @@ tags:
 
 # GitHub Actions juhend
 
-See leht on **teatmik**. N7 ja N8 praktikumis kirjutad töövoo samm haaval ja iga uus võti on seal juhendis selgitatud. Kui praktikumis või kodutöös tekib küsimus, mida mõni võti teeb või miks käivitus on punane, otsi vastust kõigepealt siit ja seejärel ametlikust dokumentatsioonist (lingid on iga osa juures ja lehe lõpus). Lehte ei pea pähe õppima.
+Siin on ühel lehel GitHub Actionsi põhimõisted, töövoo süntaks, näited ja veaotsing. Kui N7 või N8 praktikumis tekib küsimus, mida mõni võti teeb või miks käivitus on punane, otsi vastust siit ja seejärel ametlikust dokumentatsioonist, mille lingid on iga osa juures. Vaja on GitHubi kontot, Giti põhikäske (`add`, `commit`, `push`) ja YAML-i põhireegleid ([N7 loeng §5](week07/lecture.md#yaml-i-reeglid)).
 
 Ülesehitus järgib freeCodeCampi artiklit [Learn to Use GitHub Actions: a Step-by-Step Guide](https://www.freecodecamp.org/news/learn-to-use-github-actions-step-by-step-guide/), mida võid lugeda ingliskeelse lisamaterjalina. Näited on selle kursuse omad: Pythoni testid, Dockeri image ja MkDocsi sait.
-
-**Eeldused:** GitHubi konto ja repositoorium, Giti põhikäsud (`add`, `commit`, `push`, N2) ning YAML-i põhireeglid ([N7 loeng §5](week07/lecture.md#yaml-i-reeglid)).
 
 ## 1. Põhimõisted
 
@@ -19,7 +17,7 @@ See leht on **teatmik**. N7 ja N8 praktikumis kirjutad töövoo samm haaval ja i
 
 **Sündmus** (event) käivitab töövoo. Sündmus on näiteks `push`, uus pull request või kellaaeg. Paljudel sündmustel on **tegevuse tüübid** (activity types). Näiteks pull request võib olla avatud (`opened`), uuendatud (`synchronize`) või suletud (`closed`), ja võtmega `types` saad valida, millise tegevuse peale töövoog käivitub.
 
-**Töö** (job) on sammude rühm, mis tehakse ühes runneris. Ühe töövoo tööd käivituvad vaikimisi **korraga** (paralleelselt). Kui töö peab ootama teise töö lõppu, kirjutatakse selle juurde `needs`.
+**Töö** (job) on sammude rühm, mis tehakse ühes runneris. Ühe töövoo tööd käivituvad vaikimisi korraga (paralleelselt). Kui töö peab ootama teise töö lõppu, kirjutatakse selle juurde `needs`.
 
 **Samm** (step) on üks käsk (`run`) või üks valmis action (`uses`). Ühe töö sammud tehakse järjest samas masinas, seega näeb järgmine samm eelmise sammu loodud faile.
 
@@ -50,9 +48,13 @@ Ametlik kirjeldus on lehel [Understanding GitHub Actions](https://docs.github.co
 
 Töövoo saab luua kahel viisil. Mõlemal juhul tekib repositooriumi sama fail.
 
-**GitHubi veebis.** Ava repositooriumi vahekaart **Actions** ja vajuta **New workflow**. GitHub pakub malle repositooriumi koodi keele järgi, näiteks Pythoni repositooriumile Pythoni testide malli. Vali mall, vajuta **Configure**, muuda faili vajaduse korral ja vajuta **Commit changes**. Mallid on kirjeldatud lehel [Use workflow templates](https://docs.github.com/en/actions/how-tos/write-workflows/use-workflow-templates), kus on ka pildid.
+### GitHubi veebis
 
-**Oma redaktoris.** Sellel kursusel kasutame seda viisi. Loo fail `.github/workflows/<nimi>.yml`, salvesta see repositooriumi ja saada GitHubi:
+Ava repositooriumi vahekaart **Actions** ja vajuta **New workflow**. GitHub pakub malle repositooriumi koodi keele järgi, näiteks Pythoni repositooriumile Pythoni testide malli. Vali mall, vajuta **Configure**, muuda faili vajaduse korral ja vajuta **Commit changes**. Mallid on kirjeldatud lehel [Use workflow templates](https://docs.github.com/en/actions/how-tos/write-workflows/use-workflow-templates), kus on ka pildid.
+
+### Oma redaktoris
+
+Sellel kursusel kasutame seda viisi. Loo fail `.github/workflows/<nimi>.yml`, salvesta see repositooriumi ja saada GitHubi:
 
 ```bash
 mkdir -p .github/workflows
@@ -122,7 +124,7 @@ jobs:
 6. Runner on tühi. `actions/checkout` toob repositooriumi failid runnerisse. Ilma selleta ei ole kausta `flask` olemas.
 7. Kui mõni test kukub, lõpetab `pytest` väljumiskoodiga 1. Samm ja töö muutuvad punaseks ning töö `konteiner` ei käivitu.
 8. Töö `konteiner` käivitub alles siis, kui `test` on roheline. Ilma võtmeta `needs` käivituksid mõlemad korraga.
-9. Käsitsi käivitamisel tehakse ainult testid. Töö `konteiner` on käivituse lehel hall ja märgitud **skipped**.
+9. Käsitsi käivitamisel tehakse ainult testid. Töö `konteiner` on käivituse lehel hall ja märgitud `skipped`.
 10. Märk `|` tähendab mitmerealist teksti. Iga rida on eraldi käsk samas shellis.
 11. Samm käivitub ainult siis, kui mõni eelmine samm kukkus. Konteineri logist näed, miks rakendus ei vastanud.
 
@@ -145,8 +147,8 @@ Kõik sündmused on lehel [Events that trigger workflows](https://docs.github.co
 ### Tööd
 
 - `jobs` all on töövoo tööd. Töö nime valid ise, näiteks `test`.
-- `runs-on` ütleb, mis masinas töö käib, tavaliselt `ubuntu-latest`.
-- `needs` paneb töö ootama teise töö lõppu. Ilma selleta käivad tööd korraga.
+- `runs-on` ütleb, mis masinas töö käivitub, tavaliselt `ubuntu-latest`.
+- `needs` paneb töö ootama teise töö lõppu. Ilma selleta käivituvad tööd korraga.
 - `if` käivitab töö ainult siis, kui tingimus kehtib, näiteks `if: github.event_name == 'push'`.
 
 ### Sammud
@@ -219,7 +221,7 @@ Teine töö samas käivituses saab artefakti kätte action'iga [`actions/downloa
 
 ### Dockeri image GHCR-i
 
-N8 töö `build-and-push` ehitab image'i ja saadab selle GitHubi registrisse GHCR. Siin on selle lühem kuju. Võti `permissions: packages: write` on vajalik, sest vaikimisi võib `GITHUB_TOKEN` registrist ainult lugeda (N8 viga 1). Täielik variant tag'ide ja vahemäluga on [N8 praktikumis](week08/lab.md).
+N8 töö `build-and-push` ehitab image'i ja saadab selle GitHubi registrisse GHCR. Siin on selle lühem kuju. Võti `permissions: packages: write` on vajalik, sest vaikimisi võib `GITHUB_TOKEN` registrist ainult lugeda. Täielik variant tag'ide ja vahemäluga on [N8 praktikumis](week08/lab.md).
 
 ??? example "Töö `build-and-push`"
 
@@ -306,7 +308,7 @@ Enne esimest käivitust vali repositooriumi seadetes **Settings** → **Pages** 
 
 ### Ajastatud kontroll: kas sait vastab
 
-Sündmus `schedule` käivitab töövoo ilma commit'ita. Allolev töövoog kontrollib iga päev kell 06:00 UTC, kas sait vastab. Kui `curl` saab vea, on käivitus punane ja GitHub saadab kirja kasutajale, kes cron-rea viimati muutis.
+Sündmus `schedule` käivitab töövoo ilma commit'ita. Allolev töövoog kontrollib iga päev kell 06:00 UTC, kas sait vastab. Kui `curl` saab vea, on käivitus punane ja GitHub saadab kirja kasutajale, kes cron-rida viimasena muutis.
 
 ??? example "Fail `.github/workflows/saidi-kontroll.yml`"
 
@@ -330,10 +332,10 @@ Sündmus `schedule` käivitab töövoo ilma commit'ita. Allolev töövoog kontro
 
 Iga töövoo muudatuse proovimiseks tuleb tavaliselt teha commit ja push ning oodata, kuni runner käivitub. Tööriist [act](https://github.com/nektos/act) käivitab töövoo sinu masinas Dockeri konteineris. Nii näed vea mõne sekundiga, ajalugu ei täitu katsetuste commit'idega ja GitHubi minuteid ei kulu. Kasutusjuhend on lehel [nektosact.com](https://nektosact.com/).
 
-!!! warning "Testimata kohapeal"
+!!! warning "Kursuse masinates proovimata"
     Seda osa ei ole kursuse masinates proovitud. Käsud on võetud act'i ametlikust juhendist (versioon v0.2.94).
 
-`act` vajab Dockerit. Kasuta masinat, kuhu paigaldasid Dockeri N5-s. Ametlik paigaldusskript paneb programmi kausta, mille annad valikuga `-b`:
+`act` vajab Dockerit. Kasuta masinat, kus Docker on paigaldatud. Ametlik paigaldusskript paneb programmi kausta, mille annad valikuga `-b`:
 
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash -s -- -b /usr/local/bin
@@ -367,31 +369,31 @@ Lõplik kontroll on ikkagi GitHubis: roheline `act` ei tähenda, et käivitus Gi
 
 Kui käivitus on punane, ava see vahekaardil **Actions**, vali punane töö ja ava punane samm. Loe logi viimased read, sest seal on veateade ja väljumiskood. Esimeses sammus **Set up job** on runneri versioon, action'ite versioonid ja lõik `GITHUB_TOKEN Permissions`.
 
-??? warning "Vahekaardil Actions ei ilmu käivitust"
-    Põhjus: fail ei ole kaustas `.github/workflows/` (näiteks `.github/workflow/`) või sündmus `on` ei vasta (vale haru, `branches` piirab). Vaata: faili tee ja võti `on`.
+??? warning "Kui vahekaardil Actions ei ilmu käivitust"
+    Fail ei ole kaustas `.github/workflows/` (näiteks on see kaustas `.github/workflow/`) või sündmus ei vasta võtmele `on` (vale haru või `branches` piirab). Kontrolli faili teed ja võtit `on`.
 
-??? warning "Invalid workflow file ja rea number"
-    Põhjus: YAML-i viga: tabulaator, vale taane, koolonile ei järgne tühikut. Vaata: näidatud rida failis.
+??? warning "Kui tuleb viga Invalid workflow file ja rea number"
+    Failis on YAML-i viga: tabulaator, vale taane või koolonile ei järgne tühikut. Vaata failis näidatud rida.
 
-??? warning "Nuppu Run workflow ei ole"
-    Põhjus: `workflow_dispatch` puudub või fail ei ole harus `main`. Vaata: haru `main` fail.
+??? warning "Kui nuppu Run workflow ei ole"
+    Sündmus `workflow_dispatch` puudub või fail ei ole harus `main`. Kontrolli faili harus `main`.
 
-??? warning "Unable to resolve action"
-    Põhjus: action'i nimes või versioonis on viga. Vaata: **Set up job**, action'i lehel **Releases**.
+??? warning "Kui tuleb viga Unable to resolve action"
+    Action'i nimes või versioonis on viga. Vaata sammu **Set up job** ja action'i lehel jaotist **Releases**.
 
-??? warning "Command not found"
-    Põhjus: runner on tühi, tööriist või kood on puudu. Vaata: kas enne on `checkout` või `setup-*` samm.
+??? warning "Kui tuleb viga command not found"
+    Runner on tühi ja tööriist või kood puudub. Kontrolli, kas enne seda on samm `checkout` või `setup-*`.
 
-??? warning "Process completed with exit code 1"
-    Põhjus: sammu käsk lõpetas veaga. Vaata: sama sammu logi read enne seda rida.
+??? warning "Kui tuleb viga Process completed with exit code 1"
+    Sammu käsk lõpetas veaga. Põhjus on sama sammu logis enne seda rida.
 
-??? warning "Denied või Resource not accessible by integration"
-    Põhjus: `GITHUB_TOKEN`-il ei ole õigust. Vaata: **Set up job** → `GITHUB_TOKEN Permissions`, võti `permissions`.
+??? warning "Kui tuleb viga denied või Resource not accessible by integration"
+    `GITHUB_TOKEN`-il ei ole vajalikku õigust. Vaata sammus **Set up job** lõiku `GITHUB_TOKEN Permissions` ja kontrolli võtit `permissions`.
 
-??? warning "Töö on hall ja skipped"
-    Põhjus: töö tingimus `if` ei kehtinud või `needs` töö kukkus. Vaata: võtmed `if` ja `needs`.
+??? warning "Kui töö on hall ja märgitud skipped"
+    Töö tingimus `if` ei kehtinud või kukkus töö, mida `needs` ootab. Kontrolli võtmeid `if` ja `needs`.
 
-Kui logist ei piisa, käivita töö uuesti nupuga **Re-run jobs** ja vali **Enable debug logging**. Siis näitab logi iga sammu kohta rohkem ridu ([Enable debug logging](https://docs.github.com/en/actions/how-tos/monitor-workflows/enable-debug-logging)). Rohkem näiteid on lehel [Troubleshoot workflows](https://docs.github.com/en/actions/how-tos/troubleshoot-workflows). Vea leidmise järjekorda (sümptom, hüpotees, tõend, parandus) kasutasime [N8 loengus](week08/lecture.md#7-vea-leidmine-sumptom-hupotees-toend-parandus).
+Kui logist ei piisa, käivita töö uuesti nupuga **Re-run jobs** ja vali **Enable debug logging**. Siis näitab logi iga sammu kohta rohkem ridu ([Enable debug logging](https://docs.github.com/en/actions/how-tos/monitor-workflows/enable-debug-logging)). Rohkem näiteid on lehel [Troubleshoot workflows](https://docs.github.com/en/actions/how-tos/troubleshoot-workflows). Vea leidmise järjekord (sümptom, hüpotees, tõend, parandus) on kirjeldatud [N8 loengus](week08/lecture.md#7-vea-leidmine-sumptom-hupotees-toend-parandus).
 
 ## 7. Hind
 

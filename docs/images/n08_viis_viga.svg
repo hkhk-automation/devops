@@ -19,8 +19,8 @@
   <circle cx="60" cy="80" r="13" fill="#c62828"/><text x="60" y="85" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">3</text>
   <text x="40" y="180" font-size="12" fill="#424242"><tspan font-weight="700" fill="#b71c1c">1</tspan> kirjutamisõigus</text>
   <text x="170" y="180" font-size="12" fill="#424242"><tspan font-weight="700" fill="#b71c1c">2</tspan> järjekord</text>
-  <text x="270" y="180" font-size="12" fill="#424242"><tspan font-weight="700" fill="#b71c1c">3</tspan> millal workflow käivitub</text>
-  <text x="40" y="198" font-size="11" fill="#616161">Viga 1 teete koos õpetajaga, vead 2 ja 3 paaris.</text>
+  <text x="270" y="180" font-size="12" fill="#424242"><tspan font-weight="700" fill="#b71c1c">3</tspan> millal töövoog käivitub</text>
+  <text x="40" y="198" font-size="11" fill="#616161">Vead 1–3 on töövoos, vead 4 ja 5 serveris.</text>
 
   <rect x="660" y="60" width="220" height="80" rx="12" fill="#fff3e0" stroke="#ef6c00" stroke-width="1.5"/>
   <text x="770" y="95" text-anchor="middle" font-size="16" font-weight="700" fill="#bf360c">GHCR</text>

@@ -9,15 +9,11 @@ tags:
 
 # Praktikum: katkine konveier korda
 
-N7 lõpus kontrollis konveier koodi ja konteinerit. Tänases repositooriumis on sama kood ja konveieris on kolmas töö `build-and-push`, mis peaks saatma image'i registrisse GHCR. Lisaks on skript, mis peaks image'i serveris käivitama. Mõlemas on vigu.
+Tänases repositooriumis on Flaski rakendus, selle testid ja konveier kolme tööga: `test` käivitab testid, `konteiner` kontrollib, kas konteiner vastab, ja `build-and-push` peaks saatma image'i registrisse GHCR. Lisaks on skript, mis peaks image'i serveris käivitama. Konveieris ja skriptis on vead, mille leiad ja parandad ükshaaval. Lõpus näitab server sama versiooni, mis on registris, ja viimases osas käivitad sama konveieri Jenkinsis.
 
-Leiad ja parandad vead ükshaaval. Lõpus näitab server sama versiooni, mis on registris. Viimases osas käivitad sama konveieri Jenkinsis.
-
-Töötad masinas `proxmox1` VS Code'i kaudu nagu N7-s. Serveri rollis on samuti `proxmox1`, sest seal töötab Docker (N5). Töökohas on server eraldi masin, aga käsud on samad.
+Töötad masinas `proxmox1` VS Code'i kaudu. Seal töötab Docker, seepärast on `proxmox1` ka serveri rollis. Töökohas on server eraldi masin, aga käsud on samad. Töövoo võtmete kirjelduse leiad [GitHub Actionsi teatmikust](../github-actions.md).
 
 **Edenemine:** laboritahvel <http://192.168.125.187:8091/> (VPN-iga).
-
-**Teatmik:** [GitHub Actions juhend](../github-actions.md)
 
 Iga vea juures on samad sammud samas järjekorras ([loengu §7](lecture.md#7-vea-leidmine-sumptom-hupotees-toend-parandus)):
 
@@ -26,7 +22,7 @@ Iga vea juures on samad sammud samas järjekorras ([loengu §7](lecture.md#7-vea
 - **Uuri:** kust leida tõend. Tõend kinnitab oletuse või lükkab selle ümber. Enne tõendit ära midagi muuda.
 - **Paranda** ja **Kontrolli:** tee üks muudatus ja vaata sama sümptomit uuesti. Põhjus ja parandus on kokkuvolditud plokis. Ava see alles siis, kui oled ise proovinud.
 - **Küsimus:** kirjuta README-sse üks lause ja vigade tabelisse üks rida.
-- **Issue:** iga vea kohta on repositooriumis issue (samm 1.4). Paranduse commit sulgeb selle.
+- **Issue:** iga vea kohta teed repositooriumis issue (samm 1.4). Paranduse commit sulgeb selle.
 
 ??? abstract "Õpiväljundid"
 
@@ -57,13 +53,13 @@ ls -a . flask server jenkins
 
 **Kontrolli**
 
-Kaustas `flask/` on N7 failid. Kaustas `server/` on skript `paigalda.sh`. Kaustas `jenkins/` on Jenkinsi `Dockerfile`. Ava `.github/workflows/ci.yml` ja leia kolm tööd. Kaks esimest on sinu N7 omad. Kolmas on uus.
+Kaustas `flask/` on rakendus ja testid. Kaustas `server/` on skript `paigalda.sh`. Kaustas `jenkins/` on Jenkinsi `Dockerfile`. Ava `.github/workflows/ci.yml` ja leia kolm tööd. Kaks esimest, `test` ja `konteiner`, käivitavad testid ja kontrollivad konteinerit. Kolmas, `build-and-push`, on uus.
 
 Rakendusel on uus aadress `/versioon`. Ava `flask/Dockerfile` ja leia read `ARG VERSIOON` ja `ENV VERSIOON`. Konveier annab ehitamisel siia commit'i lühiräsi ([loengu §3](lecture.md#3-tagid-rasi-ja-latest)).
 
 ### 1.2 Testid oma masinas
 
-Tee virtuaalkeskkond nagu N7 Osa 0-s ja käivita testid:
+Tee projektile virtuaalkeskkond (kaust `.venv`, kuhu paigaldatakse ainult selle projekti paketid) ja käivita testid:
 
 ```bash
 python3 -m venv .venv
@@ -86,7 +82,7 @@ git commit -m "N8: nimi README-sse"
 git push
 ```
 
-Push harusse `main` käivitab konveieri. Ava repositooriumis vahekaart **Actions** ja oota, kuni käivitus lõpeb. **Ära veel midagi paranda.**
+Push harusse `main` käivitab konveieri. Ava repositooriumis vahekaart **Actions** ja oota, kuni käivitus lõpeb. Ära veel midagi paranda.
 
 ### 1.4 Vigade issue'd
 
@@ -104,11 +100,11 @@ Repositooriumis on issue'de mall **Viga**. Iga vea juures toimi nii:
 
 Kui commit jõuab harusse `main`, sulgeb GitHub issue ise ja lisab sellele lingi commit'ile ([issue sulgemine commit'iga](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword)). Pull request'i puhul pane `Fixes #<number>` pull request'i kirjeldusse. Siis sulgub issue liitmisel. Pull request'id ja issue'd kasutavad sama numbrijada, seega ei ole issue numbrid alati järjest.
 
-Selle osa juhendis on commit'i käskudes ainult esimene rida. Teise rea `-m "Fixes #<number>"` lisa ise.
+Juhendi commit'i käskudes on ainult esimene rida. Teise rea `-m "Fixes #<number>"` lisa ise.
 
 ## Osa 2 · Viga 1: registrisse kirjutamine
 
-Sama viga nägid loengus. Tee nüüd samad sammud oma repositooriumis.
+Esimene viga on seotud tokeni õigustega, mida kirjeldab [loengu §4](lecture.md#4-oigused-github_token-ja-permissions).
 
 **Sümptom**
 
@@ -162,7 +158,7 @@ git log --oneline -1
 
 ??? warning "Kui `docker push` on ikka `denied`"
     - Kontrolli, et `permissions` on töö `build-and-push` all ja taane on sama mis real `runs-on`.
-    - Ava uuesti **Set up job**. Kui seal on `Packages: write` ja push ikka kukub, ütle õpetajale.
+    - Ava uuesti **Set up job**. Kui seal on `Packages: write` ja push ikka kukub, küsi õpetajalt abi.
     - Kui hoopis `actions/checkout` kukub (`Repository not found`), puudub `contents: read`.
 
 **Küsimus:** miks oli `GITHUB_TOKEN`-il vaikimisi õigus pakette ainult lugeda? (README küsimus 1 ja tabeli rida 1)
@@ -263,7 +259,7 @@ Kõik kolm tööd on rohelised ja järjest.
 
 ## Osa 4 · Viga 3: pull request jõuab registrisse
 
-N7-s läks kood harusse `main` pull request'i kaudu. Pull request'i koodi pole keegi veel üle vaadanud. Seega ei tohi see registrisse jõuda. Kontrolli, kas see nii on.
+Meeskonnas jõuab kood harusse `main` pull request'i kaudu. Pull request'i koodi pole keegi veel üle vaadanud. Seega ei tohi see registrisse jõuda. Kontrolli, kas see nii on.
 
 **Ülesanne**
 
@@ -282,7 +278,7 @@ git commit -m "N8: tervitus N8"
 git push -u origin n08-tervitus
 ```
 
-Ava GitHubis pull request `n08-tervitus` → `main`. **Ära seda veel liida.**
+Ava GitHubis pull request harust `n08-tervitus` harusse `main`. Ära seda veel liida.
 
 **Sümptom**
 
@@ -418,7 +414,7 @@ bash server/paigalda.sh
 
 ??? warning "Kui sisselogimine ei õnnestu"
     - `unauthorized: authentication required`: tokenil puudub õigus `read:packages` või kopeerisid selle poolikult. Tee uus token.
-    - `permission denied while trying to connect to the Docker daemon socket`: sinu kasutaja pole grupis `docker` (N5 Osa 0).
+    - `permission denied while trying to connect to the Docker daemon socket`: sinu kasutaja pole grupis `docker`. Lisa see käsuga `sudo usermod -aG docker $USER`, logi välja ja uuesti sisse.
 
 **Küsimus:** miks on serveri tokenil ainult õigus `read:packages`? (README küsimus 4 ja tabeli rida 4)
 
@@ -440,9 +436,9 @@ docker logs flask-cd
 Vaata `docker ps` veergu PORTS. Vaata logis rida `Running on`. Mis port on kummaski?
 
 ??? success "Põhjus ja parandus"
-    `curl` annab `curl: (56) Recv failure: Connection reset by peer` või `curl: (52) Empty reply from server`. Sama sümptomit nägid N5 Osa 10-s.
+    `curl` annab `curl: (56) Recv failure: Connection reset by peer` või `curl: (52) Empty reply from server`.
 
-    `docker ps` näitab `0.0.0.0:8088->80/tcp`. Logis on `Running on http://...:5000`. Skript suunab serveri pordi 8088 konteineri porti 80. Seal ei kuula keegi. Flask kuulab pordil 5000.
+    `docker ps` näitab `0.0.0.0:8088->80/tcp`. Logis on `Running on http://...:5000`. Skript suunab serveri pordi 8088 konteineri porti 80. Seal ei kuula ükski programm, Flask kuulab pordil 5000.
 
     Paranda failis `server/paigalda.sh` rida `docker run`:
 
@@ -532,13 +528,13 @@ git log --oneline -1
 
 `/versioon` vastus ja `git log --oneline -1` räsi on samad.
 
-**Küsimus:** tootmises läks viga käima. Kuidas leiad räsi järgi, mis commit selle tõi ja millise issue parandus seda puudutab? Kuidas lähed eelmisele versioonile tagasi?
+**Küsimus:** tootmises ilmus viga. Kuidas leiad räsi järgi, mis commit selle tõi ja millise issue parandus seda puudutab? Kuidas lähed eelmisele versioonile tagasi?
 
 ## Osa 6 · Sama konveier Jenkinsis
 
 GitHub Actions on teenus: GitHub haldab masinaid, mis konveierit käivitavad. **Jenkins** on programm, mille paigaldad ise ([loengu §8](lecture.md#8-cicd-tooriistad-ja-litsentsid)). Selles osas käivitad Jenkinsi konteinerina ja paned sinna sama konveieri: testid ja image'i ehituse.
 
-Jenkins töötab masinas `proxmox1`, sest seal on Docker. Masinas `proxmox2` on N5-st ainult Podman.
+Jenkins töötab masinas `proxmox1`, sest seal on Docker. Masinas `proxmox2` on ainult Podman.
 
 ### 6.1 Jenkinsi failid
 
@@ -597,7 +593,7 @@ docker run -d --name jenkins --restart unless-stopped \
 ??? note "Tabel 8.8. Jenkinsi konteineri võtmed"
     | Võti | Miks |
     |---|---|
-    | `-p 8081:8080` | Jenkins kuulab pordil 8080. Masinas on port 8080 N6 käes, seega kasutame 8081 |
+    | `-p 8081:8080` | Jenkins kuulab pordil 8080. Masinas on port 8080 N6 rakenduse kasutuses, seega kasutame 8081 |
     | `-v jenkins_home:/var/jenkins_home` | Jenkinsi seaded on volume'is. Need jäävad alles, kui konteiner tehakse uuesti |
     | `-v /var/run/docker.sock:...` | Jenkins saab kasutada masina Dockerit, et ehitada image'it |
     | `--group-add ...` | Jenkinsi kasutaja saab õiguse Dockeri soklit kasutada |
@@ -662,7 +658,7 @@ Käivitus on punane. Ava see ja vali **Pipeline Overview**. Plugin `pipeline-gra
     docker exec jenkins python3 --version
     ```
 
-3. Vaata tabelit 8.8. Kes paigaldas Pythoni GitHub Actionsis?
+3. Vaata tabelit 8.7. Kes paigaldas Pythoni GitHub Actionsis?
 
 ??? success "Põhjus ja parandus"
     Logis on rida `python3: not found`. Masinas `proxmox1` Python on, Jenkinsi konteineris mitte. GitHub Actionsis paigaldas Pythoni action `setup-python`. Jenkinsis peab selle paigaldama see, kes Jenkinsit haldab.
@@ -683,7 +679,7 @@ Käivitus on punane. Ava see ja vali **Pipeline Overview**. Plugin `pipeline-gra
 
 **Paranda**
 
-Image muutus. Ehita see uuesti ja tee konteiner uuesti, nagu N5 Osa 4-s. Seaded jäävad volume'isse alles:
+Image muutus. Ehita see uuesti ja tee konteiner uuesti. Seaded jäävad volume'isse alles:
 
 ```bash
 docker build -t minu-jenkins jenkins/
@@ -738,7 +734,7 @@ Vali **Manage Jenkins** → **Appearance**. Lõigus **Themes** vali `Dark` ja va
 
 Mõtle tagasi tabelile 8.7. GitHub Actionsis ei pidanud sa paigaldama serverit, plugin'eid ega Pythonit. Jenkinsis tegid kõike seda ise. Vastutasuks töötab Jenkins sinu võrgus ja seda saab seadistada nii, nagu firma vajab.
 
-## Osa 7 · Korrektne lahendus
+## Osa 7 · Võrdle lahendusega
 
 Kõik kuus parandust on nüüd sinu failides. Siin on need koos, nii nagu seda töökohas tehakse. Võrdle oma faile nendega. Kui midagi erineb, mõtle, kas sinu variant teeb sama asja. Näiteks `needs: [test, konteiner]` on samaväärne.
 
@@ -807,7 +803,7 @@ Praktikumis kirjutasime käsud ise, sest siis näed iga sammu eraldi logis. Tö�
     ```
 
     1.  Push käivitab töövoo ainult harus `main`. Teiste harude push ei ehita image'it (viga 3).
-    2.  Pull request'is käivituvad testid. N7 lukk vajab neid enne liitmist.
+    2.  Pull request'is käivituvad testid. Haru `main` kaitse vajab neid enne liitmist.
     3.  Image ehitatakse alles siis, kui `konteiner` on roheline. `konteiner` ootab omakorda `test`-i (viga 2).
     4.  Pull request'i käivituses jääb töö vahele. Registrisse jõuab ainult liidetud kood (viga 3).
     5.  Kirjutamisõigus registrisse ainult sellele tööle. `contents: read` on vajalik, et `actions/checkout` saaks koodi lugeda (viga 1).
@@ -870,7 +866,7 @@ curl localhost:8088/versioon
     | Rida skriptis `server/paigalda.sh` | Miks |
     |---|---|
     | `IMAGE="ghcr.io/hkhk-automation/${REPO,,}"` | sama nimi, mille konveier andis, väiketähtedega |
-    | `docker pull "$IMAGE:$TAG"` | server ei ehita, ta tõmbab registrist valmis image'i |
+    | `docker pull "$IMAGE:$TAG"` | server tõmbab registrist valmis image'i ja ei ehita seda ise |
     | `docker rm -f flask-cd` | vana konteiner eemaldatakse enne uue käivitamist |
     | `--restart unless-stopped` | konteiner käivitub uuesti ka pärast masina taaskäivitust |
     | `-p 8088:5000` | serveri port 8088 läheb konteineri porti 5000, kus Flask kuulab |
@@ -900,44 +896,18 @@ RUN jenkins-plugin-cli --plugins git workflow-aggregator pipeline-graph-view dar
 3.  Dockeri käsurea klient kopeeritakse ametlikust image'ist. Etapp `konteiner` kasutab seda.
 4.  Plugin'id paigaldatakse ehitamisel. Iga uus Jenkinsi konteiner on kohe samade plugin'itega.
 
-## Osa 8 · Töö esitamine
+## Töö esitamine
 
-**Ülesanne**
+Täida README-s vigade tabel ja vasta küsimustele 1–7. Sümptomi lahtrisse kopeeri rida logist või käsu väljundist, põhjus, parandus ja iga vastus on üks lühike lause.
 
-1. Täida README-s vigade tabel. Sümptomi lahtrisse kopeeri rida logist või käsu väljundist. Põhjus ja parandus on kumbki üks lühike lause.
-2. Vasta README küsimustele 1-7. Igaühele piisab ühest lausest.
-3. Salvesta kõik ja saada GitHubi:
+```bash
+git add README.md logid/server.txt
+git status --short
+git commit -m "N8: vigade tabel, vastused ja serveri logi"
+git push
+```
 
-    ```bash
-    git add README.md logid/server.txt
-    git status --short
-    git commit -m "N8: vigade tabel, vastused ja serveri logi"
-    git push
-    ```
-
-**Kontrolli**
-
-Töö on esitatud, kui kõik muudatused on GitHubis harus `main`. Automaatkontrolli tulemust näed vahekaardil **Actions** ja Classroom 50-s. Tahvlil on N8 vahelehel näha, mis masinas `proxmox1` töötab: sisselogimine `ghcr.io`-sse, image GHCR-ist, `/versioon` pordil 8088 ja Jenkins pordil 8081.
-
-??? note "Automaatkontroll (100 punkti)"
-
-    | Kontroll | Punktid |
-    |---|---|
-    | Failid olemas, N7 osa töötab, `logid/server.txt` olemas | 10 |
-    | Viga 1: `build-and-push` saab kirjutada GHCR-i, image'i nimi ja tag'id õiged | 15 |
-    | Viga 2: `build-and-push` ootab teste (`needs`) | 15 |
-    | Viga 3: push ainult harus `main`, pull request'is töö vahele (`if`) | 15 |
-    | Viga 5: `server/paigalda.sh` suunab pordi 5000 | 10 |
-    | `logid/server.txt`: image GHCR-ist, viimane rida on räsi | 10 |
-    | Nimi, vigade tabel ja küsimused README-s | 15 |
-    | Viga 6: `Jenkinsfile` korras, `jenkins/Dockerfile` paigaldab Pythoni | 10 |
-
-    Automaatkontroll ei ühendu sinu masinaga ega GHCR-iga. See loeb sinu faile ja käivitab teste. Viga 4 näitavad logi `logid/server.txt` ja tahvel.
-
-??? warning "Kui automaatkontroll annab vea"
-    - `pytest kukub`: tervitus failis `flask/app.py` peab sisaldama sõna `Tere` (osa 3).
-    - `logid/server.txt viimane rida peab olema /versioon vastus`: skript lõpetas veaga. Paranda see ja käivita uuesti käsuga `tee` (samm 5.3).
-    - `Vigade tabelis ja küsimustes on N vastust puudu`: README-s on `_vastus_` alles.
+Tulemuse näed Classroom 50-s.
 
 ## Lisaülesanded
 
@@ -955,7 +925,7 @@ Töö on esitatud, kui kõik muudatused on GitHubis harus `main`. Automaatkontro
     Lisa failis `jenkins/Dockerfile` plugin'ite loendisse [`build-monitor-plugin`](https://plugins.jenkins.io/build-monitor-plugin/). Ehita image ja tee konteiner uuesti (samm 6.5). Loo Jenkinsis uus vaade: **+** → **Build Monitor View** → vali `lab08`. Sellist vaadet näidatakse kontorites seinal suurel ekraanil. Mis värvi on `lab08`, kui konveier kukub?
 
 ??? example "C · Image'i päritolu tõend (raske)"
-    Server tõmbab image'i registrist. Kust ta teab, et selle ehitas sinu konveier, mitte keegi, kes sai registrisse kirjutada? Selleks on **päritolu tõend** (artifact attestation): konveier allkirjastab, mis repositooriumist, commit'ist ja töövoost image tuli ([artifact attestations](https://docs.github.com/en/actions/concepts/security/artifact-attestations)).
+    Server tõmbab image'i registrist. Kuidas kontrollida, et selle ehitas sinu konveier ja mitte keegi teine, kes sai registrisse kirjutada? Selleks on **päritolu tõend** (artifact attestation): konveier allkirjastab, mis repositooriumist, commit'ist ja töövoost image tuli ([artifact attestations](https://docs.github.com/en/actions/concepts/security/artifact-attestations)).
 
     Lisa töö `build-and-push` õigustesse `id-token: write` ja `attestations: write`. Lisa pärast `docker push` sammu ametliku juhendi järgi samm `actions/attest@v4` ([juhend](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations)). Väärtus `subject-name` on image'i nimi ilma tag'ita, `subject-digest` on image'i räsi kujul `sha256:…` (selle annab `docker inspect --format '{{index .RepoDigests 0}}'` pärast push'i) ja `push-to-registry: true`.
 
@@ -967,4 +937,3 @@ Töö on esitatud, kui kõik muudatused on GitHubis harus `main`. Automaatkontro
 
     Mida näitab väljund? Mis juhtub, kui ehitad image'i oma masinas, saadad selle sama nimega registrisse ja kontrollid uuesti? Kui GitHub ütleb, et privaatses repositooriumis see võimalus pole saadaval, kirjuta see README-sse: organisatsiooni plaan määrab, kas tõendeid saab luua.
 
-*Edasi: [kodutöö](homework.md). Seal paned sama konveieri oma varasemate praktikumide failidele: N5 Dockerfile, N6 Compose ja N3–N4 Ansible. N10-s kirjeldad OpenTofuga koodina virtuaalmasina ja kontrollid N9 ennustusi.*
