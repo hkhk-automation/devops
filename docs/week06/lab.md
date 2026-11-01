@@ -21,7 +21,7 @@ tags:
     4. Selgitad miks andmed lähevad volume'i, mitte konteinerisse: ja tõestad seda
     5. Taastad puhta seisu ise tehtud sasi järel
 
-Praktikumi loogika: baas → laienda → viga → paranda → laienda → viga → taasta. Sa ei kopeeri valmis `docker-compose.yml`-i. Sa ehitad selle teenus haaval, lõhud igal võtmekohal meelega, ja saad aru miks. Tervet faili näed üks kord: edasi ainult "lisa see teenus" / "lisa need read".
+Sa ei kopeeri valmis `docker-compose.yml`-i. Sa ehitad selle teenus haaval, lõhud igal võtmekohal meelega, ja saad aru miks. Tervet faili näed üks kord: edasi ainult "lisa see teenus" / "lisa need read".
 
 ## Osa 1 · Baas: üks teenus
 

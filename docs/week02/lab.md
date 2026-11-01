@@ -22,7 +22,7 @@ tags:
     4. leida skripti käivitades nelja vea põhjuse. Iga viga annab eri tüüpi signaali (veateade, vaikne tõrge, õiguste viga, eksitav kontroll);
     5. lahendada liitmiskonflikti ja selgitada, miks Git ei vali versiooni sinu eest.
 
-Praktikumi ülesehitus: baas → kaitse → viga → parandus → viga → põhjuse otsimine → parandus → konflikt → lahendus. Vigu ei ole ette loetletud. Need tulevad välja skripti käivitades ükshaaval ja igaüks annab märku erineval viisil. Sinu ülesanne on õppida neid signaale lugema.
+Vigu ei ole ette loetletud. Need tulevad välja skripti käivitades ükshaaval ja igaüks annab märku erineval viisil. Sinu ülesanne on õppida neid signaale lugema.
 
 !!! example "Näidisstsenaarium: Märten"
     Märten oli suvepraktikant. Ta tegi push'i otse `main`-i, sest harude kasutamine tundus talle tülikas, ja kirjutas commit-sõnumiteks `asjad`, `veelkord` ja `nüüd lõpuks`.

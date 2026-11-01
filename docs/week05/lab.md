@@ -55,7 +55,7 @@ graph LR
   <figcaption>Joonis 5.10. Praktikumi järjekord. Iga ploki lõpuks peab midagi töötama, enne seda ära järgmise plokiga alusta (Talvik, 2026).</figcaption>
 </figure>
 
-Praktikumi ülesehitus: alus → vea tekitamine → parandus → laiendus → uus viga → taastamine. Sa ei kopeeri valmis lahendust, sa ehitad, teed meelega vigu ja saad aru, miks need tekivad. Iga samm lisab ainult ühe uue asja. Kui tahad tervet faili korraga kopeerida, siis see praktikum pole selleks mõeldud.
+Sa ei kopeeri valmis lahendust, sa ehitad, teed meelega vigu ja saad aru, miks need tekivad. Iga samm lisab ainult ühe uue asja. Kui tahad tervet faili korraga kopeerida, siis see praktikum pole selleks mõeldud.
 
 ## Osa 0 · Docker VM-i peale
 
