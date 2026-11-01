@@ -45,5 +45,5 @@
     <rect x="618" y="340" width="244" height="46" rx="8" fill="#ffebee" stroke="#e53935" stroke-width="2"/><text x="634" y="361" fill="#b71c1c">✗ requests</text><text x="634" y="377" font-size="10" fill="#c62828">ModuleNotFoundError → punane X</text>
   </g>
 
-  <text x="450" y="456" text-anchor="middle" font-size="14" font-weight="700" fill="#4527a0">Runner usub ainult seda, mis on repos kirjas.</text>
+  <text x="450" y="456" text-anchor="middle" font-size="14" font-weight="700" fill="#4527a0">Runnerisse jõuab ainult see, mis on repositooriumis kirjas.</text>
 </svg>

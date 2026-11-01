@@ -15,7 +15,7 @@
 
   <!-- run rows -->
   <g font-size="12" fill="#616161">
-    <text x="12" y="140">run 1</text><text x="12" y="210">run 2</text><text x="12" y="280">run 3</text>
+    <text x="12" y="140">käivitus 1</text><text x="12" y="210">käivitus 2</text><text x="12" y="280">käivitus 3</text>
   </g>
 
   <!-- GitHub: fresh VM each time -->
@@ -31,11 +31,11 @@
     <!-- Jenkins: same server growing -->
     <rect x="670" y="112" width="160" height="190" rx="10" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2"/>
     <text x="750" y="134" fill="#424242" font-weight="700">SAMA server</text>
-    <text x="750" y="150" font-size="10" fill="#616161">jookseb kuude kaupa</text>
-    <rect x="684" y="162" width="132" height="24" rx="5" fill="#fff" stroke="#bdbdbd"/><text x="750" y="178" font-size="10" fill="#424242">run 1 jäägid</text>
-    <rect x="684" y="192" width="132" height="24" rx="5" fill="#fff" stroke="#bdbdbd"/><text x="750" y="208" font-size="10" fill="#424242">+ run 2 jäägid</text>
+    <text x="750" y="150" font-size="10" fill="#616161">töötab kuude kaupa</text>
+    <rect x="684" y="162" width="132" height="24" rx="5" fill="#fff" stroke="#bdbdbd"/><text x="750" y="178" font-size="10" fill="#424242">käivituse 1 jäägid</text>
+    <rect x="684" y="192" width="132" height="24" rx="5" fill="#fff" stroke="#bdbdbd"/><text x="750" y="208" font-size="10" fill="#424242">+ käivituse 2 jäägid</text>
     <rect x="684" y="222" width="132" height="24" rx="5" fill="#ffebee" stroke="#e53935"/><text x="750" y="238" font-size="10" fill="#b71c1c">+ „ajutiselt" pip install</text>
-    <rect x="684" y="252" width="132" height="24" rx="5" fill="#fff" stroke="#bdbdbd"/><text x="750" y="268" font-size="10" fill="#424242">+ run 3 jäägid</text>
+    <rect x="684" y="252" width="132" height="24" rx="5" fill="#fff" stroke="#bdbdbd"/><text x="750" y="268" font-size="10" fill="#424242">+ käivituse 3 jäägid</text>
     <text x="750" y="292" font-size="10" fill="#b71c1c">„töötab Jenkinsi masinas"</text>
   </g>
 

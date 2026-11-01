@@ -30,7 +30,7 @@
     <rect x="38" y="356" width="234" height="80" rx="8" fill="#fff" stroke="#ffcc80" stroke-dasharray="5 4"/>
     <text x="52" y="378" font-weight="700">Sama konveier mujal</text>
     <text x="52" y="398" font-size="11">.gitlab-ci.yml · Jenkinsfile</text>
-    <text x="52" y="416" font-size="11">võrdlustabel tunnis</text>
+    <text x="52" y="416" font-size="11">N8 loengus võrdlus</text>
     <text x="258" y="378" text-anchor="end" font-size="10">Osa 8</text>
   </g>
 
@@ -52,7 +52,7 @@
   <text x="390" y="200" font-size="13" font-weight="700" fill="#424242">Actions · runner = värske Ubuntu</text>
 
   <rect x="392" y="214" width="220" height="118" rx="8" fill="#ede7f6" stroke="#7e57c2" stroke-width="2"/>
-  <text x="404" y="236" font-size="13" font-weight="700" fill="#311b92">job: test</text>
+  <text x="404" y="236" font-size="13" font-weight="700" fill="#311b92">töö: test</text>
   <g font-size="10.5" fill="#5e35b1" font-family="ui-monospace, Menlo, monospace">
     <text x="404" y="256">checkout</text><text x="404" y="272">setup-python</text><text x="404" y="288">pip install -r ...</text><text x="404" y="304">pytest flask -v</text>
   </g>
@@ -63,7 +63,7 @@
   <text x="645" y="262" text-anchor="middle" font-size="10" font-weight="700" fill="#5e35b1">needs</text>
 
   <rect x="680" y="214" width="226" height="118" rx="8" fill="#e3f2fd" stroke="#1e88e5" stroke-width="2"/>
-  <text x="692" y="236" font-size="13" font-weight="700" fill="#0d47a1">job: konteiner</text>
+  <text x="692" y="236" font-size="13" font-weight="700" fill="#0d47a1">töö: konteiner</text>
   <g font-size="10.5" fill="#1565c0" font-family="ui-monospace, Menlo, monospace">
     <text x="692" y="256">docker build ./flask</text><text x="692" y="272">docker run -p 5000</text><text x="692" y="288">curl -f /health</text><text x="692" y="304">if: failure() → logs</text>
   </g>
@@ -84,5 +84,5 @@
   <line x1="560" y1="346" x2="530" y2="362" stroke="#43a047" stroke-width="2.5" marker-end="url(#ag)"/>
   <line x1="740" y1="346" x2="770" y2="362" stroke="#e53935" stroke-width="2.5" marker-end="url(#ar)"/>
 
-  <text x="480" y="496" text-anchor="middle" font-size="13" fill="#4527a0">Kaotasid järje? Vaata, millise kasti juures sa oled.</text>
+  <text x="480" y="496" text-anchor="middle" font-size="13" fill="#4527a0"></text>
 </svg>

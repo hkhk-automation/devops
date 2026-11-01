@@ -14,9 +14,7 @@ tags:
 
 **Teatmik:** [GitHub Actions juhend](../github-actions.md)
 
-N5-s ehitasid Flaski rakendusest image'i ja kontrollisid käsuga `curl`, et konteiner vastab. Täna kirjutad samale rakendusele testid ja paned GitHubi need iga push'i järel ise käivitama.
-
-Valmis faili `ci.yml` sa ei saa. Alustad töövoost, mis teeb ainult ühe `echo`, ja lisad sellele ridu ükshaaval. Iga puuduv rida annab vea. Loed veateate, leiad põhjuse ja lisad puuduva rea. Nii näed, milleks iga rida vajalik on. Terve fail on juhendis näha ainult osas 2, edasi lisad samme ja töid.
+N5-s ehitasid Flaski rakendusest image'i ja kontrollisid käsuga `curl`, et konteiner vastab. Täna kirjutad samale rakendusele testid ja paned GitHubi need iga push'i järel ise käivitama. Töövoo faili `ci.yml` kirjutad ise rida haaval: iga puuduv rida annab vea, mille põhjuse leiad logist.
 
 ??? abstract "Õpiväljundid"
 
@@ -27,12 +25,7 @@ Valmis faili `ci.yml` sa ei saa. Alustad töövoost, mis teeb ainult ühe `echo`
     5. Oskad lisada CI haru `main` kaitsesse nii, et punase testiga pull request'i ei saa liita.
     6. Oskad kirjutada testi enne koodi.
 
-Praktikumis on kahte tüüpi küsimusi:
-
-- **Ennusta:** enne käsku mõtled läbi, mis juhtub. Vastus on kokkuvolditud plokis **Oodatav tulemus**. Ava see alles pärast käsu käivitamist.
-- **Leia põhjus:** käivitus on punane ja plokis on küsimus, mis aitab põhjust leida. Lahendus on juhendis kohe ploki järel.
-
-- **Leia dokumentatsioonist:** küsimus, millele leiad vastuse GitHubi dokumentatsioonist. Tavaliselt on lehe link küsimuse juures. Mõne küsimuse juures on ainult dokumentatsiooni osa nimi ja lehe leiad ise. Vastus on kokkuvolditud plokis **Vastus**. Dokumentatsiooni osad on kirjeldatud loengu [§6](lecture.md#6-kust-leida-vastus-github-actionsi-dokumentatsioon).
+Rida **Ennusta** tähendab, et enne käsku mõtled läbi, mis juhtub. Vastus on kokkuvolditud plokis.
 
 Joonisel on see, mis praktikumi lõpuks valmis on.
 
@@ -63,7 +56,7 @@ ls flask/
 Käsk `ls` peab näitama faile `app.py`, `requirements.txt` ja `Dockerfile`.
 
 !!! warning "Paroolid ei lähe repositooriumi"
-    Ka privaatsesse repositooriumi ei panda paroole, `.env` faile ega tokeneid. Kui saladus satub commit'i, ei piisa faili kustutamisest, sest see jääb Giti ajalukku. N2-s nägid seda Märteni `.env` faili näitel.
+    Ka privaatsesse repositooriumi ei panda paroole, `.env` faile ega tokeneid. Kui saladus satub commit'i, ei piisa faili kustutamisest, sest see jääb Giti ajalukku.
 
 ### 0.2 Rakendus töötab
 
@@ -551,7 +544,7 @@ git add flask/test_app.py && git commit -m "test: kas lukk peab" && git push
 ??? question "Küsimus"
     Kes keelas liitmise: sina, õpetaja, GitHub või test? Mida see reegel kontrollib, mida N2 reegel (üks heakskiit) ei kontrollinud? Mida see endiselt ei kontrolli?
 
-Muuda testis sõna tagasi `"Tere"` ja saada muudatus GitHubi. Pull request'i kontroll muutub roheliseks ja liitmise nupp ka. **Ära veel liida.** Pull request jääb avatuks kuni osani 9.
+Muuda testis sõna tagasi `"Tere"` ja saada muudatus GitHubi. Pull request'i kontroll muutub roheliseks ja liitmise nupp ka. Ära veel liida. Pull request jääb avatuks kuni osani 9.
 
 !!! tip "Liitmise nupp on hall, kuigi kõik kontrollid on rohelised"
     Ruleset nõuab heakskiitu. Kontrolli, et **Required approvals** väärtus on `0`.
@@ -646,7 +639,7 @@ Saada muudatus GitHubi. Punase käivituse viimases sammus on nüüd Flaski logi 
 
 ## Osa 7 · Test enne koodi
 
-Rakendusele tuleb lisada aadress `/health`. Seekord teed seda vastupidises järjekorras: **kõigepealt test, siis kood**. Test kirjeldab, mida rakendus peab tegema. Kui kood on valmis, näitab test seda ise.
+Rakendusele tuleb lisada aadress `/health`. Seekord teed seda vastupidises järjekorras: kõigepealt test, siis kood. Test kirjeldab, mida rakendus peab tegema. Kui kood on valmis, näitab test seda ise.
 
 ### 7.1 Test kukub
 
@@ -717,7 +710,7 @@ Sinu `ci.yml` töötab ainult GitHubis. Järgmises töökohas võib olla kasutus
 
 <figure markdown="span">
   ![Kolm veergu: GitHub Actions saab iga käivituse jaoks uue tühja virtuaalmasina, GitLab CI uue konteineri, Jenkins kasutab sama serverit, kuhu kogunevad eelmiste käivituste failid](../images/n07_kolm_tooriista.svg)
-  <figcaption>Joonis 7.6 (loengust). Alumine rida on sinu tabeli vihje: kood, Python ja järjekord kolmes tööriistas (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 7.6. Kolm tööriista: kust tuleb kood, kust Python ja kuidas on tööde järjekord (Talvik, 2026).</figcaption>
 </figure>
 
 Suurim erinevus on masinas. GitHub Actions saab iga käivituse jaoks uue virtuaalmasina ja GitLab CI uue konteineri. Jenkins kasutab sageli sama serverit, kuhu jäävad eelmiste käivituste failid ja paketid. Tööriistu ja nende litsentse võrdled N8 loengu osas [§8 „CI/CD tööriistad ja litsentsid“](../week08/lecture.md#8-cicd-tooriistad-ja-litsentsid).
@@ -767,18 +760,17 @@ Nüüd on `ci.yml` harus `main`. Ava vahekaardil **Actions** töövoog **CI**. N
 
 Autograder hindab haru `main` nagu N5 ja N6 praktikumis. Tulemus on repositooriumi lehel jaotises **Releases** ja Classroom 50-s. Hinne tuleb kontrollidest 1–7 (kokku 100 punkti). Kodutöö kontroll „BOONUS 8“ annab lisapunkte.
 
-## Lõppkontroll
+??? note "Kontrollnimekiri"
+    Kui praktikum on tehtud, peaksid oskama järgmist ilma juhendita:
 
-Kui praktikum on tehtud, peaksid oskama järgmist ilma juhendita:
-
-- [ ] `pytest flask -v` sinu virtuaalmasinas näitab `3 passed`.
-- [ ] Failis `ci.yml` on kaks tööd, `test` ja `konteiner`, ning töös `konteiner` on `needs: test`.
-- [ ] Pull request'i kastis **Checks** on mõlemad tööd rohelised.
-- [ ] Vahekaardi **Actions** ajaloos on vähemalt kolm punast käivitust osast 3. Neid ei kustutata.
-- [ ] Punase testiga commit teeb pull request'i liitmise nupu halliks (ruleset `main-lukk`).
-- [ ] Punase käivituse logist oskad öelda, kas viga on koodis (`AssertionError`, `ModuleNotFoundError`) või töövoos (`file or directory not found`, `command not found`).
-- [ ] Kui rikud aadressi `/health` (näiteks `"status": "katki"`), kukub test enne, kui konteinerit üldse ehitatakse.
-- [ ] Oskad näidata GitLabi ja Jenkinsi failis rea, mis teeb sama tööd mis `needs: test`.
+    - [ ] `pytest flask -v` sinu virtuaalmasinas näitab `3 passed`.
+    - [ ] Failis `ci.yml` on kaks tööd, `test` ja `konteiner`, ning töös `konteiner` on `needs: test`.
+    - [ ] Pull request'i kastis **Checks** on mõlemad tööd rohelised.
+    - [ ] Vahekaardi **Actions** ajaloos on vähemalt kolm punast käivitust osast 3. Neid ei kustutata.
+    - [ ] Punase testiga commit teeb pull request'i liitmise nupu halliks (ruleset `main-lukk`).
+    - [ ] Punase käivituse logist oskad öelda, kas viga on koodis (`AssertionError`, `ModuleNotFoundError`) või töövoos (`file or directory not found`, `command not found`).
+    - [ ] Kui rikud aadressi `/health` (näiteks `"status": "katki"`), kukub test enne, kui konteinerit üldse ehitatakse.
+    - [ ] Oskad näidata GitLabi ja Jenkinsi failis rea, mis teeb sama tööd mis `needs: test`.
 
 ## Lisaülesanded
 
