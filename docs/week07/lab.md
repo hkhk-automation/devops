@@ -42,7 +42,7 @@ Vaata enne alustamist seda pilti. Labi lõpuks on sul **kõik see** olemas ja t�
 
 ## Osa 0 · Eeltöö — Classroomi repo ja Python-keskkond
 
-Võta Classroomis vastu ülesanne **Lab 07 - GitHub Actions CI** ([Classroom](https://classroom50.org/hkhk-automation/it24-automatiseerimine/assignments)). Selles repos on sul **admin-õigus**: Osa 5 lukk ja kodutöö Secret vajavad seda. Nädal 8 jätkab samas repos.
+Võta Classroomis vastu ülesanne **Lab 07 - GitHub Actions CI** ([Classroom](https://classroom50.org/hkhk-automation/it24-automatiseerimine/assignments)). Selles repos on sul **admin-õigus**: Osa 5 lukk ja kodutöö Secret vajavad seda. Nädal 8 jätkab sama koodiga uues repositooriumis.
 
 Klooni repo ja too sinna oma N5 Flask:
 

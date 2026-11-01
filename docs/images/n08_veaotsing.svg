@@ -1,0 +1,32 @@
+<svg viewBox="0 0 900 250" xmlns="http://www.w3.org/2000/svg" font-family="Inter, -apple-system, sans-serif">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#616161"/></marker></defs>
+  <rect x="0" y="0" width="900" height="250" fill="#ffffff"/>
+  <text x="450" y="32" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Iga viga läbib samad neli sammu</text>
+
+  <rect x="20" y="70" width="190" height="90" rx="10" fill="#ffebee" stroke="#c62828" stroke-width="1.5"/>
+  <text x="115" y="100" text-anchor="middle" font-size="16" font-weight="700" fill="#b71c1c">1. Sümptom</text>
+  <text x="115" y="122" text-anchor="middle" font-size="12" fill="#424242">mida näed: punane job,</text>
+  <text x="115" y="140" text-anchor="middle" font-size="12" fill="#424242">rida logis, curl vastus</text>
+
+  <rect x="245" y="70" width="190" height="90" rx="10" fill="#ede7f6" stroke="#5e35b1" stroke-width="1.5"/>
+  <text x="340" y="100" text-anchor="middle" font-size="16" font-weight="700" fill="#311b92">2. Hüpotees</text>
+  <text x="340" y="122" text-anchor="middle" font-size="12" fill="#424242">mis võib olla põhjus,</text>
+  <text x="340" y="140" text-anchor="middle" font-size="12" fill="#424242">mis failis, mis real</text>
+
+  <rect x="470" y="70" width="190" height="90" rx="10" fill="#fff3e0" stroke="#ef6c00" stroke-width="1.5"/>
+  <text x="565" y="100" text-anchor="middle" font-size="16" font-weight="700" fill="#bf360c">3. Tõend</text>
+  <text x="565" y="122" text-anchor="middle" font-size="12" fill="#424242">kontrolli hüpoteesi:</text>
+  <text x="565" y="140" text-anchor="middle" font-size="12" fill="#424242">Set up job, docker ps, logs</text>
+
+  <rect x="695" y="70" width="185" height="90" rx="10" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="787" y="100" text-anchor="middle" font-size="16" font-weight="700" fill="#1b5e20">4. Parandus</text>
+  <text x="787" y="122" text-anchor="middle" font-size="12" fill="#424242">üks muudatus korraga,</text>
+  <text x="787" y="140" text-anchor="middle" font-size="12" fill="#424242">siis kontroll uuesti</text>
+
+  <line x1="210" y1="115" x2="241" y2="115" stroke="#616161" stroke-width="1.8" marker-end="url(#a)"/>
+  <line x1="435" y1="115" x2="466" y2="115" stroke="#616161" stroke-width="1.8" marker-end="url(#a)"/>
+  <line x1="660" y1="115" x2="691" y2="115" stroke="#616161" stroke-width="1.8" marker-end="url(#a)"/>
+
+  <path d="M565 160 C565 215 340 215 340 164" stroke="#c62828" stroke-width="1.6" stroke-dasharray="5 4" fill="none" marker-end="url(#a)"/>
+  <text x="452" y="222" text-anchor="middle" font-size="12" fill="#b71c1c">tõend ei kinnita hüpoteesi: tee uus hüpotees</text>
+</svg>
