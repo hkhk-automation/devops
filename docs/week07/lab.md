@@ -12,6 +12,8 @@ tags:
 **Eeldus:** loeng (CI, sündmus, töö, samm, väljumiskood), N5 kaust `flask/` (Flask, `Dockerfile`, `host="0.0.0.0"`) ja N2 ruleset ning pull request. Kui mõni mõiste on segane, loe see [loengust](lecture.md) üle.
 **Keskkond:** koodi ja testid kirjutad VS Code'is oma AlmaLinuxi virtuaalmasinas. CI käivitub GitHubi runneris. Runner on värske Ubuntu virtuaalmasin, mis ei ole sinu masin. Käsk `git push` käivitab konveieri.
 
+**Teatmik:** [GitHub Actions juhend](../github-actions.md)
+
 N5-s ehitasid Flaski rakendusest image'i ja kontrollisid käsuga `curl`, et konteiner vastab. Täna kirjutad samale rakendusele testid ja paned GitHubi need iga push'i järel ise käivitama.
 
 Valmis faili `ci.yml` sa ei saa. Alustad töövoost, mis teeb ainult ühe `echo`, ja lisad sellele ridu ükshaaval. Iga puuduv rida annab vea. Loed veateate, leiad põhjuse ja lisad puuduva rea. Nii näed, milleks iga rida vajalik on. Terve fail on juhendis näha ainult osas 2, edasi lisad samme ja töid.

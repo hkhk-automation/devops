@@ -17,6 +17,8 @@ Töötad masinas `proxmox1` VS Code'i kaudu nagu N7-s. Serveri rollis on samuti 
 
 **Edenemine:** laboritahvel <http://192.168.125.187:8091/> (VPN-iga).
 
+**Teatmik:** [GitHub Actions juhend](../github-actions.md)
+
 | Osa | Töö | Aeg |
 |---|---|---|
 | 1 | Ettevalmistus ja issue'de mall | 15 min |

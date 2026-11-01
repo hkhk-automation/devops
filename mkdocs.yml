@@ -83,6 +83,7 @@ nav:
   - Avaleht: index.md
   - Töökeskkond: kodulabor.md
   - Ansible seaded (ansible.cfg): ansible-config.md
+  - GitHub Actions juhend: github-actions.md
 
 - Nädalad:
   - N1 · Miks automatiseerimine?:
