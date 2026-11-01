@@ -23,8 +23,6 @@ Mõnes sammus on rida **Ennusta**. Enne käsu käivitamist mõtle läbi, mis juh
     3. Oskad näidata, mida teeb OpenTofu, kui tegelik olek või kood muutub.
     4. Oskad hoida token, olekufaili ja provideri Gitist väljas ning lukufaili Gitis.
 
----
-
 ## Osa 1 · Ettevalmistus
 
 ### 1.1 Mida vajad
@@ -114,8 +112,6 @@ Väljundis ei ole faili `terraform.tfvars`, sest `.gitignore` jätab selle välj
 ### 1.5 Nimi ja ennustused README-s
 
 Ava VS Code'is fail `README.md`. Kirjuta rea `**Sinu nimi:**` järele oma nimi ja kontrolli, et Osa 0 all on loengu alguses kirjutatud kaks ennustust. Kui need puuduvad, kirjuta need nüüd, enne kui lood esimese masina, sest osades 4 ja 5 võrdled nendega.
-
----
 
 ## Osa 2 · Esimene masin
 
@@ -283,8 +279,6 @@ git push
 
 `git status --short` väljundis on teiste hulgas `vm.tf`, `.terraform.lock.hcl` ja kaks logifaili. Faile `terraform.tfvars`, `terraform.tfstate` ja `tfplan` ei ole.
 
----
-
 ## Osa 3 · Teine plaan ja muudatus
 
 ### 3.1 Plaan ilma muudatuseta
@@ -339,8 +333,6 @@ Proxmoxis on masina **Hardware** lehel **Memory** väärtus 2.00 GiB.
     ```
     Märk `~` tähendab muutmist kohapeal. Masin jääb samaks, provider muudab selle seadeid ja taaskäivitab masina, sest mälu ei saa töötavas masinas muuta.
 
----
-
 ## Osa 4 · Ennustus 1: masin kustutatakse käsitsi
 
 Loe README Osa 0-st oma ennustus 1.
@@ -379,8 +371,6 @@ Proxmoxis on masin `tofu-<kasutaja>` jälle olemas ja töötab.
     ```
     Plaani alguses küsis OpenTofu Proxmoxilt masinat, mis olekufailis oli. Proxmox vastas, et sellist masinat ei ole, ja OpenTofu eemaldas selle olekust. Kood nõuab ühte masinat, seega lõi OpenTofu uue. Uuel masinal on sama nimi ja VMID, aga võib olla teine IP-aadress. Samamoodi loob Docker Compose uuesti konteineri, mis kustutati käsitsi (N9 loengu osa 3).
 
----
-
 ## Osa 5 · Ennustus 2: kirjeldus eemaldatakse failist
 
 Loe README Osa 0-st oma ennustus 2.
@@ -415,8 +405,6 @@ tofu plan 2>&1 | tee -a logid/06-kirjeldus-eemaldatud.txt
     Pärast `mv vm.tf.off vm.tf` näitab teine plaan `No changes.`
 
     Olekufailis on masin, mida kood enam ei kirjelda. OpenTofu peab seda masinat enda loodud masinaks ja kustutaks selle. Ansible ei mäleta, mida ta eelmisel korral tegi: kui ülesanne kaob playbook'ist, jääb nginx masinasse alles (N9 loengu osa 6).
-
----
 
 ## Osa 6 · Olekufail ja destroy
 
@@ -468,8 +456,6 @@ Proxmoxis ei ole masinat `tofu-<kasutaja>`. Pool `tofu-<kasutaja>` on tühi.
 
 Kood on alles. Käsk `tofu apply` loob sama masina uuesti, ka kodus või järgmisel aastal.
 
----
-
 ## Osa 7 · Töö esitamine
 
 **Ülesanne**
@@ -518,8 +504,6 @@ Töö on esitatud, kui kõik muudatused on `main` harus GitHubis. Automaatkontro
     - Logifail on puudu või tühi: kontrolli, et käsus oli `2>&1 | tee logid/...` ja et logi on commit'itud (`git status`).
     - `terraform.tfvars` on Gitis: `git rm --cached terraform.tfvars`, commit ja push. Kustuta Proxmoxis token ja loo uus, sest vana on GitHubis ajaloos alles.
 
----
-
 ## Lisaülesanded
 
 ??? example "A · Olekufail kaob (keskmine)"
@@ -544,7 +528,5 @@ Töö on esitatud, kui kõik muudatused on `main` harus GitHubis. Automaatkontro
     ```
 
     Asenda 4100 oma VMID-ga. Mida näitab `tofu plan`? Miks võib plaanis olla lisaks impordile ka muudatusi? Eemalda pärast `apply` käsku plokk `import` failist ja kirjuta README-sse Lisa B alla kaks lauset.
-
----
 
 *N11 teema on korduvkasutatav infrastruktuur: sama kirjeldus mitme masina jaoks.*

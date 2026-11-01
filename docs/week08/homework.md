@@ -20,8 +20,6 @@ Kodutöö on boonus. Classroom 50-s on igal osal oma BOONUS-kontroll, mis annab 
 
 Töötad samas repositooriumis `~/lab08` masinas `proxmox1`. Failid lähevad kausta `oma/`. Konveieri kirjutad faili `.github/workflows/oma.yml`.
 
----
-
 ## 0. Vanad failid kätte
 
 Sinu varasemad praktikumid on GitHubis. Kui kausta `~/lab05`, `~/lab06` või `~/lab04` masinas pole, klooni repositoorium uuesti. Repositooriumi aadressi leiad Classroom 50-st või GitHubist organisatsioonist `hkhk-automation`:
@@ -36,8 +34,6 @@ git clone https://github.com/hkhk-automation/it24-automatiseerimine-lab-04-muutu
 N5 ja N6 töö võis olla harus. Kui failid puuduvad, vaata harusid: `git -C ~/lab05 branch -a`.
 
 Ära kopeeri faile `.vault_pass` ja `.env`. Need on saladused. `.gitignore` jätab need Gitist välja.
-
----
 
 ## K1 · Docker (kohustuslik)
 
@@ -107,8 +103,6 @@ Kui töö on punane, kasuta praktikumi järjekorda: sümptom, hüpotees, tõend,
 
 **Küsimus:** täida README kodutöö tabelis rida K1.
 
----
-
 ## K2 · Docker Compose (valikuline)
 
 N6-s ehitas `docker compose up --build` image'i masinas. Nüüd kontrollib konveier, et stack käivitub. Serveris tuleb rakenduse image registrist ja serveris midagi ei ehitata.
@@ -156,8 +150,6 @@ curl localhost:8080
 **Kontrolli:** `docker compose -f compose.server.yaml images` näitab teenusel `web` image'it `ghcr.io/...-web`.
 
 **Küsimus:** täida README kodutöö tabelis rida K2.
-
----
 
 ## K3 · Ansible (valikuline)
 
@@ -219,8 +211,6 @@ Kui konveieri töö `ansible` kontrollib ka faili `paigalda.yml`, lisa sinna sam
 
 **Küsimus:** täida README kodutöö tabelis rida K3.
 
----
-
 ## Lisaülesanne · Väljalase tag'iga
 
 **Väljalase** (release) on versioon, mille inimene märgib, näiteks `v1.0.0`. Git'is tehakse see tag'iga ([Git'i tag'id](https://git-scm.com/book/en/v2/Git-Basics-Tagging)). Starteri failis `kodutoo/release.yml` on kolleegi töövoog, mis peaks väljalaske ehitama. Selles on kolm viga.
@@ -252,8 +242,6 @@ bash server/paigalda.sh v1.0.0 2>&1 | tee logid/kodu-server.txt
 ```
 
 Logi viimane rida peab olema `v1.0.0`. Täida README tabel R1-R3.
-
----
 
 ## Esitamine
 

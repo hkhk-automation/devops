@@ -41,8 +41,6 @@ Iga vea juures on samad sammud samas järjekorras ([loengu §7](lecture.md#7-vea
   <figcaption>Joonis 8.7. Viis viga konveieris ja serveris. Kuues viga on Jenkinsis, osas 6 (Talvik, 2026).</figcaption>
 </figure>
 
----
-
 ## Osa 1 · Ettevalmistus
 
 ### 1.1 Repositoorium
@@ -107,8 +105,6 @@ Repositooriumis on issue'de mall **Viga**. Iga vea juures toimi nii:
 Kui commit jõuab harusse `main`, sulgeb GitHub issue ise ja lisab sellele lingi commit'ile ([issue sulgemine commit'iga](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword)). Pull request'i puhul pane `Fixes #<number>` pull request'i kirjeldusse. Siis sulgub issue liitmisel. Pull request'id ja issue'd kasutavad sama numbrijada, seega ei ole issue numbrid alati järjest.
 
 Selle osa juhendis on commit'i käskudes ainult esimene rida. Teise rea `-m "Fixes #<number>"` lisa ise.
-
----
 
 ## Osa 2 · Viga 1: registrisse kirjutamine
 
@@ -202,8 +198,6 @@ Repositoorium on privaatne, seega näevad märki ainult need, kellel on reposito
 
 **Ennusta.** Osas 3 kukub test. Mida näitab märk siis?
 
----
-
 ## Osa 3 · Viga 2: katkine kood jõuab registrisse
 
 Konveier on nüüd roheline. Kontrolli, kas registrisse jõuab ainult testitud kood. Kolleeg muudab tervitust ja ei käivita teste.
@@ -266,8 +260,6 @@ git push
 Kõik kolm tööd on rohelised ja järjest.
 
 **Küsimus:** miks peab image'i ehitus testide järel ootama? (README küsimus 2 ja tabeli rida 2)
-
----
 
 ## Osa 4 · Viga 3: pull request jõuab registrisse
 
@@ -360,8 +352,6 @@ git log --oneline -1
 Viimase commit'i räsi on sama, mis **Packages** all uusim tag.
 
 **Küsimus:** miks ei tohi pull request'i kood registrisse jõuda? (README küsimus 3 ja tabeli rida 3)
-
----
 
 ## Osa 5 · Server
 
@@ -543,8 +533,6 @@ git log --oneline -1
 `/versioon` vastus ja `git log --oneline -1` räsi on samad.
 
 **Küsimus:** tootmises läks viga käima. Kuidas leiad räsi järgi, mis commit selle tõi ja millise issue parandus seda puudutab? Kuidas lähed eelmisele versioonile tagasi?
-
----
 
 ## Osa 6 · Sama konveier Jenkinsis
 
@@ -753,8 +741,6 @@ Vali **Manage Jenkins** → **Appearance**. Lõigus **Themes** vali `Dark` ja va
 
 Mõtle tagasi tabelile 8.7. GitHub Actionsis ei pidanud sa paigaldama serverit, plugin'eid ega Pythonit. Jenkinsis tegid kõike seda ise. Vastutasuks töötab Jenkins sinu võrgus ja seda saab seadistada nii, nagu firma vajab.
 
----
-
 ## Osa 7 · Korrektne lahendus
 
 Kõik kuus parandust on nüüd sinu failides. Siin on need koos, nii nagu seda töökohas tehakse. Võrdle oma faile nendega. Kui midagi erineb, mõtle, kas sinu variant teeb sama asja. Näiteks `needs: [test, konteiner]` on samaväärne.
@@ -918,8 +904,6 @@ RUN jenkins-plugin-cli --plugins git workflow-aggregator pipeline-graph-view dar
 3.  Dockeri käsurea klient kopeeritakse ametlikust image'ist. Etapp `konteiner` kasutab seda.
 4.  Plugin'id paigaldatakse ehitamisel. Iga uus Jenkinsi konteiner on kohe samade plugin'itega.
 
----
-
 ## Osa 8 · Töö esitamine
 
 **Ülesanne**
@@ -959,8 +943,6 @@ Töö on esitatud, kui kõik muudatused on GitHubis harus `main`. Automaatkontro
     - `logid/server.txt viimane rida peab olema /versioon vastus`: skript lõpetas veaga. Paranda see ja käivita uuesti käsuga `tee` (samm 5.3).
     - `Vigade tabelis ja küsimustes on N vastust puudu`: README-s on `_vastus_` alles.
 
----
-
 ## Lisaülesanded
 
 ??? example "A · Vähim õigus kogu failis (keskmine)"
@@ -988,7 +970,5 @@ Töö on esitatud, kui kõik muudatused on GitHubis harus `main`. Automaatkontro
     ```
 
     Mida näitab väljund? Mis juhtub, kui ehitad image'i oma masinas, saadad selle sama nimega registrisse ja kontrollid uuesti? Kui GitHub ütleb, et privaatses repositooriumis see võimalus pole saadaval, kirjuta see README-sse: organisatsiooni plaan määrab, kas tõendeid saab luua.
-
----
 
 *Edasi: [kodutöö](homework.md). Seal paned sama konveieri oma varasemate praktikumide failidele: N5 Dockerfile, N6 Compose ja N3–N4 Ansible. N10-s kirjeldad OpenTofuga koodina virtuaalmasina ja kontrollid N9 ennustusi.*

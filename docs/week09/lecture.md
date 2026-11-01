@@ -8,10 +8,7 @@ tags:
 
 # Loeng: infrastruktuur koodina, mõtteviis
 
-
 Täna on iseseisev nädal. Server ja Proxmox jäävad puhkama. Vaatad tagasi kõigele, mida oled kaheksa nädalaga teinud, ja paned selle ühte pilti. Loe loeng läbi, vasta iga osa lõpus olevatele küsimustele vihikus ja mine siis [praktikumi](lab.md). Praktikumis katsetad samu mõtteid Dockeriga oma silmaga.
-
----
 
 !!! abstract "Õpiväljundid"
     Pärast loengut oskad:
@@ -21,8 +18,6 @@ Täna on iseseisev nädal. Server ja Proxmox jäävad puhkama. Vaatad tagasi kõ
     - selgitada idempotentsust ja kontrollida seda tööriista väljundist
     - kirjeldada konfiguratsiooni triivi ja seda, mida järgmine automaatne jooks sellega teeb
     - selgitada muudetava ja muutumatu infrastruktuuri vahet
-
----
 
 ## 1. Seni kasutatud tööriistad
 
@@ -53,8 +48,6 @@ Fail on Gitis, seega on sellel ajalugu ja seda saab üle vaadata. Mati mälu ei 
 ??? question "Kontrolli ennast"
     1. Miks oli Mati vastus „nädal, kui ma mäletan kõike“ firmale ohtlik?
     2. Too oma laboritest üks fail, mille põhjal saaks keegi teine sinu tööd korrata ilma sinult midagi küsimata.
-
----
 
 ## 2. Imperatiivne ja deklaratiivne
 
@@ -118,8 +111,6 @@ Töös on piir hägune. Dockerfile koosneb käskudest (`RUN apt install`, `COPY`
     2. Miks lisab `echo ... >> /etc/crontab` teisel käivitusel probleemi, aga Ansible'i `cron` moodul mitte?
     3. Leia oma N5 `Dockerfile`-ist üks rida, mis on imperatiivne.
 
----
-
 ## 3. Soovitud olek ja ühtlustamine
 
 !!! abstract "Miks see oluline on?"
@@ -165,8 +156,6 @@ N6-s kirjutasid `docker-compose.yml` faili ja käivitasid `docker compose up -d`
     2. Compose näitab teisel käivitusel `Running`. Mida see ütleb sulle tegeliku ja soovitud oleku kohta?
     3. Miks ei saa bash-skript ühtlustada, kui ta ei kontrolli enne midagi?
 
----
-
 ## 4. Idempotentsus
 
 !!! abstract "Miks see oluline on?"
@@ -201,8 +190,6 @@ Idempotentsus ei tule tasuta. Ansible'i moodulid (`package`, `file`, `copy`) on 
     1. Too oma elust üks idempotentne ja üks mitte-idempotentne tegevus.
     2. Playbook näitab teisel käivitusel `changed=2`. Mida see sulle ütleb ja kust otsiksid põhjust?
     3. Miks on idempotentsus eriti oluline, kui automaatika käivitub iga öö ise?
-
----
 
 ## 5. Triiv: keegi muutis serveris käsitsi
 
@@ -248,8 +235,6 @@ Triivi saab ka **tuvastada** ilma midagi muutmata. `ansible-playbook --check --d
     2. Mis oleks pidanud Mati tegema esmaspäeva hommikul, et Kati jooks tema parandust üle ei kirjutaks?
     3. Ansible't jooksutatakse ainult siis, kui keegi seda käsitsi teeb. Mitu kuud võib triiv märkamatult kesta?
 
----
-
 ## 6. Ansible ei mäleta, mida ta tegi
 
 !!! abstract "Miks see oluline on?"
@@ -263,8 +248,6 @@ N10-s näed tööriista, mis mäletab olekut.
 
 ??? question "Kontrolli ennast"
     1. Kustutasid playbookist nginx'i task'i ja jooksutasid uuesti. Miks nginx ikka töötab?
-
----
 
 ## 7. Muudetav ja muutumatu infrastruktuur
 
@@ -309,8 +292,6 @@ Firmades on tavaliselt mõlemat. Andmebaasiserver on sageli lemmikloom, sest and
     2. Kas Lab 03 `proxmox1` oli lemmikloom või kariloom? Põhjenda.
     3. Too üks põhjus, miks andmebaas jääb sageli lemmikloomaks.
 
----
-
 ## 8. IaC spekter: kus iga tööriist asub
 
 !!! abstract "Miks see oluline on?"
@@ -349,8 +330,6 @@ Git on kõigi all. Ilma Gitita on iga ülaltoodud fail lihtsalt fail sinu kettal
     1. Firma tahab 10 serverisse nginx'i ja igasse serverisse Docker konteinerit. Milline tööriist teeb millise osa?
     2. Miks on Dockerfile tabelis „imperatiivne sees, tulemus muutumatu“?
 
----
-
 ## Kokkuvõte
 
 Infrastruktuur koodina tähendab, et kõik, mis serveris ja selle ümber peab olema, on failides Gitis. Imperatiivne kood ütleb, kuidas; deklaratiivne ütleb, mis. Deklaratiivne tööriist võrdleb soovitud olekut tegelikuga ja muudab ainult vahet. Idempotentne tööriist võib joosta mitu korda ja tulemus on sama. Käsitsi muudatus tekitab triivi, mille järgmine jooks üle kirjutab. Ansible ei mäleta, mida ta eelmisel korral tegi. Muutumatu infrastruktuur väldib triivi sellega, et vahetab välja, selle asemel et parandada.
@@ -377,7 +356,5 @@ Infrastruktuur koodina tähendab, et kõik, mis serveris ja selle ümber peab ol
 3. Mis juhtub Mati käsitsi parandusega järgmisel Ansible'i jooksul ja kuidas seda vältida?
 4. Kustutad playbookist ühe task'i. Mis juhtub serveris?
 5. Kati firma tahab, et ühegi serveri kaotus ei võtaks rohkem kui tund. Mida sa neile soovitad?
-
----
 
 *Praktikumis katsetad neid mõtteid Dockeriga: vaatad, kuidas Compose ühtlustab, kuidas bash-skript teisel korral kukub, ja kirjutad Mati triivi loo lõpuni.*

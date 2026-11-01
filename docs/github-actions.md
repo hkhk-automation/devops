@@ -13,8 +13,6 @@ See leht on **teatmik**. N7 ja N8 praktikumis kirjutad töövoo samm haaval ja i
 
 **Eeldused:** GitHubi konto ja repositoorium, Giti põhikäsud (`add`, `commit`, `push`, N2) ning YAML-i põhireeglid ([N7 loeng §5](week07/lecture.md#yaml-i-reeglid)).
 
----
-
 ## 1. Põhimõisted
 
 **Töövoog** (workflow) on YAML-fail repositooriumi kaustas `.github/workflows/`. Ühes repositooriumis võib olla mitu töövoogu, näiteks `ci.yml` testide jaoks ja `pages.yml` saidi avaldamiseks.
@@ -48,8 +46,6 @@ Iga töö saab oma runneri. Kui töö `test` paigaldab Pythoni paketid, ei ole n
 
 Ametlik kirjeldus on lehel [Understanding GitHub Actions](https://docs.github.com/en/actions/get-started/understand-github-actions).
 
----
-
 ## 2. Töövoo loomine
 
 Töövoo saab luua kahel viisil. Mõlemal juhul tekib repositooriumi sama fail.
@@ -67,8 +63,6 @@ git push
 ```
 
 Kui failis on sündmus `push`, käivitub töövoog kohe pärast `git push`-i ja käivitus ilmub vahekaardile **Actions**. Kausta nimi peab olema täpselt `.github/workflows`, muidu GitHub faili ei leia.
-
----
 
 ## 3. Süntaks võti-võtmelt
 
@@ -131,8 +125,6 @@ jobs:
 9. Käsitsi käivitamisel tehakse ainult testid. Töö `konteiner` on käivituse lehel hall ja märgitud **skipped**.
 10. Märk `|` tähendab mitmerealist teksti. Iga rida on eraldi käsk samas shellis.
 11. Samm käivitub ainult siis, kui mõni eelmine samm kukkus. Konteineri logist näed, miks rakendus ei vastanud.
-
----
 
 ### Millal töövoog käivitub
 
@@ -334,8 +326,6 @@ Sündmus `schedule` käivitab töövoo ilma commit'ita. Allolev töövoog kontro
 
     Valik `-f` muudab HTTP vea (näiteks 404 või 500) väljumiskoodiks, mis ei ole 0. `-sS` peidab edenemisriba, kuid näitab veateadet. `workflow_dispatch` lubab kontrolli kohe käsitsi proovida ja ei pea ootama järgmist hommikut. Avalikus repositooriumis lülitab GitHub ajastatud töövood välja, kui repositooriumis ei ole 60 päeva jooksul ühtegi muudatust.
 
----
-
 ## 5. Töövoog oma masinas: `act`
 
 Iga töövoo muudatuse proovimiseks tuleb tavaliselt teha commit ja push ning oodata, kuni runner käivitub. Tööriist [act](https://github.com/nektos/act) käivitab töövoo sinu masinas Dockeri konteineris. Nii näed vea mõne sekundiga, ajalugu ei täitu katsetuste commit'idega ja GitHubi minuteid ei kulu. Kasutusjuhend on lehel [nektosact.com](https://nektosact.com/).
@@ -373,8 +363,6 @@ Kõik valikud on lehel [Usage guide](https://nektosact.com/usage/index.html).
 
 Lõplik kontroll on ikkagi GitHubis: roheline `act` ei tähenda, et käivitus GitHubis on roheline.
 
----
-
 ## 6. Veaotsing
 
 Kui käivitus on punane, ava see vahekaardil **Actions**, vali punane töö ja ava punane samm. Loe logi viimased read, sest seal on veateade ja väljumiskood. Esimeses sammus **Set up job** on runneri versioon, action'ite versioonid ja lõik `GITHUB_TOKEN Permissions`.
@@ -403,16 +391,11 @@ Kui käivitus on punane, ava see vahekaardil **Actions**, vali punane töö ja a
 ??? warning "Töö on hall ja skipped"
     Põhjus: töö tingimus `if` ei kehtinud või `needs` töö kukkus. Vaata: võtmed `if` ja `needs`.
 
-
 Kui logist ei piisa, käivita töö uuesti nupuga **Re-run jobs** ja vali **Enable debug logging**. Siis näitab logi iga sammu kohta rohkem ridu ([Enable debug logging](https://docs.github.com/en/actions/how-tos/monitor-workflows/enable-debug-logging)). Rohkem näiteid on lehel [Troubleshoot workflows](https://docs.github.com/en/actions/how-tos/troubleshoot-workflows). Vea leidmise järjekorda (sümptom, hüpotees, tõend, parandus) kasutasime [N8 loengus](week08/lecture.md#7-vea-leidmine-sumptom-hupotees-toend-parandus).
-
----
 
 ## 7. Hind
 
 Avalikus repositooriumis on GitHubi runnerid tasuta. Privaatses repositooriumis on igal plaanil kuus tasuta minuteid: Team plaanis umbes 3000 Linuxi minutit kuus, Windowsi ja macOS-i runneri minut maksab rohkem. Oma runner (self-hosted) on tasuta, sest töö tehakse sinu masinas. Täpsed numbrid on lehel [GitHub Actionsi arveldus](https://docs.github.com/en/billing/concepts/product-billing/github-actions).
-
----
 
 ## 8. Kust edasi
 

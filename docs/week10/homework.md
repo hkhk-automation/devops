@@ -11,8 +11,6 @@ Praktikumis lõi OpenTofu masina ja trükkis selle IP-aadressi. Osas 4 nägid, e
 
 Kodutöö on boonus (BOONUS-kontroll Classroom 50-s, 0 punkti). Tee see samas repositooriumis `~/lab10` masinas `proxmox1`. Vaja on VPN-i.
 
----
-
 ## 1. Teine provider
 
 Inventory fail luuakse provideriga [`hashicorp/local`](https://search.opentofu.org/provider/hashicorp/local/latest), mis kirjutab faile kohalikule kettale. Lisa see faili `versions.tf` plokki `required_providers`, `proxmox` ploki järele:

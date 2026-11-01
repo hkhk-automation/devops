@@ -41,8 +41,6 @@ Joonisel on kõik, mis praktikumi lõpuks valmis on. Kui kaotad järje, vaata si
   <figcaption>Joonis 7.7. Praktikumi tervikpilt: sinu VM-ist läheb kood push'iga GitHubi, kus kaks tööd järjest otsustavad, kas pull request'i võib liita. Iga kast on üks praktikumi osa (Talvik, 2026).</figcaption>
 </figure>
 
----
-
 ## Osa 0 · Repositoorium ja Pythoni keskkond
 
 Selles osas teed valmis repositooriumi ja Pythoni keskkonna, kus teste käivitada.
@@ -99,8 +97,6 @@ Käsurea ette ilmub `(.venv)`. See tähendab, et käsud `python` ja `pip` kasuta
 !!! tip "Uues terminalis tuleb viga `pytest: command not found`"
     Virtuaalkeskkond kehtib ainult terminalis, kus käivitasid `source .venv/bin/activate`. Igas uues terminalis käivita see käsk uuesti. Kui VS Code küsib all paremal **Select interpreter**, vali `.venv`.
 
----
-
 ## Osa 1 · Esimene test oma masinas
 
 Test peab enne töötama sinu masinas. CI ei paranda katkist testi, see ainult käivitab testi teises masinas.
@@ -111,7 +107,6 @@ Loo fail `flask/test_app.py`. Test küsib avalehte `/` ja kontrollib kahte asja:
 
 ```python
 from app import app
-
 
 def test_avaleht_vastab():
     vastus = app.test_client().get("/")
@@ -157,8 +152,6 @@ Salvesta test ja fail `.gitignore` commit'iga:
 git add .gitignore flask/test_app.py
 git commit -m "test: avaleht vastab"
 ```
-
----
 
 ## Osa 2 · Esimene töövoog
 
@@ -290,8 +283,6 @@ Ava töö logis kõige esimene samm **Set up job**. Sealt näed, mis masinas tö
 
 ??? question "Küsimus"
     Ühe `echo` käsu jaoks kulus kümmekond sekundit. Mis pidi enne juhtuma, et käsk saaks käivituda? Mis juhtub selle masinaga pärast käivituse lõppu?
-
----
 
 ## Osa 3 · Runner on tühi: kolm viga järjest
 
@@ -454,8 +445,6 @@ Kui käivitus kukkus põhjusel, mis ei ole sinu koodis (näiteks võrguühendus 
 ??? success "Oodatav tulemus"
     Ei ole, see on jälle punane. Uuesti käivitamine kasutab sama commit'i ja selle commit'i töövoo faili, kus samm `pip install` veel puudus ([loengu §4](lecture.md#kuidas-toovoog-kaivitub)). Uus töövoo fail kehtib ainult uutele commit'idele.
 
----
-
 ## Osa 4 · Teek, mis on ainult sinu masinas
 
 Arendaja paigaldab sageli teegi, mida ta kavatseb varsti kasutada, ainult oma masinasse. Faili `requirements.txt` jääb see kirja panemata. Tema masinas on testid rohelised. Selles osas teed sama vea meelega ja vaatad, mida CI näitab.
@@ -502,8 +491,6 @@ Saada parandus GitHubi. Töö `test` on jälle roheline.
 
 ??? question "Küsimus"
     Failis `requirements.txt` on rida `flask==3.0.3` koos versiooniga. Mis võib juhtuda poole aasta pärast, kui kirjutad `requests` ilma versioonita ja teegist ilmub uus suurversioon?
-
----
 
 ## Osa 5 · Pull request ja haru `main` kaitse
 
@@ -594,8 +581,6 @@ Jaotises [Manage workflow runs](https://docs.github.com/en/actions/how-tos/manag
 - [commit ilma käivituseta](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/skip-workflow-runs): kui commit'i sõnumis on `[skip ci]`, ei käivitu sündmuste `push` ja `pull_request` töövood. Ole ettevaatlik, sest siis jääb ruleset'i nõutud kontroll ootele ja pull request'i ei saa liita;
 - [artefaktide allalaadimine](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/download-workflow-artifacts): failid, mille töövoog salvestas, näiteks testide aruanne.
 
----
-
 ## Osa 6 · Konteineri kontroll CI-s
 
 Töö `test` kontrollib, kas **kood** töötab. N5-s nägid, et kood võib olla korras, aga konteinerist rakendus ei vasta (`127.0.0.1` ja `0.0.0.0` erinevus). Selles osas lisad teise töö `konteiner`, mis ehitab image'i, käivitab konteineri ja küsib sellelt vastust. See on loengus kirjeldatud suitsutest.
@@ -658,8 +643,6 @@ Saada muudatus GitHubi. Punase käivituse viimases sammus on nüüd Flaski logi 
 
 ??? question "Küsimus"
     Miks on `test` ja `konteiner` kaks eraldi tööd? Mida näed vahekaardil **Actions**, mida ühe töö puhul ei näeks?
-
----
 
 ## Osa 7 · Test enne koodi
 
@@ -728,8 +711,6 @@ Väljundi lõpus peab olema `3 passed` ja vahekaardil **Actions** on mõlemad t�
 ??? question "Küsimus"
     Osas 6 tuli nõue `/health` väljastpoolt, CI-st. Osas 7 kirjutasid nõude kõigepealt testiks ja alles siis koodi. Kumb järjekord annab kiiremini teada, kas töö on valmis? Kumb sobib paremini, kui sama aadressi vajab ka N6 Compose'i healthcheck?
 
----
-
 ## Osa 8 · Sama konveier teistes tööriistades
 
 Sinu `ci.yml` töötab ainult GitHubis. Järgmises töökohas võib olla kasutusel GitLab CI või Jenkins. Kõik ei pea siis otsast peale õppima, sest mudel on sama ja muutub ainult süntaks. Ava loengu [§8](lecture.md#8-sama-mote-teised-tooriistad) ja vaata kolme vahelehte, kus on sama konveier GitHub Actionsis, GitLab CI-s ja Jenkinsis.
@@ -746,8 +727,6 @@ Suurim erinevus on masinas. GitHub Actions saab iga käivituse jaoks uue virtuaa
 
 ??? question "Küsimus"
     Jenkinsi agent on sageli server, mis töötab kuude kaupa. Meenuta osa 4. Kui keegi käivitab Jenkinsi serveris korra `pip install requests`, mis juhtub järgmise kuu kõigi käivitustega? Kas Jenkins leiaks osa 4 vea?
-
----
 
 ## Osa 9 · Töö esitamine
 
@@ -788,8 +767,6 @@ Nüüd on `ci.yml` harus `main`. Ava vahekaardil **Actions** töövoog **CI**. N
 
 Autograder hindab haru `main` nagu N5 ja N6 praktikumis. Tulemus on repositooriumi lehel jaotises **Releases** ja Classroom 50-s. Hinne tuleb kontrollidest 1–7 (kokku 100 punkti). Kodutöö kontroll „BOONUS 8“ annab lisapunkte.
 
----
-
 ## Lõppkontroll
 
 Kui praktikum on tehtud, peaksid oskama järgmist ilma juhendita:
@@ -802,8 +779,6 @@ Kui praktikum on tehtud, peaksid oskama järgmist ilma juhendita:
 - [ ] Punase käivituse logist oskad öelda, kas viga on koodis (`AssertionError`, `ModuleNotFoundError`) või töövoos (`file or directory not found`, `command not found`).
 - [ ] Kui rikud aadressi `/health` (näiteks `"status": "katki"`), kukub test enne, kui konteinerit üldse ehitatakse.
 - [ ] Oskad näidata GitLabi ja Jenkinsi failis rea, mis teeb sama tööd mis `needs: test`.
-
----
 
 ## Lisaülesanded
 

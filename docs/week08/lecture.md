@@ -24,8 +24,6 @@ Praktikumis saad konveieri, mille kolleeg on juba kirjutanud. Selles on vead. Lo
     - leida viga järjekorras: sümptom, hüpotees, tõend, parandus
     - võrrelda GitHub Actionsit, GitLabi ja Jenkinsit ning nende litsentse
 
----
-
 ## 1. CI-st pideva tarneni
 
 Meenuta N7 sõnu. **Töövoog** (workflow) on fail kaustas `.github/workflows/`. Töövoos on **tööd** (jobs), näiteks `test` ja `konteiner`. Igas töös on **sammud** (steps). Iga kord, kui töövoog käivitub, tekib vahekaardile **Actions** uus **käivitus** (run).
@@ -59,8 +57,6 @@ Server ei ehita image'it. Ta tõmbab registrist sama faili, mille konveier ehita
 ??? question "Kontrolli ennast"
     1. Kas täna teeme pideva tarne või pideva paigalduse? Kes käivitab paigalduse?
     2. N6-s ehitas `docker compose up --build` image'i serveris. Mis võib minna valesti, kui kaks serverit ehitavad sama koodi ise?
-
----
 
 ## 2. Register ja GHCR
 
@@ -105,8 +101,6 @@ Registreid on palju. Konveier logib igasse neist sisse veidi teisiti:
     1. Repositooriumi nimi on `lab-MariTamm`. Mis juhtub, kui image'i nimeks saab `ghcr.io/hkhk-automation/lab-MariTamm`?
     2. Miks ei pea konveieri failis olema sinu GitHubi kasutajanimi?
 
----
-
 ## 3. Tag'id: räsi ja `latest`
 
 **Tag** on image'i nimi pärast koolonit. Ühel image'il võib olla mitu tag'i. Tag'i saab hiljem teisele image'ile ümber tõsta.
@@ -124,8 +118,6 @@ Konveier paneb igale image'ile kaks tag'i: räsi ja `latest`. Räsi tuleb muutuj
 Ainult `latest`-ist ei piisa. See ei ütle, mis versioon töötab. Kui kaks serverit tõmbasid `latest`-i eri päevadel, võib neis olla erinev kood. Räsi järgi tead täpselt, mis koodiga on tegu. Vanale versioonile tagasi minek tähendab vana räsiga image'i käivitamist.
 
 Starteris on rakendusel uus aadress `/versioon`. Konveier annab ehitamisel räsi `Dockerfile`-ile. Nii ütleb töötav rakendus ise, mis commit'ist see on tehtud.
-
----
 
 ## 4. Õigused: `GITHUB_TOKEN` ja `permissions`
 
@@ -152,8 +144,6 @@ Iga töö logi esimene samm on **Set up job**. Selle all on lõik `GITHUB_TOKEN 
     1. Sisselogimine GHCR-i õnnestub, aga `docker push` kukub sõnaga `denied`. Mida see tokeni kohta ütleb?
     2. Miks ei anna me kõigile töödele `packages: write`?
 
----
-
 ## 5. Millal image ehitatakse
 
 Registrisse tohib jõuda ainult kood, mis on testitud ja üle vaadatud. Selle eest hoolitsevad töövoos kolm asja.
@@ -174,8 +164,6 @@ Registrisse tohib jõuda ainult kood, mis on testitud ja üle vaadatud. Selle ee
 ??? question "Kontrolli ennast"
     1. Saadad GitHubi haru `n08-tervitus` ja avad pull request'i. Töövoos on `push:` ilma harudeta ja `pull_request:`. Mitu käivitust tekib?
     2. Miks on pull request'i koodi registrisse saatmine ohtlik, kui testid olid rohelised?
-
----
 
 ## 6. Server tõmbab image'i
 
@@ -205,8 +193,6 @@ Paigalduse juures kasutatakse veel kahte võimalust ([pidev paigaldus GitHub Act
 ??? question "Kontrolli ennast"
     1. Miks ei anna me serveri tokenile õigust `write:packages`, kuigi see lubaks ka lugeda?
     2. `docker ps` näitab pordiks `0.0.0.0:8088->80/tcp`. Rakendus kuulab pordil 5000. Mida vastab `curl localhost:8088`?
-
----
 
 ## 7. Vea leidmine: sümptom, hüpotees, tõend, parandus
 
@@ -251,8 +237,6 @@ Kõik vead ei tee konveierit punaseks. Kui katkine kood jõuab registrisse, on k
 **Viga saab issue.** Töökohas pannakse iga viga kirja **issue**'na: mida nähti, mis oli hüpotees ja mis oli tõend. Kui paranduse commit'i sõnumis on rida `Fixes #12`, sulgeb GitHub issue numbriga 12 siis, kui commit jõuab harusse `main`, ja lisab issue'le lingi sellele commit'ile ([issue sulgemine võtmesõnaga](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword)). Nii saab hiljem minna ahelat pidi: issue, commit'i räsi, image'i tag sama räsiga ja server, mis näitab seda räsi. Praktikumis teed iga vea kohta issue ja leiad räsi järgi vana versiooni üles (`git log --oneline`, `git show <räsi>`).
 
 **Olekumärk.** README algusesse saab panna olekumärgi (status badge): väikese pildi, mis näitab töövoo viimase käivituse tulemust harus `main`. Märgi rea annab GitHub käivituse lehel menüüst **⋯ → Create status badge** ([olekumärk](https://docs.github.com/en/actions/how-tos/monitor-workflows/add-a-status-badge)).
-
----
 
 ## 8. CI/CD tööriistad ja litsentsid
 
@@ -309,8 +293,6 @@ Litsents võib ka muutuda. HashiCorp muutis 2023. aastal Terraformi litsentsi (T
 ??? question "Kontrolli ennast"
     1. Firma tahab CI/CD-d, mis töötab ainult tema enda serverites ja on tasuta. Milliseid tabeli 8.5 tööriistu ta saab kasutada?
     2. Mida peab firma Jenkinsi puhul ise tegema, mida GitHub Actionsi puhul teeb GitHub?
-
----
 
 ## Kokkuvõte
 

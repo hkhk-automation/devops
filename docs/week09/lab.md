@@ -20,8 +20,6 @@ Lab 09 repositooriumi lingi leiad kursuse teadetest.
     3. Oskad näidata, miks konteineri olemasolu kontrolliv skript ei taga veel soovitud olekut.
     4. Oskad tekitada triivi ja võrrelda, kuidas Ansible ja Docker Compose sellele reageerivad.
 
----
-
 ## Osa 1 · KodeKloudi kursus
 
 **Ülesanne**
@@ -50,8 +48,6 @@ Tähtaja ja automaatkontrolli tulemuse näed Classroom 50-s.
 | Boonusülesanded | 0 |
 
 *Tabel 9.9. Automaatkontroll*
-
----
 
 ## Boonusülesanded
 

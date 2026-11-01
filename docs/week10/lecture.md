@@ -20,8 +20,6 @@ N9 loengus võrdlesid Bashi, Ansible'it ja Docker Compose'i. Täna kirjutad kõi
     - lugeda `tofu plan` väljundist, mida OpenTofu loob, muudab või kustutab
     - selgitada, miks olekufail ei lähe Giti, aga lukufail `.terraform.lock.hcl` läheb
 
----
-
 ## 1. Kaks ennustust
 
 OpenTofu on deklaratiivne tööriist nagu Ansible ja Docker Compose. Enne kui loed edasi, vasta N9 loengu põhjal kahele küsimusele:
@@ -30,8 +28,6 @@ OpenTofu on deklaratiivne tööriist nagu Ansible ja Docker Compose. Enne kui lo
 2. Kustutad OpenTofu failist masina kirjelduse. Mis juhtub järgmisel käivitusel? Kas Ansible teeks sama?
 
 Võta Classroom 50-s vastu ülesanne **Lab 10 - OpenTofu** ([Classroom 50](https://classroom50.org/hkhk-automation/it24-automatiseerimine/assignments)), ava GitHubis oma repositooriumi fail `README.md` (pliiatsi nupp) ja kirjuta vastused Osa 0 alla. Õiget vastust praegu ei oodata. Praktikumi osades 4 ja 5 teed mõlemad katsed läbi ja võrdled tulemust oma ennustusega.
-
----
 
 ## 2. Infrastruktuur koodina: pilv ja Proxmox
 
@@ -88,8 +84,6 @@ AWS-i ressursse kirjeldab provider [`hashicorp/aws`](https://search.opentofu.org
     1. Firma kolib Proxmoxist AWS-i. Mis muutub `.tf` failides ja mis jääb samaks?
     2. Miks saab OpenTofu luua masina platvormis, mille kohta OpenTofu ise midagi ei tea?
 
----
-
 ## 3. OpenTofu ja Ansible
 
 N3–N8 kasutasid Ansible'it. Mõlemad tööriistad on deklaratiivsed: kirjeldad soovitud olekut ja tööriist teeb ainult vajalikud muudatused. Erinevus on selles, mida nad haldavad. Ansible eeldab, et masin on juba olemas ja sellesse saab SSH-ga sisse logida. OpenTofu loob masina ise platvormi API kaudu ega logi masinasse kunagi sisse.
@@ -116,8 +110,6 @@ Töökohas on tavaline järjekord selline: OpenTofu loob masinad ja trükib nend
     1. Firma vajab uut veebiserverit, millel töötab nginx. Milline osa on OpenTofu töö ja milline Ansible'i oma?
     2. Miks ei pea OpenTofu masinasse SSH-ga sisse logima?
     3. Kumb tööriist saab töötada enne, kui masinal on IP-aadress?
-
----
 
 ## 4. Fail, mis kirjeldab masinat
 
@@ -180,8 +172,6 @@ Muutujate väärtused on failis `terraform.tfvars`. OpenTofu loeb selle faili au
     1. Mis on aadressis `proxmox_virtual_environment_vm.veeb` ressursi tüüp ja mis sinu antud nimi?
     2. Miks on API token muutujas, mitte otse failis `versions.tf`?
 
----
-
 ## 5. Töövoog: init, plan, apply, destroy
 
 <figure markdown="span">
@@ -225,8 +215,6 @@ Kolm abikäsku kasutad praktikumis iga muudatuse juures. **`tofu fmt`** vorminda
     1. Mille poolest erineb `tofu plan` käsust `ansible-playbook --check`?
     2. Miks on kasulik anda `apply` käsule salvestatud plaanifail?
 
----
-
 ## 6. Olekufail ja lukufail
 
 OpenTofu kirjutab [olekufaili](https://opentofu.org/docs/language/state/) `terraform.tfstate` iga ressursi, mille ta lõi: Proxmoxi VMID, sõlme, IP-aadressid ja kõik atribuudid. Fail on JSON. Selle järgi teab OpenTofu järgmisel käivitusel, et masin `tofu-<kasutaja>` on tema loodud ja tema hallata. Proxmoxi teisi masinaid olekufailis ei ole ja OpenTofu ei muuda neid.
@@ -249,8 +237,6 @@ Lukufail `.terraform.lock.hcl` läheb Giti. Selles on provideri versioon ja kont
     1. Kustutad kogemata faili `terraform.tfstate`. Masin on Proxmoxis alles. Mida näitab järgmine `tofu plan`?
     2. Miks läheb Giti `.terraform.lock.hcl`, aga mitte `.terraform/`?
 
----
-
 ## 7. API token ja õigused
 
 OpenTofu ühendub Proxmoxiga **API tokeniga**. Token kuulub sinu Proxmoxi kasutajale ja sellel on sinu õigused. Praktikumis lood tokeni ise Proxmoxi veebiliideses.
@@ -258,8 +244,6 @@ OpenTofu ühendub Proxmoxiga **API tokeniga**. Token kuulub sinu Proxmoxi kasuta
 Õpetaja on andnud igale õppijale õiguse luua masinaid ainult oma pool'i (`tofu-<kasutaja>`) ja kloonida ühte AlmaLinuxi malli. Teiste masinaid ei saa sinu token muuta ega kustutada. Seda nimetatakse **vähimate õiguste põhimõtteks**: automaatika saab täpselt need õigused, mida ta vajab. Kui token lekib, piirdub kahju sinu pool'iga.
 
 Token on saladus nagu parool. Ta on ainult failis `terraform.tfvars` (`.gitignore`-is) ja muutuja on märgitud `sensitive = true`, et OpenTofu ei trükiks seda välja. `sensitive` peidab väärtuse ainult ekraanilt: olekufailis on see endiselt lihttekstina ([saladused olekufailis](https://opentofu.org/docs/language/state/sensitive-data/)). Terraformist erinevalt oskab OpenTofu olekufaili [krüpteerida](https://opentofu.org/docs/language/state/encryption/), meeskonnas kasutatakse seda koos ühise backend'iga.
-
----
 
 ## 8. OpenTofu meeskonnas: Spacelift
 
@@ -283,8 +267,6 @@ Spacelift oskab käivitada ka Terraformi, Ansible'it, Pulumit ja Kubernetese man
 ??? question "Kontrolli ennast"
     1. Mis probleemi lahendab Spacelift võrreldes sellega, et iga insener käivitab `tofu apply` oma arvutist?
     2. Miks käivitab Spacelift `tofu plan` juba pull request'i juures, enne merge'i?
-
----
 
 ## Kokkuvõte
 
