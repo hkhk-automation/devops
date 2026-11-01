@@ -286,7 +286,7 @@ graph TB
     |---|---|---|---|---|
     | Bashi skript | ükskõik milline | imperatiivne | ainult kui lisad kontrolli | ei |
     | Ansible | serveri konfiguratsioon | deklaratiivne (moodulid) | jah, moodulitega | ei |
-    | Dockerfile | image | sees imperatiivne, tulemus muutumatu | korduv ehitus võib anda teise image.i, sest alusimage ja paketid muutuvad; vahemälu kasutab varasemate sammude tulemusi | ei |
+    | Dockerfile | image | sees imperatiivne, tulemus muutumatu | korduv ehitus võib anda teise image'i, sest alusimage ja paketid muutuvad; vahemälu kasutab varasemate sammude tulemusi | ei |
     | Docker Compose | konteinerid | deklaratiivne | jah | Docker teab, millised konteinerid töötavad |
 
 Git on kõigi kihtide all. Ilma Gitita on iga fail lihtsalt fail ühe inimese kettal.
