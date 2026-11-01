@@ -353,6 +353,28 @@ docker volume ls
 
 ---
 
+## Esitamine
+
+Automaatkontroll käivitab sinu stacki GitHubis ise. Selleks peavad repos olema need failid:
+
+```text
+docker-compose.yml
+app/Dockerfile
+app/app.py
+app/requirements.txt
+nginx/default.conf
+.gitignore
+```
+
+Faili `.env` reposse ei panda. Automaatkontroll loob testimiseks oma `.env`-i ja annab väärtuse igale muutujale, mida `docker-compose.yml` kasutab.
+
+1. Tee töö harus `n06-lab`: `git switch -c n06-lab`.
+2. Lisa failid, tee commit ja `git push -u origin n06-lab`.
+3. Ava GitHubis pull request `main` vastu ja liida see (**Merge**). Automaatkontroll hindab haru `main`.
+4. Vaata tulemust repo vahekaardil **Actions**. Punase testi korral loe selle väljundit, paranda ja push'i uuesti.
+
+---
+
 ## Lõppkontroll — oskad ilma juhendita
 
 - [ ] Ehitad kolme-teenuse stacki üks teenus korraga
