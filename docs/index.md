@@ -1,13 +1,8 @@
-<div class="hero-section" markdown>
-<div class="hero-content" markdown>
 # IT-automatiseerimine
 
-13 nädala jooksul õpid automatiseerima tüüpilisi serverihalduse ja tarkvaraarenduse töid, mida muidu tehakse käsitsi. Kursus on kutsekooli 3. kursuse esimene automatiseerimise aine.
+13 nädala jooksul õpid automatiseerima serverihalduse ja tarkvaraarenduse töid, mida muidu tehakse käsitsi.
 
-[Alusta kursusega](week01/lecture.md){ .btn-primary }
-[13 nädala ülevaade](#programm){ .btn-secondary }
-</div>
-</div>
+[Alusta esimesest nädalast](week01/lecture.md) · [Programm](#programm)
 
 ## Mida sa õpid
 
