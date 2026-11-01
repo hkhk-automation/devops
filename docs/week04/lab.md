@@ -469,10 +469,7 @@ Selle faili täidad praktikumi jooksul juurde (Osa 11 ja Osa 12). Vaata ka: [Han
 
 **Dokumentatsioon:** [Protecting sensitive data with Ansible vault](https://docs.ansible.com/ansible/latest/vault_guide/index.html)
 
-!!! info "Kolm asja, mida ei tohi segamini ajada"
-    Vault on nagu lukustatud kast. Kastis on saladus. Kast võib olla avalikus kohas (Gitis), sest ilma võtmeta ei saa seda avada.
-
-    Võti on parool, mille sa kohe välja mõtled, see ei tohi Gitti minna. Ja `.vault_pass` on võtmest tehtud koopia failina, et sa ei peaks igal korral seda trükkima.
+Vault'iga on kolm eri asja. Krüpteeritud fail `vault.yml` võib olla Gitis, sest ilma paroolita seda avada ei saa. Parool ei lähe Giti. Fail `.vault_pass` hoiab parooli, et seda ei peaks iga kord trükkima, ja ka see ei lähe Giti.
 
 <figure markdown="span">
 ```mermaid

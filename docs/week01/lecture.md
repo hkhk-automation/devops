@@ -19,9 +19,6 @@ tags:
     5. mida tähendavad **idempotentsus** ning **deklaratiivne ja imperatiivne** lähenemine;
     6. kuidas Git, Ansible, Docker, CI/CD ja Terraform viivad teenuse arendusest tootmiskeskkonda.
 
-!!! info "Kolm asja ilma slaidita"
-    Tunni lõpuks peaksid oskama **ilma slaidita** selgitada, miks käsitöö ei skaleeru, miks automatiseerimine ei ole lihtsalt „kiirem käsitöö“ ja kuidas kursuse tööriistad moodustavad ühe ahela.
-
 ## 1. Näidisstsenaarium
 
 !!! abstract "Miks see oluline on?"
