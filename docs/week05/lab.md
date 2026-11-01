@@ -30,8 +30,7 @@ Rida **Ennusta** tähendab, et enne käsku mõtled läbi, mis juhtub. Vastus on 
 
 ## Osa 0 · Docker VM-i peale
 
-!!! success "Eesmärk"
-    Osa lõpuks: `docker run --rm hello-world` näitab `Hello from Docker!`.
+Osa lõpuks: `docker run --rm hello-world` näitab `Hello from Docker!`.
 
 Sinu VM-is on AlmaLinux (RHEL-i perekond, paketihaldur `dnf`). AlmaLinuxiga on kaasas Red Hati Podman, kursusel kasutatakse aga Docker Engine'it Dockeri enda repositooriumist, sama, mida kasutab automaatkontroll. Podmaniga tutvud osas 14.
 
@@ -77,8 +76,7 @@ ls -l /var/run/docker.sock
 
 ### 0.1 VS Code: Docker otse VM-is
 
-!!! success "Eesmärk"
-    Osa lõpuks: VS Code'i vasakul ribal on konteinerite ikoon ja seal on näha image `hello-world`.
+Osa lõpuks: VS Code'i vasakul ribal on konteinerite ikoon ja seal on näha image `hello-world`.
 
 1. VS Code'is on sul juba laiendus **Remote - SSH** (N1). Ühenda VM-iga (`F1` → *Remote-SSH: Connect to Host*).
 2. VM-iga ühendatud aknas ava Extensions ja paigalda [Container Tools](https://code.visualstudio.com/docs/containers/overview) (`ms-azuretools.vscode-containers`, Microsoft; varem kandis nime "Docker"). Vajuta *Install in SSH: ...*, sest laiendus peab töötama VM-is, kus on Docker.
@@ -86,13 +84,11 @@ ls -l /var/run/docker.sock
 
 Kui laiendus näitab viga `permission denied`, on põhjus sama mis eespool: VS Code'i SSH-sessioon algas enne `usermod`-i. Vali `F1` → *Remote-SSH: Kill VS Code Server on Host* ja ühenda uuesti.
 
-!!! tip
-    Laiendus teeb töö mugavamaks, aga ei asenda käske. Praktikumis kirjuta käsud terminali, sest serveris graafilist liidest ei ole.
+Laiendus teeb töö mugavamaks, aga ei asenda käske. Kirjuta käsud terminali, sest serveris graafilist liidest ei ole.
 
 ### 0.2 Docker Hubi konto
 
-!!! success "Eesmärk"
-    Osa lõpuks: `docker login` ütleb `Login Succeeded`.
+Osa lõpuks: `docker login` ütleb `Login Succeeded`.
 
 Docker Hub on image'ide hoidla, kust tulevad `ubuntu`, `nginx` ja `python` ning kuhu laadid osas 9 üles oma image'i.
 
@@ -114,8 +110,7 @@ Sisselogimine tõstab ka tõmbamise piirmäära, mis kooli ühise IP-aadressi ta
 
 ### 0.3 Tõmba image ja vaata konteinerisse
 
-!!! success "Eesmärk"
-    Osa lõpuks: oskad öelda, mitu korda on `-alpine` väiksem, ja oled olnud konteineri sees.
+Osa lõpuks: oskad öelda, mitu korda on `-alpine` väiksem, ja oled olnud konteineri sees.
 
 Enne oma image'i ehitamist vaata valmis image'it. Tõmba see konkreetse tag'iga:
 
@@ -167,8 +162,7 @@ docker ps -a
 
 ## Osa 1 · Alus: töötav image
 
-!!! success "Eesmärk"
-    Osa lõpuks: `curl localhost:8080` näitab nginx-i tervituslehte.
+Osa lõpuks: `curl localhost:8080` näitab nginx-i tervituslehte.
 
 Klooni oma Classroom 50 repositoorium (`lab-05-...`), loo haru ja kaustad:
 
@@ -203,8 +197,7 @@ curl localhost:8080
 
 ## Osa 2 · Viga ja selle põhjus
 
-!!! success "Eesmärk"
-    Osa lõpuks: build läbib, sest Dockerfile'is on `-y`.
+Osa lõpuks: build läbib, sest Dockerfile'is on `-y`.
 
 Nüüd teed meelega levinud vea. Lisa paigaldusse teine pakett (`curl`), aga jäta `-y` teadlikult ära. Muuda keskmine rida selliseks:
 
@@ -239,8 +232,7 @@ Nüüd build õnnestub. Dockerfile'is kasuta `apt install` käsuga alati `-y`.
 
 ## Osa 3 · Laiendus: oma sisu image'isse
 
-!!! success "Eesmärk"
-    Osa lõpuks: uus image on ehitatud (leht on veel vana, see on meelega nii).
+Osa lõpuks: uus image on ehitatud (leht on veel vana, see on meelega nii).
 
 Praegu näitab nginx vaikimisi lehte. Pane sinna oma leht: loo kausta `nginx/` fail `index.html`:
 
@@ -268,8 +260,7 @@ curl localhost:8080
 
 ## Osa 4 · Uus build ei uuenda konteinerit
 
-!!! success "Eesmärk"
-    Osa lõpuks: `curl localhost:8080` näitab `Versioon 1`.
+Osa lõpuks: `curl localhost:8080` näitab `Versioon 1`.
 
 Uus image on ehitatud, aga `curl` näitab vana lehte. Vaata konteinereid ja image'eid:
 
@@ -313,8 +304,7 @@ sequenceDiagram
 
 ## Osa 5 · Port on juba kinni
 
-!!! success "Eesmärk"
-    Osa lõpuks: kaks konteinerit töötavad portidel `8080` ja `8081`, tõend on failis `logid/docker-ps.txt`.
+Osa lõpuks: kaks konteinerit töötavad portidel `8080` ja `8081`, tõend on failis `logid/docker-ps.txt`.
 
 Proovi käivitada teine konteiner samast image'ist, sama pordiga:
 
@@ -347,8 +337,7 @@ docker ps > ../logid/docker-ps.txt
 
 ## Osa 6 · Konteiner lõpetab kohe töö
 
-!!! success "Eesmärk"
-    Osa lõpuks: `docker ps` näitab `web3` olekuks `Up`.
+Osa lõpuks: `docker ps` näitab `web3` olekuks `Up`.
 
 Muuda `Dockerfile`-is `CMD` rida selliseks (võta `daemon off;` ära):
 
@@ -409,8 +398,7 @@ Seekord jääb `web3` tööle.
 
 ## Osa 7 · Koristamine
 
-!!! success "Eesmärk"
-    Osa lõpuks: `docker ps -a` on tühi.
+Osa lõpuks: `docker ps -a` on tühi.
 
 Nüüd on kolm konteinerit ja üks image. Peata ja kustuta konteinerid:
 
@@ -443,8 +431,7 @@ docker image prune -f   # eemaldab varasematest build'idest jäänud nimeta (<no
 
 ## Osa 8 · Seadistatav ja mitte-root image
 
-!!! success "Eesmärk"
-    Osa lõpuks: väljundis on `olen appuser`, tõend on failis `logid/turve.txt`.
+Osa lõpuks: väljundis on `olen appuser`, tõend on failis `logid/turve.txt`.
 
 Loo uus kaust, et see ei läheks nginx-i failidega segamini:
 
@@ -493,8 +480,7 @@ docker rmi turve && cd ..
 
 ## Osa 9 · Avalda oma image Docker Hubi
 
-!!! success "Eesmärk"
-    Osa lõpuks: sinu image on Docker Hubis näha ja `docker run kasutaja/minu-nginx:v1` töötab.
+Osa lõpuks: sinu image on Docker Hubis näha ja `docker run kasutaja/minu-nginx:v1` töötab.
 
 Ehita nginx-i image uuesti (osas 7 kustutasid selle) ja anna sellele Docker Hubi nimi koos tag'iga:
 
@@ -540,8 +526,7 @@ cd ..
 
 ## Osa 10 · Tegelik rakendus: Flask konteinerisse
 
-!!! success "Eesmärk"
-    Osa lõpuks: `curl localhost:5000` näitab `Tere konteinerist!`.
+Osa lõpuks: `curl localhost:5000` näitab `Tere konteinerist!`.
 
 Seni pakkisid valmis nginx-i. Nüüd pakid oma koodi. Loo repositooriumi juurkausta kaust `flask`:
 
@@ -602,8 +587,7 @@ curl localhost:5000
 
 ## Osa 11 · Kihid ja vahemälu: miks ridade järjekord on oluline
 
-!!! success "Eesmärk"
-    Osa lõpuks: build'i väljundis on `pip install` real `CACHED`, tõend on failis `logid/cache.txt`.
+Osa lõpuks: build'i väljundis on `pip install` real `CACHED`, tõend on failis `logid/cache.txt`.
 
 Muuda `app.py`-s tervitust (nt `"Tere, versioon 2!"`), ehita uuesti ja salvesta väljund:
 
@@ -631,8 +615,7 @@ cd ..
 
 ## Osa 12 · Multi-stage build: väike lõppimage
 
-!!! success "Eesmärk"
-    Osa lõpuks: `curl localhost:8084` näitab sinu `leht.md` sisu ja image on väiksem kui 100 MB.
+Osa lõpuks: `curl localhost:8084` näitab sinu `leht.md` sisu ja image on väiksem kui 100 MB.
 
 Lehe ehitamiseks on vaja tööriistu (Python ja teegid), aga lehe serveerimiseks ainult nginx-i. Tootmise image'is pole Pythonit vaja.
 
@@ -684,8 +667,7 @@ cd ..
 
 ## Osa 13 · Andmed: bind mount ja volume
 
-!!! success "Eesmärk"
-    Osa lõpuks: kui muudad faili VM-is, muutub leht kohe; failis `logid/volume.txt` on kaks rida.
+Osa lõpuks: kui muudad faili VM-is, muutub leht kohe; failis `logid/volume.txt` on kaks rida.
 
 Konteiner on ajutine, kirjutatav kiht kaob `rm`-iga. Andmete alleshoidmiseks on kaks viisi.
 
@@ -730,8 +712,7 @@ docker volume ls
 
 ## Osa 14 · Podman teises Alma VM-is
 
-!!! success "Eesmärk"
-    Osa lõpuks: teises VM-is töötab sinu Docker Hubi image Podmaniga, tõend on failis `logid/podman.txt`.
+Osa lõpuks: teises VM-is töötab sinu Docker Hubi image Podmaniga, tõend on failis `logid/podman.txt`.
 
 AlmaLinuxi ja RHEL-i vaikimisi konteineritööriist on [Podman](https://podman.io/docs). Kasuta oma teist Proxmoxi Alma masinat (N1 inventory'st). Seal Dockerit pole ja seda sinna ei paigaldata.
 

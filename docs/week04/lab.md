@@ -127,7 +127,7 @@ Sama põhimõte on Wordi kirjakoostes: mall on kiri „Lp `{{ nimi }}`“, `grou
 
 Kui teine käivitus annab `changed=0`, on playbook idempotentne. Praktikumis kontrollid seda peaaegu igal sammul.
 
-!!! tip "Kui jääd hätta"
+??? tip "Kui jääd hätta"
     1. Loe osa juures olevat plokki „Kuidas see töötab?“ ja vaata joonist.
     2. **Ennusta**, mis juhtub, ja alles siis käivita. Kui ennustus ja tulemus erinevad, uuri, miks.
     3. Ava Ansible'i ametlik dokumentatsioon ja otsi mooduli täisnime järgi (nt `ansible.builtin.service`). Vaata parameetreid, lubatud väärtusi ja näiteid.
@@ -299,7 +299,7 @@ Kas `paketi_nimi` on väljundis? Kui pole, jäi fail lugemata. Vea `undefined va
 
 Paranda viga ja käivita playbook: tulemus on `changed=0`. Käivita `ansible-inventory` uuesti ja veendu, et muutuja on nüüd olemas.
 
-!!! tip "Kaust `all/` või fail `all.yml`"
+??? tip "Kaust `all/` või fail `all.yml`"
     Mõlemad töötavad. Kaust lubab grupil hoida mitut faili. Osa 6-s lisad sinna krüpteeritud `vault.yml`.
 
     Kui paneksid selle `group_vars/vault.yml`-ks, loeks Ansible seda grupi nimega `vault` muutujateks. Sellist gruppi pole ja saladus ei jõuaks kuhugi.
@@ -728,7 +728,7 @@ Lisafail läheb kausta `/etc/chrony.d/`. Kui `confdir` rida puudub, küsi õpeta
 !!! warning "Kaks nime"
     Pakett on `chrony`, aga teenus on `chronyd`. Paketi ja teenuse nimi on sageli erinev.
 
-!!! example "Uuri ise: `reloaded` või `restarted`?"
+??? example "Uuri ise: `reloaded` või `restarted`?"
     1. Ava `ansible.builtin.service` dokumentatsioon ja vaata, milliseid `state` väärtusi saad kasutada.
     2. Uuri sõlmes, kas `chronyd` oskab konfiguratsiooni uuesti laadida: `ssh proxmox1 "systemctl show chronyd -p CanReload"`. Dokumentatsioon näitab, mida Ansible'i moodul lubab, ja `CanReload` näitab, kas teenus oskab konfiguratsiooni uuesti lugeda.
     3. Lisa `logid/dokumendid.txt` faili, kumba valid ja miks.
@@ -836,7 +836,7 @@ Tee nii:
     | 5 | Handleris `state: reloaded` → `state: reload` | `value of state must be one of: ...`; õige väärtus tuleb leida ametlikust `ansible.builtin.service` dokumentatsioonist |
     | 6 | Eemalda `notify:` täielikult | Vigu pole, aga päis ei uuene (vaikne viga) |
 
-!!! tip "Kui päis ikka ei uuene pärast parandust"
+??? tip "Kui päis ikka ei uuene pärast parandust"
     Kui fail jõudis sõlme juba eelmisel katsel, on template nüüd `ok` ja handlerit ei kutsuta (vt osa 10). Muuda väärtust uuesti (`-v6`).
 
 ??? question "Mõtle pärast"
