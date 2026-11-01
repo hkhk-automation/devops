@@ -2,7 +2,7 @@
 
 13 nädala jooksul õpid automatiseerima serverihalduse ja tarkvaraarenduse töid, mida muidu tehakse käsitsi.
 
-[Alusta esimesest nädalast](week01/lecture.md) · [Programm](#programm)
+[Alusta esimesest nädalast](week01/lecture.md) · [Teemad nädalate kaupa](#teemad-nadalate-kaupa)
 
 ## Mida sa õpid
 
@@ -15,7 +15,7 @@
 
 ---
 
-## Programm
+## Teemad nädalate kaupa
 
 | # | Teema | Tööriistad |
 |---|---|---|
