@@ -287,7 +287,7 @@ Jenkinsi konveier on repositooriumi failis `Jenkinsfile` ([Jenkinsfile'i süntak
 
 GitLab kasutab mudelit **open core**. Põhiosa on avatud (Community Edition, MIT). Lisavõimalused on kaustas `ee/` ja nende kasutamiseks tootmises on vaja tasulist tellimust ([CE või EE](https://about.gitlab.com/install/ce-or-ee/)).
 
-Litsents võib ka muutuda. N10-s nägid, et HashiCorp muutis 2023. aastal Terraformi litsentsi. Uus litsents BSL ei luba Terraformi kasutada HashiCorpiga konkureerivas tootes ([HashiCorpi teade](https://www.hashicorp.com/blog/hashicorp-adopts-business-source-license)). Kogukond jätkas viimase vaba versiooniga ja nii tekkis OpenTofu. Seega tasub enne tööriista valimist vaadata ka litsentsi ja seda, kes projekti juhib.
+Litsents võib ka muutuda. HashiCorp muutis 2023. aastal Terraformi litsentsi (Terraformi ja OpenTofuga töötad N10-s). Uus litsents BSL ei luba Terraformi kasutada HashiCorpiga konkureerivas tootes ([HashiCorpi teade](https://www.hashicorp.com/blog/hashicorp-adopts-business-source-license)). Kogukond jätkas viimase vaba versiooniga ja nii tekkis OpenTofu. Seega tasub enne tööriista valimist vaadata ka litsentsi ja seda, kes projekti juhib.
 
 ??? question "Kui palju GitHub Actions maksab?"
     Litsentsi kõrval tuleb vaadata ka hinda. Leia vastused GitHubi dokumentatsioonist, lehelt [GitHub Actionsi arveldus](https://docs.github.com/en/billing/concepts/product-billing/github-actions), ja võrdle plaane lehel [github.com/pricing](https://github.com/pricing):

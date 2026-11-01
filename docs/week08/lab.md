@@ -991,4 +991,4 @@ Töö on esitatud, kui kõik muudatused on GitHubis harus `main`. Automaatkontro
 
 ---
 
-*Edasi: [kodutöö](homework.md). Seal paned sama konveieri oma varasemate praktikumide failidele: N5 Dockerfile, N6 Compose ja N3–N4 Ansible. N9 teema on infrastruktuur koodina.*
+*Edasi: [kodutöö](homework.md). Seal paned sama konveieri oma varasemate praktikumide failidele: N5 Dockerfile, N6 Compose ja N3–N4 Ansible. N10-s kirjeldad OpenTofuga koodina virtuaalmasina ja kontrollid N9 ennustusi.*
