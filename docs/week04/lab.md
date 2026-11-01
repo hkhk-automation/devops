@@ -991,6 +991,7 @@ Testid 1–6 peavad olema ✅. Test 7 on kodutöö.
 4. `git push -u origin n04-vault`, ava **Pull Request** `main` vastu, Actions roheline
 5. Kodutöö lisad samasse PR-i ([kodutöö](homework.md)). PR-i link GitHub Projecti.
 6. **Git-harjutus: review.** Ava oma paarilise PR, vaata sakki **Files changed** ja kirjuta vähemalt **ühe rea** peale kommentaar (nt "miks siin on `reloaded`, mitte `restarted`?"). Vali lõpus **Approve** või **Request changes**. Sinu PR-il teeb sama teine.
+7. Pärast ülevaatust liida PR `main`-i (**Merge**). Automaatkontroll hindab haru `main`, seega tulemus tuleb alles pärast merge'i.
 
 !!! example "Enne PR-i kontrolli"
     ```bash

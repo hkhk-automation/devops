@@ -9,7 +9,7 @@ tags:
 # Kodutöö: ülevaatus mõlemalt poolt
 
 **Tähtaeg:** pühapäev 23:59
-**Esitamine:** kahe liidetud (merged) PR-i lingid GitHub Projectis. Haru: `n02-lab`.
+**Esitamine:** kahe liidetud (merged) PR-i lingid GitHub Projectis.
 
 ---
 

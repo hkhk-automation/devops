@@ -58,7 +58,7 @@ git commit -m "N5 kodutöö: Ansible deploy"
 git push
 ```
 
-PR uueneb automaatselt. Kirjuta PR-i kirjeldusse 2–3 lauset: miks kasutasid `docker_container`-it, mitte `command: docker run`-i.
+Kui PR on veel avatud, uueneb see automaatselt. Kui praktikumi PR on juba liidetud, ava samast harust uus PR `main` vastu. Kirjuta PR-i kirjeldusse 2–3 lauset: miks kasutasid `docker_container`-it, mitte `command: docker run`-i. Liida PR `main`-i (**Merge**), sest automaatkontroll hindab haru `main`.
 
 ## Enesekontroll
 

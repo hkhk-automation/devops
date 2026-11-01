@@ -102,7 +102,8 @@ ssh proxmox3 "curl -s localhost" > logid/prod.html
 
 1. Käivita uuesti midagi muutmata ja uuenda praktikumi tõendid (`logid/play_recap.txt`, `leht.html`, `pais.txt`): `changed=0` kõigil kolmel sõlmel.
 2. `bash kontroll.sh`, kõik 7 ✅
-3. Commit samasse haru `n04-vault`, push. PR uueneb ise.
+3. Commit samasse haru `n04-vault`, push. Kui PR on veel avatud, uueneb see ise. Kui praktikumi PR on juba liidetud, ava samast harust uus PR `main` vastu.
+4. Liida PR `main`-i (**Merge**). Automaatkontroll hindab haru `main`, seega kodutöö läheb arvesse alles pärast merge'i.
 
 ---
 

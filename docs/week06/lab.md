@@ -349,7 +349,7 @@ Volume püsib `down` järel — kontrolli:
 docker volume ls
 ```
 
-`pgdata` on seal. Täielikuks puhastuseks: `docker compose down -v`.
+`pgdata` on seal. Jäta see alles, sest laboritahvel kontrollib volume'i `pgdata` olemasolu. Käsk `docker compose down -v` kustutaks andmebaasi andmed.
 
 ---
 
@@ -372,6 +372,8 @@ Faili `.env` reposse ei panda. Automaatkontroll loob testimiseks oma `.env`-i ja
 2. Lisa failid, tee commit ja `git push -u origin n06-lab`.
 3. Ava GitHubis pull request `main` vastu ja liida see (**Merge**). Automaatkontroll hindab haru `main`.
 4. Vaata tulemust repo vahekaardil **Actions**. Punase testi korral loe selle väljundit, paranda ja push'i uuesti.
+
+Hinne tuleb kontrollidest 1–6, kokku 80 punkti, ja 80/80 on täistulemus. Kontroll „BOONUS 7. Kodutöö“ on vabatahtlik ja punkte ei anna.
 
 ---
 
