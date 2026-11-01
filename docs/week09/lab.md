@@ -41,7 +41,7 @@ Repositooriumis on kaust `kodekloud/` ja selles `.pdf`, `.png` või `.jpg` fail.
 
 ### Esitamine
 
-Tähtaeg on neljapäev, 12.11 kell 23:59. Automaatkontrolli tulemuse näed repositooriumi vahekaardil **Actions** ja Classroom 50-s.
+Tähtaja ja automaatkontrolli tulemuse näed Classroom 50-s.
 
 | Kontroll | Punktid |
 |---|---|
