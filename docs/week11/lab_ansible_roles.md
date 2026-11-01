@@ -167,9 +167,9 @@ curl http://<IP>:8080
 **Ei vasta.** Leht ütleb "8080", aga nginx kuulab ikka 80.
 
 ??? question "Leia põhjus"
-    `nginx_port` on praegu ainult HTML-i sees **dekoratiivne tekst**. Kuskil pole task'i, mis nginx'i **konfiguratsiooni** (mitte HTML-i) muudaks. Mis fail peaks olema malliks tehtud, et port päriselt muutuks? (Vihje: `/etc/nginx/sites-available/default`, `listen {{ nginx_port }};`.)
+    `nginx_port` on praegu ainult HTML-i sees **dekoratiivne tekst**. Kuskil pole task'i, mis nginx'i **konfiguratsiooni** (mitte HTML-i) muudaks. Mis fail peaks olema malliks tehtud, et port muutuks? (Vihje: `/etc/nginx/sites-available/default`, `listen {{ nginx_port }};`.)
 
-See on tahtlik lõks, muutuja olemasolu ei tähenda et ta midagi mõjutab. Päris pordi muutmine jääb lisaülesandeks. Taasta `nginx_port: 80`.
+See on tahtlik lõks, muutuja olemasolu ei tähenda et ta midagi mõjutab. Pordi muutmine nginx'i konfiguratsioonis jääb lisaülesandeks. Taasta `nginx_port: 80`.
 
 ---
 
@@ -242,7 +242,7 @@ ssh <kasutaja>@<IP> "git --version"
 
 ## Lisaülesanded
 
-1. **Päris port.** Loo `templates/nginx.conf.j2` (baseeru `/etc/nginx/sites-available/default`), `listen {{ nginx_port }};`, lisa `template` task + `notify: restart nginx`.
+1. **Port nginx'i konfiguratsioonis.** Loo `templates/nginx.conf.j2` (baseeru `/etc/nginx/sites-available/default`), `listen {{ nginx_port }};`, lisa `template` task + `notify: restart nginx`.
 2. **Handlers.** `handlers/main.yml`: `restart nginx` (`service: state: restarted`). Kutsu `notify:`-ga, veendu et käivitub ainult siis kui fail muutus.
 3. **Teine roll.** Loo `firewall` roll (`ufw allow {{ nginx_port }}`), lisa `site.yml`-i kolmandaks, jälgi järjekorda.
 4. **Dependency.** `nginx/meta/main.yml`-i `dependencies:` plokk, mis nõuab `firewall`-i enne. Kas pead siis `firewall`-i veel eraldi `roles:`-is mainima?

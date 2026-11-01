@@ -101,7 +101,7 @@ graph LR
 - **chroot (1979)**: protsess näeb ainult osa failisüsteemist. See oli esimene "oma juurkataloog".
 - **FreeBSD jails (2000), Solaris Zones (2004)**: lisaks failidele on eraldi ka protsessid, võrk ja kasutajad.
 - **cgroups + namespaces (Linux, 2006–2008)**: Google'i insenerid lisasid tuuma ressursipiirangud (cgroups); namespaces eraldavad protsessid, võrgu ja failisüsteemi. Need kaks koos **ongi** konteiner.
-- **LXC (2008)**: esimesed "päris" Linuxi konteinerid, mida oli aga keeruline kasutada.
+- **LXC (2008)**: esimesed täisväärtuslikud Linuxi konteinerid, mida oli aga keeruline kasutada.
 - **Docker (2013)**: firma dotCloud lõi lihtsa käsurea, `Dockerfile`-i, kihilise image'i ja registry (Docker Hub). Konteinerist sai arendaja tööriist.
 - **Kubernetes (2014)**: Google avaldas orkestreerija paljude konteinerite haldamiseks.
 - **OCI (2015)**: Open Container Initiative: image'i ja käivitamise standard. Tänu sellele töötab Dockeriga ehitatud image ka Podmanis ja Kubernetes'is.

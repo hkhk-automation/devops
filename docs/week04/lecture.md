@@ -49,7 +49,7 @@ N3 praktikumis paigaldas su playbook nginx-i ja kopeeris staatilise `index.html`
         dest: /usr/share/nginx/html/index.html
 ```
 
-See töötab ühe serveri jaoks. Aga sul on kolm sõlme, ja päris elus on sama playbook vaja jooksutada nii testis kui tootmises. Kohe tekivad küsimused: kuidas saab iga server oma nime lehele? Kuidas on testis debug-info nähtav ja tootmises mitte? Kuhu panna andmebaasi parool, mis testis ja tootmises on erinev?
+See töötab ühe serveri jaoks. Aga sul on kolm sõlme, ja töökohas on sama playbook vaja jooksutada nii testis kui tootmises. Kohe tekivad küsimused: kuidas saab iga server oma nime lehele? Kuidas on testis debug-info nähtav ja tootmises mitte? Kuhu panna andmebaasi parool, mis testis ja tootmises on erinev?
 
 Kui väärtused on otse YAML-failis, on kaks halba varianti: kirjutad iga keskkonna jaoks eraldi playbooki ja hoiad neid käsitsi sünkroonis, või muudad sama faili enne igat käivitust. Mõlemal juhul unustad varem või hiljem midagi ja saadad vale konfiguratsiooni valesse kohta.
 
@@ -282,7 +282,7 @@ N3-s nägid `loop`-i, mis kordab **task'i**. Mallis on oma tsükkel `{% for %}`,
 
 Kui `teenused: [nginx, sshd, firewalld]`, tuleb välja kolm `<li>` rida. `loop.index` on jooksev number alates 1-st; `loop.first` ja `loop.last` ütlevad, kas oled esimese või viimase elemendi juures.
 
-Tsükkel koos erimuutujatega (N3 ptk 9) on koht, kus mallid muutuvad päriselt kasulikuks. Näiteks nginx-i koormusjaotur, mis peab teadma kõiki veebiservereid:
+Tsükkel koos erimuutujatega (N3 ptk 9) on koht, kus mallid muutuvad kasulikuks. Näiteks nginx-i koormusjaotur, mis peab teadma kõiki veebiservereid:
 
 ```jinja
 upstream veebiserverid {
@@ -602,7 +602,7 @@ Selle ploki kleebid näiteks `main.yml`-i. Eelis: muutuja nimi on nähtav, fail 
 
 ### 7.6 Mitu parooli: vault ID
 
-Päris projektis on arenduse ja tootmise saladustel eri paroolid: arendaja teab dev-parooli, aga mitte prod-parooli. Selleks on **vault ID**: sildiga parool:
+Töökohas on arenduse ja tootmise saladustel eri paroolid: arendaja teab dev-parooli, aga mitte prod-parooli. Selleks on **vault ID**: sildiga parool:
 
 ```bash
 ansible-vault create --vault-id dev@prompt group_vars/dev/vault.yml
@@ -653,7 +653,7 @@ Mallid lahendavad teise igapäevase probleemi. Kümne serveri kümme käsitsi mu
 - **Jinja2:** `{{ }}` väärtus, `{% %}` loogika, `{# #}` kommentaar; filtrid `|`-ga, `default` valikuliste muutujate jaoks
 - **`{% for %}` mallis** kordab ridu ühes failis; **`loop`** kordab task'e
 - **`template`**, mitte `copy`, kui failis on `{{ }}`; renderdatakse kontroll-node'is; `validate`, `backup`, `# {{ ansible_managed }}`
-- **`--check --diff`** näitab faili muutust enne päriselt tegemist
+- **`--check --diff`** näitab faili muutust enne muutmist
 - **Handler** jookseb play lõpus, üks kord, ainult kui kutsuv task oli `changed`
 - **Vault** krüpteerib faili (`create/edit/view/rekey`) või väärtuse (`encrypt_string`)
 - **Parool:** `--ask-vault-pass`, `--vault-password-file`, `ansible.cfg`, keskkonnamuutuja; `.vault_pass` → `.gitignore` **enne** faili loomist

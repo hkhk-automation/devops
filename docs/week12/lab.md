@@ -110,9 +110,9 @@ ansible-playbook -i inventory.ini site.yml
 `PLAY RECAP` näitab ikka **kahte** hosti. `<host3>` jäi vahele, nginx sinna ei paigaldatud, aga viga ka ei antud. Vaikne möödaminek.
 
 ??? question "Leia põhjus enne parandamist"
-    `site.yml` ütleb `hosts: web`. Host, mis on kirjas **enne** esimest `[grupp]` rida, kuulub Ansible's erigruppi `ungrouped`: mitte `web`-i. Miks on see vaikne (ei anna viga) ohtlikum kui vali viga? Kus päris elus tähendaks "üks server jäi seadistamata, aga keegi ei märganud"?
+    `site.yml` ütleb `hosts: web`. Host, mis on kirjas **enne** esimest `[grupp]` rida, kuulub Ansible's erigruppi `ungrouped`: mitte `web`-i. Miks on see vaikne (ei anna viga) ohtlikum kui vali viga? Kus töökohas tähendaks "üks server jäi seadistamata, aga keegi ei märganud"?
 
-Kontrolli kellele playbook päriselt rakendub:
+Kontrolli kellele playbook rakendub:
 
 ```bash
 ansible web -i inventory.ini --list-hosts
@@ -127,7 +127,7 @@ ansible web -i inventory.ini --list-hosts
 
 ## Osa 4 · Laienda: kaks keskkonda group_vars'iga
 
-Praegu on kõik hostid ühesugused. Päris elus on `web` grupp tootmine ja sul on eraldi `staging` grupp teiste väärtustega. Teeme kaks keskkonda, **sama koodiga**.
+Praegu on kõik hostid ühesugused. Töökohas on `web` grupp tootmine ja sul on eraldi `staging` grupp teiste väärtustega. Teeme kaks keskkonda, **sama koodiga**.
 
 Muuda `inventory.ini` kaheks grupiks:
 

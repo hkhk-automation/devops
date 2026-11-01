@@ -154,7 +154,7 @@ terraform init && terraform plan
 `default` on sama → tulemus sama. Esimene test enne edasi minemist.
 
 !!! tip
-    Kirjutad `variable` bloki, aga unustad `main.tf`-is `var.faili_nimi` kasutada, muutuja jääb kasutuks. Kontrolli alati et iga uus muutuja on päriselt kasutuses.
+    Kirjutad `variable` bloki, aga unustad `main.tf`-is `var.faili_nimi` kasutada, muutuja jääb kasutuks. Kontrolli alati et iga uus muutuja on kasutuses.
 
 ### 2.2 Ülekirjutamine käsurealt
 

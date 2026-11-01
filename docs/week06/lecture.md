@@ -13,7 +13,7 @@ tags:
 !!! abstract "Õpiväljundid"
     Pärast loengut oskad:
 
-    - selgitada, miks päris rakendus vajab mitut konteinerit
+    - selgitada, miks tegelik rakendus vajab mitut konteinerit
     - kirjeldada `docker-compose.yml` struktuuri
     - käivitada ja peatada mitme konteineri stacki ühe käsuga
     - eristada, mis on Compose'is teenus, võrk ja volume
@@ -24,7 +24,7 @@ tags:
 
 ## 1. Miks mitu konteinerit?
 
-Eelmisel nädalal pakkisime Flaski rakenduse ühte image'isse ja käivitasime selle üksiku konteinerina. Demoks sobib, aga päris rakendusel on rohkem osi: Flask vajab andmebaasi (PostgreSQL) ja tihti ka nginx-i enda ees, mis tegeleb HTTPS-iga ja jagab liiklust.
+Eelmisel nädalal pakkisime Flaski rakenduse ühte image'isse ja käivitasime selle üksiku konteinerina. Demoks sobib, aga tegelikul rakendusel on rohkem osi: Flask vajab andmebaasi (PostgreSQL) ja tihti ka nginx-i enda ees, mis tegeleb HTTPS-iga ja jagab liiklust.
 
 Miks mitte panna kõik (Flask, PostgreSQL, nginx) ühte konteinerisse? Tehniliselt saab, praktikas on see halb mõte. Kui kõik on ühes, ei saa andmebaasi uuendada rakendust puudutamata, ei saa nginx-i taaskäivitada Flaski protsessi segamata ega üht komponenti eraldi skaleerida. Iga komponent oma konteineris = iga osa vastutus on eraldi.
 
@@ -78,7 +78,7 @@ volumes:
 
 `services` kirjeldab kolme teenust. `web` ehitatakse kohapeal kaustast `./app` (`build`), `db` ja `nginx` tulevad valmis image'itena, konkreetse tag'iga, mitte `latest` (meenuta nädal 5). `ports` seob konteineri pordi väljapoole. Siin on see ainult nginx-il: `web` ja `db` räägivad ainult sisevõrgus.
 
-`depends_on` määrab käivitusjärjekorra. Tähelepanu: see ootab ainult, et konteiner **käivituks**, mitte et PostgreSQL oleks päriselt päringuteks valmis. Selle lahendab `healthcheck` (labi lisaülesanne) või rakenduse enda uuesti proovimine.
+`depends_on` määrab käivitusjärjekorra. Tähelepanu: see ootab ainult, et konteiner **käivituks**, mitte et PostgreSQL oleks päringuteks valmis. Selle lahendab `healthcheck` (labi lisaülesanne) või rakenduse enda uuesti proovimine.
 
 `volumes` faili lõpus loob nimega volume'i `pgdata` andmete hoidmiseks. Võrku pole vaja eraldi kirjeldada: Compose loob stackile ise ühe sisevõrgu, kuhu kõik teenused kuuluvad.
 

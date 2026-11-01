@@ -22,7 +22,7 @@ tags:
 
 ## 1. Nädalatel 3–4 tegid juba Ansible't. Mis siis uut?
 
-Nädalatel 3–4 kirjutasid playbook'i, mis paigaldas nginx'i **ühele** serverile. See oli automatiseerimine, aga veel mitte päris "infrastruktuur koodina".
+Nädalatel 3–4 kirjutasid playbook'i, mis paigaldas nginx'i **ühele** serverile. See oli automatiseerimine, aga veel mitte "infrastruktuur koodina".
 
 Vahe on skaalas ja hoiakus. Üks server on skript. Kakskümmend serverit, kolmes keskkonnas (arendus, test, tootmine), kus iga keskkond on **koodis kirjeldatud** ja igaüks saab selle nullist üles ehitada sama failikomplektiga, see on IaC. Server ei ole enam "lemmikloom", keda käsitsi hooldad ja kelle kadumine on katastroof. Ta on "kariloom": kui üks katki, kustutad ja playbook ehitab identse asemele.
 
@@ -32,7 +32,7 @@ Märten hooldas lemmikloomi. Igal serveril oli oma käsitsi tehtud eripära, mid
 
 ## 2. Üks playbook, mitu serverit
 
-Seni oli `inventory.ini`-s üks host. Päris elus on neid mitu, gruppidena:
+Seni oli `inventory.ini`-s üks host. Töökohas on neid mitu, gruppidena:
 
 ```ini
 [web]
@@ -93,7 +93,7 @@ See on "configuration drift" avastamine ja parandamine ühe käsuga. Käsitsi ho
 
 Nädalatel 10–11 nägid Terraformi. Nüüd Ansible sama "infra koodina" lipu all. Millal kumb?
 
-Lühivastus: nad teevad **eri asju** ja päris meeskonnad kasutavad **mõlemat koos**.
+Lühivastus: nad teevad **eri asju** ja meeskonnad töökohtades kasutavad **mõlemat koos**.
 
 | | Terraform | Ansible |
 |---|---|---|
@@ -123,7 +123,7 @@ See on kogu kursuse mõte ühes kohas: Märteni pähe salvestatud, käsitsi teht
 - **Üks playbook, mitu hosti**: inventory grupid, `hosts: web` jookseb kõigil
 - **group_vars / host_vars**: sama kood, erinev keskkond; muutub ainult muutujafail
 - **Idempotentsus infra tasemel**: `changed=0` on tervisekontroll, drift parandub ise
-- **Ansible seadistab, Terraform loob**: päris elus mõlemad koos, tööriist töö järgi
+- **Ansible seadistab, Terraform loob**: töökohas mõlemad koos, tööriist töö järgi
 - Server on kariloom, mitte lemmikloom: surm ei ole katastroof, kui seis on koodis
 
 ---

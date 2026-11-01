@@ -13,7 +13,7 @@ tags:
 
 ## Ülesanne
 
-Praegu kehtivad muutujad kõigile hostidele ühtemoodi (`group_vars/all/`). Päris elus on dev ja prod erinevad, dev-serveril on debug-info nähtav, prod-serveril mitte. Tekita see erinevus **ainult muutujatega**, `nginx.yml`-i puutumata.
+Praegu kehtivad muutujad kõigile hostidele ühtemoodi (`group_vars/all/`). Töökohas on dev ja prod erinevad, dev-serveril on debug-info nähtav, prod-serveril mitte. Tekita see erinevus **ainult muutujatega**, `nginx.yml`-i puutumata.
 
 Kasutad oma kahte ülejäänud sõlme: **`proxmox2` = dev**, **`proxmox3` = prod**.
 

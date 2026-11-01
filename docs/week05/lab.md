@@ -51,7 +51,7 @@ graph LR
     subgraph C[3 · Turvaline ja jagatud]
       C1[8 USER] --> C2[9 push Hubi]
     end
-    subgraph D[4 · Päris rakendus]
+    subgraph D[4 · Tegelik rakendus]
       D1[10 Flask] --> D2[11 kihid] --> D3[12 multi-stage] --> D4[13 andmed] --> D5[14 Podman]
     end
     A --> B --> C --> D
@@ -463,7 +463,7 @@ Seekord jääb `web3` tööle.
 !!! success "Eesmärk"
     Osa lõpuks: `docker ps -a` on tühi.
 
-Nüüd on sul kolm konteinerit ja üks image. Koristame nagu päris töös:
+Nüüd on sul kolm konteinerit ja üks image. Koristame nagu töökohas:
 
 ```bash
 docker ps -a
@@ -585,7 +585,7 @@ cd ..
 
 ---
 
-## Osa 10 · Päris rakendus: Flask konteinerisse
+## Osa 10 · Tegelik rakendus: Flask konteinerisse
 
 !!! success "Eesmärk"
     Osa lõpuks: `curl localhost:5000` näitab `Tere konteinerist!`.

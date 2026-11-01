@@ -18,7 +18,7 @@ Labi lõpuks sul on töötav nginx roll. Nüüd laiendad seda.
 
 ### 1. Lisa handler
 
-Praegu taaskäivitab nginx teenuse iga kord kui playbook jookseb. Handler käivitub ainult siis kui konfiguratsioon päriselt muutus.
+Praegu taaskäivitab nginx teenuse iga kord kui playbook jookseb. Handler käivitub ainult siis kui konfiguratsioon muutus.
 
 `tasks/main.yml`-is lisa `notify`:
 

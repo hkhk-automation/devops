@@ -16,7 +16,7 @@ tags:
 
 ## Ülesanne
 
-Labis käivitasid konteinereid käsitsi (`docker run`). Päris töös teeb seda **automatiseerimine**: Ansible valmistab serveri ette ja käivitab konteineri. Nii paned loengu põhimõtte "Ansible haldab serverit, Docker rakendust" praktikasse.
+Labis käivitasid konteinereid käsitsi (`docker run`). Töökohas teeb seda **automatiseerimine**: Ansible valmistab serveri ette ja käivitab konteineri. Nii paned loengu põhimõtte "Ansible haldab serverit, Docker rakendust" praktikasse.
 
 Kirjuta playbook `ansible/deploy.yml`, mis sinu **esimeses** VM-is (selles, kus on Docker):
 

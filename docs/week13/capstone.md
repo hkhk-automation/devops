@@ -58,4 +58,4 @@ Esitluses peate suutma vastata:
 
 ## Lisaülesanne
 
-Laienda Ansible IaC osa (nädal 12): halda **kahte** keskkonda (production + staging) group_vars'iga, tekita ühele hostile käsitsi drift ja näita esitluses, kuidas playbook selle parandab. Selgita: mida tähendaks `changed=0` vs `changed=5` päris serveripargis?
+Laienda Ansible IaC osa (nädal 12): halda **kahte** keskkonda (production + staging) group_vars'iga, tekita ühele hostile käsitsi drift ja näita esitluses, kuidas playbook selle parandab. Selgita: mida tähendaks `changed=0` vs `changed=5` tootmise serveripargis?

@@ -123,7 +123,7 @@ ansible-playbook -i inventory.ini nginx.yml --vault-password-file .vault_pass --
 | `-i inventory.ini` | **kuhu**: sõlmede nimekiri |
 | `nginx.yml` | **mida** teha |
 | `--vault-password-file .vault_pass` | Vault parool on selles failis (muidu küsiks) |
-| `--check` | **kuiv** jooks: ära tee midagi päriselt |
+| `--check` | **kuiv** jooks: ära muuda midagi |
 | `--diff` | näita, mis failides muutuks |
 
 ### Kuidas Ansible'i väljundit lugeda
@@ -309,7 +309,7 @@ mkdir -p group_vars/all
 
 ```yaml
 paketi_nimi: nginx
-omaniku_nimi: Mari Maasikas     # sinu päris nimi
+omaniku_nimi: Mari Maasikas     # sinu tegelik nimi
 ```
 
 Kustuta `vars:` plokk playbookist. Nüüd **tee meelega viga:** nimeta muutuja failis valesti (`pakett_nimi`) **või** pane kaust vale nimega (`vars/all/`). Käivita.
@@ -632,7 +632,7 @@ graph LR
     C -->|"jah"| S["Ansible arvutab, mis muutuks<br/>--diff näitab erinevust<br/>sõlm jääb SAMAKS"]
     C -->|"ei"| R["Ansible muudab sõlme"]
 ```
-  <figcaption>Joonis 7. `--check` ütleb, mis juhtuks, aga ei muuda midagi; ilma selleta muudab Ansible sõlme päriselt (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 7. `--check` ütleb, mis juhtuks, aga ei muuda midagi; ilma selleta muudab Ansible sõlme (Talvik, 2026).</figcaption>
 </figure>
 
 1. Muuda `group_vars/all/main.yml`-is `omaniku_nimi` väärtust (lisa lõppu ` (test)`).
@@ -652,7 +652,7 @@ ssh proxmox1 "curl -s localhost"
 5. Muuda nimi tagasi õigeks ja käivita `changed=0` seisuni.
 
 ??? question "Mõtle"
-    Sa pole veel midagi tootmisse saatnud, aga diff näitas sulle täpselt, mis muutuks. Millal oleks see päästnud sind päris serveril?
+    Sa pole veel midagi tootmisse saatnud, aga diff näitas sulle täpselt, mis muutuks. Millal oleks see päästnud sind tootmisserveris?
 
 !!! warning "Mida Vault **ei** kaitse"
     Proovi: `ansible-inventory -i inventory.ini --host proxmox1 --vault-password-file .vault_pass`. Mida sa näed `db_password` kohal? Mida see tähendab, kui keegi jagab su terminali ekraani või `--diff` väljund läheb CI logisse?
@@ -896,7 +896,7 @@ Enne edasi minekut käivita `git status`: kõik peab olema puhas (või ainult si
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'primaryColor':'#ede7f6','primaryBorderColor':'#5e35b1','primaryTextColor':'#212121','lineColor':'#7e57c2'}}}%%
 graph LR
-    N["proxmox1<br/>päris sõlm"] -->|"ssh: sina jooksutad"| T["logid/*.txt, *.html<br/>tõendid"]
+    N["proxmox1<br/>sinu sõlm"] -->|"ssh: sina jooksutad"| T["logid/*.txt, *.html<br/>tõendid"]
     T --> A["bash kontroll.sh<br/>sinu arvutis"]
     T -->|"push"| G["GitHub Actions<br/>sama skript"]
     A -.->|"sama tulemus"| G

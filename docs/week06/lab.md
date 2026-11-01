@@ -311,7 +311,7 @@ docker compose config
 `docker compose config` näitab lõplikku faili, muutujad asendatud. Vaata väljundi algust ja `db` osa.
 
 ??? question "Leia põhjus"
-    Hoiatus `The "POSTGRES_PASWORD" variable is not set. Defaulting to a blank string.` ja `POSTGRES_PASSWORD: ""`. Compose ei peatu, vaid paneb parooliks tühja teksti. Miks on see ohtlikum kui päris viga? Paranda nimi ja asenda ka teised kohad.
+    Hoiatus `The "POSTGRES_PASWORD" variable is not set. Defaulting to a blank string.` ja `POSTGRES_PASSWORD: ""`. Compose ei peatu, vaid paneb parooliks tühja teksti. Miks on see ohtlikum kui viga, mis peatab käivituse? Paranda nimi ja asenda ka teised kohad.
 
 **Paranda:**
 
