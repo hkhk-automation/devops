@@ -242,7 +242,7 @@ Näed nginx-i tervituslehte. Alus töötab. **Ära mine edasi enne, kui see tö�
 
 ---
 
-## Osa 2 · Viga: ja miks see tekib
+## Osa 2 · Viga ja selle põhjus
 
 !!! success "Eesmärk"
     Osa lõpuks: build läbib, sest Dockerfile'is on `-y`.
