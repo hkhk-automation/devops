@@ -55,7 +55,7 @@ Tähtaeg on neljapäev, 12.11 kell 23:59. Automaatkontrolli tulemuse näed repos
 
 ## Boonusülesanded
 
-Boonusülesanded ei anna punkte, aga automaatkontroll näitab nende tulemust ridadena `BOONUS`. Vastused kirjuta faili `BOONUS.md` (kui sinu repositooriumis seda faili pole, siis README samanimelistesse osadesse). Rida **Ennusta** tähendab, et enne käsku mõtled läbi, mis juhtub. Vastus on kokkuvolditud plokis.
+Vastused kirjuta faili `BOONUS.md`.
 
 ### Võrdlustabel (`BOONUS.md` Osa 2)
 
@@ -304,4 +304,4 @@ Loe [12-Factor App](https://12factor.net/) peatükid **III Config**, **IV Backin
 
 Kirjuta skript `triivikontroll.sh`, mis käivitab `ansible-playbook triiv.yml --check`. Kui väljundis on `changed=0`, kirjutab skript `triivi ei ole` ja lõpetab koodiga 0. Muul juhul kirjutab skript `TRIIV!` ja lõpetab koodiga 1. Proovi mõlemat olukorda.
 
-Pane skript GitHubi faili `lisa/triivikontroll.sh` ja väljund faili `logid/lisa-b.txt`. Kirjuta README-sse cron'i rida (`crontab -e`), mis käivitab skripti igal ööl kell 3.
+Pane skript GitHubi faili `lisa/triivikontroll.sh` ja väljund faili `logid/lisa-b.txt`. Kirjuta faili `BOONUS.md` cron'i rida (`crontab -e`), mis käivitab skripti igal ööl kell 3.
