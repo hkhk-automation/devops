@@ -7,27 +7,21 @@ tags:
 
 # Praktikum: Docker Compose
 
-**Eeldused:** Loeng antud (teenus, võrk, volume, miks mitu konteinerit). Nädal 5 Flask + `Dockerfile` olemas. Kui udu, [tagasi loengusse](lecture.md). Siit edasi **ainult käed külge**.
+**Eeldused:** Loeng antud (teenus, võrk, volume, miks mitu konteinerit). Nädal 5 Flask + `Dockerfile` olemas. Kui midagi on segane, mine [tagasi loengusse](lecture.md). Siit edasi on ainult praktiline töö.
 
-**Keskkond:** sinu AlmaLinuxi VM, kus Docker on nädal 5 Osa 0 järgi paigaldatud. Kood ja käsud **VS Code'is**. `localhost` = VM, kus Docker jookseb.
+**Keskkond:** sinu AlmaLinuxi VM, kus Docker on nädal 5 Osa 0 järgi paigaldatud. Kood ja käsud VS Code'is. `localhost` = VM, kus Docker jookseb.
 
----
+??? abstract "Õpiväljundid"
 
-!!! abstract "Õpiväljundid"
-
-    Selle labi lõpuks sa:
+    Praktikumi lõpuks sa:
 
     1. Ehitad kolme-teenuse stacki üks teenus korraga, testides igal sammul
-    2. **Leiad** veateate järgi viie tüüpilise Compose-vea põhjuse (kadunud parool, vale host-nimi, 502, kadunud andmed, `.env`)
-    3. Selgitad miks teenused suhtlevad **nime**, mitte IP järgi
+    2. Leiad veateate järgi viie tüüpilise Compose-vea põhjuse (kadunud parool, vale host-nimi, 502, kadunud andmed, `.env`)
+    3. Selgitad miks teenused suhtlevad nime, mitte IP järgi
     4. Selgitad miks andmed lähevad volume'i, mitte konteinerisse: ja tõestad seda
     5. Taastad puhta seisu ise tehtud sasi järel
 
----
-
-Labi loogika: **baas → laienda → viga → paranda → laienda → viga → taasta.** Sa ei kopeeri valmis `docker-compose.yml`-i. Sa ehitad selle teenus haaval, lõhud igal võtmekohal meelega, ja saad aru **miks**. Tervet faili näed **üks kord**: edasi ainult "lisa see teenus" / "lisa need read".
-
----
+Praktikumi loogika: baas → laienda → viga → paranda → laienda → viga → taasta. Sa ei kopeeri valmis `docker-compose.yml`-i. Sa ehitad selle teenus haaval, lõhud igal võtmekohal meelega, ja saad aru miks. Tervet faili näed üks kord: edasi ainult "lisa see teenus" / "lisa need read".
 
 ## Osa 1 · Baas: üks teenus
 
@@ -40,7 +34,7 @@ docker build -t week06-app ./app
 docker run --rm -p 5000:5000 week06-app
 ```
 
-Teises terminalis `curl localhost:5000` vastab? Peata (`Ctrl+C`). Nüüd sama Compose'iga. Loo `app/` kõrvale `docker-compose.yml`. **Ainus kord terve fail**: edasi lisad ridu:
+Teises terminalis `curl localhost:5000` vastab? Peata (`Ctrl+C`). Nüüd sama [Docker Compose'iga](https://docs.docker.com/compose/). Loo `app/` kõrvale `docker-compose.yml`. Ainus kord terve fail: edasi lisad ridu:
 
 ```yaml
 services:
@@ -56,19 +50,17 @@ docker compose ps
 curl localhost:5000
 ```
 
-Sama vastus, aga nüüd üks käsk. **Ära edasi mine enne kui vastab.**
+Sama vastus, aga nüüd üks käsk. Ära edasi mine enne kui vastab.
 
-!!! tip "Kui `build: ./app` ei leia Dockerfile'i"
+??? warning "Kui `build: ./app` ei leia Dockerfile'i"
     Tee on suhteline `docker-compose.yml` asukoha suhtes, mitte terminali kausta suhtes. `docker-compose.yml` peab olema kaustas `~/lab06`, `app/` selle kõrval.
 
-!!! tip "Kui saad vea `port is already allocated`"
+??? warning "Kui saad vea `port is already allocated`"
     Nädal 5 konteiner `flask1` hoiab veel porti 5000. `docker ps` näitab seda, `docker rm -f flask1` vabastab.
-
----
 
 ## Osa 2 · Andmebaas ilma paroolita
 
-Lisa **teine teenus**. Näita ainult uut tükki, lisa `web` alla, sama taande tasandile:
+Lisa teine teenus. Näita ainult uut tükki, lisa `web` alla, sama taande tasandile:
 
 ```yaml
   db:
@@ -82,12 +74,12 @@ docker compose up -d db
 docker compose logs db
 ```
 
-**Vaata mis juhtub.** `db` sureb kohe, logis midagi stiilis `Database is uninitialized and superuser password is not specified`.
+Vaata mis juhtub. `db` sureb kohe, logis midagi stiilis `Database is uninitialized and superuser password is not specified`.
 
 ??? question "Leia põhjus enne parandamist"
-    PostgreSQL image keeldub käivitumast ilma parooli. Miks arvad, et image on **teadlikult** tehtud niimoodi keelduma, mitte vaikeparooliga käivituma?
+    PostgreSQL image keeldub käivitumast ilma parooli. Miks arvad, et image on teadlikult tehtud niimoodi keelduma, mitte vaikeparooliga käivituma?
 
-**Paranda**: lisa `db`-le keskkonnamuutujad:
+**Paranda**: lisa `db`-le keskkonnamuutujad. Image'i muutujad on kirjeldatud [PostgreSQL-i image'i lehel](https://hub.docker.com/_/postgres).
 
 ```yaml
   db:
@@ -104,11 +96,9 @@ docker compose logs db
 
 Otsi logist `database system is ready to accept connections`. Tuleb paari sekundiga.
 
----
-
 ## Osa 3 · Vale aadress andmebaasile
 
-Flask peab teadma **kus** db on. Proovime **meelega valesti**: IP-ga. Lisa `web`-le:
+Flask peab teadma kus db on. Proovime meelega valesti: IP-ga. Lisa `web`-le:
 
 ```yaml
     environment:
@@ -125,19 +115,21 @@ psycopg2-binary
 
 Lisa `app/app.py`-sse (importid faili algusesse, route teiste route'ide juurde, `app.run` rea kohale):
 
-```python
-import os
-import psycopg2
+??? example "Lisa faili `app/app.py`"
 
-@app.route("/db-check")
-def db_check():
-    try:
-        conn = psycopg2.connect(os.environ["DATABASE_URL"], connect_timeout=3)
-        conn.close()
-        return "DB OK\n"
-    except Exception as e:
-        return f"DB viga: {e}\n", 500
-```
+    ```python
+    import os
+    import psycopg2
+
+    @app.route("/db-check")
+    def db_check():
+        try:
+            conn = psycopg2.connect(os.environ["DATABASE_URL"], connect_timeout=3)
+            conn.close()
+            return "DB OK\n"
+        except Exception as e:
+            return f"DB viga: {e}\n", 500
+    ```
 
 Kood muutus, seega image tuleb uuesti ehitada (`--build`):
 
@@ -146,10 +138,13 @@ docker compose up -d --build
 curl localhost:5000/db-check
 ```
 
-**Viga:** `DB viga: ... Connection refused`. `127.0.0.1` konteineri sees tähendab **seda sama konteinerit**, mitte db-konteinerit. `web`-i sees pole ühtegi andmebaasi, mis pordil 5432 vastaks.
+??? warning "Kui logis on `ModuleNotFoundError: psycopg2`"
+    Image ehitati enne, kui `requirements.txt` muutus. Ehita uuesti käsuga `docker compose up -d --build`.
+
+**Viga:** `DB viga: ... Connection refused`. `127.0.0.1` konteineri sees tähendab seda sama konteinerit, mitte db-konteinerit. `web`-i sees pole ühtegi andmebaasi, mis pordil 5432 vastaks.
 
 ??? question "Leia põhjus"
-    Iga konteiner on oma `localhost`. `web` konteineri `127.0.0.1` ei ole `db` konteiner. Compose annab teenustele **nime**-põhise aadressi. Mis on siis õige host `web`-i jaoks?
+    Iga konteiner on oma `localhost`. `web` konteineri `127.0.0.1` ei ole `db` konteiner. Compose annab teenustele nime-põhise aadressi. Mis on siis õige host `web`-i jaoks?
 
 **Paranda**: IP asemel teenuse nimi `db`:
 
@@ -164,11 +159,12 @@ curl localhost:5000/db-check
 
 Ühendus OK. `db` on DNS-nimi Compose sisevõrgus, mitte miski, mille sa määrasid, vaid mille Compose ise teenuse nimest tegi.
 
----
+??? warning "Kui `/db-check` annab vea `could not translate host name`"
+    Hostinimes `DATABASE_URL`-is on trükiviga. Nimi peab olema täpselt sama mis teenuse nimi `docker-compose.yml`-is (`db`).
 
 ## Osa 4 · Laienda: nginx ja 502
 
-Paneme nginx-i Flaski ette (pöördproksi). Loo `nginx/default.conf`: **meelega vale** pordiga (`8000`, aga Flask kuulab porti `5000`):
+Paneme nginx-i Flaski ette (pöördproksi). Loo `nginx/default.conf`: meelega vale pordiga (`8000`, aga Flask kuulab porti `5000`):
 
 ```nginx
 server {
@@ -199,12 +195,12 @@ docker compose up -d
 curl localhost:8080
 ```
 
-**502 Bad Gateway.**
+502 Bad Gateway.
 
 ??? question "Leia põhjus"
     Vaata `docker compose logs nginx`. Seal on `connect() failed (111: Connection refused) while connecting to upstream`. nginx leidis `web`-i üles, aga keegi ei vastanud pordil 8000. 502 tähendab alati: nginx ise töötab, aga see, kelle juurde ta liikluse saadab, ei vasta. Mis port on Flaski `app.run` reas?
 
-!!! tip "Kui nginx ei käivitu üldse"
+??? warning "Kui nginx ei käivitu üldse"
     Kui `docker compose ps` ei näita nginx-i ja logis on `host not found in upstream`, siis on `proxy_pass` reas teenuse nimi, mida compose-failis pole (nt `app` või `flask`). nginx kontrollib nimed käivitudes ja keeldub tööle hakkamast. Nimi `proxy_pass`-is = teenuse nimi compose-failis.
 
 **Paranda**: `default.conf`-is port `8000` → `5000`:
@@ -229,8 +225,6 @@ docker compose up -d
 curl localhost:8080
 ```
 
----
-
 ## Osa 5 · Andmed kaovad
 
 Kirjuta andmebaasi midagi (oma rakenduse route kaudu, või käsitsi):
@@ -248,10 +242,10 @@ docker compose up -d
 docker compose exec db psql -U postgres -d appdb -c "SELECT * FROM test;"
 ```
 
-**Tabelit pole.** Andmed kadusid.
+Tabelit pole. Andmed kadusid.
 
 ??? question "Leia põhjus"
-    `down` kustutas konteinerid. PostgreSQL kirjutas andmed konteineri **sisemisse** failisüsteemi, mis kadus koos konteineriga. Kus peaksid andmed elama, et konteineri kustutamine neid ei puudutaks?
+    `down` kustutas konteinerid. PostgreSQL kirjutas andmed konteineri sisemisse failisüsteemi, mis kadus koos konteineriga. Kus peaksid andmed elama, et konteineri kustutamine neid ei puudutaks?
 
 **Paranda**: lisa `db`-le volume ja faili lõppu `volumes:` sektsioon:
 
@@ -265,7 +259,7 @@ docker compose exec db psql -U postgres -d appdb -c "SELECT * FROM test;"
       - pgdata:/var/lib/postgresql/data
 ```
 
-Faili **lõppu** (teenustega samal tasandil):
+Faili lõppu (teenustega samal tasandil):
 
 ```yaml
 volumes:
@@ -280,12 +274,10 @@ docker compose up -d
 docker compose exec db psql -U postgres -d appdb -c "SELECT * FROM test;"
 ```
 
-Rida on **alles**. Volume elab konteinerist eraldi.
+Rida on alles. Volume elab konteinerist eraldi.
 
 ??? question "Mõtle"
-    `docker compose down -v` (tähega `v`) kustutab **ka** volume'i. Millal sa seda tahaksid, ja miks Docker ei tee seda vaikimisi?
-
----
+    `docker compose down -v` (tähega `v`) kustutab ka volume'i. Millal sa seda tahaksid, ja miks Docker ei tee seda vaikimisi?
 
 ## Osa 6 · Parool failis
 
@@ -298,7 +290,7 @@ POSTGRES_PASSWORD=secret123
 POSTGRES_DB=appdb
 ```
 
-Asenda `db` all parool kõigepealt **meelega trükiveaga** muutuja nimes (üks `S` puudu):
+Asenda `db` all parool kõigepealt meelega trükiveaga muutuja nimes (üks `S` puudu):
 
 ```yaml
       POSTGRES_PASSWORD: ${POSTGRES_PASWORD}
@@ -308,7 +300,7 @@ Asenda `db` all parool kõigepealt **meelega trükiveaga** muutuja nimes (üks `
 docker compose config
 ```
 
-`docker compose config` näitab lõplikku faili, muutujad asendatud. Vaata väljundi algust ja `db` osa.
+[`docker compose config`](https://docs.docker.com/reference/cli/docker/compose/config/) näitab lõplikku faili, muutujad asendatud. Vaata väljundi algust ja `db` osa.
 
 ??? question "Leia põhjus"
     Hoiatus `The "POSTGRES_PASWORD" variable is not set. Defaulting to a blank string.` ja `POSTGRES_PASSWORD: ""`. Compose ei peatu, vaid paneb parooliks tühja teksti. Miks on see ohtlikum kui viga, mis peatab käivituse? Paranda nimi ja asenda ka teised kohad.
@@ -327,10 +319,11 @@ docker compose up -d
 curl localhost:8080/db-check
 ```
 
-!!! warning
-    Lisa `.env` **kohe** `.gitignore`-i: `echo ".env" >> .gitignore`. Kui kaust on Giti repo, kontrolli `git status`: `.env` ei tohi olla jälgitavate failide seas.
+??? warning "Kui hoiatus `variable is not set` jääb alles"
+    Kontrolli, et muutuja nimi on `.env`-is ja `docker-compose.yml`-is sama ning et `.env` on `docker-compose.yml`-iga samas kaustas.
 
----
+!!! warning
+    Lisa `.env` kohe `.gitignore`-i: `echo ".env" >> .gitignore`. Kui kaust on Giti repo, kontrolli `git status`: `.env` ei tohi olla jälgitavate failide seas.
 
 ## Osa 7 · Taasta ja koristus
 
@@ -350,8 +343,6 @@ docker volume ls
 ```
 
 `pgdata` on seal. Jäta see alles, sest laboritahvel kontrollib volume'i `pgdata` olemasolu. Käsk `docker compose down -v` kustutaks andmebaasi andmed.
-
----
 
 ## Esitamine
 
@@ -375,51 +366,23 @@ Faili `.env` reposse ei panda. Automaatkontroll loob testimiseks oma `.env`-i ja
 
 Hinne tuleb kontrollidest 1–6, kokku 80 punkti, ja 80/80 on täistulemus. Kontroll „BOONUS 7. Kodutöö“ on vabatahtlik ja punkte ei anna.
 
----
+??? note "Kontrollnimekiri: kas oskad ilma juhendita?"
 
-## Lõppkontroll: oskad ilma juhendita
-
-- [ ] Ehitad kolme-teenuse stacki üks teenus korraga
-- [ ] `curl localhost:8080` vastab läbi nginx-i (mitte otse Flaski pordilt)
-- [ ] Selgitad miks host on `db`, mitte `127.0.0.1` ega IP
-- [ ] Eristad: 502 = nginx töötab, aga `web` ei vasta (port); nginx ei käivitu = vale teenuse nimi `proxy_pass`-is
-- [ ] Tõestad et volume säilitab andmed üle `down`/`up`
-- [ ] Parool on `.env`-is (`${NIMI}` süntaks), `.env` on `.gitignore`-is
-- [ ] `docker compose ps` on tühi kui pead selle tühjaks tegema
-
----
+    - [ ] Ehitad kolme-teenuse stacki üks teenus korraga
+    - [ ] `curl localhost:8080` vastab läbi nginx-i (mitte otse Flaski pordilt)
+    - [ ] Selgitad miks host on `db`, mitte `127.0.0.1` ega IP
+    - [ ] Eristad: 502 = nginx töötab, aga `web` ei vasta (port); nginx ei käivitu = vale teenuse nimi `proxy_pass`-is
+    - [ ] Tõestad et volume säilitab andmed üle `down`/`up`
+    - [ ] Parool on `.env`-is (`${NIMI}` süntaks), `.env` on `.gitignore`-is
+    - [ ] `docker compose ps` on tühi kui pead selle tühjaks tegema
 
 ## Lisaülesanded
 
-1. **Healthcheck:** lisa `db`-le `healthcheck`, muuda `web depends_on` → `condition: service_healthy`. Millal `depends_on` üksi ei piisa?
-2. **Neljas teenus:** Redis või pgAdmin stacki (vt kodutöö): teenus haaval, testi eraldi.
-3. **Skaleerimine:** `docker compose up -d --scale web=3`. Mis läheb katki port-mapping'uga, ja miks vajaks see nginx load-balancer'it?
+??? example "A · Healthcheck"
+    Lisa `db`-le `healthcheck` ja muuda `web` teenuse `depends_on` kujule `condition: service_healthy`. Näide on Dockeri juhendis [Control startup order](https://docs.docker.com/compose/how-tos/startup-order/), kõik võtmed [Compose'i failivormingu juhendis](https://docs.docker.com/reference/compose-file/). Millal `depends_on` üksi ei piisa?
 
----
+??? example "B · Neljas teenus"
+    Lisa stacki Redis või pgAdmin (vt [kodutöö](homework.md)): teenus haaval, iga teenust testi eraldi.
 
-## Veaotsing
-
-| Veateade | Põhjus | Lahendus |
-|---|---|---|
-| `db` sureb (`Exit 1`) | `POSTGRES_PASSWORD` puudub | Lisa `environment` |
-| `Connection refused` (`/db-check`) | Host on `127.0.0.1` või IP, mitte teenuse nimi | Host = teenuse nimi (`db`) |
-| `could not translate host name` | Teenuse nimes on viga | Nimi `DATABASE_URL`-is = nimi compose'is |
-| nginx ei käivitu, `host not found in upstream` | Vale teenuse nimi `proxy_pass`-is | Nimi konfiguratsioonis = nimi compose'is |
-| `502 Bad Gateway` | Vale port `proxy_pass`-is või `web` ei tööta | Port = Flaski port (5000), vaata `docker compose ps` |
-| Andmed kaovad `down` järel | Volume puudub | Lisa `volumes` |
-| `variable is not set. Defaulting to a blank string` | Trükiviga muutuja nimes või `.env` vales kaustas | Nimi `.env`-is = nimi compose'is, `.env` compose-failiga samas kaustas |
-| `ModuleNotFoundError: psycopg2` | Image ehitati enne `requirements.txt` muutmist | `docker compose up -d --build` |
-| Muudatus ei rakendu | Image/konfiguratsioon vana | Koodi puhul `up -d --build`, nginx-i konfi puhul `restart nginx` |
-
-*Tabel 6.1. Iga rida on viga, mille sa selles labis ise tekitasid ja parandasid.*
-
----
-
-## Allikad
-
-| Allikas | URL | Miks |
-|---|---|---|
-| Docker Compose | <https://docs.docker.com/compose/> | Kõik võtmesõnad |
-| Compose file spec | <https://docs.docker.com/reference/compose-file/> | `depends_on`, `volumes`, `environment` |
-| PostgreSQL image | <https://hub.docker.com/_/postgres> | `POSTGRES_PASSWORD` |
-| Compose `config` | <https://docs.docker.com/reference/cli/docker/compose/config/> | Muutujate silumiseks |
+??? example "C · Skaleerimine"
+    Käivita `docker compose up -d --scale web=3`. Mis läheb katki pordivastendusega (`ports`) ja miks vajaks see nginx-i koormusejaoturit?

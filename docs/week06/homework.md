@@ -45,17 +45,17 @@ Kodutöö läheb samasse repositooriumisse nagu praktikum.
     - kuidas kontrollisid, et teenus töötab (route'i väljund või pgAdmini ekraanipilt).
 5. Liida pull request (**Merge**). Automaatkontroll hindab haru `main`, kodutöö kontroll on BOONUS.
 
-!!! warning "Tüüpilised vead"
-    - **Redis on lisatud, aga rakendus ei kasuta seda:** kontrollija näeb tühja konteinerit.
-    - **pgAdmin ei saa `db`-ga ühendust:** kasuta hostina teenuse nime `db`, mitte `localhost` ega IP-d.
-    - **`.env` jõudis GitHubi:** kontrolli `.gitignore` enne `git add`.
-    - **Pull request jäi liitmata:** automaatkontroll hindab ainult haru `main`.
+??? warning "Tüüpilised vead"
+    - Redis on lisatud, aga rakendus ei kasuta seda: kontrollija näeb tühja konteinerit.
+    - pgAdmin ei saa `db`-ga ühendust: kasuta hostina teenuse nime `db`, mitte `localhost` ega IP-d.
+    - `.env` jõudis GitHubi: kontrolli `.gitignore` enne `git add`.
+    - Pull request jäi liitmata: automaatkontroll hindab ainult haru `main`.
 
-## Kontrollnimekiri
+??? note "Kontrollnimekiri"
 
-- [ ] Neljas teenus on olemasolevas `docker-compose.yml`-is
-- [ ] `docker compose ps` näitab nelja teenust olekus `Up`
-- [ ] Uut teenust kasutatakse (Redis: route; pgAdmin: ühendus `db`-ga)
-- [ ] Paroolid ja võtmed on `.env`-is, mitte `docker-compose.yml`-is
-- [ ] `.env` on `.gitignore`-is
-- [ ] Pull request on tehtud koos `docker compose ps` väljundi ja lühikirjeldusega ning liidetud `main`-i
+    - [ ] Neljas teenus on olemasolevas `docker-compose.yml`-is
+    - [ ] `docker compose ps` näitab nelja teenust olekus `Up`
+    - [ ] Uut teenust kasutatakse (Redis: route; pgAdmin: ühendus `db`-ga)
+    - [ ] Paroolid ja võtmed on `.env`-is, mitte `docker-compose.yml`-is
+    - [ ] `.env` on `.gitignore`-is
+    - [ ] Pull request on tehtud koos `docker compose ps` väljundi ja lühikirjeldusega ning liidetud `main`-i
