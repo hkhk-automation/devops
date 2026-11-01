@@ -15,8 +15,6 @@ Kursuse lõpuks oskad:
 5. kirjeldada masinaid koodina ja lugeda enne muutmist plaani;
 6. hallata mitme serveri seadistusi ühes playbook'is ja versioonihalduses.
 
----
-
 ## Teemad nädalate kaupa
 
 | # | Teema | Tööriistad |
@@ -35,8 +33,6 @@ Kursuse lõpuks oskad:
 | N12 | Terve serveripark koodina | Ansible, group_vars |
 | N13 | Lõpuprojekt | stsenaariumi järgi |
 
----
-
 ## Enne esimest tundi
 
 **1. GitHubi konto.** Loo konto kooli e-posti aadressiga: [github.com](https://github.com). Vali kasutajanimi, millest õpetaja sind ära tunneb, näiteks eesnimi ja perekonnanimi kokku. Repositooriumid tekivad Classroom 50-s ise.
@@ -49,8 +45,6 @@ Kursuse lõpuks oskad:
 Laiendused paigaldame kursuse käigus, praegu ära paigalda midagi ette.
 
 **4. Töökeskkond.** Koolis saad Proxmoxi virtuaalmasinad. Kodus pääsed nendeni VPN-iga. Mida kodus ilma VPN-ita teha saab, on lehel [Töökeskkond](kodulabor.md).
-
----
 
 ## Hindamine
 
