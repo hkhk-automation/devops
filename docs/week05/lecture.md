@@ -5,9 +5,9 @@ tags:
   - Automatiseerimine
 ---
 
-# Loeng: rakenduse pakkimine ja ümberpaigutamine
+# Loeng: rakenduse pakkimine ja teisaldamine
 
-Sama kood võib arendaja masinas töötada ja serveris katki minna, sest keskkond on erinev: teine Pythoni versioon, teised teegid või teine OS. Konteiner lahendab selle nii, et rakendus liigub koos oma keskkonnaga ja käitub igas masinas ühtemoodi.
+Sama kood võib arendaja masinas töötada ja serveris katki minna, sest keskkond on erinev: teine Pythoni versioon, teised teegid või teine OS. Konteiner pakib rakenduse koos vajalike teekide ja tööriistadega. Nii vähenevad arendaja arvuti ja serveri keskkondade erinevused.
 
 ??? abstract "Õpiväljundid"
     Pärast loengut ja praktikumi oskad:
@@ -33,11 +33,11 @@ Konteineri puhul ei kohandata serverit rakenduse järgi: rakendus võtab oma kes
 
 Füüsilises serveris on üks OS ja tavaliselt üks rakendus. Rakendus kasutab 10% protsessorist, ülejäänu seisab tühjalt, aga voolu ja ruumi võtab terve masin. Uue serveri saamine võtab nädalaid (ost, tarne, paigaldus). Riistvararike peatab kõik, mis selles masinas töötab. Kui panna kaks rakendust samasse masinasse, segavad need teineteist (sama Python, samad pordid).
 
-**Virtualiseerimine** jagab ühe füüsilise masina mitmeks **virtuaalmasinaks (VM)**: igal VM-il on oma virtuaalne riistvara ja oma terve operatsioonisüsteem. Ressursse jagab hüperviisor (Proxmox, VMware, VirtualBox, Hyper-V). Ka sinu kooli AlmaLinuxi masin on Proxmoxi VM.
+**Virtualiseerimine** jagab ühe füüsilise masina mitmeks **virtuaalmasinaks (VM)**: igal VM-il on oma virtuaalne riistvara ja oma täielik operatsioonisüsteem. Ressursse jagab hüperviisor (Proxmox, VMware, VirtualBox, Hyper-V). Ka sinu kooli AlmaLinuxi masin on Proxmoxi VM.
 
 Virtualiseerimise eelised:
 
-- riistvara on täielikult kasutuses (kümned VM-id ühes serveris);
+- riistvara ressursse saab tõhusamalt kasutada (kümned VM-id ühes serveris);
 - VM-id on üksteisest eraldatud: kui üks läheb katki, töötavad teised edasi;
 - uue VM-i saab minutitega;
 - enne riskantset muudatust saab teha hetktõmmise (**snapshot**) või varukoopia;
@@ -105,7 +105,7 @@ VM ja konteiner ei välista teineteist: sageli töötavad konteinerid VM-i sees.
     - **FreeBSD jails (2000), Solaris Zones (2004)**: lisaks failidele on eraldi ka protsessid, võrk ja kasutajad.
     - **cgroups + namespaces (Linux, 2006–2008)**: Google'i insenerid lisasid tuuma ressursipiirangud (cgroups); namespaces eraldavad protsessid, võrgu ja failisüsteemi. Need kaks koos ongi konteiner.
     - **LXC (2008)**: esimesed täisväärtuslikud Linuxi konteinerid, mida oli aga keeruline kasutada.
-    - **Docker (2013)**: ettevõte dotCloud lõi lihtsa käsurea, `Dockerfile`-i, kihilise image'i ja registry (Docker Hub). Konteinerist sai arendaja tööriist.
+    - **Docker (2013)**: ettevõte dotCloud lõi lihtsa käsurea, `Dockerfile`-i, kihilise image'i ja registri (Docker Hub). Konteinerist sai arendaja tööriist.
     - **Kubernetes (2014)**: Google avaldas orkestreerija paljude konteinerite haldamiseks.
     - **OCI (2015)**: [Open Container Initiative](https://opencontainers.org): image'i ja käivitamise standard. Tänu sellele töötab Dockeriga ehitatud image ka Podmanis ja Kubernetes'is.
     - **Podman (Red Hat, versioon 1.0 aastal 2019)**: Dockeriga ühilduv, aga töötab ilma deemonita ja ilma root-õigusteta.
@@ -117,8 +117,8 @@ VM ja konteiner ei välista teineteist: sageli töötavad konteinerid VM-i sees.
 Dockeril on **klient-server-arhitektuur**:
 
 <figure markdown="span">
-  ![Klient (CLI, VS Code, Ansible) saadab REST päringu docker.sock kaudu dockerd deemonile, mis kasutab containerd-d ja runc-i konteinerite käivitamiseks ning registry't image'ide jaoks](../images/n05_arhitektuur.svg)
-  <figcaption>Joonis 5.3. Käsk `docker` ise midagi ei käivita, see saadab päringu deemonile, mis teeb töö ära containerd ja runc abil (Talvik, 2026).</figcaption>
+  ![Klient (CLI, VS Code, Ansible) saadab REST-päringu docker.sock kaudu dockerd deemonile, mis kasutab containerd-d ja runc-i konteinerite käivitamiseks ning registrit image'ide jaoks](../images/n05_arhitektuur.svg)
+  <figcaption>Joonis 5.3. Käsk `docker` ise midagi ei käivita, see saadab päringu deemonile, mis teeb töö ära komponentide `containerd` ja `runc` abil (Talvik, 2026).</figcaption>
 </figure>
 
 - **Klient** (`docker` CLI, VS Code laiendus, Ansible): saadab käsu REST API kaudu. Klient võib asuda ka teises masinas.
@@ -134,7 +134,7 @@ Käsk `docker run nginx:1.27` teeb viis sammu:
 sequenceDiagram
     participant K as Klient (docker CLI)
     participant D as dockerd
-    participant R as Registry (Docker Hub)
+    participant R as Register (Docker Hub)
     K->>D: docker run nginx:1.27 (REST, docker.sock)
     D->>D: kas image on kettal?
     D->>R: 1. pull - pole kettal, tõmba
@@ -161,7 +161,7 @@ Image on kirjutuskaitstud. Konteineri käivitamisel lisatakse selle peale õhuke
 
 **Konteiner** on image'i käivitatud eksemplar, protsess, millel on oma failisüsteem (image'ist), oma võrguliides ja oma eraldatud keskkond.
 
-Analoogia: image on retsept, konteiner on retsepti järgi valminud roog. Sama retsepti järgi saad teha sama rooga nii mitu korda, kui tahad, ja see tuleb iga kord samasugune, sest retsept ei muutu. Programmeerimises: image on klass, konteiner on objekt. Sama vahet selgitab näidetega [OpenReplay algajate juhend](https://blog.openreplay.com/beginner-guide-docker-images-containers/).
+Analoogia: Dockerfile on retsept, image on selle järgi valmistatud ja pakitud toit ning konteiner on toit, mis on lauale toodud. Ühest image'ist saad käivitada nii mitu konteinerit, kui tahad, ja igaüks algab samast sisust. Programmeerimises: image on klass, konteiner on objekt. Sama vahet selgitab näidetega [OpenReplay algajate juhend](https://blog.openreplay.com/beginner-guide-docker-images-containers/).
 
 <figure markdown="span">
 ```mermaid
@@ -200,16 +200,16 @@ CMD ["python", "app.py"]
 - `COPY requirements.txt .` kopeerib enne ülejäänud koodi ainult sõltuvuste faili. Kui `requirements.txt` ei muutu, võtab Docker selle kihi vahemälust ja ehitamine on kiirem.
 - `RUN pip install` paigaldab teegid image'isse.
 - Teine `COPY` kopeerib ülejäänud koodi.
-- `EXPOSE` dokumenteerib pordi.
+- `EXPOSE` dokumenteerib rakenduse kasutatava pordi. Port avaldatakse alles käivitamisel võtmega `-p`.
 - `CMD` on käsk, mis käivitatakse konteineri käivitumisel.
 
 ```bash
 docker build -t minu-flask-app .
 ```
 
-`-t` annab image'ile nime, punkt näitab, et Dockerfile on praeguses kaustas. Sama tee algusest lõpuni läbib [Dockeri alustamise juhend](https://docs.docker.com/get-started/).
+`-t` annab image'ile nime. Punkt määrab ehituskontekstiks praeguse kausta: sealt võtab `COPY` failid. Selles näites on seal ka Dockerfile. Sama tee algusest lõpuni läbib [Dockeri alustamise juhend](https://docs.docker.com/get-started/).
 
-## 6. Põhikäsklused
+## 6. Põhikäsud
 
 ```bash
 docker build -t minu-app .        # ehita image Dockerfile'ist
@@ -220,28 +220,29 @@ docker rm <id>                     # kustuta peatatud konteiner
 docker logs <nimi>                 # konteineri väljund - esimene koht vigade otsimisel
 docker exec -it <nimi> bash        # shell töötava konteineri sisse
 docker run -it --rm ubuntu:24.04 bash  # interaktiivne ühekordne konteiner
-docker pull nginx:1.27             # tõmba image registry'st
-docker images / docker rmi <image> # image'id kettal / kustuta
+docker pull nginx:1.27             # tõmba image registrist
+docker images                      # image'id kettal
+docker rmi <image>                 # kustuta image
 docker system prune                # koristus: peatatud konteinerid, kasutamata image'id
 ```
 
 `-d` käivitab konteineri taustal, `-p 5000:5000` seob konteineri sisemise pordi hosti pordiga, ilma selleta ei pääse rakendusele konteinerist väljast ligi.
 
-Konteineri saab käivitada kolmel viisil:
+Käivitamisel saab kombineerida järgmisi võtmeid:
 
-- taustal (`-d`): teenused ja veebiserver;
-- interaktiivselt (`-it`): uurimiseks, saad terminali konteineri sees;
-- nimega (`--name web1`): siis ei pea juhuslikku ID-d kopeerima.
+- `-d` käivitab taustal (teenused ja veebiserver);
+- `-it` avab terminali konteineri sees (uurimiseks);
+- `--name web1` annab nime, siis ei pea juhuslikku ID-d kopeerima.
 
 `--rm` kustutab konteineri automaatselt, kui see lõpetab töö.
 
-## 7. Image'i nimi, tag ja registry
+## 7. Image'i nimi, tag ja register
 
 Image'i täisnimi koosneb mitmest osast:
 
 ```text
 ghcr.io / hkhk-automation / minu-nginx : v1
-registry   nimeruum (kasutaja)  repo       tag
+register   nimeruum (kasutaja)  repo       tag
 ```
 
 Kui kirjutad lühikese nime, lisab Docker puuduvad osad ise: `nginx` = `docker.io/library/nginx:latest` (Docker Hub, ametlik image, tag `latest`).
@@ -250,9 +251,9 @@ Kui kirjutad lühikese nime, lisab Docker puuduvad osad ise: `nginx` = `docker.i
 
 ??? note "Tabel 5.3. Tag'id ja digest"
 
-    | Tag | Mida tähendab | Muutub? |
+    | Viide | Mida tähendab | Kas võib hakata viitama teisele sisule? |
     |---|---|---|
-    | `nginx:1.27.3` | Täpne versioon | Praktiliselt mitte |
+    | `nginx:1.27.3` | Täpne versioon | Harva, kui avaldaja tag'i ümber tõstab |
     | `nginx:1.27` | Uusim 1.27.x | Jah, iga paranduse järel |
     | `nginx:1` | Uusim 1.x | Jah, tihti |
     | `nginx:latest` | Ainult vaikimisi nimi, mille hooldaja võib panna ükskõik millisele versioonile | Jah, ettearvamatult |
@@ -264,18 +265,18 @@ Kui kirjutad lühikese nime, lisab Docker puuduvad osad ise: `nginx` = `docker.i
 - tootmises kasuta alati konkreetset tag'i (`nginx:1.27`), kriitilises kohas isegi digest'i (`@sha256:...`), sest tag'i saab teisele image'ile ümber tõsta, digest'i ei saa;
 - pane oma image'ile versioon (`v1`, `1.0.3` või Giti commit'i lühiräsi), siis tead täpselt, mis tootmises töötab, ja saad vajadusel tagasi minna (kui `v2` on katki, käivita `docker run ...:v1`).
 
-Image'eid hoitakse registry's. Kõige tuntum on [Docker Hub](https://hub.docker.com): kui kirjutad `FROM nginx`, tuleb image sealt. Teised on näiteks GitHub Container Registry (`ghcr.io`), Quay.io (Red Hat) ja ettevõtete oma registry'd. `docker pull` tõmbab image'i alla, `docker push` laadib selle üles (et jagada oma image'it meeskonnaga; vaja on `docker login`).
+Image'eid hoitakse **registris** (registry). Kõige tuntum on [Docker Hub](https://hub.docker.com): kui kirjutad `FROM nginx`, tuleb image sealt. Teised on näiteks GitHub Container Registry (`ghcr.io`), Quay.io (Red Hat) ja ettevõtete oma registrid. `docker pull` tõmbab image'i alla, `docker push` laadib selle üles (et jagada oma image'it meeskonnaga; vaja on `docker login`).
 
 Docker Hubis vaata image'i lehel kolme asja:
 
-- märgis: *Docker Official Image* (Docker hooldab, näiteks `nginx`, `python`, `ubuntu`) või *Verified Publisher* (avaldab tootja ise). Need on usaldusväärsed. Suvaline `kasutaja123/nginx` võib sisaldada ükskõik mida;
+- märgis: *Docker Official Image* (Docker hooldab, näiteks `nginx`, `python`, `ubuntu`) või *Verified Publisher* (avaldab tootja ise). Eelista selge päritolu ja aktiivse hooldusega image'eid ning kontrolli nende versioone. Suvaline `kasutaja123/nginx` võib sisaldada ükskõik mida;
 - vahekaart **Tags** näitab, millised versioonid on olemas (`1.27`, `1.27-alpine`, `latest`...);
 - ametliku image'i nime ees pole kasutajanime: `nginx` on sama mis `docker.io/library/nginx`.
 
 Oma image'i saab teistega jagada kolmel viisil:
 
 ```bash
-# 1. Registry kaudu (tavaline)
+# 1. Registri kaudu (tavaline)
 docker tag minu-app:1.0 kasutaja/minu-app:1.0   # uus nimi samale image'ile
 docker login
 docker push kasutaja/minu-app:1.0
@@ -299,16 +300,16 @@ Docker Hub piirab sisselogimata tõmbamiste arvu. Kui terve klass tõmbab image'
 %%{init: {'theme':'base','themeVariables':{'primaryColor':'#ede7f6','primaryBorderColor':'#5e35b1','primaryTextColor':'#212121','lineColor':'#7e57c2'}}}%%
 graph LR
     A[Arendaja<br/>Dockerfile] -->|docker build| I[Image<br/>minu-app:1.0]
-    I -->|docker push| R[(Registry<br/>Docker Hub / GHCR)]
+    I -->|docker push| R[(Register<br/>Docker Hub / GHCR)]
     R -->|docker pull| S1[Staging server]
     R -->|docker pull| S2[Tootmisserver]
     S1 -->|docker run| C1[Konteiner]
     S2 -->|docker run| C2[Konteiner]
 ```
-  <figcaption>Joonis 5.6. Sama image (sama tag) jõuab registry kaudu muutmata kujul igasse keskkonda, seepärast käitub see igal pool ühtemoodi (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 5.6. Sama image'i kasutatakse test- ja tootmiskeskkonnas ilma seda uuesti ehitamata. Kood ja teegid on mõlemas samad (Talvik, 2026).</figcaption>
 </figure>
 
-**Kiht** (layer) tekib iga Dockerfile'i rea kohta. Docker salvestab kihid vahemällu ja ehitab uuesti alles muutunud kihist alates. Seepärast on järjekord oluline: harva muutuvad osad (OS, teegid) on üleval ja tihti muutuv kood all, nagu `requirements.txt` näites.
+**Kiht** (layer) tekib Dockerfile'i sammudest, mis muudavad faile (`RUN`, `COPY`). Docker salvestab sammude tulemused vahemällu ja ehitab uuesti alles muutunud sammust alates. Seepärast on järjekord oluline: harva muutuvad osad (OS, teegid) on üleval ja tihti muutuv kood all, nagu `requirements.txt` näites.
 
 <figure markdown="span">
   ![Dockerfile'i kuus rida kuue kihina; app.py muutmisel tulevad neli ülemist vahemälust ja ehitatakse uuesti ainult COPY . . ja CMD](../images/n05_kihid.svg)
@@ -319,7 +320,7 @@ graph LR
 
 Allolev Dockerfile ehitab sama Flaski image'i nii, et rakendus töötab tavakasutajana ja osa seadistusest tuleb muutujatest.
 
-??? example "Fail `Dockerfile`: mitte-root kasutaja, `ARG` ja `ENV`"
+??? example "Fail `Dockerfile`: tavakasutaja, `ARG` ja `ENV`"
 
     ```dockerfile
     FROM python:3.12-slim
@@ -338,19 +339,19 @@ Allolev Dockerfile ehitab sama Flaski image'i nii, et rakendus töötab tavakasu
     CMD ["python", "app.py"]
     ```
 
-Vaikimisi töötab konteineris kõik root'ina. Kui rakenduses on turvaauk, saab ründaja konteineris root-õigused. `USER` vähendab võimalikku kahju.
+Paljud baasimage'id käivitavad rakenduse root'ina. Kontrolli, millise kasutajana sinu baasimage töötab. Kui rakenduses on turvaauk, saab ründaja konteineris root-õigused. `USER` vähendab võimalikku kahju.
 
 Turvareeglid, mis sobivad igale Dockerfile'ile:
 
 - baasimage on ametlik (Docker Official Image) või tuntud tootjalt; suvalisest `kasutaja123/python` image'ist ei tea, mis seal sees on;
 - tag on konkreetne, sest `latest` muutub ettearvamatult;
-- vähem pakette tähendab vähem turvaauke: kasuta `-slim` või `alpine` image'eid ja ära paigalda tööriistu igaks juhuks;
+- vähem pakette tähendab väiksemat ründepinda: kasuta `-slim` või `alpine` image'eid ja ära paigalda tööriistu igaks juhuks;
 - rakendus töötab tavakasutajana (`USER`);
 - saladused ei kuulu image'isse: paroole ei panda `ENV`-i ega `ARG`-i ega kopeerita `COPY`-ga. Igaüks saab image'i lahti pakkida ja saladus jääb kihti alles ka siis, kui mõni hilisem rida selle kustutab.
 
 Need ja teised soovitused (kihtide järjekord, tag'id, `.dockerignore`) on Dockeri lehel [Building best practices](https://docs.docker.com/build/building/best-practices/).
 
-**Mitmeetapiline build (multi-stage)**: ehitustööriistad (kompilaator, `npm`, `pip`-i vahemälu) ei pea lõppimage'isse jõudma:
+**Mitmeetapiline ehitamine (multi-stage build)**: ehitustööriistad (kompilaator, `npm`, `pip`-i vahemälu) ei pea lõppimage'isse jõudma:
 
 ```dockerfile
 FROM node:20-alpine AS build      # etapp 1: ehita
@@ -364,9 +365,9 @@ FROM nginx:1.27-alpine            # etapp 2: ainult tulemus
 COPY --from=build /app/dist /usr/share/nginx/html
 ```
 
-Lõppimage'is on ainult nginx ja valmis failid: see on sadu megabaite väiksem ja vähemate pakettidega, seega ka vähemate turvaaukudega.
+Lõppimage'is on ainult nginx ja valmis failid. See on tavaliselt palju väiksem ja selles on vähem pakette, mida peab turvauuendustega hoidma.
 
-Andmeid ei hoita konteineris. Konteiner on ajutine (kirjutatav kiht kaob `rm`-iga). Püsivate andmete jaoks on kaks võimalust:
+Andmeid ei hoita konteineris. Konteiner on ajutine: kirjutatav kiht kustutatakse koos konteineriga. Püsivate andmete jaoks on kaks võimalust:
 
 - **Volume**: Dockeri hallatud andmeala: `docker volume create andmed`, `docker run -v andmed:/var/lib/mysql ...`: näiteks andmebaasidele.
 - **Bind mount**: hosti kaust ühendatakse konteinerisse: `docker run -v $(pwd):/app ...`: arenduses, sest koodi muudatus on kohe näha.
@@ -396,7 +397,7 @@ Kursusel kasutatakse Dockerit, sest see on valdkonnas levinuim tööriist, enami
     | Tööriist | Mis see on | Kus kohtad |
     |---|---|---|
     | **Docker Engine** | Deemon + CLI + API Linuxis | Serverid, meie VM |
-    | **Docker Desktop** | Windowsi ja Maci rakendus: Engine VM-is, CLI, Compose, Kubernetes, graafiline liides. Suurfirmadele tasuline | Arendaja sülearvuti |
+    | **Docker Desktop** | Windowsi ja macOS-i rakendus: Engine VM-is, CLI, Compose, Kubernetes, graafiline liides. Suurfirmadele tasuline | Arendaja sülearvuti |
     | **Docker Compose** | Mitu konteinerit ühest YAML-failist, ühe käsuga (`docker compose up`) | N6 |
     | **Docker Swarm** | Dockeri enda lihtne orkestreerija mitmele serverile | Väiksemad paigaldused |
     | **Kubernetes** | Orkestreerijate standard: paigaldus, uuendused, koormuse jaotamine, tervisekontroll, skaleerimine. Google'i Borgi järeltulija, avaldatud 2014, CNCF-is alates 2015 | Suured süsteemid, pilv (EKS, AKS, GKE, OpenShift) |
@@ -423,7 +424,7 @@ Praktikas kasutatakse neid koos: Ansible'i playbook seadistab serveri (paigaldab
 %%{init: {'theme':'base','themeVariables':{'primaryColor':'#ede7f6','primaryBorderColor':'#5e35b1','primaryTextColor':'#212121','lineColor':'#7e57c2'}}}%%
 graph LR
     subgraph Ansible[Ansible - server]
-      P1[Docker paigaldus] --> P2[Tulemüür, kasutajad] --> P3[docker run]
+      P1[Dockeri paigaldamine] --> P2[Tulemüür, kasutajad] --> P3[docker run]
     end
     subgraph Docker[Docker - rakendus]
       I[Image: Python + teegid + kood] --> C[Konteiner]
@@ -433,7 +434,7 @@ graph LR
   <figcaption>Joonis 5.8. Ansible valmistab serveri ette ja käivitab konteineri; mis on konteineri sees, määrab image (Talvik, 2026).</figcaption>
 </figure>
 
-Kui konteinereid on kümneid või sadu mitmel serveril, võtab nende haldamise üle **orkestreerija** (vt Tabel 5.5). N6-s tuleb vahesamm: Docker Compose, millega käivitad mitu teenust ühes masinas.
+Kui konteinereid on kümneid või sadu mitmel serveril, võtab nende haldamise üle **orkestreerija** (vt tabel 5.5). N6-s tuleb vahesamm: Docker Compose, millega käivitad mitu teenust ühes masinas.
 
 Kui kahtled, kas kasutada Ansible'it või Dockerit, küsi: kas see on osa serverist (tulemüür, kasutajad, ketas) või osa rakendusest (Pythoni versioon, teegid, kood)? Esimesel juhul Ansible, teisel Docker.
 
@@ -441,7 +442,7 @@ Kui kahtled, kas kasutada Ansible'it või Dockerit, küsi: kas see on osa server
 
 Suurtes meeskondades liigub sama image muutmata kujul arendaja masinast testkeskkonda (staging) ja sealt tootmisse. Kui image läbib testkeskkonnas testid, on kindel, et tootmises käivitub täpselt sama kood samade teekidega.
 
-Nii kaob probleem „töötab minu masinas“. Arendaja annab serverile valmis paki, milles on kõik vajalik olemas. Kui tootmises tekib viga, käivitad sama image'i oma masinas ja näed täpselt sama viga.
+Nii väheneb probleem „töötab minu masinas“. Arendaja annab serverile valmis image'i, milles on rakendus koos sõltuvustega. Kui tootmises tekib viga, saad sama image'iga viga oma masinas uurida. Kood ja teegid on samad, aga võrgu, andmete, õiguste ja keskkonnamuutujate mõju tuleb eraldi kontrollida.
 
 ## Kokkuvõte
 

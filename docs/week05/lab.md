@@ -606,7 +606,7 @@ time docker build -t flask-app .
 ```
 
 ??? question "Võrdle"
-    Kas `pip install` käivitus nüüd uuesti? Miks, mis muutus kihis, millest `pip` sõltub? Kui projektis on 200 teeki ja CI ehitab image'i 30 korda päevas, kui palju aega selline järjekord raiskab? (Vaata [loengu joonist kihtide kohta](lecture.md#7-imagei-nimi-tag-ja-registry).)
+    Kas `pip install` käivitus nüüd uuesti? Miks, mis muutus kihis, millest `pip` sõltub? Kui projektis on 200 teeki ja CI ehitab image'i 30 korda päevas, kui palju aega selline järjekord raiskab? (Vaata [loengu joonist kihtide kohta](lecture.md#7-imagei-nimi-tag-ja-register).)
 
 Taasta õige järjekord: kõigepealt `requirements.txt` ja `pip install`, siis kood. Automaatkontroll vaatab seda järjekorda.
 
