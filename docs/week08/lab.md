@@ -989,6 +989,19 @@ Töö on esitatud, kui kõik muudatused on GitHubis harus `main`. Automaatkontro
 ??? example "B · Seinaekraan Jenkinsile (keskmine)"
     Lisa failis `jenkins/Dockerfile` plugin'ite loendisse [`build-monitor-plugin`](https://plugins.jenkins.io/build-monitor-plugin/). Ehita image ja tee konteiner uuesti (samm 6.5). Loo Jenkinsis uus vaade: **+** → **Build Monitor View** → vali `lab08`. Sellist vaadet näidatakse kontorites seinal suurel ekraanil. Mis värvi on `lab08`, kui konveier kukub?
 
+??? example "C · Image'i päritolu tõend (raske)"
+    Server tõmbab image'i registrist. Kust ta teab, et selle ehitas sinu konveier, mitte keegi, kes sai registrisse kirjutada? Selleks on **päritolu tõend** (artifact attestation): konveier allkirjastab, mis repositooriumist, commit'ist ja töövoost image tuli ([artifact attestations](https://docs.github.com/en/actions/concepts/security/artifact-attestations)).
+
+    Lisa töö `build-and-push` õigustesse `id-token: write` ja `attestations: write`. Lisa pärast `docker push` sammu ametliku juhendi järgi samm `actions/attest@v4` ([juhend](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations)). Väärtus `subject-name` on image'i nimi ilma tag'ita, `subject-digest` on image'i räsi kujul `sha256:…` (selle annab `docker inspect --format '{{index .RepoDigests 0}}'` pärast push'i) ja `push-to-registry: true`.
+
+    Kontrolli serveris:
+
+    ```bash
+    gh attestation verify oci://ghcr.io/hkhk-automation/<sinu-repo>:latest -R hkhk-automation/<sinu-repo>
+    ```
+
+    Mida näitab väljund? Mis juhtub, kui ehitad image'i oma masinas, saadad selle sama nimega registrisse ja kontrollid uuesti? Kui GitHub ütleb, et privaatses repositooriumis see võimalus pole saadaval, kirjuta see README-sse: organisatsiooni plaan määrab, kas tõendeid saab luua.
+
 ---
 
-*Edasi: [kodutöö](homework.md). Seal leiad ise vead väljalaske töövoos. N9 teema on infrastruktuur koodina.*
+*Edasi: [kodutöö](homework.md). Seal paned sama konveieri oma varasemate praktikumide failidele: N5 Dockerfile, N6 Compose ja N3–N4 Ansible. N9 teema on infrastruktuur koodina.*
