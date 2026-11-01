@@ -20,11 +20,11 @@ Töötad masinas `proxmox1` VS Code'i kaudu nagu N7-s. Serveri rollis on samuti 
 | Osa | Töö | Aeg |
 |---|---|---|
 | 1 | Ettevalmistus ja issue'de mall | 15 min |
-| 2 | Viga 1: registrisse kirjutamine (klassis koos) | 25 min |
+| 2 | Viga 1: registrisse kirjutamine | 15 min |
 | 3 | Viga 2: katkine kood jõuab registrisse | 20 min |
 | 4 | Viga 3: pull request jõuab registrisse | 25 min |
 | 5 | Vead 4 ja 5: server, tagasi vanale versioonile | 45 min |
-| 6 | Sama konveier Jenkinsis, viga 6 | 35 min |
+| 6 | Sama konveier Jenkinsis, viga 6 | 45 min |
 | 7 | Korrektne lahendus | 5 min |
 | 8 | Töö esitamine | 10 min |
 
@@ -33,23 +33,13 @@ Töötad masinas `proxmox1` VS Code'i kaudu nagu N7-s. Serveri rollis on samuti 
 Iga vea juures on samad sammud samas järjekorras ([loengu §7](lecture.md#7-vea-leidmine-sumptom-hupotees-toend-parandus)):
 
 - **Sümptom:** mida näed. See võib olla punane töö, rida logis või käsu väljund.
-- **Ennusta:** mis on põhjus ja mis failis see on. Ütle oma oletus naabrile. Kirja seda panema ei pea.
+- **Ennusta:** mis on põhjus ja mis failis see on. Kirjuta oletus vea issue väljale **Hüpotees**, enne kui tõendit otsid.
 - **Uuri:** kust leida tõend. Tõend kinnitab oletuse või lükkab selle ümber. Enne tõendit ära midagi muuda.
 - **Paranda** ja **Kontrolli:** tee üks muudatus ja vaata sama sümptomit uuesti. Põhjus ja parandus on kokkuvolditud plokis. Ava see alles siis, kui oled ise proovinud.
 - **Küsimus:** kirjuta README-sse üks lause ja vigade tabelisse üks rida.
 - **Issue:** iga vea kohta on repositooriumis issue (samm 1.4). Paranduse commit sulgeb selle.
 
-Esimese vea teeme klassis koos. Ülejäänud vead teed paaris naabriga. Kumbki töötab oma repositooriumis.
-
-??? note "Õpetajale: viga 1 tahvlil (umbes 15 minutit)"
-    Kõigil õpilastel on pärast sammu 1.3 sama punane käivitus. Ava oma repositooriumis sama käivitus projektoril. Mõtle valjult ja ära ütle põhjust enne tõendit:
-
-    1. **Sümptom.** Loe ette, mis on roheline ja mis punane. Ava punane samm ja loe viimane rida lõpuni. Näita, et oluline sõna on `denied`.
-    2. **Hüpotees.** Ütle kaks oletust: vale parool või puuduv õigus. Küsi klassilt, kumb on tõenäolisem. Rõhuta, et sisselogimise samm oli roheline.
-    3. **Tõend.** Ava sama töö samm **Set up job** ja lõik `GITHUB_TOKEN Permissions`. Näita rida `Packages: read`. Võrdle tööga `konteiner`.
-    4. **Parandus.** Lisa `permissions` plokk. Ütle, miks `contents: read` jääb alles. Tee commit ja push, näita rohelist käivitust ja paketti jaotises **Packages**.
-
-    Õpilased teevad sama paranduse samal ajal oma repositooriumis. Siis paaris edasi osaga 3.
+Kõik vead teed iseseisvalt.
 
 ??? abstract "Õpiväljundid"
 
@@ -120,7 +110,7 @@ Töökohas ei parandata viga ilma kirjeta. Iga viga saab **issue**: GitHubi kirj
 Repositooriumis on issue'de mall **Viga**. Iga vea juures toimi nii:
 
 1. Kui näed sümptomit, ava vahekaart **Issues** → **New issue** → **Viga**. Pealkirjaks kirjuta lühidalt, mida näed, näiteks `build-and-push: docker push denied`. Väljale **Sümptom** kopeeri rida logist.
-2. Kui oled tõendi leidnud, täida väljad **Hüpotees** ja **Tõend**.
+2. Sammus **Ennusta** kirjuta oma oletus väljale **Hüpotees**. Kui oled tõendi leidnud, täida väli **Tõend**.
 3. Pane paranduse commit'i sõnumisse teise reana `Fixes #<issue number>`. Issue number on pealkirja järel, näiteks `#2`:
 
     ```bash
@@ -135,13 +125,13 @@ Selle osa juhendis on commit'i käskudes ainult esimene rida. Teise rea `-m "Fix
 
 ## Osa 2 · Viga 1: registrisse kirjutamine
 
-Seda viga uurime klassis koos. Tee samu samme oma repositooriumis.
+Sama viga nägid loengus. Tee nüüd samad sammud oma repositooriumis.
 
 **Sümptom**
 
 Käivituse lehel on `test` ja `konteiner` rohelised. `build-and-push` on punane. Ava see töö ja leia punane samm.
 
-**Ennusta.** Samm `Logi GHCR-i sisse` on roheline. Samm `Saada image GHCR-i` on punane. Mis on põhjus ja mis failis?
+**Ennusta.** Samm `Logi GHCR-i sisse` on roheline. Samm `Saada image GHCR-i` on punane. Mis on põhjus ja mis failis? Kirjuta oletus issue väljale **Hüpotees**.
 
 **Uuri**
 
@@ -245,7 +235,7 @@ git push
 
 `test` on punane. `konteiner` on hall (`skipped`). Vaata, mis olekus on `build-and-push`. Ava **Packages** ja vaata tag'e.
 
-**Ennusta.** Test kukkus. Kas registrisse jõudis uus image? Kui jõudis, siis miks?
+**Ennusta.** Test kukkus. Kas registrisse jõudis uus image? Kui jõudis, siis miks? Kirjuta oletus issue väljale **Hüpotees**.
 
 **Uuri**
 
@@ -319,7 +309,7 @@ Ava GitHubis pull request `n08-tervitus` → `main`. **Ära seda veel liida.**
 
 Vaata vahekaarti **Actions**. Vaata pull request'i lehel kasti **Checks**. Vaata ka **Packages** all tag'e.
 
-**Ennusta.** Kood on ainult harus `n08-tervitus`. Kas see jõudis registrisse? Kui jõudis, siis mis selle käivitas?
+**Ennusta.** Kood on ainult harus `n08-tervitus`. Kas see jõudis registrisse? Kui jõudis, siis mis selle käivitas? Kirjuta oletus issue väljale **Hüpotees**.
 
 **Uuri**
 
@@ -406,7 +396,7 @@ bash server/paigalda.sh
 
 Pärast rida `== image ...` lõpetab skript veaga.
 
-**Ennusta.** Image on registris olemas, sa nägid seda **Packages** all. Miks ei saa server seda kätte?
+**Ennusta.** Image on registris olemas, sa nägid seda **Packages** all. Miks ei saa server seda kätte? Kirjuta oletus issue väljale **Hüpotees**.
 
 **Uuri**
 
@@ -461,7 +451,7 @@ bash server/paigalda.sh
 
 Skript jõuab reani `== versioon`. `curl` proovib mitu korda ja lõpetab veaga.
 
-**Ennusta.** Konteiner käivitus. Miks ei saa `curl` vastust?
+**Ennusta.** Konteiner käivitus. Miks ei saa `curl` vastust? Kirjuta oletus issue väljale **Hüpotees**.
 
 **Uuri**
 
@@ -688,7 +678,7 @@ Vajuta vasakul **Build Now**.
 
 Käivitus on punane. Ava see ja vali **Pipeline Overview**. Plugin `pipeline-graph-view` näitab etappe graafiliselt. Etapp `test` on punane.
 
-**Ennusta.** Samad testid läbisid sinu masinas ja GitHub Actionsis. Miks kukuvad need Jenkinsis?
+**Ennusta.** Samad testid läbisid sinu masinas ja GitHub Actionsis. Miks kukuvad need Jenkinsis? Kirjuta oletus issue väljale **Hüpotees**.
 
 **Uuri**
 

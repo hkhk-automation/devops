@@ -193,6 +193,18 @@ Praktikumi konveier on kirjutatud, aga katki. Kõige aeglasem viis on muuta ridu
 
 *Tabel 8.3. Kust leida tõend.*
 
+Järgmisena näed seda järjekorda ühe vea peal. Õpetaja otsib viga oma repositooriumis ja mõtleb valjult.
+
+??? note "Õpetajale: demo oma repositooriumis (umbes 10 min)"
+    Kasuta oma test-repositooriumi (näiteks `lab08-proov`, loodud starterist), mitte õpilase oma. Enne loengut tee sinna üks push, et töö `build-and-push` oleks punane (viga 1). Näita käivitust projektoril. Mõtle valjult ja ära ütle põhjust enne tõendit:
+
+    1. **Sümptom.** Loe ette, mis on roheline ja mis punane. Ava punane samm ja loe viimane rida lõpuni. Näita, et oluline sõna on `denied`.
+    2. **Hüpotees.** Ava issue mallist **Viga** ja kirjuta väljale **Hüpotees** kaks oletust: vale parool või puuduv õigus. Küsi klassilt, kumb on tõenäolisem. Rõhuta, et sisselogimise samm oli roheline.
+    3. **Tõend.** Ava sama töö samm **Set up job** ja lõik `GITHUB_TOKEN Permissions`. Näita rida `Packages: read`. Võrdle tööga `konteiner`. Kirjuta see väljale **Tõend**.
+    4. **Parandus.** Lisa `permissions` plokk. Ütle, miks `contents: read` jääb alles. Tee commit sõnumiga `Fixes #<number>`, näita rohelist käivitust, suletud issue'd ja paketti jaotises **Packages**.
+
+    Praktikumis teevad õpilased sama vea oma repositooriumis iseseisvalt (osa 2).
+
 Kõik vead ei tee konveierit punaseks. Kui katkine kood jõuab registrisse, on kõik tööd rohelised. Sellist viga näed ainult siis, kui kontrollid tulemust: mis on registris ja mis töötab serveris.
 
 ---
