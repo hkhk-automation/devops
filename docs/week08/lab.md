@@ -548,23 +548,23 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v7
-      - name: Image'i nimi ja versioon
+      - name: Image'i nimi ja versioon # (6)!
         run: |
-          echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV" # (6)!
-          echo "VERSIOON=${GITHUB_SHA::7}" >> "$GITHUB_ENV" # (7)!
-      - name: Ehita image
+          echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+          echo "VERSIOON=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+      - name: Ehita image # (7)!
         run: >
           docker build
           --build-arg VERSIOON=$VERSIOON
           --label org.opencontainers.image.source=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY
           -t "$IMAGE:$VERSIOON" -t "$IMAGE:latest"
-          ./flask # (8)!
+          ./flask
       - name: Logi GHCR-i sisse
         env:
-          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }} # (9)!
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }} # (8)!
         run: echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
       - name: Saada image GHCR-i
-        run: docker push --all-tags "$IMAGE" # (10)!
+        run: docker push --all-tags "$IMAGE" # (9)!
 ```
 
 1.  Push käivitab workflow'i ainult harus `main`. Teiste harude push'id ei ehita image'it (viga 3).
@@ -572,11 +572,10 @@ jobs:
 3.  Image ehitatakse alles siis, kui `konteiner` on roheline. `konteiner` ootab omakorda `test`-i (viga 2).
 4.  Pull request'i käivituses jääb job vahele (`skipped`). Registrisse jõuab ainult liidetud kood (viga 3).
 5.  Kirjutamisõigus registrisse ainult sellele job'ile. `contents: read` on vajalik, et `actions/checkout` saaks koodi lugeda (viga 1).
-6.  Image'i nimes on lubatud ainult väiketähed. `,,` teeb repositooriumi nime väiketähtedeks.
-7.  Commit'i lühiräsi: tag, mis ütleb täpselt, mis koodist image tehti.
-8.  Kaks tag'i samale image'ile: räsi ja `latest`. `--build-arg` annab rakendusele versiooni, silt seob paketi repositooriumiga.
-9.  Ajutine token, mis kehtib ainult selle käivituse ajal. Faili ei kirjutata ühtegi saladust.
-10. Saadab registrisse mõlemad tag'id.
+6.  Image'i nimes on lubatud ainult väiketähed: `${GITHUB_REPOSITORY,,}` teeb repositooriumi nime väiketähtedeks. `${GITHUB_SHA::7}` on commit'i lühiräsi, tag, mis ütleb täpselt, mis koodist image tehti.
+7.  Kaks tag'i samale image'ile: räsi ja `latest`. `--build-arg` annab rakendusele versiooni, silt `org.opencontainers.image.source` seob paketi repositooriumiga.
+8.  Ajutine token, mis kehtib ainult selle käivituse ajal. Faili ei kirjutata ühtegi saladust.
+9.  Saadab registrisse mõlemad tag'id.
 
 Serveris tehakse üks kord sisselogimine ja iga paigaldus on üks käsk:
 
