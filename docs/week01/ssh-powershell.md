@@ -1,7 +1,7 @@
 # SSH-võti PowerShellist Linuxi serveritesse
 
 > Kui võti on loodud Windowsi PowerShellis, siis Linuxi juhendi käsud (`ssh-copy-id`)
-> ei tööta ja avaliku võtme faili kopeerimisel tekib **kodeeringu probleem**.
+> ei tööta ja avaliku võtme faili kopeerimisel tekib kodeeringu probleem.
 > Windows PowerShell 5.1 salvestab ümbersuunamisel (`>`) faili kodeeringus UTF-16 koos BOM-iga
 > ja lisab rea lõppu CRLF-i (`\r`). Sellise võtme lükkab server tagasi ilma selgituseta
 > ja kasutaja näeb ainult teadet „Permission denied“.
@@ -33,7 +33,7 @@ type $env:USERPROFILE\.ssh\id_ed25519.pub | ssh kasutaja@server "mkdir -p ~/.ssh
 
 ```powershell
 ssh kasutaja@server
-# Kui ei tööta, käivita diagnostikaga:
+# Kui ei tööta, vaata üksikasjalikku väljundit:
 ssh -vvv kasutaja@server
 # Otsi ridu: "Offering public key" ja "Server accepts key".
 ```
@@ -71,9 +71,6 @@ Start-Service ssh-agent
 ssh-add $env:USERPROFILE\.ssh\id_ed25519
 ```
 
----
-
-**Kokkuvõte: miks Linuxi juhend Windowsis ei töötanud**
-
-Käsku `ssh-copy-id` Windowsis ei ole ja faili kirjutamisel läheb võti UTF-16 kodeeringu ja CRLF-reavahetuste tõttu katki.
-Lahendus on suunata võti toru kaudu otse `ssh` abil serverisse (punkt 2) ja kontrollida õigusi (punktid 4 ja 5).
+??? abstract "Kokkuvõte: miks Linuxi juhend Windowsis ei töötanud"
+    Käsku `ssh-copy-id` Windowsis ei ole ja faili kirjutamisel läheb võti UTF-16 kodeeringu ja CRLF-reavahetuste tõttu katki.
+    Lahendus on suunata võti toru kaudu otse `ssh` abil serverisse (punkt 2) ja kontrollida õigusi (punktid 4 ja 5).

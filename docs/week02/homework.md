@@ -8,17 +8,14 @@ tags:
 
 # Kodutöö: ülevaatus mõlemalt poolt
 
-**Tähtaeg:** pühapäev 23:59
+Tähtaja näed Classroom 50-s.
+
 **Esitamine:** kahe liidetud (merged) PR-i lingid GitHub Projectis.
 
----
-
-Praktikumis seadistasid oma repositooriumi, kaitsesid `main`-haru ja parandasid Märteni skripti pull request'i kaudu. Kodutöös töötad **paarilise** repositooriumis ja teete läbi kogu ülevaatuse ringi nii autori kui ka ülevaataja rollis.
+Praktikumis seadistasid oma repositooriumi, kaitsesid `main`-haru ja parandasid Märteni skripti pull request'i kaudu. Kodutöös töötad paarilise repositooriumis ja teete läbi kogu ülevaatuse ringi nii autori kui ka ülevaataja rollis.
 
 !!! warning
     Kõik muudatused tehakse pull request'i kaudu. Kui midagi jõuab otse `main`-i, ei ole kodutöö tehtud. Haru kaitse peaks sellise push'i niikuinii tagasi lükkama.
-
----
 
 ## Osa 1 · Panus paarilise repositooriumisse
 
@@ -29,7 +26,7 @@ git clone git@github.com:hkhk-automation/marten-monitor-<paarilise-nimi>.git
 cd marten-monitor-<paarilise-nimi>
 ```
 
-Loo oma haru ja tee üks **sisuline** muudatus. Vali üks järgmistest:
+Loo oma haru ja tee üks sisuline muudatus. Vali üks järgmistest:
 
 - lisa failile `monitor.sh` kommentaariplokk, mis selgitab, mida iga rida teeb;
 - lisa faili `README.md` jaotis "Kasutamine" koos näidiskäsuga;
@@ -43,18 +40,18 @@ git commit -m "lisa: <konkreetne kirjeldus>"
 git push -u origin lisa/<sinu-nimi>-panus
 ```
 
-Ava paarilise repositooriumis PR. Kirjelda description'is, mida ja miks muutsid. Määra ülevaatajaks (reviewer) repositooriumi omanik ehk paariline.
+Ava paarilise repositooriumis PR ([pull request'i loomine](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)). Kirjelda description'is, mida ja miks muutsid. Määra ülevaatajaks (reviewer) repositooriumi omanik ehk paariline.
 
 ## Osa 2 · Paarilise pull request'i ülevaatamine oma repositooriumis
 
 Paariline teeb sama sinu repositooriumis. Omanikuna on sinu ülesanded järgmised:
 
-- ava tema PR ja vahekaart **Files changed**;
-- kirjuta **vähemalt üks sisuline kommentaar**. "LGTM" ei lähe arvesse. Kirjuta, mis on hästi tehtud ja mida võiks teha teisiti;
+- ava tema PR ja vahekaart **Files changed** ([kuidas ülevaatus GitHubis käib](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/about-pull-request-reviews));
+- kirjuta vähemalt üks sisuline kommentaar. "LGTM" ei lähe arvesse. Kirjuta, mis on hästi tehtud ja mida võiks teha teisiti;
 - kui muudatus on korras, vajuta **Approve** ja liida PR.
 
 ??? question "Mõtle"
-    Oma repositooriumis oled admin, paarilise repositooriumis on sul Write-õigus. Mida **ei saa** sa tema repositooriumis teha, mida saad oma repositooriumis? Miks on see hea?
+    Oma repositooriumis oled admin, paarilise repositooriumis on sul Write-õigus. Mida ei saa sa tema repositooriumis teha, mida saad oma repositooriumis? Miks on see hea?
 
 ## Osa 3 · Konflikt teisest vaatenurgast
 
@@ -75,7 +72,7 @@ git push
 
 Loo oma repositooriumis uus haru ja tee väike lisandus. Nii näitad, et oskad reeglite piires ka üksi töötada:
 
-- lisa fail `.github/CODEOWNERS`, mis nõuab `monitor.sh` muudatustele sinu ülevaatust, **või**
+- lisa fail `.github/CODEOWNERS`, mis nõuab `monitor.sh` muudatustele sinu ülevaatust ([faili süntaks](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners)), või
 - lisa veateate mall `.github/ISSUE_TEMPLATE/bug.md`.
 
 ```bash
@@ -88,26 +85,15 @@ git push -u origin lisa/codeowners
 
 Ava PR. GitHub ei luba oma pull request'i ise kinnitada, seega selgita description'is, miks see on erand, ja liida PR.
 
----
-
 ## Mida hinnatakse
 
-- [ ] Panus paarilise repositooriumisse on tehtud PR-iga funktsiooniharust, otse `main`-i ei ole midagi saadetud
-- [ ] Paarilise PR-il on sisuline ülevaatuse kommentaar ("LGTM" ei lähe arvesse)
-- [ ] Konflikt on lahendatud (kui see tekkis) ja faili ei jäänud markereid
-- [ ] Iseseisev lisandus oma repositooriumis on tehtud PR-i kaudu
-- [ ] Commit-sõnumid on konkreetsed
-- [ ] GitHub Projectis on kahe liidetud PR-i lingid
+??? note "Hindamise kriteeriumid"
+    - [ ] Panus paarilise repositooriumisse on tehtud PR-iga funktsiooniharust, otse `main`-i ei ole midagi saadetud
+    - [ ] Paarilise PR-il on sisuline ülevaatuse kommentaar ("LGTM" ei lähe arvesse)
+    - [ ] Konflikt on lahendatud (kui see tekkis) ja faili ei jäänud markereid
+    - [ ] Iseseisev lisandus oma repositooriumis on tehtud PR-i kaudu
+    - [ ] Commit-sõnumid on konkreetsed
+    - [ ] GitHub Projectis on kahe liidetud PR-i lingid
 
 !!! tip
-    Link peab viima **PR-ile**, repositooriumi link ei sobi. PR peab olema olekus "Merged".
-
----
-
-## Allikad
-
-| Allikas | URL |
-|---|---|
-| PR-i loomine | <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request> |
-| PR-i ülevaatus | <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/about-pull-request-reviews> |
-| CODEOWNERS | <https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners> |
+    Link peab viima PR-ile, repositooriumi link ei sobi. PR peab olema olekus "Merged".
