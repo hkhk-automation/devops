@@ -3,7 +3,7 @@
     <marker id="a7" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#7e57c2"/></marker>
     <marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#e53935"/></marker>
   </defs>
-  <text x="450" y="32" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Kodutöö — kolmas job kontrollib koostööd</text>
+  <text x="450" y="32" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Kodutöö, kolmas job kontrollib koostööd</text>
 
   <g font-size="12" text-anchor="middle">
     <rect x="20" y="70" width="150" height="70" rx="10" fill="#ede7f6" stroke="#7e57c2" stroke-width="2"/>
@@ -13,7 +13,7 @@
     <text x="285" y="98" font-size="14" font-weight="700" fill="#0d47a1">konteiner</text><text x="285" y="118" fill="#1565c0">üks konteiner · labor</text>
 
     <rect x="400" y="56" width="300" height="200" rx="12" fill="#fff8e1" stroke="#fb8c00" stroke-width="2"/>
-    <text x="550" y="82" font-size="14" font-weight="700" fill="#e65100">stack — kodutöö</text>
+    <text x="550" y="82" font-size="14" font-weight="700" fill="#e65100">stack, kodutöö</text>
     <text x="550" y="100" font-size="11" fill="#ef6c00" font-family="ui-monospace, Menlo, monospace">docker compose up -d --build --wait</text>
     <rect x="420" y="116" width="120" height="64" rx="8" fill="#fff" stroke="#ffa726"/>
     <text x="480" y="142" font-weight="700" fill="#bf360c">web</text><text x="480" y="160" font-size="10" fill="#bf360c">Flask · /db-check</text>
@@ -36,7 +36,7 @@
 
   <!-- first attempt -->
   <rect x="400" y="276" width="480" height="60" rx="10" fill="#ffebee" stroke="#e53935" stroke-width="2"/>
-  <text x="640" y="300" text-anchor="middle" font-size="13" font-weight="700" fill="#b71c1c">1. katse: punane — db sureb ilma paroolita</text>
+  <text x="640" y="300" text-anchor="middle" font-size="13" font-weight="700" fill="#b71c1c">1. katse: punane, db sureb ilma paroolita</text>
   <text x="640" y="320" text-anchor="middle" font-size="11" fill="#c62828">sama viga mis N6 Osa 2-s · leia see docker compose logs väljundist</text>
   <line x1="550" y1="258" x2="550" y2="272" stroke="#e53935" stroke-width="2.5" marker-end="url(#ar)"/>
 

@@ -5,7 +5,7 @@ tags:
   - Kodutöö
 ---
 
-# N10 · Kodutöö: Ansible'i inventory OpenTofu väljundist
+# Kodutöö: Ansible'i inventory OpenTofu väljundist
 
 Praktikumis lõi OpenTofu masina ja trükkis selle IP-aadressi. Osas 4 nägid, et uuesti loodud masinal võib olla teine IP. Kui inventory on käsitsi kirjutatud, peab keegi selle iga kord parandama. Kodutöös kirjutab OpenTofu Ansible'i inventory ise ja Ansible ühendub masinaga, mille OpenTofu lõi. Nii töötavad kaks tööriista koos: OpenTofu loob masina, Ansible seadistab selle.
 

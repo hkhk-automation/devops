@@ -7,7 +7,6 @@ tags:
 
 # Loeng: infrastruktuuri kirjeldamine koodina (OpenTofu)
 
-**Kestus:** umbes 45 minutit tunni alguses, siis [praktikum](lab.md).
 **Eeldus:** N9 loeng: soovitud olek, ühtlustamine, triiv.
 
 N9 loengus võrdlesid Bashi, Ansible'it ja Docker Compose'i. Täna kirjutad kõigepealt kaks ennustust tööriista kohta, mida sa veel ei kasutanud. Siis kirjeldad OpenTofuga kooli Proxmoxis ühe virtuaalmasina ja kontrollid mõlemat ennustust oma masinaga.

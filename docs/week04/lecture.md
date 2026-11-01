@@ -6,10 +6,9 @@ tags:
   - Turvalisus
 ---
 
-# Loeng: Dünaamiline konfiguratsioon ja saladuste kaitse
+# Loeng: dünaamiline konfiguratsioon ja saladuste kaitse
 
 **Maht:** ~40 min iseseisvat lugemist, loe **enne** praktikumit
-**Tase:** Algaste, eeldame, et N3 praktikum on tehtud (`nginx.yml` töötab) ja N3 muutujate peatükk (ptk 9) on loetud
 
 See leht on mõeldud iseseisvaks lugemiseks ja praktikumi ajal spikriks. Tunnis läbime põhiosa kiiremini.
 

@@ -8,7 +8,6 @@ tags:
 
 # Loeng: automaatne testimine ja konveier (CI)
 
-**Kestus:** umbes 40 minutit tunni alguses, siis [praktikum](lab.md).
 **Eeldus:** N2 pull request'id ja haru `main` kaitsmine, N5 Flaski rakendus ja `Dockerfile`. Teste ei ole sa varem kirjutanud. Seda õpid täna.
 
 N5-s pakkisid Flaski rakenduse konteinerisse ja N6-s panid selle Compose'iga koos andmebaasiga tööle. Iga kord kontrollisid tulemust ise: käivitasid `curl`-i ja vaatasid vastust. Täna antakse see kontroll üle masinale. GitHub hakkab iga muudatuse järel ise teste käivitama ja ütleb, kas kood on korras.

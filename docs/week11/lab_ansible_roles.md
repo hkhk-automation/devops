@@ -5,12 +5,11 @@ tags:
   - Praktikum
 ---
 
-# Ansible rollid — Labor (Valik 2)
+# Praktikum: Ansible rollid
 
-**Kestus:** 4 tundi
-**Tase:** Algaste
-**Eeldused:** Loeng antud (rolli struktuur, `ansible-galaxy init`, `roles:`). Ansible playbook/inventory/vars (nädalad 3–4), Jinja2. Kui udu — [tagasi loengusse](lecture_ansible_roles.md).
-**Kontroll-node:** sinu arvuti, **VS Code**. Sihtmärk sinu valik (vt [Töökeskkond](../kodulabor.md)) — kodus lokaalne, koolis Proxmox. `inventory.ini` on nädalast 3.
+**Eeldused:** Loeng antud (rolli struktuur, `ansible-galaxy init`, `roles:`). Ansible playbook/inventory/vars (nädalad 3–4), Jinja2. Kui udu, [tagasi loengusse](lecture_ansible_roles.md).
+
+**Kontroll-node:** sinu arvuti, **VS Code**. Sihtmärk sinu valik (vt [Töökeskkond](../kodulabor.md)), kodus lokaalne, koolis Proxmox. `inventory.ini` on nädalast 3.
 
 ---
 
@@ -30,9 +29,9 @@ Labi loogika: **skelett → tasks → laienda → template → viga (port ei muu
 
 ---
 
-## Osa 1 · Skelett — `ansible-galaxy init`
+## Osa 1 · Skelett: `ansible-galaxy init`
 
-Roll on kokkulepitud kaustastruktuur, mis paneb tasks, muutujad, mallid ja handlerid **ette antud kohtadesse**. Ansible teab neid kohti ise — sa ei kirjuta `include_vars` käsitsi.
+Roll on kokkulepitud kaustastruktuur, mis paneb tasks, muutujad, mallid ja handlerid **ette antud kohtadesse**. Ansible teab neid kohti ise, sa ei kirjuta `include_vars` käsitsi.
 
 Ava töökaust VS Code'is (`code .`), terminal `` Ctrl+` ``. Genereeri esimene roll:
 
@@ -46,20 +45,20 @@ find nginx -type f
 Näed standardstruktuuri (`tasks/`, `defaults/`, `handlers/`, `templates/`, `files/`, `vars/`, `meta/`).
 
 !!! tip
-    `ansible-galaxy init` "existing directory" — kaust juba on. `rm -rf nginx` või teine nimi; `init` ei kirjuta olemasoleva peale.
+    `ansible-galaxy init` "existing directory", kaust juba on. `rm -rf nginx` või teine nimi; `init` ei kirjuta olemasoleva peale.
 
 ??? question "Mõtle"
     `defaults/main.yml` ja `vars/main.yml` mõlemad hoiavad muutujaid. Loe [precedence-dokumentatsiooni](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable). Kumb võidab, kui sama muutuja on mõlemas? Miks valis Ansible rollidele just sellise vaikekäitumise?
 
-Enamikku kaustadest (`files`, `tests`, `vars`, `meta`) sa täna ei puuduta. See on tahtlik — Ansible eeldab struktuuri ka siis kui kõike ei kasuta.
+Enamikku kaustadest (`files`, `tests`, `vars`, `meta`) sa täna ei puuduta. See on tahtlik, Ansible eeldab struktuuri ka siis kui kõike ei kasuta.
 
 ---
 
 ## Osa 2 · Kirjuta nginx-roll
 
-Täidame skeleti kihiti — iga sammu järel testime.
+Täidame skeleti kihiti, iga sammu järel testime.
 
-### 2.1 Tasks — ainult paigaldus
+### 2.1 Tasks: ainult paigaldus
 
 Ava `nginx/tasks/main.yml`, kirjuta **ainult** paigaldus:
 
@@ -88,7 +87,7 @@ ansible-playbook -i inventory.ini site.yml
 ```
 
 !!! tip
-    `roles/nginx: not found` — `ansible-playbook` otsib `roles/`-i **käivituskohast**. Kontrolli et oled `~/ansible-lab`-is, mitte `roles/nginx` sees.
+    `roles/nginx: not found`: `ansible-playbook` otsib `roles/`-i **käivituskohast**. Kontrolli et oled `~/ansible-lab`-is, mitte `roles/nginx` sees.
 
 Kontrolli sihtmärgis et pakett on, teenus veel maas:
 
@@ -117,7 +116,7 @@ Näed "Welcome to nginx!" vaikimisi lehte.
 ??? question "Mõtle"
     Käivitasid playbook'i kaks korda ilma muutmata. "changed" või "ok"? Mida see ütleb idempotentsuse kohta (nädal 3–4)?
 
-### 2.2 Defaults — muutuv port
+### 2.2 Defaults: muutuv port
 
 Ava `nginx/defaults/main.yml`:
 
@@ -126,9 +125,9 @@ Ava `nginx/defaults/main.yml`:
 nginx_port: 80
 ```
 
-Defaults on madalaima prioriteediga — mõeldud **ülekirjutamiseks**. Kasutu, kuni keegi seda ei kasuta — anname otstarbe malliga.
+Defaults on madalaima prioriteediga (mõeldud **ülekirjutamiseks**. Kasutu, kuni keegi seda ei kasuta) anname otstarbe malliga.
 
-### 2.3 Template — Jinja2 kasutab muutujat
+### 2.3 Template: Jinja2 kasutab muutujat
 
 Loo `nginx/templates/index.html.j2`:
 
@@ -150,14 +149,14 @@ Lisa `tasks/main.yml`-i lõppu:
     dest: /var/www/html/index.html
 ```
 
-Käivita, kontrolli `curl http://<IP>` — dünaamiline leht hostinimega.
+Käivita, kontrolli `curl http://<IP>`: dünaamiline leht hostinimega.
 
 !!! tip
     Leht ei muutu? Brauseri vahemälu petab sagedamini kui Ansible. Kasuta `curl`, mitte brauserit.
 
 ---
 
-## Osa 3 · Viga — muutuja, mis ei muuda midagi
+## Osa 3 · Viga: muutuja, mis ei muuda midagi
 
 Malli järgi "töötab pordil {{ nginx_port }}". Muuda `defaults/main.yml`-is `nginx_port: 8080`, käivita, ja proovi:
 
@@ -170,7 +169,7 @@ curl http://<IP>:8080
 ??? question "Leia põhjus"
     `nginx_port` on praegu ainult HTML-i sees **dekoratiivne tekst**. Kuskil pole task'i, mis nginx'i **konfiguratsiooni** (mitte HTML-i) muudaks. Mis fail peaks olema malliks tehtud, et port päriselt muutuks? (Vihje: `/etc/nginx/sites-available/default`, `listen {{ nginx_port }};`.)
 
-See on tahtlik lõks — muutuja olemasolu ei tähenda et ta midagi mõjutab. Päris pordi muutmine jääb lisaülesandeks. Taasta `nginx_port: 80`.
+See on tahtlik lõks, muutuja olemasolu ei tähenda et ta midagi mõjutab. Päris pordi muutmine jääb lisaülesandeks. Taasta `nginx_port: 80`.
 
 ---
 
@@ -209,7 +208,7 @@ ansible-galaxy list
 ```
 
 !!! tip
-    `command not found` — Galaxy tuleb Ansible'iga kaasa; kontrolli `ansible --version`.
+    `command not found`: Galaxy tuleb Ansible'iga kaasa; kontrolli `ansible --version`.
 
 Roll paigaldub globaalsesse `~/.ansible/roles/`-i (jagatud sõltuvus, mitte su projekti osa). Lisa `site.yml`-i teiseks rolliks:
 
@@ -229,7 +228,7 @@ ssh <kasutaja>@<IP> "git --version"
 
 ---
 
-## Lõppkontroll — oskad ilma juhendita
+## Lõppkontroll: oskad ilma juhendita
 
 - [ ] `ansible-galaxy init nginx` genereeris täieliku struktuuri
 - [ ] `curl http://<IP>` näitab **sinu** HTML-i, mitte vaikimisi lehte
@@ -254,11 +253,11 @@ ssh <kasutaja>@<IP> "git --version"
 
 | Probleem | Lahendus |
 |---|---|
-| `init` — "existing directory" | `rm -rf roles/nginx` või uus nimi |
+| `init`: "existing directory" | `rm -rf roles/nginx` või uus nimi |
 | `roles/nginx: not found` | Käivita `ansible-playbook` projekti juurest (kus `roles/`) |
 | Task "ok" iga kord, midagi ei muutu | `become: true` puudub |
 | Muudatus `index.html.j2`-s ei kajastu | `curl`, mitte brauser; kontrolli et `template` task jooksis (`-v`) |
-| `nginx_port` ei mõjuta kuulamisporti | Roll muudab ainult HTML-i, mitte konfi — vt Lisaülesanne 1 |
+| `nginx_port` ei mõjuta kuulamisporti | Roll muudab ainult HTML-i, mitte konfi, vt Lisaülesanne 1 |
 | `geerlingguy.git` ei lae | Kontrolli võrku (Galaxy server) |
 | Handler ei käivitu | `notify:` nimi peab **sõna-sõnalt** kattuma handleri `name:`-ga |
 | `Permission denied` `/var/www/html/` | `become: true` puudub |

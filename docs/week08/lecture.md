@@ -8,7 +8,6 @@ tags:
 
 # Loeng: automaatne ehitamine ja levitamine (CD)
 
-**Kestus:** umbes 40 minutit tunni alguses, siis [praktikum](lab.md).
 **Eeldus:** N7 praktikum ja N5 Docker (`docker build`, `docker run -p`).
 
 N7-s kontrollis GitHub Actions iga muudatust. Konveier käivitas testid ja ehitas image'i. Kui käivitus lõppes, kadus image koos runneriga. Täna jõuab image registrisse ja sealt serverisse.

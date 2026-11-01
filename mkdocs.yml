@@ -135,16 +135,16 @@ nav:
     - Kodutöö: week10/homework.md
 
   - N11 · Korduvkasutatav infrastruktuur:
-    - Valik 1 — Terraform moodulid: week11/lab_terraform_modules.md
-    - Valik 2 — Ansible rollid (loeng): week11/lecture_ansible_roles.md
-    - Valik 2 — Ansible rollid (praktikum): week11/lab_ansible_roles.md
-    - Valik 2 — Ansible rollid (kodutöö): week11/homework_ansible_roles.md
+    - "Valik 1: Terraformi moodulid": week11/lab_terraform_modules.md
+    - "Valik 2: Ansible rollid (loeng)": week11/lecture_ansible_roles.md
+    - "Valik 2: Ansible rollid (praktikum)": week11/lab_ansible_roles.md
+    - "Valik 2: Ansible rollid (kodutöö)": week11/homework_ansible_roles.md
 
   - N12 · Terve serveripark koodina:
     - Loeng: week12/lecture.md
     - Praktikum: week12/lab.md
 
-  - N13 · Täielik tarnekonveier — otsast lõpuni:
+  - N13 · Täielik tarnekonveier otsast lõpuni:
     - Capstone: week13/capstone.md
 
 - Info:

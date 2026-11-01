@@ -5,12 +5,11 @@ tags:
   - Praktikum
 ---
 
-# Terraform moodulid — Labor (Valik 1)
+# Praktikum: Terraformi moodulid
 
-**Kestus:** 4 tundi
-**Tase:** Algaste
-**Eeldused:** Nädal 10 — nägid `init/plan/apply/destroy` tsüklit ja jooksutasid valmis konfiga sama ise. Tead mis on muutuja programmeerimises. Kui udu — [tagasi nädal 10 loengusse](../week10/lecture.md).
-**Töökeskkond:** oma masin, **VS Code**, Terraform installitud (`terraform -version`). `local` provider — loob faile ainult su kettal, serverit ega kontot vaja pole.
+**Eeldused:** Nädal 10 (nägid `init/plan/apply/destroy` tsüklit ja jooksutasid valmis konfiga sama ise. Tead mis on muutuja programmeerimises. Kui udu) [tagasi nädal 10 loengusse](../week10/lecture.md).
+
+**Töökeskkond:** oma masin, **VS Code**, Terraform installitud (`terraform -version`). `local` provider, loob faile ainult su kettal, serverit ega kontot vaja pole.
 
 ---
 
@@ -25,7 +24,7 @@ tags:
 
 ---
 
-Labi loogika: **HCL nullist → muutujad → outputs → moodul → korda kaks korda.** Sa kirjutad iga rea ise (mitte ei kopeeri suurt näidet) — nii jääb süntaks meelde. Fragmendid, testid igal sammul.
+Labi loogika: **HCL nullist → muutujad → outputs → moodul → korda kaks korda.** Sa kirjutad iga rea ise (mitte ei kopeeri suurt näidet), nii jääb süntaks meelde. Fragmendid, testid igal sammul.
 
 ---
 
@@ -59,7 +58,7 @@ resource "local_file" "tervitus" {
 }
 ```
 
-Ainult **üks resource** — muutujad ja outputid tulevad hiljem.
+Ainult **üks resource**: muutujad ja outputid tulevad hiljem.
 
 ```bash
 terraform init
@@ -69,7 +68,7 @@ ls -la
 `Terraform has been successfully initialized!` + uued `.terraform/` ja `.terraform.lock.hcl`.
 
 !!! tip
-    `Failed to install provider` — kontrolli internetti, `init` laeb plugina ainult esimesel korral.
+    `Failed to install provider`: kontrolli internetti, `init` laeb plugina ainult esimesel korral.
 
 ??? question "Mõtle"
     Mis on `.terraform/` ja `.terraform.lock.hcl`, ja miks Terraform neid enne `plan`-i vajab?
@@ -90,7 +89,7 @@ cat tervitus.txt
 Kinnita `yes` enne kui fail tekib.
 
 !!! tip
-    Korduval testimisel `terraform apply -auto-approve` jätab kinnituse vahele. Tavatöös on kinnituse lugemine turvavõrk — ära harju `-auto-approve`-ga.
+    Korduval testimisel `terraform apply -auto-approve` jätab kinnituse vahele. Tavatöös on kinnituse lugemine turvavõrk, ära harju `-auto-approve`-ga.
 
 ??? question "Mõtle"
     Mille poolest erineb `local_file` resource tavalisest `echo "tekst" > fail.txt` käsust? Miks selleks Terraform?
@@ -108,7 +107,7 @@ rm tervitus.txt
 terraform plan
 ```
 
-Terraform tahab faili taastada — state ütleb et peaks olema. Taasta `apply`-ga.
+Terraform tahab faili taastada, state ütleb et peaks olema. Taasta `apply`-ga.
 
 ### 1.4 Destroy
 
@@ -155,7 +154,7 @@ terraform init && terraform plan
 `default` on sama → tulemus sama. Esimene test enne edasi minemist.
 
 !!! tip
-    Kirjutad `variable` bloki, aga unustad `main.tf`-is `var.faili_nimi` kasutada — muutuja jääb kasutuks. Kontrolli alati et iga uus muutuja on päriselt kasutuses.
+    Kirjutad `variable` bloki, aga unustad `main.tf`-is `var.faili_nimi` kasutada, muutuja jääb kasutuks. Kontrolli alati et iga uus muutuja on päriselt kasutuses.
 
 ### 2.2 Ülekirjutamine käsurealt
 
@@ -166,7 +165,7 @@ terraform plan -var="faili_nimi=proov.txt"
 ??? question "Mõtle"
     Miks on `default` mugav arenduses, aga tootmises tahaks meeskond ehk nõuda et väärtus antaks alati eksplitsiitselt?
 
-### 2.3 Teine muutuja — sisu
+### 2.3 Teine muutuja: sisu
 
 `variables.tf`-i:
 
@@ -192,13 +191,13 @@ terraform apply && cat tervitus.txt
 ```
 
 !!! tip
-    `plan` näitab destroy + create lihtsa muutuse asemel? Normaalne kui `filename` muutub — fail loetakse uueks resource'iks.
+    `plan` näitab destroy + create lihtsa muutuse asemel? Normaalne kui `filename` muutub, fail loetakse uueks resource'iks.
 
 ---
 
 ## Osa 3 · Outputs
 
-Kui konfig loob midagi, tahad tulemust näha ilma faile otsimata — ja Osas 4–5 väärtust edasi anda.
+Kui konfig loob midagi, tahad tulemust näha ilma faile otsimata, ja Osas 4–5 väärtust edasi anda.
 
 ### 3.1 Esimene output
 
@@ -217,9 +216,9 @@ terraform output loodud_faili_nimi
 ```
 
 ??? question "Mõtle"
-    `local_file.tervitus.filename` — mis need kolm osa tähendavad? Kust said need nimed, kui vaatad `main.tf`-i?
+    `local_file.tervitus.filename`: mis need kolm osa tähendavad? Kust said need nimed, kui vaatad `main.tf`-i?
 
-### 3.2 Teine output — räsi
+### 3.2 Teine output: räsi
 
 `local_file` loob automaatselt `content_md5`:
 
@@ -240,7 +239,7 @@ terraform apply && terraform output sisu_rasi
 
 ## Osa 4 · Moodul
 
-Sul on üks fail, mis loob ühe teksti-faili. Kümne jaoks kopeeriksid koodi kümme korda. Moodul pakib loogika korduvkasutatavaks üksuseks — nagu funktsioon.
+Sul on üks fail, mis loob ühe teksti-faili. Kümne jaoks kopeeriksid koodi kümme korda. Moodul pakib loogika korduvkasutatavaks üksuseks, nagu funktsioon.
 
 ### 4.1 Mooduli kaust
 
@@ -248,11 +247,11 @@ Sul on üks fail, mis loob ühe teksti-faili. Kümne jaoks kopeeriksid koodi kü
 mkdir -p modules/tekstifail
 ```
 
-`modules/<nimi>/` on Terraformi kokkulepe — juur kutsub, alamkataloogid on moodulid.
+`modules/<nimi>/` on Terraformi kokkulepe, juur kutsub, alamkataloogid on moodulid.
 
 ### 4.2 Tõsta kood moodulisse
 
-`modules/tekstifail/main.tf` (**ilma** `terraform { required_providers }` plokita — see jääb ainult juurde):
+`modules/tekstifail/main.tf` (**ilma** `terraform { required_providers }` plokita, see jääb ainult juurde):
 
 ```hcl
 resource "local_file" "see" {
@@ -275,7 +274,7 @@ variable "faili_sisu" {
 ```
 
 !!! tip
-    `faili_nimi`-l pole `default`-i — iga mooduli kutse **peab** failinime andma, muidu tekiks mitme kutse vahel konflikt.
+    `faili_nimi`-l pole `default`-i, iga mooduli kutse **peab** failinime andma, muidu tekiks mitme kutse vahel konflikt.
 
 `modules/tekstifail/outputs.tf`:
 
@@ -291,7 +290,7 @@ output "sisu_rasi" {
 
 ### 4.3 Kutsu moodulit juurest
 
-Kirjuta juure `main.tf` ümber — **kutsub moodulit** resource'i asemel:
+Kirjuta juure `main.tf` ümber, **kutsub moodulit** resource'i asemel:
 
 ```hcl
 terraform {
@@ -331,7 +330,7 @@ terraform apply
 ```
 
 !!! tip
-    `Module not installed` — iga kord kui lisad/muudad `module` plokki, jooksuta `init` uuesti (mitte ainult provider'ite jaoks).
+    `Module not installed`: iga kord kui lisad/muudad `module` plokki, jooksuta `init` uuesti (mitte ainult provider'ite jaoks).
 
 ??? question "Mõtle"
     Ava `terraform.tfstate`. Kuidas erineb resource'i nimi state's (`module.tervitus.local_file.see`) võrreldes varasemaga (`local_file.tervitus`)?
@@ -340,7 +339,7 @@ terraform apply
 
 ## Osa 5 · Kutsu moodulit kaks korda
 
-See ongi mooduli mõte — üks kood, mitu kasutuskorda.
+See ongi mooduli mõte, üks kood, mitu kasutuskorda.
 
 ### 5.1 Teine kutse
 
@@ -393,7 +392,7 @@ Kontrolli et mõlemad failid tekkisid ja siis kadusid.
 
 ---
 
-## Lõppkontroll — oskad ilma juhendita
+## Lõppkontroll: oskad ilma juhendita
 
 - [ ] Juurkataloogis `main.tf`, `variables.tf`, `outputs.tf` + `modules/tekstifail/` kolme failiga
 - [ ] `terraform validate` ei anna viga
@@ -417,14 +416,14 @@ Kontrolli et mõlemad failid tekkisid ja siis kadusid.
 
 | Probleem | Lahendus |
 |---|---|
-| `terraform: command not found` | Pole PATH-is — `which terraform`, installi |
+| `terraform: command not found` | Pole PATH-is, `which terraform`, installi |
 | `Failed to install provider` | Kontrolli võrku; kustuta `.terraform/`, `init` uuesti |
-| `Unsupported argument` | Kirjaviga atribuudis — kontrolli `local_file` dokke |
+| `Unsupported argument` | Kirjaviga atribuudis, kontrolli `local_file` dokke |
 | `Reference to undeclared resource/module` | Viitad millelegi defineerimata, või kirjaviga |
-| `Module not installed` | `terraform init` uuesti — iga uus/muudetud `module` vajab init'i |
+| `Module not installed` | `terraform init` uuesti, iga uus/muudetud `module` vajab init'i |
 | Kaks moodulit kirjutavad sama faili | Iga kutse `faili_nimi` unikaalseks |
-| `plan` tahab faili taastada | Fail kustutati/muudeti käsitsi — state vs tegelikkus lahknevad |
-| `destroy` ei kustuta | Vale kaust — `terraform.tfstate` peab samas olema |
+| `plan` tahab faili taastada | Fail kustutati/muudeti käsitsi, state vs tegelikkus lahknevad |
+| `destroy` ei kustuta | Vale kaust, `terraform.tfstate` peab samas olema |
 
 *Tabel 11.2. Levinumad tõrked ja lahendused.*
 

@@ -6,7 +6,7 @@ tags:
   - Kodutöö
 ---
 
-# N7 · Kodutöö: CI testib rakendust koos andmebaasiga
+# Kodutöö: CI testib rakendust koos andmebaasiga
 
 **Eeldus:** praktikum on tehtud. Failis `ci.yml` on tööd `test` ja `konteiner` ning pull request `n07-ci` on roheline. N6 praktikumist on vaja teenuseid `web` ja `db`, aadressi `/db-check` ja faili `.env`.
 

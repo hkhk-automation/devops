@@ -8,8 +8,6 @@ tags:
 
 # Loeng: infrastruktuur koodina, mõtteviis
 
-**Kestus:** ~60 minutit iseseisvalt lugedes
-**Tase:** eeldame nädalaid 2-6: Git ja Märteni `monitor.sh` (N2), Ansible (N3-4), Dockerfile (N5), Compose (N6). Uut tööriista täna ei paigalda.
 
 Täna on iseseisev nädal. Server ja Proxmox jäävad puhkama. Vaatad tagasi kõigele, mida oled kaheksa nädalaga teinud, ja paned selle ühte pilti. Loe loeng läbi, vasta iga osa lõpus olevatele küsimustele vihikus ja mine siis [praktikumi](lab.md). Praktikumis katsetad samu mõtteid Dockeriga oma silmaga.
 

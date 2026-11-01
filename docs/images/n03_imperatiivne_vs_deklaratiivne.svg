@@ -18,7 +18,7 @@
   <!-- IMPERATIIVNE -->
   <rect x="30" y="60" width="390" height="340" rx="14" fill="url(#imp)" stroke="#ffa726" stroke-width="2"/>
   <text x="225" y="90" text-anchor="middle" font-size="16" font-weight="700" fill="#e65100">IMPERATIIVNE</text>
-  <text x="225" y="110" text-anchor="middle" font-size="12" fill="#ef6c00">ütle MIDA TEHA — samm-sammult</text>
+  <text x="225" y="110" text-anchor="middle" font-size="12" fill="#ef6c00">ütle MIDA TEHA, samm-sammult</text>
 
   <g font-family="JetBrains Mono, monospace" font-size="13" fill="#5d4037">
     <rect x="70" y="128" width="310" height="36" rx="7" fill="#fff" stroke="#ffcc80"/>
@@ -37,7 +37,7 @@
   <!-- DEKLARATIIVNE -->
   <rect x="480" y="60" width="390" height="340" rx="14" fill="url(#dek)" stroke="#7e57c2" stroke-width="2"/>
   <text x="675" y="90" text-anchor="middle" font-size="16" font-weight="700" fill="#4527a0">DEKLARATIIVNE</text>
-  <text x="675" y="110" text-anchor="middle" font-size="12" fill="#5e35b1">ütle MIS PEAB OLEMA — soovitud seisund</text>
+  <text x="675" y="110" text-anchor="middle" font-size="12" fill="#5e35b1">ütle MIS PEAB OLEMA, soovitud seisund</text>
 
   <rect x="520" y="132" width="310" height="150" rx="9" fill="#fff" stroke="#b39ddb"/>
   <g font-family="JetBrains Mono, monospace" font-size="13" fill="#311b92">

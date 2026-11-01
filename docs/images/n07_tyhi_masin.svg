@@ -2,7 +2,7 @@
   <defs>
     <marker id="a7" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#7e57c2"/></marker>
   </defs>
-  <text x="450" y="32" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Sinu VM vs runner — mida tühi masin ei tea</text>
+  <text x="450" y="32" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Sinu VM vs runner, mida tühi masin ei tea</text>
 
   <!-- Sinu VM -->
   <rect x="20" y="56" width="300" height="370" rx="14" fill="#fff3e0" stroke="#ffa726" stroke-width="2"/>
@@ -24,7 +24,7 @@
     <rect x="345" y="178" width="210" height="34" rx="6" fill="#ede7f6" stroke="#7e57c2"/><text x="450" y="200">actions/setup-python</text>
     <rect x="345" y="234" width="210" height="34" rx="6" fill="#ede7f6" stroke="#7e57c2"/><text x="450" y="256" font-size="10">pip install -r requirements.txt</text>
     <rect x="345" y="290" width="210" height="34" rx="6" fill="#ede7f6" stroke="#7e57c2"/><text x="450" y="312">pip install pytest</text>
-    <rect x="345" y="346" width="210" height="34" rx="6" fill="#ffebee" stroke="#e53935" stroke-dasharray="5 4"/><text x="450" y="362" fill="#b71c1c">— puudub —</text><text x="450" y="375" font-size="9" fill="#b71c1c" font-family="Inter, sans-serif">pole requirements.txt-is</text>
+    <rect x="345" y="346" width="210" height="34" rx="6" fill="#ffebee" stroke="#e53935" stroke-dasharray="5 4"/><text x="450" y="362" fill="#b71c1c">- puudub -</text><text x="450" y="375" font-size="9" fill="#b71c1c" font-family="Inter, sans-serif">pole requirements.txt-is</text>
   </g>
   <g stroke="#7e57c2" stroke-width="2" marker-end="url(#a7)">
     <line x1="557" y1="139" x2="598" y2="139"/>

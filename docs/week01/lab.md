@@ -9,7 +9,6 @@ tags:
 
 **Õpilane:** ______________________________  **Kuupäev:** ____________
 
-**Kestus:** 4 A-t · **Tase:** 3. aasta · **Esitamine:** vt lõpp
 
 **Eelteadmised:** Linuxi käsurida, sudo ja VS Code. Selles praktikumis on uued teemad võtmepõhine SSH-ühendus kolme masinasse, nimega hostid failis `~/.ssh/config` ja VS Code Remote-SSH.
 

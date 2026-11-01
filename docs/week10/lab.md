@@ -6,7 +6,7 @@ tags:
   - Praktikum
 ---
 
-# N10 · Praktikum: virtuaalmasin OpenTofuga
+# Praktikum: virtuaalmasin OpenTofuga
 
 Loengu alguses kirjutasid README-sse kaks ennustust: mida teeb OpenTofu, kui masin kustutatakse käsitsi või kui masina kirjeldus kaob failist. Täna kirjeldad kooli Proxmoxis ühe masina, lood selle OpenTofuga ja kontrollid mõlemat ennustust.
 

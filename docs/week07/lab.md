@@ -6,10 +6,10 @@ tags:
   - Praktikum
 ---
 
-# N7 · Praktikum: GitHub Actions CI
+# Praktikum: GitHub Actions CI
 
-**Kestus:** 3 × 45 min. Klassis jõuad osad 0–7. Osad 8 ja 9 (teised tööriistad, README ja töö esitamine) lõpeta kodus.
 **Eeldus:** loeng (CI, sündmus, töö, samm, väljumiskood), N5 kaust `flask/` (Flask, `Dockerfile`, `host="0.0.0.0"`) ja N2 ruleset ning pull request. Kui mõni mõiste on segane, loe see [loengust](lecture.md) üle.
+
 **Keskkond:** koodi ja testid kirjutad VS Code'is oma AlmaLinuxi virtuaalmasinas. CI käivitub GitHubi runneris. Runner on värske Ubuntu virtuaalmasin, mis ei ole sinu masin. Käsk `git push` käivitab konveieri.
 
 **Teatmik:** [GitHub Actions juhend](../github-actions.md)

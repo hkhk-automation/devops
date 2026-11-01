@@ -3,7 +3,7 @@
     <linearGradient id="vm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3e0"/><stop offset="1" stop-color="#ffe0b2"/></linearGradient>
     <linearGradient id="ct" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ede7f6"/><stop offset="1" stop-color="#d1c4e9"/></linearGradient>
   </defs>
-  <text x="450" y="32" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Virtuaalmasin vs konteiner — mis kaasa tuleb</text>
+  <text x="450" y="32" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Virtuaalmasin vs konteiner, mis kaasa tuleb</text>
 
   <text x="225" y="68" text-anchor="middle" font-size="16" font-weight="700" fill="#e65100">Virtuaalmasinad</text>
   <g font-size="12" text-anchor="middle">
@@ -29,7 +29,7 @@
     <rect x="617" y="184" width="115" height="34" rx="6" fill="url(#ct)" stroke="#7e57c2"/><text x="674" y="206" fill="#311b92">Teegid</text>
     <rect x="744" y="184" width="115" height="34" rx="6" fill="url(#ct)" stroke="#7e57c2"/><text x="801" y="206" fill="#311b92">Teegid</text>
     <rect x="490" y="244" width="369" height="44" rx="8" fill="#fff" stroke="#5e35b1" stroke-width="2"/><text x="674" y="264" font-weight="700" fill="#4527a0">Docker Engine</text><text x="674" y="280" font-size="10" fill="#5e35b1">namespaces + cgroups</text>
-    <rect x="490" y="294" width="369" height="34" rx="6" fill="#d1c4e9" stroke="#5e35b1" stroke-width="2"/><text x="674" y="316" font-weight="700" fill="#311b92">Host-OS — ÜKS jagatud Linuxi tuum</text>
+    <rect x="490" y="294" width="369" height="34" rx="6" fill="#d1c4e9" stroke="#5e35b1" stroke-width="2"/><text x="674" y="316" font-weight="700" fill="#311b92">Host-OS, ÜKS jagatud Linuxi tuum</text>
   </g>
   <line x1="450" y1="60" x2="450" y2="330" stroke="#bdbdbd" stroke-dasharray="6 6"/>
 

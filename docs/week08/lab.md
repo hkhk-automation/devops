@@ -7,7 +7,7 @@ tags:
   - Praktikum
 ---
 
-# N8 · Praktikum: katkine konveier korda
+# Praktikum: katkine konveier korda
 
 N7 lõpus kontrollis konveier koodi ja konteinerit. Tänases repositooriumis on sama kood. Kolleeg on lisanud konveierile kolmanda töö `build-and-push`. See peaks saatma image'i registrisse GHCR. Ta on kirjutanud ka skripti, mis peaks image'i serveris käivitama. Mõlemas on vigu.
 

@@ -5,10 +5,10 @@ tags:
   - Kodutöö
 ---
 
-# Kodutöö — Ansible rollid (Valik 2)
+# Kodutöö: Ansible rollid
 
 **Tähtaeg:** pühapäev 23:59
-**Esitamine:** GitHub repo link — PR peab olema "Merged"
+**Esitamine:** GitHub repo link, PR peab olema "Merged"
 
 ---
 
@@ -63,7 +63,7 @@ Kõik muudatused eraldi harus, PR `main`-i vastu. PR description: mis muutsid ja
 
 ## Mida hinnatakse
 
-- Handler töötab — teine käivitus ei taaskäivita nginx't tarbetult
+- Handler töötab: teine käivitus ei taaskäivita nginx't tarbetult
 - `nginx_server_name` on kasutusel mallis
 - `vastus.md` vastab küsimusele konkreetselt, mitte üldiselt
 - PR on korrektselt esitatud feature branchist

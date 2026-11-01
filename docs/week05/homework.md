@@ -5,9 +5,10 @@ tags:
   - Kodutöö
 ---
 
-# Kodutöö — Ansible paigaldab sinu konteineri
+# Kodutöö: Ansible paigaldab sinu konteineri
 
 **Eeldused:** 5. nädala lab on tehtud (sinu image on Docker Hubis: `<kasutaja>/minu-nginx:v1`), N3–N4 Ansible.
+
 **Esitamine:** sama repo ja haru mis labis (`n05-docker`), kaust `ansible/`, sama PR.
 **Hinne:** kodutöö on vabatahtlik boonus. Labi hinne tuleb kontrollidest 1–12 (85 punkti); kontroll „BOONUS 13. Kodutöö“ punkte ei anna ega võta. Tehtud boonus annab laboritahvlil tähe ja XP-d. Punane rist Actionsis tähendab siis ainult, et boonus on tegemata.
 
@@ -37,7 +38,7 @@ ansible-playbook -i inventory.ini deploy.yml | tee ../logid/deploy_recap.txt
 ```
 
 !!! tip
-    `community.docker.docker_container` on deklaratiivne: sa kirjeldad, **milline olek** peab olema ("konteiner töötab sellest image'ist"), mitte ei anna käsku. Võrdle sellega: `ansible.builtin.command: docker run ...` — mis juhtuks teisel käivitusel? (Meenuta labi 5. osa viga!)
+    `community.docker.docker_container` on deklaratiivne: sa kirjeldad, **milline olek** peab olema ("konteiner töötab sellest image'ist"), mitte ei anna käsku. Võrdle sellega: `ansible.builtin.command: docker run ...`: mis juhtuks teisel käivitusel? (Meenuta labi 5. osa viga!)
 
 ??? question "Mõtle"
     Tuleb uus versioon: ehitad `v2` ja laadid selle Docker Hubi. Mida muudad playbookis ja mida Ansible siis konteineriga teeb? Kuidas lähed tagasi `v1` juurde, kui `v2` on katki?
@@ -74,5 +75,5 @@ Kui PR on veel avatud, uueneb see automaatselt. Kui praktikumi PR on juba liidet
 | `couldn't resolve module/action 'community.docker.docker_container'` | `ansible-galaxy collection install community.docker` |
 | `Failed to import the required Python library (Docker SDK for Python)` | Samm 2: moodul `pip`, `name: docker` sihtmasinas |
 | `permission denied ... docker.sock` | Lisa playbooki `become: true` |
-| `port is already allocated` | Port 8085 on juba kasutusel — vaata `docker ps` ja vali teine port |
+| `port is already allocated` | Port 8085 on juba kasutusel, vaata `docker ps` ja vali teine port |
 | Teisel korral `changed=1` | Kas kasutad `command`-i? Või on tag `latest`? |

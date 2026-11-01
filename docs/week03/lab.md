@@ -7,8 +7,8 @@ tags:
 
 # Praktikum: esimene Ansible'i playbook
 
-**Kestus:** 4 tundi
 **Eeldused:** Loeng on läbi loetud (ptk 1–8: inventory, push-mudel, playbook, idempotentsus). 1. nädala töö on tehtud: `kursus_ed25519` võti on kolmes sõlmes ja `ansible -m ping` annab vastuseks `pong`. Kui mõni neist mõistetest pole selge, vaata enne praktikumi vastav [loenguosa](lecture.md) üle.
+
 **Kontroll-node:** sinu arvuti. Kogu töö käib **VS Code'is**: failid on redaktoris ja käsud terminalis.
 **Sihtmärk:** sinu Proxmoxi sõlmed `proxmox1` / `proxmox2` / `proxmox3` (nagu 1. nädalal). Kodus töötades sobib ka WSL2, virtuaalmasin või pilveserver. Playbook on kõigil sama.
 

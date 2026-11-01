@@ -8,7 +8,6 @@ tags:
 # Loeng: serveri konfiguratsiooni automatiseerimine
 
 **Maht:** ~40 min iseseisvat lugemist, loe **enne** praktikumi
-**Tase:** algtase. Eeldame, et tunned SSH-d ja oled kasutanud käsku `git push`.
 
 See leht on mõeldud iseseisvaks lugemiseks. Loe see rahulikult läbi enne praktikumi. Tunnis käime põhiosa kiiremini üle, kuid siit leiad kõik koos näidetega lahti seletatuna ja saad lehte praktikumi ajal spikrina kasutada.
 

@@ -1,6 +1,5 @@
-# Capstone — Täielik tarnekonveier
+# Lõpuprojekt: täielik tarnekonveier
 
-**Kestus:** 4 tundi (grupitöö + esitlus)
 **Grupid:** 2–3 inimest
 **Eeldused:** Kõik eelnevad nädalad läbitud.
 
@@ -25,15 +24,15 @@ Valige üks stsenaarium:
 
 Minimaalne kombinatsioon mis peab töötama:
 
-- Versioonihalduse töövoog — branching + PR (nädal 2)
-- Serveri konfiguratsioon — Ansible (nädal 3–4) VÕI infrastruktuur koodina (nädal 10–12)
+- Versioonihalduse töövoog: branching + PR (nädal 2)
+- Serveri konfiguratsioon: Ansible (nädal 3–4) VÕI infrastruktuur koodina (nädal 10–12)
 - Üks järgnevatest: CI pipeline / Docker / Compose (nädalad 5–8)
 
 **Nädal 9 võrdlustabel peab esitluses nähtav olema.**
 
 ---
 
-## Esitlus — 7 minutit
+## Esitlus: 7 minutit
 
 - **5 min:** live demo + arhitektuuridiagramm
 - **2 min:** küsimused kaasõpilastelt ja õpetajalt

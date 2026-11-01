@@ -7,7 +7,7 @@ tags:
   - Kodutöö
 ---
 
-# N8 · Kodutöö: oma failid konveierisse
+# Kodutöö: oma failid konveierisse
 
 Praktikumis said konveieri, mille kolleeg oli kirjutanud. Kodutöös paned konveierisse oma failid: `Dockerfile` N5-st, Compose'i faili N6-st ja Ansible'i playbook'i N4-st. Reeglid on samad mis praktikumis:
 
@@ -17,15 +17,6 @@ Praktikumis said konveieri, mille kolleeg oli kirjutanud. Kodutöös paned konve
 - tag on commit'i lühiräsi.
 
 Kodutöö on boonus. Classroom 50-s on igal osal oma BOONUS-kontroll, mis annab 0 punkti. Kohustuslik on K1. K2 ja K3 on valikulised.
-
-| Osa | Mida teed | Aeg |
-|---|---|---|
-| K1 Docker | oma image GHCR-i | 45 min |
-| K2 Compose | stack käivitub konveieris, serveris tuleb image registrist | 45 min |
-| K3 Ansible | playbook'i kontroll konveieris, soovi korral paigaldus | 30-60 min |
-| Lisaülesanne | väljalase tag'iga | 30 min |
-
-*Tabel 8.11. Kodutöö osad.*
 
 Töötad samas repositooriumis `~/lab08` masinas `proxmox1`. Failid lähevad kausta `oma/`. Konveieri kirjutad faili `.github/workflows/oma.yml`.
 

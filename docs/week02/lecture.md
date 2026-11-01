@@ -9,8 +9,6 @@ tags:
 
 *Kuidas meeskond muudab sama koodi nii, et keegi ei kirjuta teise tööd üle*
 
-**Kestus:** umbes 50 min. Siin on loengu **põhiosa**. Lisamaterjal (rebase, muudatuste tagasivõtmine, mõistete võrdlus) on samas failis allpool jaotises **Taust ja edasijõudnutele**. Loe see läbi pärast tundi.
-**Tase:** kolmas kursus. Eeldame, et oskad kasutada Linuxi käsurida ja tekstiredaktorit. Git on uus tööriist, mida õpime algusest peale.
 
 ---
 

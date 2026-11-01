@@ -7,7 +7,7 @@ tags:
   - Praktikum
 ---
 
-# N9 · Praktikum: infrastruktuur koodina (iseseisev)
+# Praktikum: infrastruktuur koodina
 
 See nädal on iseseisev e-õpe ja kogu töö käib brauseris, Proxmoxi ja VPN-i ei ole vaja. Kohustuslik on läbida KodeKloudi Dockeri kursus ja kirjutada oma nimi Lab 09 repositooriumi README-sse. Boonusülesanded ja [loeng](lecture.md) näitavad, mille poolest Bash, Ansible ja Docker Compose erinevad.
 

@@ -6,7 +6,7 @@
     <marker id="ab" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#1e88e5"/></marker>
     <marker id="ag" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#43a047"/></marker>
   </defs>
-  <text x="480" y="30" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Mida sa täna ehitad — tervikpilt</text>
+  <text x="480" y="30" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Mida sa täna ehitad, tervikpilt</text>
 
   <!-- laptop -->
   <rect x="20" y="70" width="170" height="200" rx="14" fill="#fff3e0" stroke="#ffa726" stroke-width="2"/>
@@ -19,7 +19,7 @@
 
   <!-- VM1 -->
   <rect x="230" y="60" width="440" height="470" rx="14" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2"/>
-  <text x="450" y="86" text-anchor="middle" font-size="15" font-weight="700" fill="#424242">Alma VM 1 — Docker (Osa 0)</text>
+  <text x="450" y="86" text-anchor="middle" font-size="15" font-weight="700" fill="#424242">Alma VM 1, Docker (Osa 0)</text>
   <rect x="250" y="100" width="400" height="44" rx="8" fill="#fff" stroke="#5e35b1" stroke-width="2"/>
   <text x="450" y="120" text-anchor="middle" font-size="13" font-weight="700" fill="#311b92">dockerd</text>
   <text x="450" y="136" text-anchor="middle" font-size="10" fill="#5e35b1">repo lab05/: nginx/ turve/ flask/ multistage/ logid/</text>
@@ -44,7 +44,7 @@
 
   <!-- VM2 -->
   <rect x="720" y="300" width="220" height="190" rx="14" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2"/>
-  <text x="830" y="326" text-anchor="middle" font-size="15" font-weight="700" fill="#424242">Alma VM 2 — Podman</text>
+  <text x="830" y="326" text-anchor="middle" font-size="15" font-weight="700" fill="#424242">Alma VM 2, Podman</text>
   <text x="830" y="344" text-anchor="middle" font-size="11" fill="#616161">ilma deemonita, rootless · Osa 14</text>
   <rect x="740" y="360" width="180" height="56" rx="8" fill="url(#pm)" stroke="#43a047"/>
   <text x="830" y="382" text-anchor="middle" font-size="12" font-weight="700" fill="#1b5e20">web1 · :8080</text>

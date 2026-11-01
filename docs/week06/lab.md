@@ -5,10 +5,10 @@ tags:
   - Praktikum
 ---
 
-# Docker Compose — Labor
+# Praktikum: Docker Compose
 
-**Kestus:** 4 tundi
-**Eeldused:** Loeng antud (teenus, võrk, volume, miks mitu konteinerit). Nädal 5 Flask + `Dockerfile` olemas. Kui udu — [tagasi loengusse](lecture.md). Siit edasi **ainult käed külge**.
+**Eeldused:** Loeng antud (teenus, võrk, volume, miks mitu konteinerit). Nädal 5 Flask + `Dockerfile` olemas. Kui udu, [tagasi loengusse](lecture.md). Siit edasi **ainult käed külge**.
+
 **Keskkond:** sinu AlmaLinuxi VM, kus Docker on nädal 5 Osa 0 järgi paigaldatud. Kood ja käsud **VS Code'is**. `localhost` = VM, kus Docker jookseb.
 
 ---
@@ -20,16 +20,16 @@ tags:
     1. Ehitad kolme-teenuse stacki üks teenus korraga, testides igal sammul
     2. **Leiad** veateate järgi viie tüüpilise Compose-vea põhjuse (kadunud parool, vale host-nimi, 502, kadunud andmed, `.env`)
     3. Selgitad miks teenused suhtlevad **nime**, mitte IP järgi
-    4. Selgitad miks andmed lähevad volume'i, mitte konteinerisse — ja tõestad seda
+    4. Selgitad miks andmed lähevad volume'i, mitte konteinerisse: ja tõestad seda
     5. Taastad puhta seisu ise tehtud sasi järel
 
 ---
 
-Labi loogika: **baas → laienda → viga → paranda → laienda → viga → taasta.** Sa ei kopeeri valmis `docker-compose.yml`-i. Sa ehitad selle teenus haaval, lõhud igal võtmekohal meelega, ja saad aru **miks**. Tervet faili näed **üks kord** — edasi ainult "lisa see teenus" / "lisa need read".
+Labi loogika: **baas → laienda → viga → paranda → laienda → viga → taasta.** Sa ei kopeeri valmis `docker-compose.yml`-i. Sa ehitad selle teenus haaval, lõhud igal võtmekohal meelega, ja saad aru **miks**. Tervet faili näed **üks kord**: edasi ainult "lisa see teenus" / "lisa need read".
 
 ---
 
-## Osa 1 · Baas — üks teenus
+## Osa 1 · Baas: üks teenus
 
 Tee uus kaust ja kopeeri sinna nädal 5 Flaski rakendus (`app.py`, `requirements.txt`, `Dockerfile`) nimega `app`. Käivita, et see ikka töötab:
 
@@ -40,7 +40,7 @@ docker build -t week06-app ./app
 docker run --rm -p 5000:5000 week06-app
 ```
 
-Teises terminalis `curl localhost:5000` vastab? Peata (`Ctrl+C`). Nüüd sama Compose'iga. Loo `app/` kõrvale `docker-compose.yml`. **Ainus kord terve fail** — edasi lisad ridu:
+Teises terminalis `curl localhost:5000` vastab? Peata (`Ctrl+C`). Nüüd sama Compose'iga. Loo `app/` kõrvale `docker-compose.yml`. **Ainus kord terve fail**: edasi lisad ridu:
 
 ```yaml
 services:
@@ -68,7 +68,7 @@ Sama vastus, aga nüüd üks käsk. **Ära edasi mine enne kui vastab.**
 
 ## Osa 2 · Andmebaas ilma paroolita
 
-Lisa **teine teenus**. Näita ainult uut tükki — lisa `web` alla, sama taande tasandile:
+Lisa **teine teenus**. Näita ainult uut tükki, lisa `web` alla, sama taande tasandile:
 
 ```yaml
   db:
@@ -87,7 +87,7 @@ docker compose logs db
 ??? question "Leia põhjus enne parandamist"
     PostgreSQL image keeldub käivitumast ilma parooli. Miks arvad, et image on **teadlikult** tehtud niimoodi keelduma, mitte vaikeparooliga käivituma?
 
-**Paranda** — lisa `db`-le keskkonnamuutujad:
+**Paranda**: lisa `db`-le keskkonnamuutujad:
 
 ```yaml
   db:
@@ -108,7 +108,7 @@ Otsi logist `database system is ready to accept connections`. Tuleb paari sekund
 
 ## Osa 3 · Vale aadress andmebaasile
 
-Flask peab teadma **kus** db on. Proovime **meelega valesti** — IP-ga. Lisa `web`-le:
+Flask peab teadma **kus** db on. Proovime **meelega valesti**: IP-ga. Lisa `web`-le:
 
 ```yaml
     environment:
@@ -151,7 +151,7 @@ curl localhost:5000/db-check
 ??? question "Leia põhjus"
     Iga konteiner on oma `localhost`. `web` konteineri `127.0.0.1` ei ole `db` konteiner. Compose annab teenustele **nime**-põhise aadressi. Mis on siis õige host `web`-i jaoks?
 
-**Paranda** — IP asemel teenuse nimi `db`:
+**Paranda**: IP asemel teenuse nimi `db`:
 
 ```yaml
       DATABASE_URL: postgresql://postgres:secret123@db:5432/appdb
@@ -162,13 +162,13 @@ docker compose up -d
 curl localhost:5000/db-check
 ```
 
-Ühendus OK. `db` on DNS-nimi Compose sisevõrgus — mitte miski, mille sa määrasid, vaid mille Compose ise teenuse nimest tegi.
+Ühendus OK. `db` on DNS-nimi Compose sisevõrgus, mitte miski, mille sa määrasid, vaid mille Compose ise teenuse nimest tegi.
 
 ---
 
-## Osa 4 · Laienda — nginx ja 502
+## Osa 4 · Laienda: nginx ja 502
 
-Paneme nginx-i Flaski ette (pöördproksi). Loo `nginx/default.conf` — **meelega vale** pordiga (`8000`, aga Flask kuulab porti `5000`):
+Paneme nginx-i Flaski ette (pöördproksi). Loo `nginx/default.conf`: **meelega vale** pordiga (`8000`, aga Flask kuulab porti `5000`):
 
 ```nginx
 server {
@@ -207,7 +207,7 @@ curl localhost:8080
 !!! tip "Kui nginx ei käivitu üldse"
     Kui `docker compose ps` ei näita nginx-i ja logis on `host not found in upstream`, siis on `proxy_pass` reas teenuse nimi, mida compose-failis pole (nt `app` või `flask`). nginx kontrollib nimed käivitudes ja keeldub tööle hakkamast. Nimi `proxy_pass`-is = teenuse nimi compose-failis.
 
-**Paranda** — `default.conf`-is port `8000` → `5000`:
+**Paranda**: `default.conf`-is port `8000` → `5000`:
 
 ```nginx
         proxy_pass http://web:5000;
@@ -220,7 +220,7 @@ docker compose restart nginx
 curl localhost:8080
 ```
 
-Vastus tuleb — nüüd läbi pordi 8080 ja nginx-i. Kui saad ikka 502, kontrolli `docker compose logs nginx` — kas muudatus jõudis konteinerisse? Kindel viis on `docker compose up -d --force-recreate nginx`.
+Vastus tuleb, nüüd läbi pordi 8080 ja nginx-i. Kui saad ikka 502, kontrolli `docker compose logs nginx`: kas muudatus jõudis konteinerisse? Kindel viis on `docker compose up -d --force-recreate nginx`.
 
 Eemalda `web`-lt `ports: 5000:5000` (kogu liiklus käib läbi nginx'i, Flask ei pea otse väljas olema):
 
@@ -240,7 +240,7 @@ docker compose exec db psql -U postgres -d appdb -c "CREATE TABLE test (id int);
 docker compose exec db psql -U postgres -d appdb -c "SELECT * FROM test;"
 ```
 
-Rida on olemas. Nüüd tee see, mida sa iga päev teed — kustuta stack ja käivita uuesti:
+Rida on olemas. Nüüd tee see, mida sa iga päev teed, kustuta stack ja käivita uuesti:
 
 ```bash
 docker compose down
@@ -253,7 +253,7 @@ docker compose exec db psql -U postgres -d appdb -c "SELECT * FROM test;"
 ??? question "Leia põhjus"
     `down` kustutas konteinerid. PostgreSQL kirjutas andmed konteineri **sisemisse** failisüsteemi, mis kadus koos konteineriga. Kus peaksid andmed elama, et konteineri kustutamine neid ei puudutaks?
 
-**Paranda** — lisa `db`-le volume ja faili lõppu `volumes:` sektsioon:
+**Paranda**: lisa `db`-le volume ja faili lõppu `volumes:` sektsioon:
 
 ```yaml
   db:
@@ -328,7 +328,7 @@ curl localhost:8080/db-check
 ```
 
 !!! warning
-    Lisa `.env` **kohe** `.gitignore`-i: `echo ".env" >> .gitignore`. Kui kaust on Giti repo, kontrolli `git status` — `.env` ei tohi olla jälgitavate failide seas.
+    Lisa `.env` **kohe** `.gitignore`-i: `echo ".env" >> .gitignore`. Kui kaust on Giti repo, kontrolli `git status`: `.env` ei tohi olla jälgitavate failide seas.
 
 ---
 
@@ -341,9 +341,9 @@ docker compose ps
 ```
 
 ??? question "Mõtle"
-    `docker compose stop` vs `down` vs `down -v` — kolm eri taset. Millal kumbagi? (Peatab / kustutab konteinerid / kustutab ka andmed.)
+    `docker compose stop` vs `down` vs `down -v`: kolm eri taset. Millal kumbagi? (Peatab / kustutab konteinerid / kustutab ka andmed.)
 
-Volume püsib `down` järel — kontrolli:
+Volume püsib `down` järel, kontrolli:
 
 ```bash
 docker volume ls
@@ -377,7 +377,7 @@ Hinne tuleb kontrollidest 1–6, kokku 80 punkti, ja 80/80 on täistulemus. Kont
 
 ---
 
-## Lõppkontroll — oskad ilma juhendita
+## Lõppkontroll: oskad ilma juhendita
 
 - [ ] Ehitad kolme-teenuse stacki üks teenus korraga
 - [ ] `curl localhost:8080` vastab läbi nginx-i (mitte otse Flaski pordilt)
@@ -392,7 +392,7 @@ Hinne tuleb kontrollidest 1–6, kokku 80 punkti, ja 80/80 on täistulemus. Kont
 ## Lisaülesanded
 
 1. **Healthcheck:** lisa `db`-le `healthcheck`, muuda `web depends_on` → `condition: service_healthy`. Millal `depends_on` üksi ei piisa?
-2. **Neljas teenus:** Redis või pgAdmin stacki (vt kodutöö) — teenus haaval, testi eraldi.
+2. **Neljas teenus:** Redis või pgAdmin stacki (vt kodutöö): teenus haaval, testi eraldi.
 3. **Skaleerimine:** `docker compose up -d --scale web=3`. Mis läheb katki port-mapping'uga, ja miks vajaks see nginx load-balancer'it?
 
 ---

@@ -8,8 +8,8 @@ tags:
 
 # Praktikum: tühjast repost meeskonnatööni
 
-**Kestus:** 4 tundi
 **Eeldused:** loeng on läbitud (commit, haru, kaugrepo, pull request). 1. nädala töö on tehtud: SSH-võti on GitHubis ja sihtmärk töötab. Tead, mida teevad `git clone`, `git add`, `git commit` ja `git push`.
+
 **Kontrollsõlm:** sinu arvuti, kogu töö käib **VS Code'is**. Repo asub sinu masinas.
 **Sihtmärk:** sinu valik (vt [Töökeskkond](../kodulabor.md)). Märteni skripti käivitame **sihtmärgil**, sest monitooringuskripti, mida on kontrollitud ainult lugedes, ei saa pidada testituks.
 

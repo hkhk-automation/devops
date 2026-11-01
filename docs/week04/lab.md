@@ -5,10 +5,10 @@ tags:
   - Turvalisus
 ---
 
-# Muutujad, Jinja2 ja Vault: Praktikum
+# Praktikum: muutujad, Jinja2 ja Vault
 
-**Kestus:** 4 tundi
 **Eeldused:** Loeng loetud (välisfailid, Jinja2, handlers, Vault). N3 praktikum tehtud, töötav `nginx.yml` (`package` + `service` + `copy`). Kui udu, [tagasi loengusse](lecture.md).
+
 **Kontroll-node:** sinu arvuti, kogu töö **VS Code'is**.
 **Sihtmärk:** `proxmox1` (nagu N3). Kodus sobib ka WSL2/VM.
 
@@ -38,17 +38,7 @@ tags:
 
 ---
 
-Praktikumi loogika: **baas → laienda → viga → paranda → ennusta → lõhu ise → ehita ise → vaheta vead.** Ehitad N3 playbooki peale samm-sammult; alguses juhendan sind, lõpus enam mitte.
-
-| Osa | Sisu | Orientiir |
-|---|---|---|
-| 0 | Töövoog: haru, commit'id, Giti spikker | ~10 min |
-| 1–5 | Muutujad, mall, handler (juhendatud) | ~90 min |
-| 6–8 | Vault | ~40 min |
-| 9–10 | Kuiv-jooks ja katkine play | ~25 min |
-| 11 | **Iseseisev:** lisa teine teenus | ~40 min |
-| 12 | **Paaris:** vigade vahetus | ~25 min |
-| 13 | Tõendid ja kontroll | ~15 min |
+Ehitad N3 playbook'i edasi samm-sammult. Alguses on juhend täpne, lõpus teed ise.
 
 Lõpuks näeb su repo välja nii:
 

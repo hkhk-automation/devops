@@ -4,7 +4,7 @@
     <marker id="ag" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#43a047"/></marker>
     <marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#e53935"/></marker>
   </defs>
-  <text x="480" y="30" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Mida sa täna ehitad — tervikpilt</text>
+  <text x="480" y="30" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Mida sa täna ehitad, tervikpilt</text>
 
   <!-- VM -->
   <rect x="20" y="60" width="270" height="400" rx="14" fill="#fff3e0" stroke="#ffa726" stroke-width="2"/>

@@ -9,8 +9,6 @@ tags:
 
 *Kuidas käsitsi tehtud IT-töö jäi suurenevale koormusele alla ja mis tuli selle asemele*
 
-**Kestus:** umbes 50 min. Siin on loengu **põhiosa**. Süvendav materjal (SRE, AIOps, DORA, Ops-valdkonnad, ajalugu) on samas failis allpool jaotises **Taust ja edasijõudnutele**, mida on soovitatav lugeda pärast tundi.
-**Tase:** sissejuhatav. Tööriistu selles tunnis veel ei kasutata, eesmärk on mõista, miks neid vaja on.
 
 ---
 

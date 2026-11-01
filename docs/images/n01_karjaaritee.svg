@@ -17,7 +17,7 @@
     </marker>
   </defs>
 
-  <text x="450" y="34" text-anchor="middle" font-size="22" font-weight="700" fill="#4527a0">Kus sa praegu oled — ja kuhu see kursus viib</text>
+  <text x="450" y="34" text-anchor="middle" font-size="22" font-weight="700" fill="#4527a0">Kus sa praegu oled, ja kuhu see kursus viib</text>
   <text x="450" y="56" text-anchor="middle" font-size="13" fill="#666">Sa ei alusta nullist. Sinu CompTIA-tase on vundament.</text>
 
   <!-- COLUMN 1: JUBA OSKAD -->
