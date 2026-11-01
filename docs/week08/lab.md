@@ -9,20 +9,9 @@ tags:
 
 # Praktikum: katkine konveier korda
 
-Tänases repositooriumis on Flaski rakendus, selle testid ja konveier kolme tööga: `test` käivitab testid, `konteiner` kontrollib, kas konteiner vastab, ja `build-and-push` peaks saatma image'i registrisse GHCR. Lisaks on skript, mis peaks image'i serveris käivitama. Konveieris ja skriptis on vead, mille leiad ja parandad ükshaaval. Lõpus näitab server sama versiooni, mis on registris, ja viimases osas käivitad sama konveieri Jenkinsis.
-
-Töötad masinas `proxmox1` VS Code'i kaudu. Seal töötab Docker, seepärast on `proxmox1` ka serveri rollis. Töökohas on server eraldi masin, aga käsud on samad. Töövoo võtmete kirjelduse leiad [GitHub Actionsi teatmikust](../github-actions.md).
+Repositooriumis on Flaski rakendus, konveier, mis peaks image'i registrisse saatma, ja skript, mis peaks image'i serveris käivitama. Mõlemas on vead. Leiad ja parandad need ükshaaval. Töötad masinas `proxmox1`, mis on ühtlasi server.
 
 **Edenemine:** laboritahvel <http://192.168.125.187:8091/> (VPN-iga).
-
-Iga vea juures on samad sammud samas järjekorras ([loengu §7](lecture.md#7-vea-leidmine-sumptom-hupotees-toend-parandus)):
-
-- **Sümptom:** mida näed. See võib olla punane töö, rida logis või käsu väljund.
-- **Ennusta:** mis on põhjus ja mis failis see on. Kirjuta oletus vea issue väljale **Hüpotees**, enne kui tõendit otsid.
-- **Uuri:** kust leida tõend. Tõend kinnitab oletuse või lükkab selle ümber. Enne tõendit ära midagi muuda.
-- **Paranda** ja **Kontrolli:** tee üks muudatus ja vaata sama sümptomit uuesti. Põhjus ja parandus on kokkuvolditud plokis. Ava see alles siis, kui oled ise proovinud.
-- **Küsimus:** kirjuta README-sse üks lause ja vigade tabelisse üks rida.
-- **Issue:** iga vea kohta teed repositooriumis issue (samm 1.4). Paranduse commit sulgeb selle.
 
 ??? abstract "Õpiväljundid"
 
@@ -32,10 +21,14 @@ Iga vea juures on samad sammud samas järjekorras ([loengu §7](lecture.md#7-vea
     4. Oskad tõmmata privaatse image'i serverisse ja käivitada selle õige pordiga.
     5. Oskad käivitada sama konveieri Jenkinsis ja võrrelda seda GitHub Actionsiga.
 
-<figure markdown="span">
-  ![ci.yml-is tööd test, konteiner ja build-and-push. Punased numbrid: 1 build-and-push kirjutamisõigus, 2 konteineri ja build-and-push vahel puuduv järjekord, 3 millal töövoog käivitub. build-and-push saadab image'i GHCR-i, kus pakett on privaatne. proxmox1-s server/paigalda.sh: 4 docker pull, 5 docker run -p](../images/n08_viis_viga.svg)
-  <figcaption>Joonis 8.7. Viis viga konveieris ja serveris. Kuues viga on Jenkinsis, osas 6 (Talvik, 2026).</figcaption>
-</figure>
+Iga vea juures teed neli sammu:
+
+1. **Sümptom:** vaata, mis on punane, ja loe logi viimased read.
+2. **Hüpotees:** kirjuta vea issue'sse, mis võiks olla põhjus.
+3. **Tõend:** kontrolli oletust enne, kui midagi muudad.
+4. **Paranda** ja **Kontrolli:** tee üks muudatus ja kontrolli uuesti. Commit'i sõnumisse lisa `Fixes #<issue number>`.
+
+Põhjus ja parandus on kokkuvolditud plokis. Ava see alles siis, kui oled ise proovinud.
 
 ## Osa 1 · Ettevalmistus
 
@@ -110,9 +103,9 @@ Esimene viga on seotud tokeni õigustega, mida kirjeldab [loengu §4](lecture.md
 
 Käivituse lehel on `test` ja `konteiner` rohelised. `build-and-push` on punane. Ava see töö ja leia punane samm.
 
-**Ennusta.** Samm `Logi GHCR-i sisse` on roheline. Samm `Saada image GHCR-i` on punane. Mis on põhjus ja mis failis? Kirjuta oletus issue väljale **Hüpotees**.
+**Hüpotees.** Samm `Logi GHCR-i sisse` on roheline. Samm `Saada image GHCR-i` on punane. Mis on põhjus ja mis failis? Kirjuta oletus issue väljale **Hüpotees**.
 
-**Uuri**
+**Tõend**
 
 1. Ava punane samm. Loe viimased read lõpuni.
 2. Ava sama töö esimene samm **Set up job**. Leia lõik `GITHUB_TOKEN Permissions`.
@@ -212,9 +205,9 @@ git push
 
 `test` on punane. `konteiner` on hall (`skipped`). Vaata, mis olekus on `build-and-push`. Ava **Packages** ja vaata tag'e.
 
-**Ennusta.** Test kukkus. Kas registrisse jõudis uus image? Kui jõudis, siis miks? Kirjuta oletus issue väljale **Hüpotees**.
+**Hüpotees.** Test kukkus. Kas registrisse jõudis uus image? Kui jõudis, siis miks? Kirjuta oletus issue väljale **Hüpotees**.
 
-**Uuri**
+**Tõend**
 
 1. Käivituse lehel on tööde skeem. Vaata, millised tööd on noolega ühendatud.
 2. Ava tööd `test` ja `build-and-push`. Võrdle, mis kell kumbki alustas.
@@ -284,9 +277,9 @@ Ava GitHubis pull request harust `n08-tervitus` harusse `main`. Ära seda veel l
 
 Vaata vahekaarti **Actions**. Vaata pull request'i lehel kasti **Checks**. Vaata ka **Packages** all tag'e.
 
-**Ennusta.** Kood on ainult harus `n08-tervitus`. Kas see jõudis registrisse? Kui jõudis, siis mis selle käivitas? Kirjuta oletus issue väljale **Hüpotees**.
+**Hüpotees.** Kood on ainult harus `n08-tervitus`. Kas see jõudis registrisse? Kui jõudis, siis mis selle käivitas? Kirjuta oletus issue väljale **Hüpotees**.
 
-**Uuri**
+**Tõend**
 
 1. Vahekaardil **Actions** on iga käivituse all sündmus ja haru. Mitu käivitust tekkis viimase commit'i kohta? Mis sündmused need olid?
 2. Võrdle **Packages** all uusimat räsi kahe commit'iga:
@@ -369,9 +362,9 @@ bash server/paigalda.sh
 
 Pärast rida `== image ...` lõpetab skript veaga.
 
-**Ennusta.** Image on registris olemas, sa nägid seda **Packages** all. Miks ei saa server seda kätte? Kirjuta oletus issue väljale **Hüpotees**.
+**Hüpotees.** Image on registris olemas, sa nägid seda **Packages** all. Miks ei saa server seda kätte? Kirjuta oletus issue väljale **Hüpotees**.
 
-**Uuri**
+**Tõend**
 
 1. Loe veateade lõpuni. Mis on viimane sõna?
 2. Ava GitHubis pakett. Paremal on näha, kas pakett on **Private** või **Public**.
@@ -424,9 +417,9 @@ bash server/paigalda.sh
 
 Skript jõuab reani `== versioon`. `curl` proovib mitu korda ja lõpetab veaga.
 
-**Ennusta.** Konteiner käivitus. Miks ei saa `curl` vastust? Kirjuta oletus issue väljale **Hüpotees**.
+**Hüpotees.** Konteiner käivitus. Miks ei saa `curl` vastust? Kirjuta oletus issue väljale **Hüpotees**.
 
-**Uuri**
+**Tõend**
 
 ```bash
 docker ps --filter name=flask-cd
@@ -646,9 +639,9 @@ Vajuta vasakul **Build Now**.
 
 Käivitus on punane. Ava see ja vali **Pipeline Overview**. Plugin `pipeline-graph-view` näitab etappe graafiliselt. Etapp `test` on punane.
 
-**Ennusta.** Samad testid läbisid sinu masinas ja GitHub Actionsis. Miks kukuvad need Jenkinsis? Kirjuta oletus issue väljale **Hüpotees**.
+**Hüpotees.** Samad testid läbisid sinu masinas ja GitHub Actionsis. Miks kukuvad need Jenkinsis? Kirjuta oletus issue väljale **Hüpotees**.
 
-**Uuri**
+**Tõend**
 
 1. Vali punane etapp ja loe logi viimased read.
 2. Võrdle Pythonit masinas ja Jenkinsi konteineris:
