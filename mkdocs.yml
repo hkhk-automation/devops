@@ -8,6 +8,13 @@ copyright: Maria Talvik &middot; CC BY-SA 4.0
 exclude_docs: |
   _archive/
 
+# Veel õpetamata nädalad: avaldatud saidil ei ole, `mkdocs serve` näitab neid.
+# Avaldamiseks kustuta rida siit ja tõsta menüüs kommentaar maha.
+draft_docs: |
+  week11/
+  week12/
+  week13/
+
 # Repository
 repo_name: hkhk-automation/devops
 repo_url: https://github.com/hkhk-automation/devops
