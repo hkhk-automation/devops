@@ -249,6 +249,10 @@ Järgmisena näed seda järjekorda ühe vea peal. Õpetaja otsib viga oma reposi
 
 Kõik vead ei tee konveierit punaseks. Kui katkine kood jõuab registrisse, on kõik tööd rohelised. Sellist viga näed ainult siis, kui kontrollid tulemust: mis on registris ja mis töötab serveris.
 
+**Viga saab issue.** Töökohas pannakse iga viga kirja **issue**'na: mida nähti, mis oli hüpotees ja mis oli tõend. Kui paranduse commit'i sõnumis on rida `Fixes #12`, sulgeb GitHub issue numbriga 12 siis, kui commit jõuab harusse `main`, ja lisab issue'le lingi sellele commit'ile ([issue sulgemine võtmesõnaga](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword)). Nii saab hiljem minna ahelat pidi: issue, commit'i räsi, image'i tag sama räsiga ja server, mis näitab seda räsi. Praktikumis teed iga vea kohta issue ja leiad räsi järgi vana versiooni üles (`git log --oneline`, `git show <räsi>`).
+
+**Olekumärk.** README algusesse saab panna olekumärgi (status badge): väikese pildi, mis näitab töövoo viimase käivituse tulemust harus `main`. Märgi rea annab GitHub käivituse lehel menüüst **⋯ → Create status badge** ([olekumärk](https://docs.github.com/en/actions/how-tos/monitor-workflows/add-a-status-badge)).
+
 ---
 
 ## 8. CI/CD tööriistad ja litsentsid
@@ -262,6 +266,8 @@ GitHub Actions ei ole ainus CI/CD tööriist. Töökohas kohtad tõenäoliselt k
 **Jenkins** on vanim neist kolmest. Projekt alustas 2004. aastal nime all Hudson. 2011. aastal tekkis vaidlus Oracle'iga nime pärast ja projekt nimetati ümber Jenkinsiks ([ajalugu](https://en.wikipedia.org/wiki/Jenkins_(software))). Jenkinsi paigaldad alati ise. Selle võimalused tulevad plugin'itest. Plugin'eid on üle kahe tuhande ([Jenkinsi plugin'id](https://plugins.jenkins.io/)).
 
 Jenkinsit kasutatakse endiselt palju, eriti suurtes firmades ja vanades süsteemides. Uutes projektides valitakse seda harvem. Server, plugin'id ja nende uuendused on firma enda hallata. Iga plugin on võimalik turvaauk ja vanad plugin'id ei pruugi uue versiooniga töötada. GitHub Actions ja gitlab.com hoiavad selle töö enda käes. Praktikumi osas 6 käivitad Jenkinsi ise ja näed, mida see haldamine tähendab.
+
+Jenkinsi konveier on repositooriumi failis `Jenkinsfile` ([Jenkinsfile'i süntaks](https://www.jenkins.io/doc/book/pipeline/syntax/)). Ülesehitus on sama mis töövoo failil, ainult nimed on teised: `pipeline` on terve konveier, `agent` ütleb, kus see töötab (nagu `runs-on`), `stages` ja `stage` on etapid (nagu tööd) ning `steps` on käsud. Jenkins ise oskab vähe. Git'i tugi, konveierid ja graafiline vaade tulevad **plugin'itest**, mis paigaldatakse Jenkinsi image'isse. GitHub teatab push'ist Jenkinsile **webhook**'iga: GitHub saadab Jenkinsi aadressile päringu. Kui Jenkins on VPN-i taga, ei jõua päring kohale. Siis kontrollib Jenkins ise repositooriumi kindla aja tagant (`pollSCM`).
 
 ### Litsentsid
 

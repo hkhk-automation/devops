@@ -215,6 +215,8 @@ Plaani viimane rida võtab kokku: `Plan: 1 to add, 0 to change, 0 to destroy.` K
 
 **`tofu apply`** teeb muudatused ja kirjutab tulemuse olekufaili. Praktikumis salvestad plaani faili (`tofu plan -out=tfplan`) ja annad selle faili käsule `tofu apply tfplan`. Siis teeb OpenTofu täpselt need muudatused, mida plaanis lugesid. Ilma plaanifailita koostab `apply` plaani uuesti ja küsib kinnitust.
 
+Kolm abikäsku kasutad praktikumis iga muudatuse juures. **`tofu fmt`** vormindab `.tf` failid ühtsesse kujusse (taanded, joondus). **`tofu validate`** kontrollib süntaksit ja viiteid ilma Proxmoxiga ühendumata. **`tofu state list`** näitab, mis ressursid on olekufailis ([käskude loetelu](https://opentofu.org/docs/cli/commands/)).
+
 **`tofu destroy`** kustutab kõik ressursid, mis on olekufailis. Teisi masinaid Proxmoxis ta ei puuduta, sest ta ei tea nendest midagi.
 
 !!! warning "Loe plaan enne apply'd"
