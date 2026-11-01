@@ -175,6 +175,37 @@ git log --oneline -1
 
 **Küsimus:** miks oli `GITHUB_TOKEN`-il vaikimisi õigus pakette ainult lugeda? (README küsimus 1 ja tabeli rida 1)
 
+### 2.1 Olekumärk README-s
+
+Konveier on nüüd roheline. Et seda ei peaks iga kord vahekaardilt **Actions** otsima, lisa README algusesse **olekumärk** (status badge). See on väike pilt, mis näitab töövoo viimase käivituse tulemust harus `main`: roheline `passing` või punane `failing`. Avatud lähtekoodiga projektides on see tavaliselt README esimene rida.
+
+**Ülesanne**
+
+1. Ava vahekaart **Actions** ja vali vasakult töövoog **CI/CD**.
+2. Paremal üleval on nupp **⋯**. Vali **Create status badge**.
+3. Haruks vali `main`, sündmuseks `push`, ja vajuta **Copy status badge Markdown**.
+4. Kleebi kopeeritud rida README-s esimese pealkirja alla. Rida on kujul:
+
+    ```markdown
+    [![CI/CD](https://github.com/hkhk-automation/<sinu-repo>/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/hkhk-automation/<sinu-repo>/actions/workflows/ci.yml)
+    ```
+
+5. Salvesta muudatus ja saada see GitHubi:
+
+    ```bash
+    git add README.md
+    git commit -m "N8: olekumärk README-s"
+    git push
+    ```
+
+**Kontrolli**
+
+Ava repositooriumi avaleht. README all on roheline märk `CI/CD passing`. Märgil klõpsates avaneb töövoo käivituste nimekiri.
+
+Repositoorium on privaatne, seega näevad märki ainult need, kellel on repositooriumile ligipääs. Avalikus repositooriumis näeb seda igaüks.
+
+**Ennusta.** Osas 3 kukub test. Mida näitab märk siis?
+
 ---
 
 ## Osa 3 · Viga 2: katkine kood jõuab registrisse
