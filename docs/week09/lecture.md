@@ -16,7 +16,7 @@ Täna on iseseisev nädal. Server ja Proxmox jäävad puhkama. Vaatad tagasi kõ
     - eristada imperatiivset ja deklaratiivset lähenemist ja paigutada iga seni kasutatud tööriista ühte neist
     - selgitada, mis on soovitud olek ja kuidas tööriist ühtlustab tegeliku oleku soovitud olekuga
     - selgitada idempotentsust ja kontrollida seda tööriista väljundist
-    - kirjeldada konfiguratsiooni triivi ja seda, mida järgmine automaatne jooks sellega teeb
+    - kirjeldada konfiguratsiooni triivi ja seda, mida järgmine automaatne käivitus sellega teeb
     - selgitada muudetava ja muutumatu infrastruktuuri vahet
 
 ## 1. Seni kasutatud tööriistad
@@ -39,7 +39,7 @@ See vastus on põhjus, miks see kursus olemas on. Kõik, mida oled kaheksa näda
 | N2 | Bash, Git | käsud järjest; muudatuste ajalugu | `monitor.sh` |
 | N3-4 | Ansible | mis peab serveris olema | `nginx.yml`, `templates/*.j2` |
 | N5 | Docker | kuidas image ehitada | `Dockerfile` |
-| N6 | Docker Compose | millised konteinerid koos jooksevad | `docker-compose.yml` |
+| N6 | Docker Compose | millised konteinerid koos töötavad | `docker-compose.yml` |
 
 *Tabel 9.1. Iga nädal panid sa midagi koodi kujul kirja. Täna vaatame, mille poolest need kirjapanekud erinevad.*
 

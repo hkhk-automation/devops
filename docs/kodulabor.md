@@ -17,7 +17,7 @@ VPN-i kooli pole, seega kodus tee **lokaalselt**. Kuidas täpselt, sinu otsus. A
 
 | Variant | Lühidalt |
 |---|---|
-| WSL2 (Windows) | `wsl --install`, Ubuntu jookseb Windowsi sees |
+| WSL2 (Windows) | `wsl --install`, Ubuntu töötab Windowsi sees |
 | VirtualBox / VMware VM | Ubuntu Server ISO, host-only või NAT võrk |
 | Pilve-server | väike Ubuntu (Hetzner, DigitalOcean vms), avalik IP |
 | Vagrant | kui tahad ühe käsuga korratavat VM-i, valikuline, mitte kohustuslik |
