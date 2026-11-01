@@ -9,20 +9,20 @@ tags:
 
 # Kodutöö: oma failid konveierisse
 
-Praktikumis parandasid valmis konveierit. Kodutöös paned konveierisse oma failid: `Dockerfile` N5-st, Compose'i faili N6-st ja Ansible'i playbook'i N4-st. Reeglid on samad mis praktikumis:
+Praktikumis parandasid etteantud vigast konveierit. Kodutöös lisad konveierisse oma varasemate praktikumide failid: N5 `Dockerfile`-i, N6 Compose'i faili ja N4 Ansible'i playbook'i. Reeglid on samad mis praktikumis:
 
 - registrisse kirjutab ainult töö, millel on `permissions: packages: write`;
 - image ehitatakse alles pärast kontrolli (`needs`);
 - pull request ei saada midagi registrisse (`push: branches: [main]` ja `if`);
 - tag on commit'i lühiräsi.
 
-Kodutöö on boonus. Alusta osast K1, osad K2 ja K3 on valikulised.
+Kodutöö on boonusülesanne. Alusta osast K1. Osad K2 ja K3 ning väljalaske lisaülesanne on valikulised.
 
 Töötad samas repositooriumis `~/lab08` masinas `proxmox1`. Failid lähevad kausta `oma/`. Konveieri kirjutad faili `.github/workflows/oma.yml`.
 
-## Osa 1 · Vanad failid kätte
+## Osa 1 · Varasemate praktikumide failid
 
-Sinu varasemad praktikumid on GitHubis. Kui kausta `~/lab05`, `~/lab06` või `~/lab04` masinas pole, klooni repositoorium uuesti. Repositooriumi aadressi leiad Classroom 50-st või GitHubist organisatsioonist `hkhk-automation`:
+Sinu varasemad praktikumid on GitHubis. Kui kausta `~/lab05`, `~/lab06` või `~/lab04` masinas pole, klooni repositoorium uuesti. Repositooriumi aadressi leiad Classroom 50-st või GitHubis organisatsioonist `hkhk-automation`:
 
 ```bash
 cd ~
@@ -31,7 +31,7 @@ git clone https://github.com/hkhk-automation/it24-automatiseerimine-lab-06-docke
 git clone https://github.com/hkhk-automation/it24-automatiseerimine-lab-04-muutujad-jinja2-ja-vault-<kasutaja>.git lab04
 ```
 
-N5 ja N6 töö võis olla harus. Kui failid puuduvad, vaata harusid: `git -C ~/lab05 branch -a`.
+N5 ja N6 failid võivad olla mõnes teises harus. Kui failid puuduvad, vaata harusid: `git -C ~/lab05 branch -a`.
 
 Ära kopeeri faile `.vault_pass` ja `.env`. Need on saladused. `.gitignore` jätab need Gitist välja.
 
@@ -39,7 +39,7 @@ N5 ja N6 töö võis olla harus. Kui failid puuduvad, vaata harusid: `git -C ~/l
 
 ### K1.1 Fail kohale
 
-Vali N5-st üks image: `nginx/` (minu-nginx) või `flask/` (flask-app). Kopeeri kausta sisu:
+Vali N5-st üks rakendus, mille image'i ehitad: `nginx/` (minu-nginx) või `flask/` (flask-app). Kopeeri kausta sisu:
 
 ```bash
 cd ~/lab08
@@ -47,7 +47,7 @@ cp -r ~/lab05/nginx/. oma/docker/
 ls oma/docker
 ```
 
-Kontrolli, et image ehitub ja konteiner vastab ka siin. Port sõltub sellest, mis image valisid (nginx 80, Flask 5000):
+Kontrolli, et image'i ehitamine õnnestub ja konteiner vastab ka uues kaustas. Konteineri port sõltub sellest, millise image'i valisid (nginx 80, Flask 5000):
 
 ```bash
 docker build -t oma-test oma/docker
@@ -56,7 +56,7 @@ curl localhost:8090
 docker stop oma-test
 ```
 
-### K1.2 Kontrolltöö
+### K1.2 Image'i ehitamine ja kontrollimine
 
 Loo fail `.github/workflows/oma.yml`. Alusta sündmustest ja tööst, mis ehitab image'i ja kontrollib, et konteiner vastab:
 
@@ -87,7 +87,7 @@ Lisa teine töö `docker`. Võta eeskujuks praktikumi osa 7 töö `build-and-pus
 - töö ootab tööd `docker-test`;
 - image'i nimi on `ghcr.io/${GITHUB_REPOSITORY,,}-<nimi>`, näiteks `...-minu-nginx`. Nii ei lähe see segi praktikumi image'iga;
 - ehituskontekst on `oma/docker`;
-- `--build-arg VERSIOON` pole vaja, kui sinu image seda ei kasuta.
+- Argumenti `--build-arg VERSIOON` pole vaja, kui sinu image seda ei kasuta.
 
 Saada fail GitHubi ja vaata vahekaarti **Actions**:
 
@@ -97,11 +97,11 @@ git commit -m "N8 kodutöö K1: oma image GHCR-i"
 git push
 ```
 
-**Kontrolli:** töövoos `Oma failid` on kaks rohelist tööd ja nende vahel nool. **Packages** all on uus pakett, mille nimi lõpeb `-<nimi>`. Selle tag on sama mis `git log --oneline -1` alguses.
+**Kontrolli:** töövoos `Oma failid` on kaks rohelist tööd ja nende vahel nool. **Packages** all on uus pakett, mille nimi lõpeb `-<nimi>`. Paketi tag on sama mis käsu `git log --oneline -1` väljundi alguses olev lühiräsi.
 
-Kui töö on punane, kasuta praktikumi järjekorda: sümptom, hüpotees, tõend, parandus. Vead on tõenäoliselt samad, mis praktikumis. Kui `docker push` annab `denied`, puuduvad tööl `permissions` (praktikumi osa 2).
+Kui töö on punane, järgi praktikumi veaotsingu samme: sümptom, hüpotees, tõend, parandus. Vead on tõenäoliselt samad, mis praktikumis. Kui `docker push` annab `denied`, puuduvad tööl `permissions` (praktikumi osa 2).
 
-**Küsimus:** täida README kodutöö tabelis rida K1.
+Täida README kodutöö tabelis rida K1.
 
 ## Osa 3 · K2: Docker Compose (valikuline)
 
@@ -115,29 +115,29 @@ cp ~/lab06/docker-compose.yml oma/compose/
 cp -r ~/lab06/app ~/lab06/nginx oma/compose/
 ```
 
-### K2.2 Stack konveieris
+### K2.2 Compose'i teenused konveieris
 
-Lisa failile `oma.yml` töö `compose`. Nõuded:
+Lisa faili `oma.yml` töö `compose`. Nõuded:
 
 1. Töö sammud käivituvad kaustas `oma/compose` (`defaults: run: working-directory:`).
-2. Runneris pole faili `.env`. Anna muutujad, mida sinu Compose'i fail kasutab, töö tasemel `env:` all. Testiparool `ci-ainult-test` ei ole saladus, sest see kehtib ainult runneris. Kui see puudub, on logis `POSTGRES_PASSWORD is not specified`.
+2. Runneris pole faili `.env`. Kirjuta muutujad, mida sinu Compose'i fail kasutab, töö tasemel võtme `env:` alla. Testiparool `ci-ainult-test` ei ole saladus, sest see kehtib ainult runneris. Kui see puudub, on logis `POSTGRES_PASSWORD is not specified`.
 3. `docker compose config -q` kontrollib faili.
-4. `docker compose up -d --build` käivitab stacki.
-5. `curl` küsib nginx'i porti, mis sinu failis on (N6-s tavaliselt 8080). Kasuta `--retry`, sest andmebaas käivitub aeglaselt.
-6. Kukkumisel näitab `docker compose logs` logi (`if: failure()`). Lõpus käivitub alati `docker compose down -v` (`if: always()`).
+4. `docker compose up -d --build` käivitab kõik Compose'i teenused.
+5. `curl` saadab päringu nginx'i pordile, mis sinu failis on (N6-s tavaliselt 8080). Kasuta `--retry`, sest andmebaas käivitub aeglaselt.
+6. Kui töö ebaõnnestub, näitab `docker compose logs` teenuste logi (`if: failure()`). Lõpus käivitub alati `docker compose down -v` (`if: always()`).
 
 ### K2.3 Serveris image registrist
 
-Lisa töö `compose-web`, mis ootab tööd `compose` ja saadab rakenduse image'i (`oma/compose/app`) GHCR-i nimega `ghcr.io/${GITHUB_REPOSITORY,,}-web`, tag'iks räsi. Reeglid on samad mis K1-s.
+Lisa töö `compose-web`, mis ootab tööd `compose` ja saadab rakenduse image'i (`oma/compose/app`) GHCR-i nimega `ghcr.io/${GITHUB_REPOSITORY,,}-web`, tag'iks commit'i lühiräsi. Reeglid on samad mis K1-s.
 
-Tee Compose'i failist serveri variant `oma/compose/compose.server.yaml`. Selles on teenusel `web` rida `build:` asendatud reaga `image:`:
+Loo Compose'i failist serveri jaoks versioon `oma/compose/compose.server.yaml`. Selles on teenusel `web` rida `build:` asendatud reaga `image:`:
 
 ```yaml
   web:
     image: ghcr.io/hkhk-automation/<sinu-repo>-web:${VERSIOON}
 ```
 
-Kui konveier on roheline, käivita stack serveris registris oleva image'iga. Peata enne N6 Compose'i teenused, sest need kasutavad samu porte. Fail `.env` tuleb N6-st:
+Kui konveier on roheline, käivita Compose'i teenused serveris registris oleva image'iga. Peata enne N6 Compose'i teenused, sest need kasutavad samu porte. Kopeeri fail `.env` N6 praktikumi kaustast:
 
 ```bash
 cd ~/lab06 && docker compose down
@@ -149,11 +149,11 @@ curl localhost:8080
 
 **Kontrolli:** `docker compose -f compose.server.yaml images` näitab teenusel `web` image'it `ghcr.io/...-web`.
 
-**Küsimus:** täida README kodutöö tabelis rida K2.
+Täida README kodutöö tabelis rida K2.
 
 ## Osa 4 · K3: Ansible (valikuline)
 
-Konveier ei saa playbook'i serveris käivitada, sest runner ei pääse kooli võrku. Konveier saab aga kontrollida, et playbook on korras, enne kui keegi seda käivitab.
+Konveier ei saa playbook'i serveris käivitada, sest runner ei pääse kooli võrku. Konveier saab aga enne paigaldamist kontrollida playbook'i süntaksit.
 
 ### K3.1 Failid kohale
 
@@ -167,15 +167,15 @@ git status --short oma/ansible
 
 ### K3.2 Kontroll konveieris
 
-Lisa failile `oma.yml` töö `ansible`. Nõuded:
+Lisa faili `oma.yml` töö `ansible`. Nõuded:
 
 1. `actions/setup-python` ja `pip install ansible-core ansible-lint`.
-2. [`ansible-lint --profile min oma/ansible`](https://ansible.readthedocs.io/projects/lint/profiles/). Profiil `min` kontrollib ainult vigu, mis takistavad käivitamist. Kui `ansible-lint` leiab vigu, loe reegli nime ja rida. Rangema kontrolli jaoks proovi hiljem profiili `basic`.
+2. [`ansible-lint --profile min oma/ansible`](https://ansible.readthedocs.io/projects/lint/profiles/). Profiil `min` kontrollib vigu, mis takistavad Ansible'il playbook'i laadida. Kui `ansible-lint` leiab vigu, vaata reegli nime ja failirida. Rangema kontrolli jaoks proovi hiljem profiili `basic`.
 3. `ansible-playbook -i oma/ansible/inventory.ini oma/ansible/nginx.yml --syntax-check`.
 
 Vault'i fail `group_vars/all/vault.yml` on krüptitud ja konveieril pole parooli. `--syntax-check` kontrollib ainult playbook'i ülesehitust ja ei loe muutujate väärtusi, seega parooli pole vaja.
 
-**Kontrolli:** töö `ansible` on roheline. Tee playbook'is meelega taandeviga ja vaata, kumb samm selle leiab. Pane siis taane tagasi.
+**Kontrolli:** töö `ansible` on roheline. Tee playbook'is meelega taandeviga ja vaata, kumb samm selle leiab. Taasta seejärel õige taane.
 
 ### K3.3 Paigaldus Ansible'iga (lisasamm)
 
@@ -197,7 +197,7 @@ Praktikumis käivitas image'i skript `server/paigalda.sh`. Sama saab teha Ansibl
           - "8088:5000"
 ```
 
-Moodul [`community.docker.docker_container`](https://docs.ansible.com/ansible/latest/collections/community/docker/docker_container_module.html) ei kuulu `ansible-core`'i. Paigalda kollektsioon ja käivita playbook masinas, kust käivitad Ansible'it:
+Moodul [`community.docker.docker_container`](https://docs.ansible.com/ansible/latest/collections/community/docker/docker_container_module.html) ei kuulu paketti `ansible-core`. Paigalda kollektsioon `community.docker` masinasse, kus käivitad Ansible'i käske, ja käivita seejärel playbook:
 
 ```bash
 ansible-galaxy collection install community.docker
@@ -209,13 +209,13 @@ Kui konveieri töö `ansible` kontrollib ka faili `paigalda.yml`, lisa sinna sam
 
 **Ennusta.** Käivita sama käsk teist korda. Mida näitab `PLAY RECAP`?
 
-**Küsimus:** täida README kodutöö tabelis rida K3.
+Täida README kodutöö tabelis rida K3.
 
 ## Osa 5 · Väljalase tag'iga (lisaülesanne)
 
-**Väljalase** (release) on versioon, mille inimene märgib, näiteks `v1.0.0`. Git'is tehakse see tag'iga ([Git'i tag'id](https://git-scm.com/book/en/v2/Git-Basics-Tagging)). Starteri failis `kodutoo/release.yml` on töövoog, mis peaks väljalaske ehitama. Selles on kolm viga.
+**Väljalase** (release) on avaldamiseks märgitud tarkvaraversioon, näiteks `v1.0.0`. Git'is tähistatakse väljalaset tag'iga ([Git'i tag'id](https://git-scm.com/book/en/v2/Git-Basics-Tagging)). Starteri failis `kodutoo/release.yml` on töövoog, mis peaks väljalaske ehitama. Selles on kolm viga.
 
-Kopeeri fail õigesse kausta ja saada GitHubi. Siis märgi viimane commit versiooniks:
+Kopeeri fail õigesse kausta ja saada GitHubi. Seejärel lisa viimasele commit'ile versiooni tag:
 
 ```bash
 cp kodutoo/release.yml .github/workflows/release.yml
@@ -241,7 +241,7 @@ Kui `Release` on roheline, paigalda väljalase:
 bash server/paigalda.sh v1.0.0 2>&1 | tee logid/kodu-server.txt
 ```
 
-Logi viimane rida peab olema `v1.0.0`. Täida README tabel R1-R3.
+Logi viimane rida peab olema `v1.0.0`. Täida README tabelis read R1–R3.
 
 ## Töö esitamine
 
