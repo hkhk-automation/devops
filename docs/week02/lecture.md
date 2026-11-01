@@ -21,8 +21,7 @@ tags:
 
 ## 1. Näidisstsenaarium
 
-!!! abstract "Miks see oluline on?"
-    Ka kursuse järgmiste teemade (Ansible, Docker, CI/CD) failid on tekstifailid, mida meeskond koos muudab. Kui kaks inimest muudavad sama faili ilma versioonihalduseta, võib ühe inimese töö märkamatult kaduma minna. Git hoiab selle ära.
+Ka kursuse järgmiste teemade (Ansible, Docker, CI/CD) failid on tekstifailid, mida meeskond koos muudab. Kui kaks inimest muudavad sama faili ilma versioonihalduseta, võib ühe inimese töö märkamatult kaduma minna. Git hoiab selle ära.
 
 !!! example "Esmaspäev, rühmatöö"
     Kati ja Mati parandavad koos sama deploy-skripti. Kati saadab faili Matile, Mati muudab seda ja saadab tagasi. Vahepeal on Kati oma koopiat juba muutnud.
@@ -42,8 +41,7 @@ Git lahendab selle probleemi. Git salvestab iga commitiga projekti seisu, näita
 
 ## 2. Giti kolm ala ja commit
 
-!!! abstract "Miks see oluline on?"
-    Git ei salvesta muudatust kohe, kui faili muudad. Muudatus liigub läbi kolme ala. Alguses tekitab see segadust, aga just tänu sellele saad ühe töösessiooni jagada mitmeks selgeks commitiks.
+Git ei salvesta muudatust kohe, kui faili muudad. Muudatus liigub läbi kolme ala. Alguses tekitab see segadust, aga just tänu sellele saad ühe töösessiooni jagada mitmeks selgeks commitiks.
 
 <figure markdown="span">
 ```mermaid
@@ -74,8 +72,7 @@ Commit-sõnum on **kohustuslik**: Git keeldub tühja sõnumiga commitist. `git l
 
 ## 3. Git-failid ja `.gitignore`
 
-!!! abstract "Miks see oluline on?"
-    Kõik failid ei kuulu versioonihaldusse: saladused ja logid tuleb sealt välja jätta. Saladus, mis on kord commiti sattunud, jääb ajalukku ka pärast faili kustutamist.
+Kõik failid ei kuulu versioonihaldusse: saladused ja logid tuleb sealt välja jätta. Saladus, mis on kord commiti sattunud, jääb ajalukku ka pärast faili kustutamist.
 
 Repo juurkaustas on peidetud kaust `.git`. Selles on kogu ajalugu, commitid ja harud. Kui `.git` kustutada, jäävad failid alles, aga ajalugu kaob. Seda kausta käsitsi ei muudeta. Ainus Giti fail, mille ise kirjutad, on `.gitignore`: loend mustritest, mida Git ignoreerib. Mustrite süntaks on [`gitignore` dokumentatsioonis](https://git-scm.com/docs/gitignore). Tabelis on näha, mis sinna kuulub.
 
@@ -93,8 +90,7 @@ Repo juurkaustas on peidetud kaust `.git`. Selles on kogu ajalugu, commitid ja h
 
 ## 4. Harud
 
-!!! abstract "Miks see oluline on?"
-    Kui kõik muudaksid otse `main`-i, segaks igaühe pooleli olev töö teisi. Harude abil saate paarilisega töötada korraga kahe eri asja kallal teineteist segamata.
+Kui kõik muudaksid otse `main`-i, segaks igaühe pooleli olev töö teisi. Harude abil saate paarilisega töötada korraga kahe eri asja kallal teineteist segamata.
 
 Haru (branch) on eraldi tööliin, tehniliselt liikuv viit ühele commitile. `main` on ametlik töötav versioon. Töötad oma harus, kuni töö on valmis, ja siis liidad selle tagasi. Vahepeal jääb `main` töökorda.
 
@@ -123,8 +119,7 @@ Harusid on kahte liiki: lokaalne haru (`uus-endpoint` sinu masinas) ja kaugharu 
 
 ## 5. Liitmine ja konfliktid
 
-!!! abstract "Miks see oluline on?"
-    Enamasti liidab Git harud ise kokku. Kui aga kaks inimest muutsid sama rida, ei saa Git otsustada, kumb versioon on õige, ja jätab valiku inimesele. Konflikti lahendamine on meeskonnatöös igapäevane oskus.
+Enamasti liidab Git harud ise kokku. Kui aga kaks inimest muutsid sama rida, ei saa Git otsustada, kumb versioon on õige, ja jätab valiku inimesele. Konflikti lahendamine on meeskonnatöös igapäevane oskus.
 
 ```bash
 git switch main
@@ -154,8 +149,7 @@ git commit
 
 ## 6. Lokaalne ja kaugrepo: clone, push, pull, fetch
 
-!!! abstract "Miks see oluline on?"
-    Kaugrepo on meeskonna ühine kokkulepitud versioon. Lokaalne koopia võib olla vananenud, seepärast alusta tööpäeva käsuga `git pull` ja alles siis tee muudatusi.
+Kaugrepo on meeskonna ühine kokkulepitud versioon. Lokaalne koopia võib olla vananenud, seepärast alusta tööpäeva käsuga `git pull` ja alles siis tee muudatusi.
 
 - **Lokaalne Git** asub sinu masinas. Kogu repo koos ajalooga on sinu kettal ning commit, haru ja log töötavad ka ilma internetita. Git on hajus versioonihaldus: igal inimesel on täielik koopia.
 - **Kaugrepo (remote)** asub GitHubis ja on meeskonna ühine koopia. Põhilise kaugrepo tavapärane nimi on **`origin`**.
@@ -183,8 +177,7 @@ git pull                          # fetch + merge
 
 ## 7. GitHub: pull request, fork, koodiülevaatus
 
-!!! abstract "Miks see oluline on?"
-    Valmis haru ei liideta main'i ilma kontrollita: keegi vaatab selle enne üle. Nii leitakse vead enne, kui need kõiki mõjutavad. CI/CD moodulis käivitab iga pull request lisaks automaattestid.
+Valmis haru ei liideta main'i ilma kontrollita: keegi vaatab selle enne üle. Nii leitakse vead enne, kui need kõiki mõjutavad. CI/CD moodulis käivitab iga pull request lisaks automaattestid.
 
 Kui haru on valmis, avad **pull request'i** (PR), millega palud muudatused üle vaadata ja liita. Nimetus sõltub platvormist: **GitHubis** on see pull request, **GitLabis** ja **Bitbucketis** merge request (MR). Mõiste on sama. Kogu töövoog on kirjeldatud GitHubi juhendis [GitHub flow](https://docs.github.com/en/get-started/using-github/github-flow).
 

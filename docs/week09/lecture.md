@@ -21,8 +21,7 @@ See nädal on iseseisev ja Proxmoxi ei ole vaja. Selles loengus võrdled tööri
 
 ## 1. Seni kasutatud tööriistad
 
-!!! abstract "Miks see oluline on?"
-    Sa oled õppinud mitu tööriista, igaühel oma süntaks. Tööintervjuul ei küsita süntaksit. Küsitakse, miks valiksid ühe või teise. Selleks pead nägema, mis neil ühist on.
+Sa oled õppinud mitu tööriista, igaühel oma süntaks. Tööintervjuul ei küsita süntaksit. Küsitakse, miks valiksid ühe või teise. Selleks pead nägema, mis neil ühist on.
 
 Kati alustas sügisel praktikat väikeses hostingufirmas. Esimesel päeval näitas vanem sysadmin Mati talle serverit, mida ta oli kuus aastat ise hooldanud.
 
@@ -51,8 +50,7 @@ Fail on Gitis, seega on sellel ajalugu ja seda saab üle vaadata. Mati mälu ei 
 
 ## 2. Imperatiivne ja deklaratiivne
 
-!!! abstract "Miks see oluline on?"
-    Need kaks sõna on IaC kõige olulisem jaotus. Kui tead, kummale poole tööriist kuulub, tead juba, kuidas ta käitub teisel käivitusel.
+Need kaks sõna on IaC kõige olulisem jaotus. Kui tead, kummale poole tööriist kuulub, tead juba, kuidas ta käitub teisel käivitusel.
 
 Mõtle restoranile. Sul on kaks võimalust süüa saada.
 
@@ -113,8 +111,7 @@ Töös on piir hägune. Dockerfile koosneb käskudest (`RUN apt install`, `COPY`
 
 ## 3. Soovitud olek ja ühtlustamine
 
-!!! abstract "Miks see oluline on?"
-    Deklaratiivne tööriist teeb iga kord sama tsüklit: vaatab, võrdleb, parandab. Kui see tsükkel on sul peas, saad ennustada iga deklaratiivse tööriista käitumist, ka nende oma, mida sa veel ei tunne.
+Deklaratiivne tööriist teeb iga kord sama tsüklit: vaatab, võrdleb, parandab. Kui see tsükkel on sul peas, saad ennustada iga deklaratiivse tööriista käitumist, ka nende oma, mida sa veel ei tunne.
 
 Toas on termostaat. Sa keerad selle 21 kraadi peale. See on **soovitud olek** (desired state). Termomeeter näitab 18 kraadi. See on **tegelik olek** (actual state).
 
@@ -158,8 +155,7 @@ N6-s kirjutasid `docker-compose.yml` faili ja käivitasid `docker compose up -d`
 
 ## 4. Idempotentsus
 
-!!! abstract "Miks see oluline on?"
-    Automaatika käivitub sageli: iga push, iga öö, iga kord, kui keegi kahtleb. Kui iga käivitus midagi lõhub või topelt teeb, ei julge keegi seda käivitada ja automaatika jääb seisma.
+Automaatika käivitub sageli: iga push, iga öö, iga kord, kui keegi kahtleb. Kui iga käivitus midagi lõhub või topelt teeb, ei julge keegi seda käivitada ja automaatika jääb seisma.
 
 Liftis on kaks sorti nuppe. Korruse nupp: vajutad „5“ üks kord või kümme korda, lift sõidab ikka viiendale korrusele. Sellist toimingut, mida võib korrata ja tulemus ei muutu, nimetatakse **idempotentseks** (idempotent).
 
@@ -193,8 +189,7 @@ Idempotentsus ei tule tasuta. Ansible'i moodulid (`package`, `file`, `copy`) on 
 
 ## 5. Triiv: keegi muutis serveris käsitsi
 
-!!! abstract "Miks see oluline on?"
-    Ükski meeskond ei ole nii distsiplineeritud, et keegi kunagi serverisse käsitsi ei läheks. Sa pead teadma, mis juhtub sellise muudatusega järgmisel automaatsel jooksul, sest muidu kaob kellegi parandus vaikselt ära.
+Ükski meeskond ei ole nii distsiplineeritud, et keegi kunagi serverisse käsitsi ei läheks. Sa pead teadma, mis juhtub sellise muudatusega järgmisel automaatsel jooksul, sest muidu kaob kellegi parandus vaikselt ära.
 
 Reede öösel kell 2 helistab klient: suured failid ei lae üles. Mati logib serverisse, avab `/etc/nginx/nginx.conf` ja muudab:
 
@@ -237,8 +232,7 @@ Triivi saab ka **tuvastada** ilma midagi muutmata. `ansible-playbook --check --d
 
 ## 6. Ansible ei mäleta, mida ta tegi
 
-!!! abstract "Miks see oluline on?"
-    Kui sa seda ei tea, kustutad ühel päeval playbookist rea ja imestad, miks see asi serveris ikka olemas on.
+Kui sa seda ei tea, kustutad ühel päeval playbookist rea ja imestad, miks see asi serveris ikka olemas on.
 
 Ansible ei mäleta midagi. Iga kord, kui playbook jookseb, vaatab Ansible serverit justkui esimest korda. Ta ei tea, mis ta eelmisel korral tegi.
 
@@ -251,8 +245,7 @@ N10-s näed tööriista, mis mäletab olekut.
 
 ## 7. Muudetav ja muutumatu infrastruktuur
 
-!!! abstract "Miks see oluline on?"
-    Triivi saab vältida kahel viisil: kas parandad serverit pidevalt kirjelduse järgi või ei paranda seda kunagi ja vahetad välja. N5-s Dockeriga tegid juba teist.
+Triivi saab vältida kahel viisil: kas parandad serverit pidevalt kirjelduse järgi või ei paranda seda kunagi ja vahetad välja. N5-s Dockeriga tegid juba teist.
 
 Mati server on **muudetav** (mutable) infrastruktuur. See on üks ja sama masin kuus aastat. Sellele paigaldatakse uuendusi, muudetakse faile, lisatakse pakette. Iga muudatus on väike, aga aastatega koguneb masinasse asju, mida keegi ei mäleta. Ansible hoiab sellist masinat korras, aga ainult nende asjade osas, mis playbookis kirjas on.
 
@@ -294,8 +287,7 @@ Firmades on tavaliselt mõlemat. Andmebaasiserver on sageli lemmikloom, sest and
 
 ## 8. IaC spekter: kus iga tööriist asub
 
-!!! abstract "Miks see oluline on?"
-    Tööriistad ei konkureeri omavahel, nad katavad erinevaid kihte. Kui näed, mis kiht on kelle oma, oskad valida õige tööriista ja ei püüa ühe tööriistaga teha kõike.
+Tööriistad ei konkureeri omavahel, nad katavad erinevaid kihte. Kui näed, mis kiht on kelle oma, oskad valida õige tööriista ja ei püüa ühe tööriistaga teha kõike.
 
 Kujuta ette maja ehitamist. Kõigepealt on vaja krunti ja vundamenti (masinad, võrgud). Siis seinu ja juhtmeid (operatsioonisüsteem, paketid, konfiguratsioon). Siis mööblit (rakendused). Iga kihi jaoks on eri meister.
 

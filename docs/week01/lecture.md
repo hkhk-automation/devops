@@ -19,40 +19,20 @@ tags:
     5. mida tähendavad **idempotentsus** ning **deklaratiivne ja imperatiivne** lähenemine;
     6. kuidas Git, Ansible, Docker, CI/CD ja Terraform viivad teenuse arendusest tootmiskeskkonda.
 
-## 1. Näidisstsenaarium
+## 1. Kus käsitsi tehtud töö katki läheb
 
-!!! abstract "Miks see oluline on?"
-    Iga rakendus jõuab serverisse mingi protsessi kaudu. Kui protsess tehakse käsitsi ja see püsib ainult kellegi mälus, läheb see varem või hiljem katki ja kedagi kutsutakse öösel kell kolm appi.
+Uus veebilehe versioon töötab arendaja arvutis ja testid läbivad. Serverisse kopeerib selle administraator käsitsi. Ta teeb seda iga kord veidi erinevalt, sest juhend on ainult tema peas. Kui üks seadistus jääb tegemata, lakkab veebipood töötamast.
 
-!!! example "Reede, 23:00"
-    Kati on arendaja. Ta kirjutas veebipoele uue makselehe, mis töötab tema sülearvutis veatult. Testid läbivad ja kolleeg on koodi üle vaadanud.
+Kood oli korras, valesti läks **protsess**: viis, kuidas kood serverisse jõuab. Failide kopeerimine, seadistamine ja taaskäivitus sõltusid ühe inimese mälust. Arvuti teeb samad sammud iga kord ühtemoodi ega unusta ühtegi.
 
-    Kell 23:00 logib süsteemiadministraator Mati serverisse sisse ja kopeerib Kati failid käsitsi tootmisserverisse. Ta teeb seda iga kord veidi erinevalt, sest juhend on ainult tema peas. Seekord unustab ta väsimuse tõttu ühe seadistuse.
-
-    Veebipood lakkab töötamast ja kliendid ei saa maksta. Ainus, kes teab, mis valesti läks, on Mati, kes läks just magama.
-
-Mõtle kolmele küsimusele.
-
-- **Mis läks valesti?** Kood oli korras. Valesti läks **protsess**, ehk viis, kuidas kood serverisse jõuab.
-- **Mis sõltus mälust?** Failide kopeerimine, seadistamine ja taaskäivitus olid kõik ainult Mati peas.
-- Mida võiks arvuti korrata? Peaaegu kõike. Arvuti ei väsi kell 23:00 ega unusta ühtegi sammu.
-
-Oluline on see, et probleem ei seisne Mati hooletuses. Probleem on **süsteemis**, mis lubas kriitilisel sammul sõltuda ainult ühe väsinud inimese mälust.
-
-!!! quote
-    Eesmärk ei ole leida Matit, keda süüdistada. Eesmärk on ehitada süsteem, kus üks unustatud samm ei saa märkamatult tootmiskeskkonda rivist välja viia.
-
-Lähtepunkt on järgmine: käsitsi tehtud töö on ebaühtlane ja aeglane, automatiseeritud ja üle vaadatud protsess on korratav ja turvalisem. Vastutus jääb inimestele, aga automatiseerimise korral on näha, kes mida muutis.
+Seega ei ole lahendus „ole hoolikam“. Lahendus on protsess, mis on kirjas koodina, mida saab üle vaadata ja mis käib iga kord samamoodi.
 
 ??? question "Kontrolli ennast"
-    1. Kati kood töötas tema arvutis. Miks veebipood siiski rivist välja läks?
-    2. Nimeta üks samm, mis sõltus ainult Mati mälust.
-    3. Miks ei ole „Mati peab olema hoolikam“ hea lahendus?
+    1. Kood töötas arendaja arvutis. Miks veebipood siiski lakkas töötamast?
+    2. Nimeta üks samm, mis sõltus ainult ühe inimese mälust.
+    3. Miks ei ole „administraator peab olema hoolikam“ hea lahendus?
 
 ## 2. Mis käsitsi tehtud töös valesti läheb
-
-!!! abstract "Miks see oluline on?"
-    Ühte serverit ja ühte muudatust saab hallata käsitsi. Probleemid tekivad mahu kasvades ja just see on automatiseerimise peamine põhjus.
 
 Ühte serverit ja ühekordset muudatust saab hallata käsitsi. Kui servereid, kasutajaid, muudatusi ja keskkondi lisandub, kasvavad koos nendega ka järgmised probleemid:
 
@@ -71,8 +51,7 @@ Käsitöö ei skaleeru sellepärast, et inimene ei suuda sama tegevust sada kord
 
 ## 3. Millal automatiseerida ja millal mitte
 
-!!! abstract "Miks see oluline on?"
-    Algaja arvab sageli, et kõik tuleb kohe automatiseerida. Kogenud insener oskab hinnata, millal see end ära tasub ja millal mitte.
+Kõike ei tasu kohe automatiseerida.
 
 Automatiseerimiseks sobib hästi töö, mis on:
 
@@ -110,10 +89,7 @@ Ole ettevaatlik: vigane protsess jääb vigaseks ka siis, kui see on automatisee
 
 ## 4. Automatiseerimise lühike ajalugu
 
-!!! abstract "Miks see oluline on?"
-    Automatiseerimine ei alanud DevOpsi ega tehisintellektiga. Iga uus lähenemine tekkis siis, kui eelmine ei tulnud kasvava mahuga enam toime.
-
-Iga samm tekkis siis, kui eelmine ei tulnud kasvava mahuga toime. Sammud on koos probleemide ja lahendustega tabelis 4.1.
+Automatiseerimine ei alanud DevOpsi ega tehisintellektiga. Iga uus lähenemine tekkis siis, kui eelmine ei tulnud kasvava mahuga enam toime. Sammud on koos probleemide ja lahendustega tabelis 4.1.
 
 ??? info "Tabel 4.1. Automatiseerimise areng"
     | Samm | Milline probleem tekkis? | Milline lahendus tekkis? |
@@ -128,9 +104,6 @@ Iga samm tekkis siis, kui eelmine ei tulnud kasvava mahuga toime. Sammud on koos
 
     *Tabel 4.1. Automatiseerimise areng.*
 
-!!! quote
-    Uus tehnoloogia ei kaota vana. Ansible ei asenda SSH-d, Terraform ei kaota vajadust võrke tunda ja CI/CD ei võta ära vastutust testimise eest. Automatiseerimine tugineb põhiteadmistele ja võimaldab neid rakendada suuremas mahus.
-
 ??? question "Kontrolli ennast"
     1. Miks tekkis iga uus automatiseerimise lähenemine?
     2. Kas Ansible asendab SSH? Selgita.
@@ -138,8 +111,7 @@ Iga samm tekkis siis, kui eelmine ei tulnud kasvava mahuga toime. Sammud on koos
 
 ## 5. Sama töö käsitsi ja Ansible'iga
 
-!!! abstract "Miks see oluline on?"
-    See on loengu tehniline keskpunkt. Erinevus on kõige selgemini näha, kui sama ülesannet tehakse kahel viisil.
+Erinevus on kõige selgemini näha, kui sama ülesannet tehakse kahel viisil.
 
 Ülesanne: paigalda kolmele serverile nginx ja käivita see.
 
@@ -196,8 +168,7 @@ Sama fail sobib nii kolme kui ka kolmesaja serveri jaoks, muuta tuleb ainult inv
 
 ## 6. Idempotentsus
 
-!!! abstract "Miks see oluline on?"
-    Idempotentsus on automatiseerimise keskne mõiste. Kui automaatika käivitatakse uuesti, ei tohi see süsteemi iga korraga üha rohkem muuta ega seda rikkuda.
+Idempotentsus on automatiseerimise keskne mõiste. Kui automaatika käivitatakse uuesti, ei tohi see süsteemi iga korraga üha rohkem muuta ega seda rikkuda.
 
 ```bash
 echo "x" >> fail    # EI ole idempotentne: iga käivitus lisab rea
@@ -215,8 +186,7 @@ Ansible on üles ehitatud just sellele põhimõttele. Näiteks kirjeldatakse, et
 
 ## 7. Deklaratiivne ja imperatiivne lähenemine
 
-!!! abstract "Miks see oluline on?"
-    See selgitab, miks konfiguratsioonihaldus ja IaC ei ole lihtsalt „palju käske ühes failis“. See on otsene üleminek Bashilt Ansible'ile.
+See selgitab, miks konfiguratsioonihaldus ja IaC ei ole lihtsalt „palju käske ühes failis“. See on otsene üleminek Bashilt Ansible'ile.
 
 - **Imperatiivne:** „tee need sammud selles järjekorras“ (näiteks Bashi skript).
 - **Deklaratiivne:** „süsteem peab olema sellises lõppseisus“ (näiteks Ansible, Terraform, Docker Compose).
@@ -233,8 +203,7 @@ Deklaratiivne kirjeldus ütleb, *mis peab olema*, ja ei ütle, *kuidas seda teha
 
 ## 8. DevOps kui põhimõte
 
-!!! abstract "Miks see oluline on?"
-    Automatiseerimine ei lahenda ainult tehnilist probleemi. Kui arendaja kirjutab koodi ja käitusmeeskond haldab teenust, peab tarneahel olema ühine, nähtav ja tagasisidega.
+Automatiseerimine ei lahenda ainult tehnilist probleemi. Kui arendaja kirjutab koodi ja käitusmeeskond haldab teenust, peab tarneahel olema ühine, nähtav ja tagasisidega.
 
 Lühidalt:
 
@@ -243,9 +212,6 @@ Lühidalt:
 - kui arendus andis valmis koodi lihtsalt käitusele üle („viskas üle müüri“), olid väljalasked aeglased ja riskantsed ning vigade korral otsiti süüdlast;
 - DevOps ühendab koostöö, jagatud vastutuse, automatiseerimise, mõõtmise ja teadmiste jagamise;
 - DevOps **ei ole** üks tööriist, eraldi tiim ega ametinimetus.
-
-!!! quote
-    Hea automatiseerimine vajab lisaks uuele tööriistale ka inimesi, toimivat koostööd, mõõtmist ja jagatud teadmisi.
 
 *DevOpsi päritolu, CAMS-mudelit, SRE-d, platvormi-inseneeriat ja teisi Ops-valdkondi käsitleb allpool olev jaotis **Taust ja edasijõudnutele**.*
 
@@ -256,15 +222,11 @@ Lühidalt:
 
 ## 9. Infrastruktuur koodina ja kursuse tööriistaahel
 
-!!! abstract "Miks see oluline on?"
-    IaC on kursuse üks kesksemaid ideid ja tööriistaahel näitab, kuidas eri tööriistad omavahel seotud on.
+IaC on kursuse üks kesksemaid ideid ja tööriistaahel näitab, kuidas eri tööriistad omavahel seotud on.
 
 **Infrastruktuur koodina (IaC)** tähendab, et serverid, võrgud ja õigused kirjeldatakse failides, mida saab hoida versioonihalduses, üle vaadata ja automaatselt rakendada.
 
-!!! quote
-    Selle asemel et teha server pilvekonsoolis kümne nupuvajutusega, kirjeldatakse server, võrk ja õigused koodina. Kood vaadatakse üle ja automaatika loob taristu iga kord ühtemoodi.
-
-IaC ning automatiseeritud ja üle vaadatud juurutus oleksid Kati ja Mati vea tõenäosust tunduvalt vähendanud. Ka automaatikas võib olla vigu, kuid siis on viga nähtav ja korratav ega ole peidus ühe inimese mälus.
+IaC ning automatiseeritud ja üle vaadatud juurutus oleksid osas 1 kirjeldatud vea tõenäosust tunduvalt vähendanud. Ka automaatikas võib olla vigu, kuid siis on viga nähtav ja korratav ega ole peidus ühe inimese mälus.
 
 Kursuse tööriistad moodustavad ühe tarneahela:
 
@@ -320,9 +282,7 @@ graph LR
 
 Loeng selgitas, miks automatiseerida. Praktikumis õpid, kuidas seda teha. Täna seadistad töökeskkonna, mis on ahela **esimene osa**: SSH-võti, nimega hostid failis `~/.ssh/config`, VS Code Remote-SSH, Git ja Ansible'i kontroller.
 
-See võib tunduda väikese tehnilise detailina, kuid see on eeldus, et sama tegevust saaks hiljem korrata kümnetes serverites. Kui töökeskkond täna ei tööta, ei saa ka ülejäänud kursuse töid teha.
-
-*Nüüd võid alustada [praktikumiga](lab.md). Töökeskkond on ahela esimene osa ja kõik järgmised nädalad tuginevad sellele.*
+Edasi: [praktikum](lab.md).
 
 ## Taust ja edasijõudnutele
 
@@ -434,7 +394,7 @@ Need teemad süvendavad loengut ega kuulu esimese tunni põhiosa juurde. Neist o
 ??? info "Rike kui õppimise võimalus: postmortem"
     Blameless-kultuuris ei ole algpõhjuse analüüsi (RCA) eesmärk süüdlase leidmine. „Inimlik viga“ on uurimise **algus**, mitte lõpp.
 
-    - **5 korda miks (5 Whys):** *Veebipood lakkas töötamast. Miks? Seadistus oli vale. Miks? Mati unustas ühe sammu. Miks? Samm oli ainult tema peas ja kirja panemata. Miks? Juurutus tehti käsitsi. Miks? Automaatset juurutust ei olnud.* Seega on vastus „automaatset juurutust ei olnud“ ja Mati ei ole algpõhjus.
+    - **5 korda miks (5 Whys):** *Veebipood lakkas töötamast. Miks? Seadistus oli vale. Miks? Administraator unustas ühe sammu. Miks? Samm oli ainult tema peas ja kirja panemata. Miks? Juurutus tehti käsitsi. Miks? Automaatset juurutust ei olnud.* Seega on vastus „automaatset juurutust ei olnud“ ja administraator ei ole algpõhjus.
     - **Ishikawa diagramm (kalaluu):** põhjused rühmitatakse kategooriatesse (inimesed, protsess, tööriistad, keskkond).
 
 ??? info "DORA"
