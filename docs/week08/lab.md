@@ -93,6 +93,11 @@ Repositooriumis on issue'de mall **Viga**. Iga vea juures toimi nii:
 
 Kui commit jõuab repositooriumi vaikeharusse (siin `main`), sulgeb GitHub issue ise ja lisab sellele lingi commit'ile ([issue sulgemine commit'iga](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword)). Pull request'i puhul pane `Fixes #<number>` pull request'i kirjeldusse. Siis sulgub issue liitmisel. Pull request'id ja issue'd kasutavad sama numbrijada, seega ei ole issue numbrid alati järjest.
 
+<figure markdown="span">
+  ![Neli kasti järjest: 1. Sümptom (mida näed: punane töö, rida logis, curl vastus), 2. Hüpotees (mis võib olla põhjus, mis failis, mis real), 3. Tõend (kontrolli hüpoteesi), 4. Parandus (üks muudatus korraga)](../images/n08_veaotsing.svg)
+  <figcaption>Joonis 8.7. Iga viga läbib samad neli sammu (Talvik, 2026).</figcaption>
+</figure>
+
 Juhendi commit'i käskudes on ainult sõnumi pealkiri. Lisa paranduse commit'ile ise teine `-m` argument: `-m "Fixes #<number>"`.
 
 ## Osa 2 · Viga 1: registrisse kirjutamine
@@ -111,7 +116,15 @@ Käivituse lehel on `test` ja `konteiner` rohelised. `build-and-push` on punane.
 2. Ava sama töö esimene samm **Set up job**. Leia lõik `GITHUB_TOKEN Permissions`.
 3. Ava `.github/workflows/ci.yml`. Otsi töö `build-and-push` juurest sõna `permissions`.
 
+??? tip "Vihje"
+    Sisselogimine õnnestus, push mitte. Token kehtib, aga mida see tohib teha? Vaata sammus **Set up job** lõigus `GITHUB_TOKEN Permissions` rida `Packages`.
+
 ??? success "Põhjus ja parandus"
+    <figure markdown="span">
+      ![Ülemine rida enne parandust: docker login õnnestub, docker push annab denied, sest tokenil on Packages: read. Alumine rida pärast parandust: login ja push õnnestuvad ja image jõuab GHCR-i. All rida permissions: contents: read, packages: write](../images/n08_oigused.svg)
+      <figcaption>Joonis 8.8. Token kehtib, aga ilma õiguseta `packages: write` ei saa registrisse kirjutada (Talvik, 2026).</figcaption>
+    </figure>
+
     Logi lõpus on:
 
     ```text
@@ -213,7 +226,15 @@ git push
 2. Ava tööd `test` ja `build-and-push`. Võrdle, mis kell kumbki alustas.
 3. Võrdle failis `ci.yml` töö `konteiner` algust töö `build-and-push` algusega.
 
+??? tip "Vihje"
+    Vaata käivituse lehel tööde skeemi. Kui töö ei oota ühtegi teist tööd, alustab see kohe. Milline võti ütleb, mida töö ootab?
+
 ??? success "Põhjus ja parandus"
+    <figure markdown="span">
+      ![Ülemine rida ilma needs'ita: test punane, konteiner vahele jäänud, build-and-push alustab koos testiga ja katkine kood jõuab GHCR-i. Alumine rida needs: konteiner: test punane, konteiner ja build-and-push jäävad vahele](../images/n08_needs.svg)
+      <figcaption>Joonis 8.9. `needs` paneb tööd järjekorda: kui test kukub, image'it ei ehitata (Talvik, 2026).</figcaption>
+    </figure>
+
     `build-and-push` on roheline ja **Packages** all on uus räsi. `latest` näitab nüüd koodi, mille test kukkus. Skeemil on nool ainult `test` ja `konteiner` vahel. `build-and-push` alustas samal ajal kui `test`. Tööl puudub `needs`, seega ei oota see teisi ([loengu §5](lecture.md#5-millal-image-ehitatakse)).
 
     Määra töö sõltuvus võtmega `needs`. `konteiner` ootab juba `test`-i, seega piisab `konteiner`-ist:
@@ -291,7 +312,15 @@ Vaata vahekaarti **Actions**. Vaata pull request'i lehel kasti **Checks**. Vaata
 
 3. Ava failis `ci.yml` plokk `on:` ja töö `build-and-push` päis. Kas miski ütleb, millises harus või millise sündmusega see töö käivitub?
 
+??? tip "Vihje"
+    Vaata iga käivituse juures sündmust ja haru. Võtme `on:` all on `push:` ilma harudeta. Millistes harudes see siis töövoo käivitab? Ja mis jätaks töö `build-and-push` pull request'is vahele?
+
 ??? success "Põhjus ja parandus"
+    <figure markdown="span">
+      ![Ülemine rida pull_request: test ja konteiner rohelised, build-and-push hall ja skipped. Alumine rida push harusse main: kõik kolm tööd ja image läheb GHCR-i](../images/n08_pr_vs_main.svg)
+      <figcaption>Joonis 8.10. Pärast parandust käivad pull request'is ainult testid, registrisse jõuab liidetud kood (Talvik, 2026).</figcaption>
+    </figure>
+
     Sama commit'i kohta on kaks käivitust. Üks on `push` harus `n08-tervitus`, teine on `pull_request`. Mõlemas oli `build-and-push` roheline. **Packages** all on haru commit'i räsi. `latest` näitab nüüd koodi, mida keegi pole üle vaadanud.
 
     Põhjuseid on kaks. `push:` ilma harudeta käivitab töövoo iga haru igal push'il. Tööl `build-and-push` ei ole tingimust, mis jätaks selle pull request'is vahele ([loengu §5](lecture.md#5-millal-image-ehitatakse)).
@@ -374,6 +403,9 @@ Pärast rida `== image ...` lõpetab skript veaga.
     grep ghcr.io ~/.docker/config.json
     ```
 
+??? tip "Vihje"
+    Konveier logis registrisse sisse oma `GITHUB_TOKEN`-iga. Kas serveril on token? Mis käsk salvestab sisselogimise faili `~/.docker/config.json`?
+
 ??? success "Põhjus ja parandus"
     Veateade on umbes selline:
 
@@ -428,7 +460,15 @@ docker logs flask-cd
 
 Vaata `docker ps` veergu PORTS. Vaata logis rida `Running on`. Millisele konteineri pordile suunab Docker liikluse ja millisel pordil kuulab Flask?
 
+??? tip "Vihje"
+    `-p A:B` tähendab: serveri port A suunatakse konteineri porti B. Kas B on see port, millel Flask kuulab (logi rida `Running on`)?
+
 ??? success "Põhjus ja parandus"
+    <figure markdown="span">
+      ![curl localhost:8088. Konteineris flask-cd on port 80, kus keegi ei kuula, ja port 5000, kus kuulab Flask. -p 8088:80 annab Connection reset, -p 8088:5000 annab tervituse](../images/n08_pordid_server.svg)
+      <figcaption>Joonis 8.11. `-p 8088:5000`: serveri port 8088 suunatakse konteineri porti 5000, kus Flask kuulab (Talvik, 2026).</figcaption>
+    </figure>
+
     `curl` annab `curl: (56) Recv failure: Connection reset by peer` või `curl: (52) Empty reply from server`.
 
     `docker ps` näitab `0.0.0.0:8088->80/tcp`. Logis on `Running on http://...:5000`. Skript suunab serveri pordi 8088 konteineri porti 80. Seal ei kuula ükski programm, Flask kuulab pordil 5000.
@@ -653,7 +693,15 @@ Käivitus on punane. Ava see ja vali **Pipeline Overview**. Plugin `pipeline-gra
 
 3. Vaata tabelit 8.7. Kes paigaldas Pythoni GitHub Actionsis?
 
+??? tip "Vihje"
+    GitHub Actionsis paigaldas Pythoni samm `setup-python`. Kes paigaldab Pythoni sinu Jenkinsi konteinerisse? Millisest failist see konteiner ehitatakse?
+
 ??? success "Põhjus ja parandus"
+    <figure markdown="span">
+      ![Vasakul GitHub Actions: samm actions/setup-python, pytest töötab. Paremal Jenkins: jenkins/Dockerfile paigaldab python3, pytest töötab](../images/n08_jenkins_python.svg)
+      <figcaption>Joonis 8.12. GitHub Actionsis paigaldab Pythoni action, Jenkinsis paigaldad selle ise (Talvik, 2026).</figcaption>
+    </figure>
+
     Logis on rida `python3: not found`. Masinas `proxmox1` Python on, Jenkinsi konteineris mitte. GitHub Actionsis paigaldas Pythoni action `setup-python`. Jenkinsis peab selle paigaldama see, kes Jenkinsit haldab.
 
     Lisa failis `jenkins/Dockerfile` pärast rida `FROM` Pythoni paigaldus. Paigaldamiseks on vaja root'i õigusi. Seejärel vahetatakse kasutaja tagasi `jenkins`-iks, et Jenkins ei töötaks root'ina:

@@ -1,0 +1,20 @@
+<svg viewBox="0 0 900 250" xmlns="http://www.w3.org/2000/svg" font-family="Inter, -apple-system, sans-serif">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#616161"/></marker></defs>
+  <rect x="0" y="0" width="900" height="250" fill="#ffffff"/>
+  <text x="450" y="32" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">-p serveri port : konteineri port</text>
+  <rect x="40" y="70" width="150" height="56" rx="8" fill="#ede7f6" stroke="#5e35b1"/>
+  <text x="115" y="96" text-anchor="middle" font-size="14" font-weight="700" fill="#311b92">curl</text>
+  <text x="115" y="114" text-anchor="middle" font-size="11" fill="#311b92">localhost:8088</text>
+  <rect x="250" y="55" width="600" height="160" rx="10" fill="#fafafa" stroke="#9e9e9e"/>
+  <text x="270" y="78" font-size="13" font-weight="700" fill="#424242">konteiner flask-cd</text>
+  <rect x="290" y="95" width="150" height="46" rx="8" fill="#ffebee" stroke="#c62828"/>
+  <text x="365" y="117" text-anchor="middle" font-size="14" font-weight="700" fill="#b71c1c">port 80</text>
+  <text x="365" y="133" text-anchor="middle" font-size="11" fill="#b71c1c">keegi ei kuula</text>
+  <rect x="290" y="155" width="150" height="46" rx="8" fill="#e8f5e9" stroke="#2e7d32"/>
+  <text x="365" y="177" text-anchor="middle" font-size="14" font-weight="700" fill="#1b5e20">port 5000</text>
+  <text x="365" y="193" text-anchor="middle" font-size="11" fill="#1b5e20">Flask kuulab</text>
+  <line x1="190" y1="98" x2="286" y2="116" stroke="#c62828" stroke-width="1.6" marker-end="url(#a)"/>
+  <line x1="190" y1="104" x2="286" y2="176" stroke="#2e7d32" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#a)"/>
+  <text x="470" y="122" font-size="13" fill="#b71c1c">-p 8088:80   enne: Connection reset</text>
+  <text x="470" y="182" font-size="13" fill="#1b5e20">-p 8088:5000   pärast: tervitus</text>
+</svg>
