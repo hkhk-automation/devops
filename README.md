@@ -1,4 +1,4 @@
-# IT automatiseerimise kursus
+# IT automatiseerimise kursus !
 
 Serverite ja rakenduste automatiseerimine — Git'ist infrastruktuurini koodina. Kutsekooli 3. aasta esimene automatiseerimiskursus, 13 nädalat.
 
