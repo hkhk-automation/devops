@@ -1,0 +1,39 @@
+<svg viewBox="0 0 900 300" width="900" height="300" xmlns="http://www.w3.org/2000/svg" font-family="Inter, -apple-system, sans-serif">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#616161"/></marker></defs>
+  <text x="450" y="30" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Neli tööriista, neli ülesannet</text>
+
+  <rect x="20" y="70" width="190" height="130" rx="10" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="115" y="100" text-anchor="middle" font-size="17" font-weight="700" fill="#0d47a1">Packer</text>
+  <text x="115" y="126" text-anchor="middle" font-size="12" fill="#424242">teeb masina malli:</text>
+  <text x="115" y="144" text-anchor="middle" font-size="12" fill="#424242">OS, guest agent,</text>
+  <text x="115" y="162" text-anchor="middle" font-size="12" fill="#424242">cloud-init</text>
+  <text x="115" y="188" text-anchor="middle" font-size="12" fill="#1565c0" font-family="ui-monospace, Menlo, monospace">mall 9000</text>
+
+  <rect x="245" y="70" width="190" height="130" rx="10" fill="#4527a0"/>
+  <text x="340" y="100" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">OpenTofu</text>
+  <text x="340" y="126" text-anchor="middle" font-size="12" fill="#d1c4e9">loob masina mallist:</text>
+  <text x="340" y="144" text-anchor="middle" font-size="12" fill="#d1c4e9">tuumad, mälu, võrk</text>
+  <text x="340" y="188" text-anchor="middle" font-size="12" fill="#d1c4e9" font-family="ui-monospace, Menlo, monospace">output ip</text>
+
+  <rect x="470" y="70" width="190" height="130" rx="10" fill="#fff3e0" stroke="#ef6c00" stroke-width="1.5"/>
+  <text x="565" y="100" text-anchor="middle" font-size="17" font-weight="700" fill="#bf360c">Ansible</text>
+  <text x="565" y="126" text-anchor="middle" font-size="12" fill="#424242">seadistab sisu:</text>
+  <text x="565" y="144" text-anchor="middle" font-size="12" fill="#424242">paketid, failid,</text>
+  <text x="565" y="162" text-anchor="middle" font-size="12" fill="#424242">teenused</text>
+  <text x="565" y="188" text-anchor="middle" font-size="12" fill="#e65100" font-family="ui-monospace, Menlo, monospace">inventory</text>
+
+  <rect x="695" y="70" width="185" height="130" rx="10" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="787" y="100" text-anchor="middle" font-size="17" font-weight="700" fill="#1b5e20">rakendus käib</text>
+  <text x="787" y="126" text-anchor="middle" font-size="12" fill="#424242">nginx, andmebaas,</text>
+  <text x="787" y="144" text-anchor="middle" font-size="12" fill="#424242">sinu konteiner</text>
+
+  <line x1="210" y1="135" x2="243" y2="135" stroke="#616161" stroke-width="1.8" marker-end="url(#a)"/>
+  <line x1="435" y1="135" x2="468" y2="135" stroke="#616161" stroke-width="1.8" marker-end="url(#a)"/>
+  <line x1="660" y1="135" x2="693" y2="135" stroke="#616161" stroke-width="1.8" marker-end="url(#a)"/>
+
+  <rect x="245" y="232" width="415" height="50" rx="10" fill="#fafafa" stroke="#9e9e9e" stroke-width="1.5"/>
+  <text x="452" y="254" text-anchor="middle" font-size="15" font-weight="700" fill="#212121">Vault või OpenBao: saladused</text>
+  <text x="452" y="272" text-anchor="middle" font-size="12" fill="#616161">API-token, paroolid, võtmed, mida OpenTofu ja Ansible küsivad</text>
+  <line x1="340" y1="232" x2="340" y2="202" stroke="#9e9e9e" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#a)"/>
+  <line x1="565" y1="232" x2="565" y2="202" stroke="#9e9e9e" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#a)"/>
+</svg>

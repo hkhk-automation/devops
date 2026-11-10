@@ -1,4 +1,4 @@
-<svg viewBox="0 0 960 560" xmlns="http://www.w3.org/2000/svg" font-family="Inter, -apple-system, sans-serif">
+<svg viewBox="0 0 960 560" width="960" height="560" xmlns="http://www.w3.org/2000/svg" font-family="Inter, -apple-system, sans-serif">
   <defs>
     <linearGradient id="ct" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ede7f6"/><stop offset="1" stop-color="#d1c4e9"/></linearGradient>
     <linearGradient id="pm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8f5e9"/><stop offset="1" stop-color="#c8e6c9"/></linearGradient>

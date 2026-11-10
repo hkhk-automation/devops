@@ -1,0 +1,41 @@
+<svg viewBox="0 0 900 420" width="900" height="420" xmlns="http://www.w3.org/2000/svg" font-family="Inter, -apple-system, sans-serif">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#616161"/></marker></defs>
+  <text x="450" y="32" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Infrastruktuuri elutsükkel OpenTofuga</text>
+
+  <rect x="40" y="70" width="230" height="110" rx="10" fill="#ede7f6" stroke="#5e35b1" stroke-width="1.5"/>
+  <text x="155" y="100" text-anchor="middle" font-size="17" font-weight="700" fill="#4527a0">1. Kirjelda</text>
+  <text x="155" y="124" text-anchor="middle" font-size="12" fill="#5e35b1" font-family="ui-monospace, Menlo, monospace">vm.tf · tofu init</text>
+  <text x="155" y="146" text-anchor="middle" font-size="12" fill="#616161">fail Gitis, provider</text>
+  <text x="155" y="164" text-anchor="middle" font-size="12" fill="#616161">alla laaditud</text>
+
+  <rect x="335" y="70" width="230" height="110" rx="10" fill="#fff3e0" stroke="#ef6c00" stroke-width="1.5"/>
+  <text x="450" y="100" text-anchor="middle" font-size="17" font-weight="700" fill="#bf360c">2. Plaani</text>
+  <text x="450" y="124" text-anchor="middle" font-size="12" fill="#e65100" font-family="ui-monospace, Menlo, monospace">tofu plan -out=tfplan</text>
+  <text x="450" y="146" text-anchor="middle" font-size="12" fill="#616161">loe läbi: + ~ -</text>
+  <text x="450" y="164" text-anchor="middle" font-size="12" fill="#616161">midagi ei muutu</text>
+
+  <rect x="630" y="70" width="230" height="110" rx="10" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="745" y="100" text-anchor="middle" font-size="17" font-weight="700" fill="#1b5e20">3. Rakenda</text>
+  <text x="745" y="124" text-anchor="middle" font-size="12" fill="#2e7d32" font-family="ui-monospace, Menlo, monospace">tofu apply tfplan</text>
+  <text x="745" y="146" text-anchor="middle" font-size="12" fill="#616161">masin luuakse või muutub,</text>
+  <text x="745" y="164" text-anchor="middle" font-size="12" fill="#616161">olekufail uueneb</text>
+
+  <line x1="270" y1="125" x2="333" y2="125" stroke="#616161" stroke-width="1.8" marker-end="url(#a)"/>
+  <line x1="565" y1="125" x2="628" y2="125" stroke="#616161" stroke-width="1.8" marker-end="url(#a)"/>
+
+  <rect x="335" y="250" width="230" height="110" rx="10" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="450" y="280" text-anchor="middle" font-size="17" font-weight="700" fill="#0d47a1">4. Halda</text>
+  <text x="450" y="304" text-anchor="middle" font-size="12" fill="#1565c0" font-family="ui-monospace, Menlo, monospace">muuda .tf faili</text>
+  <text x="450" y="326" text-anchor="middle" font-size="12" fill="#616161">plaan näitab ka käsitsi</text>
+  <text x="450" y="344" text-anchor="middle" font-size="12" fill="#616161">tehtud muudatusi (triiv)</text>
+
+  <path d="M745,180 L745,305 L567,305" stroke="#616161" stroke-width="1.8" fill="none" marker-end="url(#a)"/>
+  <path d="M335,305 L155,305 L155,182" stroke="#616161" stroke-width="1.8" fill="none" marker-end="url(#a)"/>
+  <text x="245" y="296" text-anchor="middle" font-size="12" fill="#616161">uus muudatus</text>
+
+  <rect x="630" y="330" width="230" height="64" rx="10" fill="#ffebee" stroke="#c62828" stroke-width="1.5"/>
+  <text x="745" y="356" text-anchor="middle" font-size="16" font-weight="700" fill="#b71c1c">5. Kustuta</text>
+  <text x="745" y="378" text-anchor="middle" font-size="12" fill="#c62828" font-family="ui-monospace, Menlo, monospace">tofu destroy</text>
+  <line x1="565" y1="345" x2="628" y2="358" stroke="#616161" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a)"/>
+  <text x="450" y="404" text-anchor="middle" font-size="12" fill="#616161">kui keskkonda enam vaja ei ole</text>
+</svg>

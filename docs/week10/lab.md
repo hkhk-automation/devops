@@ -12,7 +12,7 @@ Täna kirjeldad failis ühe virtuaalmasina, lood selle OpenTofuga õpetaja Proxm
 
 <figure markdown="span">
   ![Vasakul masin proxmox1, kaustas ~/lab10 failid vm.tf, terraform.tfvars tokeniga ja terraform.tfstate ning käsud tofu plan ja tofu apply. Nool API-päring HTTPS, token kasutaja@pve!tofu, läheb Proxmoxi 192.168.100.200, mis kontrollib tokeni õigusi. Proxmoxis kloonitakse mallist 9000 masin tofu-kasutaja pool'i tofu-kasutaja, VMID 41xx. Guest agent teatab IP-aadressi, katkendjoonega nool viib masina andmed ja IP tagasi olekufaili ja tofu output ip väljundisse](../images/n10_lab_ylevaade.svg)
-  <figcaption>Joonis 10.6. OpenTofu saadab masinast proxmox1 API-päringu tokeniga, Proxmox loob masina sinu pool'i ja annab IP tagasi (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 10.7. OpenTofu saadab masinast proxmox1 API-päringu tokeniga, Proxmox loob masina sinu pool'i ja annab IP tagasi (Talvik, 2026).</figcaption>
 </figure>
 
 **Edenemine:** laboritahvel <http://192.168.125.187:8091/> (VPN-iga).
@@ -33,6 +33,11 @@ Rida **Ennusta** tähendab, et enne käsku mõtled läbi, mis juhtub. Vastus on 
 - VPN-ühendus ja VS Code'i ühendus masinaga `proxmox1`.
 - Õpetaja Proxmoxi klastri veebiliides <https://192.168.100.200:8006>. Kasutajanime ja parooli said kooli meiliga. Vali sisselogimisel **Realm** väärtuseks **Proxmox VE authentication server**. Brauser hoiatab sertifikaadi eest, sest klastril on ise allkirjastatud sertifikaat: vali **Advanced** ja jätka.
 - **VMID**: number vahemikus 4100–4199, mis on samas meilis. Proxmoxis kannab sinu uus masin seda numbrit.
+
+<figure markdown="span">
+  ![Sinu arvuti ühendub VPN-iga kooli võrku 192.168.125.0/23, kus on masin proxmox1 kaustaga ~/lab10, siin käivitad käsud. proxmox1 saadab HTTPS-päringu tokeniga õpetaja klastrisse, võrk 192.168.100.0/24: sõlm marianodea aadressil .200 port 8006, API ja mall 9000, ning teine sõlm marionodeb .201. Sild vmbr0 ühendab sõlmed, sinu masina tofu-kasutaja (VMID 41xx, AlmaLinux, aadress 192.168.100.x, sinu pool'is) ja ruuteri .1, mis jagab DHCP-ga IP-aadressi. proxmox1-st läheb sinu masinasse ping ja SSH, kodutöös Ansible](../images/n10_topoloogia.svg)
+  <figcaption>Joonis 10.8. Praktikumi võrk: käsud käivitad masinas proxmox1, masin tekib õpetaja klastrisse ja saab IP-aadressi DHCP-st (Talvik, 2026).</figcaption>
+</figure>
 
 Sinu kasutajal on õigus luua masinaid pool'i `tofu-<kasutaja>` (näiteks `tofu-mtamm`). Kui sa Proxmoxi vasakus menüüs seda pool'i ei näe, küsi enne jätkamist õpetajalt abi.
 

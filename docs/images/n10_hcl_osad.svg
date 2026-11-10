@@ -1,0 +1,56 @@
+<svg viewBox="0 0 900 478" width="900" height="478" xmlns="http://www.w3.org/2000/svg" font-family="Inter, -apple-system, sans-serif">
+  <text x="450" y="32" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Mis on mis .tf failis</text>
+  <rect x="20" y="50" width="560" height="408" rx="10" fill="#1e1e2e"/>
+  <text x="36" y="80" font-size="13" fill="#cfd8dc" font-family="ui-monospace, Menlo, Consolas, monospace" xml:space="preserve"><tspan fill="#ffb74d" font-weight="700">variable "kasutaja"</tspan> {</text>
+  <circle cx="556" cy="76" r="10" fill="#c62828"/><text x="556" y="80" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">1</text>
+  <text x="36" y="104" font-size="13" fill="#cfd8dc" font-family="ui-monospace, Menlo, Consolas, monospace" xml:space="preserve">  type = string</text>
+  <text x="36" y="128" font-size="13" fill="#cfd8dc" font-family="ui-monospace, Menlo, Consolas, monospace" xml:space="preserve">}</text>
+  <text x="36" y="152" font-size="13" fill="#cfd8dc" font-family="ui-monospace, Menlo, Consolas, monospace" xml:space="preserve"></text>
+  <text x="36" y="176" font-size="13" fill="#cfd8dc" font-family="ui-monospace, Menlo, Consolas, monospace" xml:space="preserve"><tspan fill="#ffb74d" font-weight="700">resource</tspan> <tspan fill="#ffb74d" font-weight="700">"proxmox_virtual_environment_vm"</tspan> <tspan fill="#ffb74d" font-weight="700">"veeb"</tspan> {</text>
+  <circle cx="556" cy="172" r="10" fill="#c62828"/><text x="556" y="176" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">4</text>
+  <circle cx="530" cy="172" r="10" fill="#c62828"/><text x="530" y="176" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">3</text>
+  <circle cx="504" cy="172" r="10" fill="#c62828"/><text x="504" y="176" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">2</text>
+  <text x="36" y="200" font-size="13" fill="#cfd8dc" font-family="ui-monospace, Menlo, Consolas, monospace" xml:space="preserve">  <tspan fill="#ffb74d" font-weight="700">name</tspan>      = <tspan fill="#ffb74d" font-weight="700">"tofu-${var.kasutaja}"</tspan></text>
+  <circle cx="556" cy="196" r="10" fill="#c62828"/><text x="556" y="200" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">6</text>
+  <circle cx="530" cy="196" r="10" fill="#c62828"/><text x="530" y="200" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">5</text>
+  <text x="36" y="224" font-size="13" fill="#cfd8dc" font-family="ui-monospace, Menlo, Consolas, monospace" xml:space="preserve">  node_name = <tspan fill="#ffb74d" font-weight="700">var.node_name</tspan></text>
+  <circle cx="556" cy="220" r="10" fill="#c62828"/><text x="556" y="224" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">7</text>
+  <text x="36" y="248" font-size="13" fill="#cfd8dc" font-family="ui-monospace, Menlo, Consolas, monospace" xml:space="preserve"></text>
+  <text x="36" y="272" font-size="13" fill="#cfd8dc" font-family="ui-monospace, Menlo, Consolas, monospace" xml:space="preserve">  <tspan fill="#ffb74d" font-weight="700">memory</tspan> {</text>
+  <circle cx="556" cy="268" r="10" fill="#c62828"/><text x="556" y="272" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">8</text>
+  <text x="36" y="296" font-size="13" fill="#cfd8dc" font-family="ui-monospace, Menlo, Consolas, monospace" xml:space="preserve">    dedicated = 1024</text>
+  <text x="36" y="320" font-size="13" fill="#cfd8dc" font-family="ui-monospace, Menlo, Consolas, monospace" xml:space="preserve">  }</text>
+  <text x="36" y="344" font-size="13" fill="#cfd8dc" font-family="ui-monospace, Menlo, Consolas, monospace" xml:space="preserve">}</text>
+  <text x="36" y="368" font-size="13" fill="#cfd8dc" font-family="ui-monospace, Menlo, Consolas, monospace" xml:space="preserve"></text>
+  <text x="36" y="392" font-size="13" fill="#cfd8dc" font-family="ui-monospace, Menlo, Consolas, monospace" xml:space="preserve">output "ip" {</text>
+  <text x="36" y="416" font-size="13" fill="#cfd8dc" font-family="ui-monospace, Menlo, Consolas, monospace" xml:space="preserve">  value = <tspan fill="#ffb74d" font-weight="700">proxmox_virtual_environment_vm.veeb.ipv4_addresses</tspan></text>
+  <circle cx="556" cy="412" r="10" fill="#c62828"/><text x="556" y="416" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">9</text>
+  <text x="36" y="440" font-size="13" fill="#cfd8dc" font-family="ui-monospace, Menlo, Consolas, monospace" xml:space="preserve">}</text>
+  <circle cx="612" cy="76" r="11" fill="#c62828"/><text x="612" y="80" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">1</text>
+  <text x="632" y="80" font-size="14" font-weight="700" fill="#212121">muutuja deklareerimine</text>
+  <text x="632" y="97" font-size="12" fill="#616161">fail variables.tf</text>
+  <circle cx="612" cy="120" r="11" fill="#c62828"/><text x="612" y="124" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">2</text>
+  <text x="632" y="124" font-size="14" font-weight="700" fill="#212121">plokk</text>
+  <text x="632" y="141" font-size="12" fill="#616161">algab sõnaga resource, variable või output</text>
+  <circle cx="612" cy="164" r="11" fill="#c62828"/><text x="612" y="168" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">3</text>
+  <text x="632" y="168" font-size="14" font-weight="700" fill="#212121">ressursitüüp</text>
+  <text x="632" y="185" font-size="12" fill="#616161">selle annab provider</text>
+  <circle cx="612" cy="208" r="11" fill="#c62828"/><text x="612" y="212" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">4</text>
+  <text x="632" y="212" font-size="14" font-weight="700" fill="#212121">sinu antud nimi</text>
+  <text x="632" y="229" font-size="12" fill="#616161">sellega viitad ressursile mujal</text>
+  <circle cx="612" cy="252" r="11" fill="#c62828"/><text x="612" y="256" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">5</text>
+  <text x="632" y="256" font-size="14" font-weight="700" fill="#212121">argument</text>
+  <text x="632" y="273" font-size="12" fill="#616161">kuju: nimi = väärtus</text>
+  <circle cx="612" cy="296" r="11" fill="#c62828"/><text x="612" y="300" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">6</text>
+  <text x="632" y="300" font-size="14" font-weight="700" fill="#212121">avaldis</text>
+  <text x="632" y="317" font-size="12" fill="#616161">${…} paneb muutuja väärtuse teksti sisse</text>
+  <circle cx="612" cy="340" r="11" fill="#c62828"/><text x="612" y="344" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">7</text>
+  <text x="632" y="344" font-size="14" font-weight="700" fill="#212121">viide muutujale</text>
+  <text x="632" y="361" font-size="12" fill="#616161">väärtus tuleb failist terraform.tfvars</text>
+  <circle cx="612" cy="384" r="11" fill="#c62828"/><text x="612" y="388" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">8</text>
+  <text x="632" y="388" font-size="14" font-weight="700" fill="#212121">pesastatud plokk</text>
+  <text x="632" y="405" font-size="12" fill="#616161">plokk ploki sees</text>
+  <circle cx="612" cy="428" r="11" fill="#c62828"/><text x="612" y="432" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">9</text>
+  <text x="632" y="432" font-size="14" font-weight="700" fill="#212121">viide ressursi atribuudile</text>
+  <text x="632" y="449" font-size="12" fill="#616161">väärtus on teada pärast apply käsku</text>
+</svg>
