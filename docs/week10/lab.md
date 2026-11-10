@@ -26,8 +26,8 @@ Rida **Ennusta** tähendab, et enne käsku mõtled läbi, mis juhtub. Vastus on 
 ### 1.1 Mida vajad
 
 - VPN-ühendus ja VS Code'i ühendus masinaga `proxmox1`.
-- Proxmoxi veebiliides <https://192.168.124.200:8006>. Logi sisse oma Proxmoxi kasutajaga.
-- **VMID**: number vahemikus 4100–4199, mille annab õpetaja tunni alguses. Proxmoxis kannab sinu uus masin seda numbrit.
+- Õpetaja Proxmoxi klastri veebiliides <https://192.168.100.200:8006>. Kasutajanime ja parooli said kooli meiliga. Vali sisselogimisel **Realm** väärtuseks **Proxmox VE authentication server**. Brauser hoiatab sertifikaadi eest, sest klastril on ise allkirjastatud sertifikaat: vali **Advanced** ja jätka.
+- **VMID**: number vahemikus 4100–4199, mis on samas meilis. Proxmoxis kannab sinu uus masin seda numbrit.
 
 Sinu kasutajal on õigus luua masinaid pool'i `tofu-<kasutaja>` (näiteks `tofu-mtamm`). Kui sa Proxmoxi vasakus menüüs seda pool'i ei näe, küsi enne jätkamist õpetajalt abi.
 
@@ -80,7 +80,7 @@ OpenTofu ühendub Proxmoxiga API-tokeniga. Token kuulub sinu kasutajale ja selle
 
 1. Vali Proxmoxi veebiliideses **Datacenter → Permissions → API Tokens** ja vajuta **Add**.
 2. **User**: sinu kasutaja. **Token ID**: `tofu`. Eemalda linnuke **Privilege Separation**, siis saab token sinu õigused. Vajuta **Add**.
-3. Aken näitab väärtusi **Token ID** (näiteks `mtamm@hkhk.edu.ee!tofu`) ja **Secret**. Saladust näidatakse ainult üks kord. Ära sulge akent enne järgmist sammu.
+3. Aken näitab väärtusi **Token ID** (näiteks `mtamm@pve!tofu`) ja **Secret**. Saladust näidatakse ainult üks kord. Ära sulge akent enne järgmist sammu.
 
 Tee näidisfailist oma muutujate fail ja ava see VS Code'is:
 
@@ -89,7 +89,7 @@ cp terraform.tfvars.example terraform.tfvars
 code terraform.tfvars
 ```
 
-Kirjuta failis `proxmox_api_token` väärtuseks Token ID, märk `=` ja Secret. Kirjuta `kasutaja` väärtuseks oma kasutajanimi ilma osata `@hkhk.edu.ee` ja `vm_id` väärtuseks õpetajalt saadud number. Salvesta fail.
+Kirjuta failis `proxmox_api_token` väärtuseks Token ID, märk `=` ja Secret. Kirjuta `kasutaja` väärtuseks oma kasutajanimi ilma osata `@pve` ja `vm_id` väärtuseks meilis olnud number. Klastri aadress, sõlm ja mall on starteris juba õiged, neid ei pea faili kirjutama. Salvesta fail.
 
 Kontrolli, et token ei lähe Giti:
 
@@ -247,7 +247,7 @@ Ava Proxmoxi veebiliideses pool `tofu-<kasutaja>`. Selles on masin `tofu-<kasuta
 ??? warning "Kui apply annab vea"
     - `403 Forbidden` või `Permission check failed`: kontrolli kõigepealt failis `terraform.tfvars` tokeni nime. Kui see on õige, on tokenil **Privilege Separation** sees (loo token uuesti, samm 1.4) või sul pole veel pool'i õigusi (küsi õpetajalt).
     - `pool 'tofu-...' does not exist`: `kasutaja` väärtus failis `terraform.tfvars` ei vasta sinu Proxmoxi kasutajanimele.
-    - `VM ... already exists`: sinu `vm_id` on kellegi teise masina number. Kontrolli õpetajalt saadud numbrit.
+    - `VM ... already exists`: sinu `vm_id` on kellegi teise masina number. Kontrolli meilis olnud numbrit.
     - `Still creating...` kestab üle 5 minuti: ava Proxmoxis masina **Console** ja vaata, kas masin käivitus. Kui käivitus, aga guest agent ei vasta, küsi õpetajalt abi.
 
 ### 2.5 Kood GitHubi
@@ -480,8 +480,8 @@ Tulemuse näed Classroom 50-s.
     ```hcl
     import {
       to = proxmox_virtual_environment_vm.veeb
-      id = "SR630V3-2/4100"
+      id = "marianodea/4100"
     }
     ```
 
-    Asenda `SR630V3-2` oma muutuja `node_name` väärtusega ja `4100` oma VMID-ga. Mida näitab `tofu plan`? Miks võib plaanis olla lisaks impordile ka muudatusi? Eemalda pärast `apply` käsku plokk `import` failist ja kirjuta README-sse Lisa B alla kaks lauset.
+    Asenda `4100` oma VMID-ga. Mida näitab `tofu plan`? Miks võib plaanis olla lisaks impordile ka muudatusi? Eemalda pärast `apply` käsku plokk `import` failist ja kirjuta README-sse Lisa B alla kaks lauset.
