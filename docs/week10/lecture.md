@@ -26,8 +26,23 @@ Kooli laboril pilvekontot ei ole, seega teed sama Proxmoxis. OpenTofu jaoks on P
 
 **OpenTofu** on tööriist, millega infrastruktuur kirjeldatakse ja luuakse. Käsk on `tofu` ja ametlik dokumentatsioon on aadressil [opentofu.org/docs](https://opentofu.org/docs/intro/). OpenTofu on tehtud Terraformi põhjal: keel (HCL), `.tf` failid ja töövoog on samad. Kui tööpakkumises on Terraform, tunned selle ära: `terraform plan` asemel on `tofu plan`.
 
-??? info "Miks on kaks tööriista"
-    HashiCorp muutis 2023. aasta augustis Terraformi litsentsi. Uus litsents (BSL) lubab koodi lugeda ja kasutada, aga ei luba seda kasutada HashiCorpiga konkureerivas tootes. Ettevõtted, kelle töö põhines Terraformil, avaldasid [OpenTofu manifesti](https://opentofu.org/manifesto/) ja jätkasid viimase avatud versiooniga eraldi projektina. Projekti haldab Linux Foundation ja see kuulub [CNCF-i projektide](https://www.cncf.io/projects/opentofu/) hulka.
+### Terraform ja OpenTofu
+
+Terraformi tegi ettevõte HashiCorp, [esimene versioon](https://github.com/hashicorp/terraform/releases/tag/v0.1.0) ilmus 28. juulil 2014. Üheksa aastat oli Terraform avatud lähtekoodiga (litsents MPL 2.0) ja sellest sai infrastruktuuri kirjeldamise levinuim tööriist. 2023. aasta augustis vahetas HashiCorp litsentsi: uus litsents (BSL) lubab koodi kasutada, aga ei luba seda kasutada HashiCorpiga konkureerivas tootes.
+
+Ettevõtted, mille tooted põhinesid Terraformil, avaldasid [OpenTofu manifesti](https://opentofu.org/manifesto/) ja jätkasid viimase avatud versiooniga eraldi projektina. OpenTofut haldab Linux Foundation, [esimene stabiilne versioon 1.6.0](https://opentofu.org/blog/opentofu-is-going-ga/) ilmus 10. jaanuaril 2024 ja projekt kuulub [CNCF-i projektide](https://www.cncf.io/projects/opentofu/) hulka. HashiCorp kuulub alates 2025. aastast IBM-ile.
+
+??? note "Tabel 10.1. Terraform ja OpenTofu"
+    | | Terraform | OpenTofu |
+    |---|---|---|
+    | Kes arendab | HashiCorp (IBM) | kogukond, Linux Foundation |
+    | Litsents | BSL: kasutada võib, konkureerivas tootes mitte | MPL 2.0: avatud lähtekood |
+    | Käsk | `terraform plan` | `tofu plan` |
+    | Keel ja failid | HCL, `.tf` | samad, failid ühilduvad |
+    | Providerid | registry.terraform.io | registry.opentofu.org, samad providerid |
+    | Olekufaili krüpteerimine | ei ole sisse ehitatud | [sisse ehitatud](https://opentofu.org/docs/language/state/encryption/) alates versioonist 1.7 |
+
+Kui oskad OpenTofut, oskad ka Terraformi. Olemasoleva Terraformi projekti saab enamasti OpenTofule üle viia nii, et käsk `terraform` asendatakse käsuga `tofu` ([üleminek](https://opentofu.org/docs/intro/migration/)).
 
 OpenTofu ise ei tea Proxmoxist ega AWS-ist midagi. Iga platvormi jaoks on eraldi **provider**: programm, mis tõlgib `.tf` faili kirjelduse selle platvormi API-päringuteks. Providerid on [OpenTofu registris](https://search.opentofu.org/), kus on iga provideri ressursid, näited ja argumentide kirjeldused. Praktikumis kasutad providerit [`bpg/proxmox`](https://search.opentofu.org/provider/bpg/proxmox/latest).
 
@@ -72,7 +87,7 @@ AWS-i ressursse kirjeldab provider [`hashicorp/aws`](https://search.opentofu.org
 
 Provider on olemas peaaegu igale süsteemile, millel on API. Pilv on kõige levinum koht, aga OpenTofuga saab hallata ka oma serveriruumi, oma arvutit ja veebiteenuseid. Kodus saad proovida ilma pilvekontota: provider `kreuzwerker/docker` loob konteinereid sinu arvuti Dockeris.
 
-??? note "Tabel 10.1. Kus OpenTofut kasutatakse"
+??? note "Tabel 10.2. Kus OpenTofut kasutatakse"
     | Kus | Mida luuakse | Provider |
     |---|---|---|
     | avalik pilv | virtuaalmasinad, võrgud, andmebaasid, kasutajaõigused | [`hashicorp/aws`](https://search.opentofu.org/provider/hashicorp/aws/latest), [`hashicorp/azurerm`](https://search.opentofu.org/provider/hashicorp/azurerm/latest), [`hashicorp/google`](https://search.opentofu.org/provider/hashicorp/google/latest) |
@@ -121,7 +136,7 @@ Praktikumis teed need kolm käivitust ise läbi. Enne masinat proovid sama mõte
 
 Ansible ja OpenTofu on mõlemad deklaratiivsed: kirjeldad soovitud olekut ja tööriist teeb ainult vajalikud muudatused. Erinevus on selles, mida nad haldavad. Ansible eeldab, et masin on juba olemas ja sellesse saab SSH-ga sisse logida. OpenTofu loob masina ise platvormi API kaudu ega logi masinasse kunagi sisse.
 
-??? note "Tabel 10.2. Ansible ja OpenTofu haldavad eri kihti. Tavaliselt kasutatakse neid koos"
+??? note "Tabel 10.3. Ansible ja OpenTofu haldavad eri kihti. Tavaliselt kasutatakse neid koos"
     | | Ansible | OpenTofu |
     |---|---|---|
     | Mida haldab | masina sisu: paketid, failid, teenused, kasutajad | masinat ennast: kas see on olemas, mitu tuuma, kui palju mälu, mis võrgus |
@@ -186,7 +201,7 @@ Rida `resource "proxmox_virtual_environment_vm" "veeb"` sisaldab kahte nime. Esi
 
 Kõik praktikumi failid kasutavad viit tüüpi plokke:
 
-??? note "Tabel 10.3. HCL-i põhiplokid"
+??? note "Tabel 10.4. HCL-i põhiplokid"
     | Plokk | Mida kirjeldab | Praktikumi fail |
     |---|---|---|
     | `terraform` | OpenTofu versioon ja providerid, mida kood vajab | `versions.tf` |
@@ -237,7 +252,7 @@ graph LR
 
 **`tofu plan`** küsib Proxmoxilt iga olekufailis oleva ressursi tegeliku oleku, võrdleb seda koodiga ja näitab, mida see muudaks. Plaan ei loo, muuda ega kustuta Proxmoxis midagi. Iga ressursi ees on märk:
 
-??? note "Tabel 10.4. Plaani märgid"
+??? note "Tabel 10.5. Plaani märgid"
     | Märk | Tähendus | Näide |
     |---|---|---|
     | `+` | luuakse | uus masin |
@@ -268,7 +283,7 @@ Olekufail ei lähe Giti. Selles võivad olla saladused (bpg provider salvestab n
 
 Lukufail `.terraform.lock.hcl` läheb Giti. Selles on provideri versioon ja kontrollsummad. Kui keegi teine või CI käivitab `tofu init`, laaditakse täpselt sama versioon. Sama rolli täidab Pythonis `requirements.txt` koos versiooninumbritega.
 
-??? note "Tabel 10.5. Mis läheb Giti. Starteri `.gitignore` sisaldab juba õigeid ridu"
+??? note "Tabel 10.6. Mis läheb Giti. Starteri `.gitignore` sisaldab juba õigeid ridu"
     | Fail või kaust | Mis seal on | Gitis? |
     |---|---|---|
     | `*.tf` | infrastruktuuri kirjeldus | jah |

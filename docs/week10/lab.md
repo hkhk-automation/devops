@@ -214,7 +214,7 @@ output "ip" {
 
 Iga atribuudi täpse tähenduse leiad provideri dokumentatsioonist: [proxmox_virtual_environment_vm](https://search.opentofu.org/provider/bpg/proxmox/latest/docs/resources/virtual_environment_vm).
 
-??? note "Tabel 10.6. Atribuudid failis `vm.tf`"
+??? note "Tabel 10.7. Atribuudid failis `vm.tf`"
     | Atribuut | Mida teeb |
     |---|---|
     | `node_name`, `vm_id`, `pool_id` | Proxmoxi sõlm, masina number ja pool, kuhu masin luuakse |
