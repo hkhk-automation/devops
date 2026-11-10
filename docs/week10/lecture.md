@@ -101,6 +101,7 @@ Provider on olemas peaaegu igale süsteemile, millel on API. Pilv on kõige levi
 ??? question "Kontrolli ennast"
     1. Ettevõte kolib Proxmoxist AWS-i. Mis muutub `.tf` failides ja mis jääb samaks?
     2. Miks saab OpenTofu luua masina platvormis, mille kohta OpenTofu ise midagi ei tea?
+    3. Ava Terraformi leht [Providers](https://developer.hashicorp.com/terraform/language/providers) ja OpenTofu registrist provider [`bpg/proxmox`](https://search.opentofu.org/provider/bpg/proxmox/latest). Millise käsuga laaditakse provider alla Terraformis ja millisega OpenTofus?
 
 ## 2. Kuidas OpenTofu töötab
 

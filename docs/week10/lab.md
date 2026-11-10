@@ -225,6 +225,15 @@ Iga atribuudi täpse tähenduse leiad provideri dokumentatsioonist: [proxmox_vir
     | `stop_on_destroy` | kustutamisel lülitatakse masin kohe välja, OpenTofu ei oota korrektset seiskamist |
     | `output "ip"` | `ipv4_addresses` on iga võrguliidese aadresside nimekiri. Meie mallis on esimene liides `lo` (127.0.0.1), seega on masina IP teise liidese (`[1]`) esimene aadress (`[0]`). Kui IP on vale, vaata kõiki aadresse käsuga `tofu state show` |
 
+**Leia dokumentatsioonist:** ava provideri leht [proxmox_virtual_environment_vm](https://search.opentofu.org/provider/bpg/proxmox/latest/docs/resources/virtual_environment_vm) ja leia vastus kahele küsimusele. Otsi lehelt (Ctrl+F) argumendi nime.
+
+1. Mida teeb `stop_on_destroy = true` ja mis oleks vaikimisi?
+2. Milline plokk ja argument määravad masina ketta suuruse ja mis on vaikimisi suurus?
+
+??? success "Vastus"
+    1. `destroy` peatab masina kohe (stop) ega oota, kuni operatsioonisüsteem end ise seiskab (shutdown). Vaikimisi on väärtus `false`, siis ootab provider seiskamist.
+    2. Plokk `disk`, argument `size` gigabaitides, vaikimisi 8. Sinu masin saab ketta mallist, seepärast `disk` plokki failis ei ole.
+
 ### 2.2 Faili kontroll ja veateade
 
 Sammus 1.6 laadis `tofu init` provideri alla. Vaata, mis kausta tekkis ja mida Git näeb:
