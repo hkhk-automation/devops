@@ -327,8 +327,19 @@ Praktikumis käivitad `tofu` oma virtuaalmasinas ja olekufail on sinu kaustas. M
 
 Spacelift oskab käivitada ka Terraformi, Ansible'it, Pulumit ja Kubernetese manifeste. Sama tüüpi platvormid on HashiCorpi HCP Terraform, env0 ja Scalr ning avatud lähtekoodiga Atlantis.
 
+Spacelift ja HCP Terraform on tasulised teenused. Tasuta paketis käivitavad nad OpenTofu oma pilves ja meie sisevõrgus olevasse Proxmoxi sealt ligi ei pääse, HCP Terraform ei käivita OpenTofut üldse. Seepärast teeme kursusel sama töövoo tasuta avatud lähtekoodiga tööriistaga [Digger](https://docs.digger.dev/ce/getting-started/with-opentofu). Digger käivitab `tofu plan` ja `tofu apply` GitHub Actionsis ja paneb plaani pull request'i kommentaariks. GitHub Actionsi runner töötab kooli võrgus ja jõuab sealt Proxmoxini. Tööriist on teine, töövoog on sama: pull request, plaan, ülevaatus ja apply pärast liitmist.
+
+??? note "Tabel 10.7. Kus OpenTofu meeskonnas käivitub"
+    | Tööriist | Hind | OpenTofu | Kus käivitub |
+    |---|---|---|---|
+    | Spacelift | tasuline, tasuta pakett piiratud | jah | Spacelifti pilves või oma masinas (tasulises paketis) |
+    | HCP Terraform | tasuline, tasuta kuni 500 ressurssi | ei | HashiCorpi pilves või agendiga oma võrgus (tasulises paketis) |
+    | Atlantis | tasuta, avatud lähtekood | jah | oma server, GitHub peab sinna ühenduma |
+    | Digger | tasuta, avatud lähtekood | jah | GitHub Actionsis, ka oma võrgus töötaval runner'il |
+
 ??? question "Kontrolli ennast"
     1. Mis probleemi lahendab Spacelift võrreldes sellega, et iga insener käivitab `tofu apply` oma arvutist?
+    3. Miks kasutame kursusel Spacelifti asemel Diggerit ja mis jääb töövoos samaks?
     2. Miks käivitab Spacelift `tofu plan` juba pull request'i juures, enne merge'i?
 
 ??? abstract "Kokkuvõte"
