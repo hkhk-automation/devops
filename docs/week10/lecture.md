@@ -79,6 +79,19 @@ Allpool on sama masin kahel platvormil. Ploki struktuur on sama, erinevad ressur
 
 AWS-i ressursse kirjeldab provider [`hashicorp/aws`](https://search.opentofu.org/provider/hashicorp/aws/latest) ja Azure'i omi [`hashicorp/azurerm`](https://search.opentofu.org/provider/hashicorp/azurerm/latest). Kui oskad lugeda ühe provideri dokumentatsiooni, oskad lugeda ka teisi.
 
+Provider on olemas peaaegu igale süsteemile, millel on API. Pilv on kõige levinum koht, aga OpenTofuga saab hallata ka oma serveriruumi, oma arvutit ja veebiteenuseid. Kodus saad proovida ilma pilvekontota: provider `kreuzwerker/docker` loob konteinereid sinu arvuti Dockeris.
+
+??? note "Tabel 10.1. Kus OpenTofut kasutatakse"
+    | Kus | Mida luuakse | Provider |
+    |---|---|---|
+    | avalik pilv | virtuaalmasinad, võrgud, andmebaasid, kasutajaõigused | [`hashicorp/aws`](https://search.opentofu.org/provider/hashicorp/aws/latest), [`hashicorp/azurerm`](https://search.opentofu.org/provider/hashicorp/azurerm/latest), [`hashicorp/google`](https://search.opentofu.org/provider/hashicorp/google/latest) |
+    | oma serveriruum | virtuaalmasinad | [`bpg/proxmox`](https://search.opentofu.org/provider/bpg/proxmox/latest), [`vmware/vsphere`](https://search.opentofu.org/provider/vmware/vsphere/latest) |
+    | oma arvuti | Dockeri konteinerid, KVM-i masinad, failid | [`kreuzwerker/docker`](https://search.opentofu.org/provider/kreuzwerker/docker/latest), [`dmacvicar/libvirt`](https://search.opentofu.org/provider/dmacvicar/libvirt/latest), [`hashicorp/local`](https://search.opentofu.org/provider/hashicorp/local/latest) |
+    | konteinerplatvorm | Kubernetese nimeruumid, teenused | [`hashicorp/kubernetes`](https://search.opentofu.org/provider/hashicorp/kubernetes/latest) |
+    | veebiteenused | GitHubi repositooriumid ja õigused, DNS-kirjed | [`integrations/github`](https://search.opentofu.org/provider/integrations/github/latest), [`cloudflare/cloudflare`](https://search.opentofu.org/provider/cloudflare/cloudflare/latest) |
+
+    Mitu providerit võib olla ühes failis. Näiteks loob üks käivitus AWS-is masina ja Cloudflare'is DNS-kirje, mis sellele masinale osutab.
+
 ??? question "Kontrolli ennast"
     1. Ettevõte kolib Proxmoxist AWS-i. Mis muutub `.tf` failides ja mis jääb samaks?
     2. Miks saab OpenTofu luua masina platvormis, mille kohta OpenTofu ise midagi ei tea?
@@ -117,7 +130,7 @@ Praktikumis teed need kolm käivitust ise läbi. Enne masinat proovid sama mõte
 
 Ansible ja OpenTofu on mõlemad deklaratiivsed: kirjeldad soovitud olekut ja tööriist teeb ainult vajalikud muudatused. Erinevus on selles, mida nad haldavad. Ansible eeldab, et masin on juba olemas ja sellesse saab SSH-ga sisse logida. OpenTofu loob masina ise platvormi API kaudu ega logi masinasse kunagi sisse.
 
-??? note "Tabel 10.1. Ansible ja OpenTofu haldavad eri kihti. Tavaliselt kasutatakse neid koos"
+??? note "Tabel 10.2. Ansible ja OpenTofu haldavad eri kihti. Tavaliselt kasutatakse neid koos"
     | | Ansible | OpenTofu |
     |---|---|---|
     | Mida haldab | masina sisu: paketid, failid, teenused, kasutajad | masinat ennast: kas see on olemas, mitu tuuma, kui palju mälu, mis võrgus |
@@ -182,7 +195,7 @@ Rida `resource "proxmox_virtual_environment_vm" "veeb"` sisaldab kahte nime. Esi
 
 Kõik praktikumi failid kasutavad viit tüüpi plokke:
 
-??? note "Tabel 10.2. HCL-i põhiplokid"
+??? note "Tabel 10.3. HCL-i põhiplokid"
     | Plokk | Mida kirjeldab | Praktikumi fail |
     |---|---|---|
     | `terraform` | OpenTofu versioon ja providerid, mida kood vajab | `versions.tf` |
@@ -233,7 +246,7 @@ graph LR
 
 **`tofu plan`** küsib Proxmoxilt iga olekufailis oleva ressursi tegeliku oleku, võrdleb seda koodiga ja näitab, mida see muudaks. Plaan ei loo, muuda ega kustuta Proxmoxis midagi. Iga ressursi ees on märk:
 
-??? note "Tabel 10.3. Plaani märgid"
+??? note "Tabel 10.4. Plaani märgid"
     | Märk | Tähendus | Näide |
     |---|---|---|
     | `+` | luuakse | uus masin |
@@ -264,7 +277,7 @@ Olekufail ei lähe Giti. Selles võivad olla saladused (bpg provider salvestab n
 
 Lukufail `.terraform.lock.hcl` läheb Giti. Selles on provideri versioon ja kontrollsummad. Kui keegi teine või CI käivitab `tofu init`, laaditakse täpselt sama versioon. Sama rolli täidab Pythonis `requirements.txt` koos versiooninumbritega.
 
-??? note "Tabel 10.4. Mis läheb Giti. Starteri `.gitignore` sisaldab juba õigeid ridu"
+??? note "Tabel 10.5. Mis läheb Giti. Starteri `.gitignore` sisaldab juba õigeid ridu"
     | Fail või kaust | Mis seal on | Gitis? |
     |---|---|---|
     | `*.tf` | infrastruktuuri kirjeldus | jah |
