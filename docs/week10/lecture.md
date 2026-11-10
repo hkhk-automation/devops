@@ -337,10 +337,14 @@ Spacelift ja HCP Terraform on tasulised teenused. Tasuta paketis käivitavad nad
     | Atlantis | tasuta, avatud lähtekood | jah | oma server, GitHub peab sinna ühenduma |
     | Digger | tasuta, avatud lähtekood | jah | GitHub Actionsis, ka oma võrgus töötaval runner'il |
 
+??? info "Loe juurde"
+    - [Digger ja OpenTofu](https://docs.digger.dev/ce/getting-started/with-opentofu): ametlik esimene seadistus.
+    - [Production-ready Terraform setup powered by Digger CI/CD](https://medium.com/converge-bio/production-ready-terraform-setup-powered-by-digger-ci-cd-47f18803cdd9) (Converge Bio): kuidas üks ettevõte Diggerit kasutab.
+
 ??? question "Kontrolli ennast"
     1. Mis probleemi lahendab Spacelift võrreldes sellega, et iga insener käivitab `tofu apply` oma arvutist?
-    3. Miks kasutame kursusel Spacelifti asemel Diggerit ja mis jääb töövoos samaks?
     2. Miks käivitab Spacelift `tofu plan` juba pull request'i juures, enne merge'i?
+    3. Miks kasutame kursusel Spacelifti asemel Diggerit ja mis jääb töövoos samaks?
 
 ??? abstract "Kokkuvõte"
     OpenTofu kirjeldab infrastruktuuri `.tf` failides ja haldab seda providerite kaudu, meie puhul Proxmoxi API kaudu. Töövoog on `init`, `plan`, `apply` ja lõpuks `destroy`. Plaan näitab enne muutmist, mida luuakse (`+`), muudetakse (`~`) ja kustutatakse (`-`). OpenTofu mäletab olekufailis, mida ta lõi, ja võrdleb iga kord kolme asja: koodi, olekufaili ja Proxmoxi tegelikku olekut. Olekufail ja token ei lähe Giti, lukufail läheb.
