@@ -42,9 +42,9 @@ Ettevõtted, mille tooted põhinesid Terraformil, avaldasid [OpenTofu manifesti]
     | Providerid | registry.terraform.io | registry.opentofu.org, samad providerid |
     | Olekufaili krüpteerimine | ei ole sisse ehitatud | [sisse ehitatud](https://opentofu.org/docs/language/state/encryption/) alates versioonist 1.7 |
 
-Kui oskad OpenTofut, oskad ka Terraformi. Olemasoleva Terraformi projekti saab enamasti OpenTofule üle viia nii, et käsk `terraform` asendatakse käsuga `tofu` ([üleminek](https://opentofu.org/docs/intro/migration/)).
+Kui oskad OpenTofut, oskad ka Terraformi: [Terraformi dokumentatsioon](https://developer.hashicorp.com/terraform) on üles ehitatud samamoodi nagu OpenTofu oma. Olemasoleva Terraformi projekti saab enamasti OpenTofule üle viia nii, et käsk `terraform` asendatakse käsuga `tofu` ([üleminek](https://opentofu.org/docs/intro/migration/)).
 
-OpenTofu ise ei tea Proxmoxist ega AWS-ist midagi. Iga platvormi jaoks on eraldi **provider**: programm, mis tõlgib `.tf` faili kirjelduse selle platvormi API-päringuteks. Providerid on [OpenTofu registris](https://search.opentofu.org/), kus on iga provideri ressursid, näited ja argumentide kirjeldused. Praktikumis kasutad providerit [`bpg/proxmox`](https://search.opentofu.org/provider/bpg/proxmox/latest).
+OpenTofu ise ei tea Proxmoxist ega AWS-ist midagi. Iga platvormi jaoks on eraldi **provider**: programm, mis tõlgib `.tf` faili kirjelduse selle platvormi API-päringuteks. Providerid on [OpenTofu registris](https://search.opentofu.org/), kus on iga provideri ressursid, näited ja argumentide kirjeldused. Terraform kasutab samu providereid, nende kasutamist selgitab Terraformi leht [Providers](https://developer.hashicorp.com/terraform/language/providers). Praktikumis kasutad providerit [`bpg/proxmox`](https://search.opentofu.org/provider/bpg/proxmox/latest).
 
 <figure markdown="span">
   ![Vasakul .tf failid Gitis, keskel käsk tofu. Sealt neli noolt nelja providerini: hashicorp/aws loob AWS-is EC2, VPC, S3 ja RDS ressursse, hashicorp/azurerm Azure'is VM-e ja võrke, hashicorp/google Google Cloudis Compute Engine'i masinaid, bpg/proxmox Proxmoxis masina sinu pool'is](../images/n10_providerid.svg)
