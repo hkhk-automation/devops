@@ -97,6 +97,48 @@ Terraform loob tühjad masinad (*provisioning*), Ansible seadistab need (*config
 
 Terraformiga saab ka serveri sisu seadistada (`local-exec` provisioner'id, mis käivitavad Bashi käske), aga siis on konfiguratsioon jagatud kahe tööriista vahel ja seda on raske hallata. Tööriist tuleb valida töö järgi.
 
+### Mitu keskkonda OpenTofuga: Terragrunt
+
+Ansible'is annab `group_vars` igale keskkonnale omad väärtused. OpenTofus on sama vajadus: arendus, test ja tootmine kasutavad sama koodi, aga eri väärtusi ja igaüks oma olekufaili. Kui iga keskkond on eraldi kaust, korduvad igas kaustas samad read: kus olekufail asub (backend), milline provider ja milline moodul.
+
+[Terragrunt](https://terragrunt.gruntwork.io/docs/) on ettevõtte Gruntwork tööriist, mis käivitab OpenTofu või Terraformi käske ja hoiab korduvad read ühes failis. Ise see infrastruktuuri ei loo.
+
+<figure markdown="span">
+  ![Vasakul ilma Terragruntita kolm kausta dev, test ja prod. Igas on punased read backend, provider ja moodul, mis korduvad, ning roheline rida, mis erineb: 1 masin 1 GB, 1 masin 2 GB, 3 masinat 4 GB. Paremal Terragruntiga: üleval fail root.hcl, kus backend ja provider on üks kord kirjas. Sellest lähevad noolega include kolm kausta, igas fail terragrunt.hcl ainult erineva väärtusega. Kõik kolm kasutavad sama moodulit moodulid/veeb](../images/n12_terragrunt.svg)
+  <figcaption>Joonis 12.2. Ilma Terragruntita korduvad backend, provider ja moodul igas keskkonnas, Terragruntiga on need ühes failis (Talvik, 2026).</figcaption>
+</figure>
+
+Igas keskkonna kaustas on lühike fail `terragrunt.hcl`. See võtab ühised seaded failist `root.hcl`, ütleb, millist moodulit kasutada, ja annab ainult need väärtused, mis selles keskkonnas erinevad:
+
+```hcl
+# prod/terragrunt.hcl
+include "root" {
+  path = find_in_parent_folders("root.hcl")
+}
+
+terraform {
+  source = "../moodulid/veeb"
+}
+
+inputs = {
+  masinaid = 3
+  malu     = 4096
+}
+```
+
+Kui osad sõltuvad üksteisest, kirjeldab plokk `dependency`, et näiteks andmebaas vajab võrgu väljundit. Käsk `terragrunt run --all apply` käivitab siis OpenTofu kõigis kaustades õiges järjekorras.
+
+<figure markdown="span">
+  ![Käsk terragrunt run --all apply. Kolm kasti järjest: 1 võrk, väljund võrgu ID; 2 andmebaas, vajab võrgu ID-d; 3 veebiserverid, vajavad võrku ja andmebaasi. Kastide vahel nool dependency. All: Terragrunt loeb sõltuvused failidest ja käivitab OpenTofu igas kaustas eraldi, õiges järjekorras](../images/n12_terragrunt_jarjekord.svg)
+  <figcaption>Joonis 12.3. <code>run --all</code> käivitab osad sõltuvuste järjekorras (Talvik, 2026).</figcaption>
+</figure>
+
+Terragrunti vajadus tekib siis, kui keskkondi ja mooduleid on palju. Ühe keskkonna ja paari faili jaoks piisab OpenTofust.
+
+??? info "Loe juurde"
+    - [What is Terragrunt?](https://notes.kodekloud.com/docs/Terragrunt-for-Beginners/Terragrunt-Basic-Concepts/What-Is-Terragrunt/page) (KodeKloud): algajale, kasutusjuhud ja võrdlus Terraformiga.
+    - [Terragrunt Quick Start](https://terragrunt.gruntwork.io/docs/getting-started/quick-start/): ametlik esimene näide.
+
 ## 6. Serveripark meeskonnas
 
 DevOpsi meeskonnas ei logita 20 serverisse käsitsi sisse. Server on koodis kirjeldatud, muudatus tehakse pull request'iga, CI kontrollib seda ja playbook rakendab muudatuse. Uus töötaja saab serveri seadistuse teada failist `site.yml`. Kui server läheb katki, seadistab playbook uue.
