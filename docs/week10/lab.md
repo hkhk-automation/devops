@@ -8,7 +8,7 @@ tags:
 
 # Praktikum: virtuaalmasin OpenTofuga
 
-Täna kirjeldad failis ühe virtuaalmasina, lood selle OpenTofuga õpetaja Proxmoxi klastris ja kontrollid kahte [loengu](lecture.md) alguses kirjutatud ennustust: mida teeb OpenTofu, kui masin kustutatakse käsitsi või kui masina kirjeldus kaob failist. Töötad AlmaLinuxi masinas `proxmox1` VS Code'i kaudu ja OpenTofu ühendub sealt Proxmoxi API-ga.
+Täna kirjeldad failis ühe virtuaalmasina, lood selle OpenTofuga õpetaja Proxmoxi klastris ja vaatad, mida teeb OpenTofu, kui masin kustutatakse käsitsi või kui masina kirjeldus kaob failist. Töötad AlmaLinuxi masinas `proxmox1` VS Code'i kaudu ja OpenTofu ühendub sealt Proxmoxi API-ga.
 
 <figure markdown="span">
   ![Vasakul masin proxmox1, kaustas ~/lab10 failid vm.tf, terraform.tfvars tokeniga ja terraform.tfstate ning käsud tofu plan ja tofu apply. Nool API-päring HTTPS, token kasutaja@pve!tofu, läheb Proxmoxi 192.168.100.200, mis kontrollib tokeni õigusi. Proxmoxis kloonitakse mallist 9000 masin tofu-kasutaja pool'i tofu-kasutaja, VMID 41xx. Guest agent teatab IP-aadressi, katkendjoonega nool viib masina andmed ja IP tagasi olekufaili ja tofu output ip väljundisse](../images/n10_lab_ylevaade.svg)
@@ -38,7 +38,7 @@ Sinu kasutajal on õigus luua masinaid pool'i `tofu-<kasutaja>` (näiteks `tofu-
 
 ### 1.2 Repositoorium
 
-Kui sa loengu alguses ülesannet **Lab 10 - OpenTofu** vastu ei võtnud, tee seda nüüd ([Classroom 50](https://classroom50.org/hkhk-automation/it24-automatiseerimine/assignments)). Klooni repositoorium masinasse `proxmox1`:
+Võta vastu ülesanne **Lab 10 - OpenTofu** ([Classroom 50](https://classroom50.org/hkhk-automation/it24-automatiseerimine/assignments)). Klooni repositoorium masinasse `proxmox1`:
 
 ```bash
 cd ~
@@ -125,9 +125,9 @@ curl -sk -w '\nHTTP %{http_code}\n' \
 ??? warning "Kui tuleb `HTTP 401`"
     Proxmox ei tunne tokenit. Kontrolli failis `terraform.tfvars`, et väärtus on kujul `kasutaja@pve!tofu=saladus`, et märgi `=` ümber ei ole tühikuid ja et saladus on kopeeritud tervikuna. Kui viga jääb, loo token uuesti.
 
-### 1.5 Nimi ja ennustused README-s
+### 1.5 Nimi README-s
 
-Ava VS Code'is fail `README.md`. Kirjuta rea `**Sinu nimi:**` järele oma nimi ja kontrolli, et README 0. osas on loengu alguses kirjutatud kaks ennustust. Kui need puuduvad, kirjuta need nüüd, enne kui lood esimese masina, sest osades 4 ja 5 võrdled nendega.
+Ava VS Code'is fail `README.md` ja kirjuta rea `**Sinu nimi:**` järele oma nimi.
 
 ### 1.6 Esimene katse ilma masinata
 
@@ -414,9 +414,7 @@ Proxmoxis on masina **Hardware** lehel **Memory** väärtus nüüd 2.00 GiB.
     ```
     Märk `~` tähendab muutmist kohapeal. Masin jääb samaks, muutub ainult seade. Meie mallis ei saa mälu töötavas masinas muuta, seega taaskäivitab provider masina. Vaata seda Proxmoxis.
 
-## Osa 4 · Ennustus 1: masin kustutatakse käsitsi
-
-Loe README 0. osast oma esimene ennustus.
+## Osa 4 · Masin kustutatakse käsitsi
 
 **Ennusta:** Kustutad masina Proxmoxi veebiliideses. Mida näitab OpenTofu järgmine plaan?
 
@@ -436,7 +434,7 @@ tofu apply tfplan 2>&1 | tee -a logid/05-kasitsi-kustutatud.txt
 
 Proxmoxis on masin `tofu-<kasutaja>` jälle olemas ja töötab.
 
-**Küsimus:** mida näitas plaan ja kas sinu ennustus pidas paika? (README 4.1)
+**Küsimus:** mida näitas plaan ja mida tegi `apply`? (README 4.1)
 
 ??? success "Oodatav tulemus"
     ```text
@@ -448,9 +446,7 @@ Proxmoxis on masin `tofu-<kasutaja>` jälle olemas ja töötab.
     ```
     Plaani koostamisel küsis OpenTofu Proxmoxilt masinat, mis olekufailis oli, ja sai teada, et seda enam ei ole. Kood nõuab endiselt ühte masinat, seega pakkus plaan selle loomist. `apply` lõi masina ja salvestas tulemuse olekufaili. Uuel masinal on sama nimi ja VMID, aga võib olla teine IP-aadress. Samamoodi loob Docker Compose uuesti konteineri, mis kustutati käsitsi.
 
-## Osa 5 · Ennustus 2: kirjeldus eemaldatakse failist
-
-Loe README 0. osast oma teine ennustus.
+## Osa 5 · Kirjeldus eemaldatakse failist
 
 OpenTofu loeb kaustast ainult `.tf` laiendiga faile. Kui nimetad faili `vm.tf` ümber, kaob masina kirjeldus koodist, aga fail jääb alles ja saad selle hiljem tagasi panna.
 
@@ -468,7 +464,7 @@ mv vm.tf.off vm.tf
 tofu plan 2>&1 | tee -a logid/06-kirjeldus-eemaldatud.txt
 ```
 
-**Küsimus:** mida näitas esimene plaan ja kas sinu ennustus pidas paika? Mida teeks Ansible, kui kustutaksid playbook'ist nginx'i paigaldamise ülesande? (README 5.1)
+**Küsimus:** mida näitas esimene plaan? Mida teeks Ansible, kui kustutaksid playbook'ist nginx'i paigaldamise ülesande? (README 5.1)
 
 ??? success "Oodatav tulemus"
     ```text
@@ -531,7 +527,7 @@ Kood on alles ja käsk `tofu apply` loob sama masina uuesti.
 
 ## Töö esitamine
 
-README-s on vastused kõigile küsimustele: iga vastuse juures üks lause selgitust ja tõend (rida väljundist või logifaili nimi). Algseid ennustusi ära muuda, kirjuta katse tulemus nende kõrvale. Kood on vormindatud ja kõik kaheksa logifaili on GitHubis:
+README-s on vastused kõigile küsimustele: iga vastuse juures üks lause selgitust ja tõend (rida väljundist või logifaili nimi). Kood on vormindatud ja kõik kaheksa logifaili on GitHubis:
 
 ```text
 logid/
