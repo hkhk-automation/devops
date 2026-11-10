@@ -428,6 +428,9 @@ Proxmoxis ei ole enam masinat `tofu-<kasutaja>` ja pool `tofu-<kasutaja>` on tü
     ```
     `tofu state list` ei trüki midagi. `destroy` kustutab ainult olekufailis olevad ressursid. Olekufail jääb alles, aga selles ei ole enam ühtegi ressurssi. Fail `terraform.tfstate.backup` on eelmise oleku koopia.
 
+??? warning "Kui `destroy` annab vea `VM stop`"
+    Masin alles taaskäivitub pärast eelmist muudatust ja ei jõudnud seiskuda. Oota minut ja käivita `tofu destroy` uuesti.
+
 Kood on alles ja käsk `tofu apply` loob sama masina uuesti.
 
 ## Töö esitamine
