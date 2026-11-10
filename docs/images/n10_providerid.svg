@@ -34,7 +34,7 @@
     <text x="706" y="76" font-weight="700" fill="#212121">AWS</text><text x="706" y="93" fill="#616161">EC2, VPC, S3, RDS</text>
     <text x="706" y="156" font-weight="700" fill="#212121">Azure</text><text x="706" y="173" fill="#616161">VM, VNet, Storage</text>
     <text x="706" y="236" font-weight="700" fill="#212121">Google Cloud</text><text x="706" y="253" fill="#616161">Compute Engine, VPC</text>
-    <text x="706" y="316" font-weight="700" fill="#4527a0">kooli Proxmox</text><text x="706" y="333" fill="#5e35b1">VM sinu pool'is (praktikum)</text>
+    <text x="706" y="316" font-weight="700" fill="#4527a0">õpetaja Proxmox</text><text x="706" y="333" fill="#5e35b1">VM sinu pool'is (praktikum)</text>
   </g>
   <text x="570" y="368" text-anchor="middle" font-size="12" fill="#616161">provider tõlgib kirjelduse platvormi API päringuteks</text>
 </svg>

@@ -1,0 +1,42 @@
+<svg viewBox="0 0 900 360" xmlns="http://www.w3.org/2000/svg" font-family="Inter, -apple-system, sans-serif">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#616161"/></marker></defs>
+  <text x="450" y="32" text-anchor="middle" font-size="21" font-weight="700" fill="#4527a0">Kust käsk liigub ja kust IP tagasi tuleb</text>
+
+  <rect x="20" y="70" width="260" height="230" rx="10" fill="#ede7f6" stroke="#5e35b1" stroke-width="1.5"/>
+  <text x="150" y="100" text-anchor="middle" font-size="17" font-weight="700" fill="#4527a0">masin proxmox1</text>
+  <text x="150" y="120" text-anchor="middle" font-size="12" fill="#5e35b1" font-family="ui-monospace, Menlo, monospace">~/lab10</text>
+  <text x="40" y="152" font-size="13" fill="#212121" font-family="ui-monospace, Menlo, monospace">vm.tf</text>
+  <text x="140" y="152" font-size="12" fill="#616161">masina kirjeldus</text>
+  <text x="40" y="180" font-size="13" fill="#212121" font-family="ui-monospace, Menlo, monospace">terraform.tfvars</text>
+  <text x="40" y="198" font-size="12" fill="#616161">token, kasutaja, vm_id</text>
+  <text x="40" y="228" font-size="13" fill="#212121" font-family="ui-monospace, Menlo, monospace">terraform.tfstate</text>
+  <text x="40" y="246" font-size="12" fill="#616161">mida OpenTofu lõi</text>
+  <rect x="40" y="262" width="220" height="28" rx="6" fill="#4527a0"/>
+  <text x="150" y="281" text-anchor="middle" font-size="13" fill="#fff" font-family="ui-monospace, Menlo, monospace">tofu plan · tofu apply</text>
+
+  <line x1="280" y1="140" x2="448" y2="140" stroke="#616161" stroke-width="1.8" marker-end="url(#a)"/>
+  <text x="364" y="130" text-anchor="middle" font-size="12" fill="#4527a0" font-weight="700">API-päring (HTTPS)</text>
+  <text x="364" y="160" text-anchor="middle" font-size="11" fill="#616161" font-family="ui-monospace, Menlo, monospace">kasutaja@pve!tofu</text>
+
+  <rect x="450" y="70" width="430" height="230" rx="10" fill="#fafafa" stroke="#9e9e9e" stroke-width="1.5"/>
+  <text x="665" y="100" text-anchor="middle" font-size="17" font-weight="700" fill="#212121">Proxmox 192.168.100.200</text>
+  <text x="665" y="120" text-anchor="middle" font-size="12" fill="#616161">kontrollib tokeni õigusi</text>
+
+  <rect x="470" y="140" width="130" height="64" rx="8" fill="#eeeeee" stroke="#9e9e9e"/>
+  <text x="535" y="167" text-anchor="middle" font-size="14" font-weight="700" fill="#212121">mall 9000</text>
+  <text x="535" y="186" text-anchor="middle" font-size="12" fill="#616161">AlmaLinux</text>
+  <line x1="600" y1="172" x2="668" y2="172" stroke="#616161" stroke-width="1.8" marker-end="url(#a)"/>
+  <text x="634" y="164" text-anchor="middle" font-size="11" fill="#616161">kloon</text>
+
+  <rect x="670" y="132" width="195" height="150" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="767" y="152" text-anchor="middle" font-size="12" fill="#2e7d32" font-family="ui-monospace, Menlo, monospace">pool tofu-&lt;kasutaja&gt;</text>
+  <text x="767" y="182" text-anchor="middle" font-size="14" font-weight="700" fill="#212121">tofu-&lt;kasutaja&gt;</text>
+  <text x="767" y="202" text-anchor="middle" font-size="12" fill="#616161">VMID 41xx</text>
+  <text x="767" y="230" text-anchor="middle" font-size="12" fill="#616161">guest agent teatab</text>
+  <text x="767" y="248" text-anchor="middle" font-size="12" fill="#616161">IP-aadressi</text>
+
+  <line x1="767" y1="282" x2="767" y2="320" stroke="#616161" stroke-width="1.8" stroke-dasharray="5 4"/>
+  <line x1="767" y1="320" x2="160" y2="320" stroke="#616161" stroke-width="1.8" stroke-dasharray="5 4"/>
+  <line x1="160" y1="320" x2="160" y2="302" stroke="#616161" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a)"/>
+  <text x="450" y="344" text-anchor="middle" font-size="12" fill="#616161">vastus: masina andmed ja IP, need lähevad olekufaili ja käsu <tspan font-family="ui-monospace, Menlo, monospace">tofu output ip</tspan> väljundisse</text>
+</svg>

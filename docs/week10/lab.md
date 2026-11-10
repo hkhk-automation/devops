@@ -8,7 +8,12 @@ tags:
 
 # Praktikum: virtuaalmasin OpenTofuga
 
-Täna kirjeldad failis ühe virtuaalmasina, lood selle OpenTofuga kooli Proxmoxis ja kontrollid kahte [loengu](lecture.md) alguses kirjutatud ennustust: mida teeb OpenTofu, kui masin kustutatakse käsitsi või kui masina kirjeldus kaob failist. Töötad AlmaLinuxi masinas `proxmox1` VS Code'i kaudu ja OpenTofu ühendub sealt Proxmoxi API-ga.
+Täna kirjeldad failis ühe virtuaalmasina, lood selle OpenTofuga õpetaja Proxmoxi klastris ja kontrollid kahte [loengu](lecture.md) alguses kirjutatud ennustust: mida teeb OpenTofu, kui masin kustutatakse käsitsi või kui masina kirjeldus kaob failist. Töötad AlmaLinuxi masinas `proxmox1` VS Code'i kaudu ja OpenTofu ühendub sealt Proxmoxi API-ga.
+
+<figure markdown="span">
+  ![Vasakul masin proxmox1, kaustas ~/lab10 failid vm.tf, terraform.tfvars tokeniga ja terraform.tfstate ning käsud tofu plan ja tofu apply. Nool API-päring HTTPS, token kasutaja@pve!tofu, läheb Proxmoxi 192.168.100.200, mis kontrollib tokeni õigusi. Proxmoxis kloonitakse mallist 9000 masin tofu-kasutaja pool'i tofu-kasutaja, VMID 41xx. Guest agent teatab IP-aadressi, katkendjoonega nool viib masina andmed ja IP tagasi olekufaili ja tofu output ip väljundisse](../images/n10_lab_ylevaade.svg)
+  <figcaption>Joonis 10.6. OpenTofu saadab masinast proxmox1 API-päringu tokeniga, Proxmox loob masina sinu pool'i ja annab IP tagasi (Talvik, 2026).</figcaption>
+</figure>
 
 **Edenemine:** laboritahvel <http://192.168.125.187:8091/> (VPN-iga).
 
@@ -103,9 +108,70 @@ git status --short
 ??? warning "Kui sulgesid akna enne tokeni saladuse kopeerimist"
     Vali sama token (**API Tokens** nimekirjas), vajuta **Remove** ja loo uus sama nimega token.
 
+Enne masina kirjeldamist kontrolli, et token töötab. Käsk loeb tokeni failist `terraform.tfvars` ja küsib sellega Proxmoxilt versiooni. Masinat see ei loo:
+
+```bash
+curl -sk -w '\nHTTP %{http_code}\n' \
+  -H "Authorization: PVEAPIToken=$(sed -n 's/^proxmox_api_token *= *"\(.*\)"/\1/p' terraform.tfvars)" \
+  https://192.168.100.200:8006/api2/json/version
+```
+
+??? success "Oodatav tulemus"
+    ```text
+    {"data":{"release":"9.2","version":"9.2.10",...}}
+    HTTP 200
+    ```
+
+??? warning "Kui tuleb `HTTP 401`"
+    Proxmox ei tunne tokenit. Kontrolli failis `terraform.tfvars`, et väärtus on kujul `kasutaja@pve!tofu=saladus`, et märgi `=` ümber ei ole tühikuid ja et saladus on kopeeritud tervikuna. Kui viga jääb, loo token uuesti.
+
 ### 1.5 Nimi ja ennustused README-s
 
 Ava VS Code'is fail `README.md`. Kirjuta rea `**Sinu nimi:**` järele oma nimi ja kontrolli, et README 0. osas on loengu alguses kirjutatud kaks ennustust. Kui need puuduvad, kirjuta need nüüd, enne kui lood esimese masina, sest osades 4 ja 5 võrdled nendega.
+
+### 1.6 Esimene katse ilma masinata
+
+Enne masinat vaata kõige väiksema failiga, kuidas OpenTofu töötab. Fail kirjeldab ainult ühte väljundit (`output`), Proxmoxis see midagi ei loo. Loo fail `tere.tf`:
+
+```hcl
+output "tere" {
+  value = "Tere, ${var.kasutaja}!"
+}
+```
+
+`tofu init` laeb alla provideri, mida nõuab fail `versions.tf`. `tofu plan` näitab, mida OpenTofu teeks:
+
+```bash
+tofu init
+tofu plan
+```
+
+??? success "Oodatav tulemus"
+    `init` lõpetab reaga `OpenTofu has been successfully initialized!`. Plaan näitab ainult väljundit:
+    ```text
+    Changes to Outputs:
+      + tere = "Tere, mtamm!"
+    ```
+
+Rakenda plaan. Ilma plaanifailita näitab `apply` plaani uuesti ja küsib kinnitust: kirjuta `yes`.
+
+```bash
+tofu apply
+```
+
+**Ennusta:** Käivitad `tofu plan` uuesti ilma faili muutmata. Mida see näitab?
+
+```bash
+tofu plan
+```
+
+??? success "Oodatav tulemus"
+    ```text
+    No changes. Your infrastructure matches the configuration.
+    ```
+    `apply` kirjutas väljundi olekufaili `terraform.tfstate`. Teine plaan võrdles faili ja olekufaili, need klappisid. Sama käib masinaga: kood, olekufail ja Proxmox peavad klappima.
+
+Muuda failis `tere.tf` sõna `Tere` sõnaks `Head päeva`, salvesta ja käivita `tofu plan`. Plaanis on nüüd märk `~`: väärtus muutub. Pane `Tere` tagasi. Fail `tere.tf` jääb kausta, see ei sega masina loomist.
 
 ## Osa 2 · Esimene masin
 
@@ -155,19 +221,13 @@ Iga atribuudi täpse tähenduse leiad provideri dokumentatsioonist: [proxmox_vir
     | `clone` | masin kloonitakse mallist `template_id` (AlmaLinux). `full = false` teeb lingitud koopia: uus masin kasutab malli ketast ja salvestab ainult erinevused, seega valmib see mõne sekundiga |
     | `cpu.type` | AlmaLinux 9 vajab protsessori tüüpi vähemalt `x86-64-v2`. Vaikimisi tüübiga masin ei käivitu |
     | `memory.dedicated` | mälu megabaitides |
-    | `agent` | Proxmox küsib masinas töötavalt guest agent'ilt IP-aadressi. Ilma selleta ei tea OpenTofu masina IP-d |
+    | `agent` | Proxmox küsib masinas töötavalt guest agent'ilt IP-aadressi. Ilma selleta ei tea OpenTofu masina IP-d. Mallis on guest agent juba paigaldatud ja käivitatud, plokk `agent` lubab Proxmoxil seda kasutada, aga ei paigalda seda |
     | `stop_on_destroy` | kustutamisel lülitatakse masin kohe välja, OpenTofu ei oota korrektset seiskamist |
     | `output "ip"` | `ipv4_addresses` on iga võrguliidese aadresside nimekiri. Meie mallis on esimene liides `lo` (127.0.0.1), seega on masina IP teise liidese (`[1]`) esimene aadress (`[0]`). Kui IP on vale, vaata kõiki aadresse käsuga `tofu state show` |
 
-### 2.2 Provideri allalaadimine
+### 2.2 Faili kontroll ja veateade
 
-`tofu init` laeb alla provideri, mida nõuab `versions.tf` plokk `required_providers`.
-
-```bash
-tofu init
-```
-
-Vaata, mis kausta tekkis ja mida Git näeb:
+Sammus 1.6 laadis `tofu init` provideri alla. Vaata, mis kausta tekkis ja mida Git näeb:
 
 ```bash
 ls -a
@@ -177,7 +237,42 @@ git status --short
 **Küsimus:** kaustas on nüüd `.terraform/` ja `.terraform.lock.hcl`. Kumb neist on `git status` väljundis ja miks? (README 2.2)
 
 ??? success "Oodatav tulemus"
-    `tofu init` lõpetab reaga `OpenTofu has been successfully initialized!`. `git status` näitab faile `.terraform.lock.hcl` ja `vm.tf`. Kausta `.terraform/` ei näita, sest see on `.gitignore`-is.
+    `git status` näitab teiste hulgas faile `.terraform.lock.hcl`, `tere.tf` ja `vm.tf`. Kausta `.terraform/` ei näita, sest see on `.gitignore`-is.
+
+Enne plaani kontrolli faili. `tofu fmt` korrastab taanded ja joonduse ning trükib muudetud failide nimed. `tofu validate` kontrollib süntaksit ja viiteid ilma Proxmoxiga ühendumata, nii et kirjaviga tuleb välja enne, kui midagi luuakse:
+
+```bash
+tofu fmt
+tofu validate
+```
+
+??? success "Oodatav tulemus"
+    ```text
+    Success! The configuration is valid.
+    ```
+    Kui `validate` näitab viga, loe veateade läbi nagu järgmises sammus ja paranda.
+
+Vigu tuleb ette ka siis, kui fail on kopeeritud. Tee üks viga meelega, et näha, kuidas veateadet lugeda. Muuda failis `vm.tf` esimesel real `var.kasutaja` kujule `var.kasutja` ja salvesta.
+
+**Ennusta:** Kas viga leiab `tofu validate` või selgub see alles siis, kui OpenTofu pöördub Proxmoxi poole?
+
+```bash
+tofu validate
+```
+
+??? success "Oodatav tulemus"
+    ```text
+    Error: Reference to undeclared input variable
+
+      on vm.tf line 2, in resource "proxmox_virtual_environment_vm" "veeb":
+       2:   name            = "tofu-${var.kasutja}"
+
+    An input variable with the name "kasutja" has not been declared. Did you mean
+    "kasutaja"?
+    ```
+    Veateates on kolm osa. Esimene rida ütleb, mis on valesti: viide muutujale, mida pole deklareeritud. Rida `on vm.tf line 2` näitab faili ja rea ning kordab seda rida. Viimane lõik selgitab põhjust ja pakub õige nime. `validate` leidis vea ilma Proxmoxita, sest see kontrollib, kas kõik viited on failides olemas.
+
+Paranda nimi tagasi kujule `var.kasutaja` ja käivita `tofu validate` uuesti. Väljund peab olema `Success! The configuration is valid.`
 
 ### 2.3 Plaan
 
@@ -212,7 +307,7 @@ Loe plaan läbi. Leia rida, mis algab märgiga `#`, ja plaani kokkuvõtterida.
 
 ### 2.4 Masina loomine
 
-Plaanifailiga teeb `apply` täpselt need muudatused, mida plaanis lugesid:
+Plaanifailiga teeb `apply` täpselt need muudatused, mida plaanis lugesid. Salvestatud plaani rakendamisel OpenTofu kinnitust (`yes`) ei küsi, seepärast loe plaan enne läbi. Kui plaan lõppes veaga, ära käivita `apply` käsku:
 
 ```bash
 tofu apply tfplan 2>&1 | tee logid/02-apply.txt
@@ -241,7 +336,8 @@ Ava Proxmoxi veebiliideses pool `tofu-<kasutaja>`. Selles on masin `tofu-<kasuta
 
     Outputs:
 
-    ip = "192.168.125.143"
+    ip = "192.168.100.75"
+    tere = "Tere, mtamm!"
     ```
 
 ??? warning "Kui apply annab vea"
@@ -350,7 +446,7 @@ Proxmoxis on masin `tofu-<kasutaja>` jälle olemas ja töötab.
     ...
     Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
     ```
-    Plaani alguses küsis OpenTofu Proxmoxilt masinat, mis olekufailis oli. Proxmox vastas, et sellist masinat ei ole, ja OpenTofu eemaldas selle olekust. Kood nõuab ühte masinat, seega näitas plaan uut masinat ja `apply` lõi selle. Uuel masinal on sama nimi ja VMID, aga võib olla teine IP-aadress. Samamoodi loob Docker Compose uuesti konteineri, mis kustutati käsitsi.
+    Plaani koostamisel küsis OpenTofu Proxmoxilt masinat, mis olekufailis oli, ja sai teada, et seda enam ei ole. Kood nõuab endiselt ühte masinat, seega pakkus plaan selle loomist. `apply` lõi masina ja salvestas tulemuse olekufaili. Uuel masinal on sama nimi ja VMID, aga võib olla teine IP-aadress. Samamoodi loob Docker Compose uuesti konteineri, mis kustutati käsitsi.
 
 ## Osa 5 · Ennustus 2: kirjeldus eemaldatakse failist
 
@@ -435,7 +531,7 @@ Kood on alles ja käsk `tofu apply` loob sama masina uuesti.
 
 ## Töö esitamine
 
-README-s on vastused kõigile küsimustele (igas vastuses üks rida logist ja üks lause selgitust), kood on vormindatud ja kõik kaheksa logifaili on GitHubis:
+README-s on vastused kõigile küsimustele: iga vastuse juures üks lause selgitust ja tõend (rida väljundist või logifaili nimi). Algseid ennustusi ära muuda, kirjuta katse tulemus nende kõrvale. Kood on vormindatud ja kõik kaheksa logifaili on GitHubis:
 
 ```text
 logid/
@@ -478,13 +574,20 @@ Tulemuse näed Classroom 50-s.
     Mida tahab OpenTofu teha? Mis juhtuks `apply` käsuga, kui masin VMID-ga `vm_id` on Proxmoxis juba olemas? Pane olek tagasi (`cp /tmp/olek-varu.tfstate terraform.tfstate`) ja kontrolli, et `tofu plan` näitab `No changes.` Kirjuta README-sse Lisa A alla kaks lauset.
 
 ??? example "B · Olemasolev masin olekusse (raskem)"
-    OpenTofu saab hakata haldama masinat, mille keegi lõi käsitsi. Masin peab Proxmoxis olemas olema, nii et pärast `destroy` loo see uuesti (`tofu apply`). Käivita lisaülesande A kaks esimest käsku ja kontrolli, et varukoopia `/tmp/olek-varu.tfstate` on olemas. Siis loe [import plokki](https://opentofu.org/docs/language/import/) ja lisa faili `vm.tf`:
+    OpenTofu saab hakata haldama masinat, mille keegi lõi käsitsi. Masin peab Proxmoxis olemas olema, nii et pärast `destroy` loo see uuesti (`tofu apply`). Tee olekufailist varukoopia ja eemalda olek:
+
+    ```bash
+    cp terraform.tfstate /tmp/olek-varu.tfstate
+    rm terraform.tfstate terraform.tfstate.backup
+    ```
+
+    Siis loe [import plokki](https://opentofu.org/docs/language/import/) ja lisa faili `vm.tf`:
 
     ```hcl
     import {
       to = proxmox_virtual_environment_vm.veeb
-      id = "marianodea/4100"
+      id = "<sõlm>/<vmid>"
     }
     ```
 
-    Asenda `4100` oma VMID-ga. Mida näitab `tofu plan`? Miks võib plaanis olla lisaks impordile ka muudatusi? Eemalda pärast `apply` käsku plokk `import` failist ja kirjuta README-sse Lisa B alla kaks lauset.
+    Asenda `<sõlm>` muutuja `node_name` väärtusega (vaata faili `variables.tf`) ja `<vmid>` oma VMID-ga. Mida näitab `tofu plan`? Miks võib plaanis olla lisaks impordile ka muudatusi? Eemalda pärast `apply` käsku plokk `import` failist ja kirjuta README-sse Lisa B alla kaks lauset.
