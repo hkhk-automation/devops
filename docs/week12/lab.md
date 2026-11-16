@@ -8,7 +8,7 @@ tags:
 
 # Praktikum: terve serveripark koodina
 
-Täna laiendad playbook'i `site.yml` ja nginx'i rolli ühelt serverilt serveripargile ning parandad kolm tahtlikku viga: host ei kuulu gruppi, muutuja on vales failis ja server on käsitsi muudetud. Lähtepunkt on [N11 praktikumi](../week11/lab_ansible_roles.md) osades 1 ja 2 tehtud roll; kui sul seda ei ole, tee need osad enne ära. Juhtmasin on sinu arvuti VS Code'iga ja vaja on kahte sihtmasinat ([töökeskkond](../kodulabor.md)): kodus kaks virtuaalmasinat, kaks WSL-i või üks masin kahe kasutajaga, koolis kaks Proxmoxi virtuaalmasinat.
+Täna laiendad playbook'i `site.yml` ja nginx'i rolli ühelt serverilt serveripargile ning parandad kolm tahtlikku viga: host ei kuulu gruppi, muutuja on vales failis ja server on käsitsi muudetud. Lähtepunkt on [N11 praktikumi](../week11/lab.md) osades 1 ja 2 tehtud roll; kui sul seda ei ole, tee need osad enne ära. Juhtmasin on sinu arvuti VS Code'iga ja vaja on kahte sihtmasinat ([töökeskkond](../kodulabor.md)): kodus kaks virtuaalmasinat, kaks WSL-i või üks masin kahe kasutajaga, koolis kaks Proxmoxi virtuaalmasinat.
 
 ??? abstract "Õpiväljundid"
 
