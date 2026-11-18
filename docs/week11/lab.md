@@ -14,17 +14,16 @@ N3 ja N4 praktikumis oli nginx'i paigaldus ühes playbook'is. Täna kirjutad sam
 ??? abstract "Õpiväljundid"
     Praktikumi lõpuks oskad:
 
-    1. luua rolli käsuga `ansible-galaxy init` ja selgitada, milleks on kaustad `tasks/`, `defaults/`, `templates/` ja `handlers/`;
-    2. kirjutada nginx'i rolli osade kaupa ja käivitada seda failist `site.yml`;
+    1. selgitada, milleks on rolli kaustad `tasks/`, `defaults/`, `templates/` ja `handlers/`;
+    2. täiendada nginx'i rolli osade kaupa ja käivitada seda failist `site.yml`;
     3. muuta rolli muutujat playbook'is, ilma rolli sisu muutmata;
-    4. leida põhjuse, miks muutuja `nginx_port` lehel ei muuda porti, mida nginx kuulab;
-    5. kasutada Galaxy rolli ja kirjutada see faili `requirements.yml`.
+    4. leida põhjuse, miks muutuja `nginx_port` lehel ei muuda porti, mida nginx kuulab.
 
 Iga ülesande kood on kokkuvolditud plokis. Loe enne selgitus, siis ava plokk, lisa kood faili ja käivita. Rida **Ennusta** tähendab, et enne käsku mõtled läbi, mis juhtub. Vastus on kokkuvolditud plokis.
 
 ## Osa 1 · Repositoorium ja rolli kaustad
 
-Töötad oma arvutis (juhtsõlm) nagu N3 ja N4 praktikumis, sihtmasin on `proxmox1`. Starteris on fail `inventory.ini` (rühm `web`, sõlm `proxmox1`) ning tühjad kaustad `roles/` ja `logid/`. Klooni oma Lab 11 repositoorium (link on Classroom 50-s):
+Töötad oma arvutis (juhtsõlm) nagu N3 ja N4 praktikumis, sihtmasin on `proxmox1`. Starteris on fail `inventory.ini` (rühm `web`, sõlm `proxmox1`) roll `roles/nginx` kahe esimese ülesandega, playbook `site.yml` ja tühi kaust `logid/`. Klooni oma Lab 11 repositoorium (link on Classroom 50-s):
 
 ```bash
 git clone <sinu-repo-URL> ~/lab11 && cd ~/lab11
@@ -34,20 +33,19 @@ ansible -i inventory.ini web -m ping
 ??? success "Oodatav tulemus"
     `proxmox1 | SUCCESS` ja `"ping": "pong"`. Kui ühendus ei tööta, kontrolli SSH-d nagu N3-s: `ssh proxmox1 hostname`.
 
-Kõik failiteed selles juhendis on kausta `~/lab11` suhtes. Rolli kaustu ei pea käsitsi looma. Käsk `ansible-galaxy init` loob rolli skeleti:
+Kõik failiteed selles juhendis on kausta `~/lab11` suhtes. Vaata, millised kaustad rollis on:
 
 ```bash
-ansible-galaxy init --init-path roles nginx
-find roles/nginx -maxdepth 1
+find roles/nginx
 ```
 
 ??? success "Oodatav tulemus"
-    Kaustas `roles/nginx/` on alamkaustad `tasks`, `defaults`, `handlers`, `templates`, `files`, `vars`, `meta` ja `tests` ning fail `README.md`.
+    Kaustas `roles/nginx/` on alamkaustad `tasks`, `defaults`, `templates` ja `handlers`. Kaustas `tasks` on fail `main.yml`, teised kaustad on veel tühjad.
 
-??? warning "Kui `ansible-galaxy init` annab vea „already exists“"
-    Kaust on juba olemas. Vaata, mis seal on (`find roles/nginx`). Kui seal on sinu varasem töö, jätka sellega. Ära kustuta kausta ega kasuta võtit `--force`, siis kaob sinu töö.
+??? info "Kuidas sellise skeleti ise loob"
+    Uue rolli kaustad loob käsk `ansible-galaxy init --init-path roles <rolli nimi>`. See teeb lisaks kaustad `files`, `vars`, `meta` ja `tests` ning faili `README.md`. Täna on skelett starteris valmis, et jõuaksid kohe rolli sisuni.
 
-Täna kasutad kaustu `tasks`, `defaults`, `templates` ja `handlers`. Ülejäänud kaustad võivad tühjaks jääda.
+Täna kasutad kaustu `tasks`, `defaults`, `templates` ja `handlers`.
 
 ??? question "Küsimus"
     `defaults/main.yml` ja `vars/main.yml` hoiavad mõlemad muutujaid. Vaata tabelit [Variable precedence](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable). Kumba paned väärtuse, mida rolli kasutaja peaks saama muuta?
@@ -59,10 +57,9 @@ Täna kasutad kaustu `tasks`, `defaults`, `templates` ja `handlers`. Ülejäänu
 
 ### 2.1 Paigaldus ja teenus
 
-Rolli ülesanded on failis `roles/nginx/tasks/main.yml`. Süntaks on sama mis playbook'i plokis `tasks:`, aga ilma `hosts:` ja `tasks:` reata, sest masinad valib playbook. Esimesed kaks ülesannet on samad mis N3-s: pakett on paigaldatud ning teenus töötab ja käivitub ka pärast taaskäivitust.
+Rolli ülesanded on failis `roles/nginx/tasks/main.yml`. Süntaks on sama mis playbook'i plokis `tasks:`, aga ilma `hosts:` ja `tasks:` reata, sest masinad valib playbook. Starteris on failis juba kaks ülesannet, mis on samad mis N3-s: pakett on paigaldatud ning teenus töötab ja käivitub ka pärast taaskäivitust. Ava fail ja võrdle seda N3 playbook'iga.
 
-??? example "Ülesanne: kirjuta `roles/nginx/tasks/main.yml`"
-    Asenda faili sisu (`---` rida võib jääda):
+??? example "Starteris on `roles/nginx/tasks/main.yml`"
 
     ```yaml
     - name: nginx on paigaldatud
@@ -79,7 +76,7 @@ Rolli ülesanded on failis `roles/nginx/tasks/main.yml`. Süntaks on sama mis pl
 
 Roll ei tee midagi, kuni playbook selle käivitab. Playbook `site.yml` ütleb, millisele rühmale roll rakendub, ja `become: true` annab paketi paigaldamiseks root-õigused.
 
-??? example "Ülesanne: loo `site.yml`"
+??? example "Starteris on `site.yml`"
     ```yaml
     - hosts: web
       become: true
@@ -234,60 +231,13 @@ ssh proxmox1 "curl -s localhost:8081"
 ??? success "Oodatav tulemus"
     Port 8081 vastab ja leht ütleb „See leht töötab pordil 8081.“ Playbook'is rolli juures antud väärtus kirjutab rolli `defaults/` üle.
 
-## Osa 6 · Galaxy roll
-
-Kõiki rolle ei pea ise kirjutama. [Ansible Galaxy](https://galaxy.ansible.com/) on avalik rollide hoidla. Projekti sõltuvused kirjutatakse faili `requirements.yml`, et järgmine inimene saaks need ühe käsuga paigaldada. Versioon on failis kirjas, et igaüks paigaldaks täpselt sama rolli.
-
-??? example "Ülesanne: loo `requirements.yml`"
-    ```yaml
-    roles:
-      - name: geerlingguy.git
-        version: "3.0.1"
-    ```
-
-```bash
-ansible-galaxy install -r requirements.yml
-ansible-galaxy list
-```
-
-??? success "Oodatav tulemus"
-    `- geerlingguy.git (3.0.1) was installed successfully` ja nimekirjas on rida `- geerlingguy.git, 3.0.1`.
-
-Roll paigaldub kausta `~/.ansible/roles/`. See kaust ei lähe repositooriumi, repositooriumi läheb ainult `requirements.yml`.
-
-??? example "Ülesanne: lisa roll `site.yml`-i teiseks"
-    ```yaml
-      roles:
-        - role: nginx
-          vars:
-            nginx_port: 8081
-        - geerlingguy.git
-    ```
-
-```bash
-ansible-playbook -i inventory.ini site.yml | tee logid/03-galaxy.txt
-ssh proxmox1 "git --version"
-```
-
-??? success "Oodatav tulemus"
-    Väljundis on ülesanded kujul `TASK [geerlingguy.git : ...]` ja sõlmes vastab `git version ...`.
-
-??? warning "Kui roll ei laadi alla"
-    Kontrolli, kas sinu arvuti jõuab Galaxy serverini: `curl -sI https://galaxy.ansible.com`. Kui versiooni `3.0.1` ei leita, vaata rolli lehelt [geerlingguy.git](https://galaxy.ansible.com/ui/standalone/roles/geerlingguy/git/) uusimat versiooni ja kirjuta see faili.
-
-??? question "Küsimus"
-    Vaata käsuga `find ~/.ansible/roles/geerlingguy.git -maxdepth 1`. Kas struktuur on sama mis sinu rollil? Mida kontrolliksid enne, kui võõra rolli oma serveris käivitad?
-
-    ??? success "Vastus"
-        Struktuur on sama (`tasks`, `defaults`, `handlers`, `meta` jne). Enne kasutamist vaata failist `tasks/main.yml`, mida roll masinas muudab, ja Galaxy lehelt, millal rolli viimati uuendati ning millised operatsioonisüsteemid on toetatud.
-
 ## Töö esitamine
 
-Repositooriumis on `site.yml`, `requirements.yml`, roll `roles/nginx/` ja logid kaustas `logid/`.
+Repositooriumis on `site.yml`, roll `roles/nginx/` ja logid kaustas `logid/`.
 
 ```bash
-git add site.yml requirements.yml roles logid
-git commit -m "nginx'i roll malli ja handler'iga, Galaxy roll geerlingguy.git"
+git add site.yml roles logid
+git commit -m "nginx'i roll malli ja handler'iga"
 git push
 ```
 
@@ -295,8 +245,54 @@ Tulemuse näed Classroom 50-s.
 
 ## Lisaülesanded
 
-??? example "1 · Teine roll"
+??? example "1 · Galaxy roll"
+    Kõiki rolle ei pea ise kirjutama. [Ansible Galaxy](https://galaxy.ansible.com/) on avalik rollide hoidla. Projekti sõltuvused kirjutatakse faili `requirements.yml`, et järgmine inimene saaks need ühe käsuga paigaldada. Versioon on failis kirjas, et igaüks paigaldaks täpselt sama rolli.
+
+    ??? example "Ülesanne: loo `requirements.yml`"
+        ```yaml
+        roles:
+          - name: geerlingguy.git
+            version: "3.0.1"
+        ```
+
+    ```bash
+    ansible-galaxy install -r requirements.yml
+    ansible-galaxy list
+    ```
+
+    ??? success "Oodatav tulemus"
+        `- geerlingguy.git (3.0.1) was installed successfully` ja nimekirjas on rida `- geerlingguy.git, 3.0.1`.
+
+    Roll paigaldub kausta `~/.ansible/roles/`. See kaust ei lähe repositooriumi, repositooriumi läheb ainult `requirements.yml`.
+
+    ??? example "Ülesanne: lisa roll `site.yml`-i teiseks"
+        ```yaml
+          roles:
+            - role: nginx
+              vars:
+                nginx_port: 8081
+            - geerlingguy.git
+        ```
+
+    ```bash
+    ansible-playbook -i inventory.ini site.yml | tee logid/03-galaxy.txt
+    ssh proxmox1 "git --version"
+    ```
+
+    ??? success "Oodatav tulemus"
+        Väljundis on ülesanded kujul `TASK [geerlingguy.git : ...]` ja sõlmes vastab `git version ...`.
+
+    ??? warning "Kui roll ei laadi alla"
+        Kontrolli, kas sinu arvuti jõuab Galaxy serverini: `curl -sI https://galaxy.ansible.com`. Kui versiooni `3.0.1` ei leita, vaata rolli lehelt [geerlingguy.git](https://galaxy.ansible.com/ui/standalone/roles/geerlingguy/git/) uusimat versiooni ja kirjuta see faili.
+
+    ??? question "Küsimus"
+        Vaata käsuga `find ~/.ansible/roles/geerlingguy.git -maxdepth 1`. Kas struktuur on sama mis sinu rollil? Mida kontrolliksid enne, kui võõra rolli oma serveris käivitad?
+
+        ??? success "Vastus"
+            Struktuur on sama (`tasks`, `defaults`, `handlers`, `meta` jne). Enne kasutamist vaata failist `tasks/main.yml`, mida roll masinas muudab, ja Galaxy lehelt, millal rolli viimati uuendati ning millised operatsioonisüsteemid on toetatud.
+
+??? example "2 · Teine roll"
     Loo roll `tulemyyr`, mis avab pordi `nginx_port` mooduliga [`ansible.posix.firewalld`](https://docs.ansible.com/ansible/latest/collections/ansible/posix/firewalld_module.html) (`port: "{{ nginx_port }}/tcp"`, `permanent: true`, `immediate: true`). Lisa roll faili `site.yml` enne rolli `nginx` ja vaata väljundist käivitamise järjekorda. Kui sõlmes firewalld ei tööta, lisa rollile esimeseks ülesandeks selle käivitamine.
 
-??? example "2 · Sõltuvus"
+??? example "3 · Sõltuvus"
     Lisa faili `roles/nginx/meta/main.yml` plokk `dependencies:`, mis nõuab, et `tulemyyr` käivituks enne. Kas pead `tulemyyr`-i siis veel failis `site.yml` nimetama?
