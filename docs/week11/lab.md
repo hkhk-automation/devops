@@ -7,23 +7,24 @@ tags:
 
 # Praktikum: Ansible'i rollid
 
-N3 ja N4 praktikumis oli nginx'i paigaldus ühes playbook'is. Täna kirjutad sama töö rolliks: ülesanded, vaikeväärtused, mallid ja handler'id on eraldi kaustades, ning playbook `site.yml` ainult käivitab rolli. Rolli kaustad on seletatud [loengus](lecture.md).
+N3 praktikumis paigaldasid nginx'i ühe playbook'iga. Täna alustad samast: starteris on tavaline playbook, mis paigaldab nginx'i ja teeb avalehe. Kõigepealt muudad selles playbook'is midagi ja vaatad, mis serveris muutub. Siis tõstad sama töö rolliks: ülesanded, muutujad ja mall lähevad rolli kindlatesse kaustadesse ning playbook `site.yml` ainult käivitab rolli. Lõpuks lisad rollile handler'i. Rolli kaustad on seletatud [loengus](lecture.md).
 
 **Edenemine:** laboritahvel <http://192.168.125.187:8091/> (VPN-iga).
 
 ??? abstract "Õpiväljundid"
     Praktikumi lõpuks oskad:
 
-    1. selgitada, milleks on rolli kaustad `tasks/`, `defaults/`, `templates/` ja `handlers/`;
-    2. täiendada nginx'i rolli osade kaupa ja käivitada seda failist `site.yml`;
-    3. muuta rolli muutujat playbook'is, ilma rolli sisu muutmata;
-    4. leida põhjuse, miks muutuja `nginx_port` lehel ei muuda porti, mida nginx kuulab.
+    1. muuta playbook'i malli ja ennustada, milline ülesanne on pärast muudatust `changed`;
+    2. tõsta tavalise playbook'i ülesanded, muutujad ja malli rolli kaustadesse `tasks/`, `defaults/` ja `templates/`;
+    3. kontrollida, et pärast rolliks tegemist on tulemus serveris sama;
+    4. leida põhjuse, miks muutuja `nginx_port` lehel ei muuda porti, mida nginx kuulab;
+    5. lisada rollile handler'i ja muuta rolli muutujat playbook'is.
 
 Iga ülesande kood on kokkuvolditud plokis. Loe enne selgitus, siis ava plokk, lisa kood faili ja käivita. Rida **Ennusta** tähendab, et enne käsku mõtled läbi, mis juhtub. Vastus on kokkuvolditud plokis.
 
-## Osa 1 · Repositoorium ja rolli kaustad
+## Osa 1 · Tavaline playbook
 
-Töötad oma arvutis (juhtsõlm) nagu N3 ja N4 praktikumis, sihtmasin on `proxmox1`. Starteris on fail `inventory.ini` (rühm `web`, sõlm `proxmox1`) roll `roles/nginx` kahe esimese ülesandega, playbook `site.yml` ja tühi kaust `logid/`. Klooni oma Lab 11 repositoorium (link on Classroom 50-s):
+Töötad oma arvutis (juhtsõlm) nagu N3 ja N4 praktikumis, sihtmasin on `proxmox1`. Starteris on fail `inventory.ini` (rühm `web`, sõlm `proxmox1`), playbook `playbook.yml`, mall `templates/index.html.j2` ja tühi kaust `logid/`. Klooni oma Lab 11 repositoorium (link on Classroom 50-s):
 
 ```bash
 git clone <sinu-repo-URL> ~/lab11 && cd ~/lab11
@@ -33,33 +34,114 @@ ansible -i inventory.ini web -m ping
 ??? success "Oodatav tulemus"
     `proxmox1 | SUCCESS` ja `"ping": "pong"`. Kui ühendus ei tööta, kontrolli SSH-d nagu N3-s: `ssh proxmox1 hostname`.
 
-Kõik failiteed selles juhendis on kausta `~/lab11` suhtes. Vaata, millised kaustad rollis on:
+Kõik failiteed selles juhendis on kausta `~/lab11` suhtes. Ava `playbook.yml` ja loe see läbi. Playbook'is on kolm osa: millistele masinatele see rakendub (`hosts`, `become`), muutuja (`vars`) ja kolm ülesannet (`tasks`).
+
+??? example "Starteris on `playbook.yml`"
+    ```yaml
+    - hosts: web
+      become: true
+      vars:
+        nginx_port: 80
+      tasks:
+        - name: nginx on paigaldatud
+          ansible.builtin.package:
+            name: nginx
+            state: present
+
+        - name: nginx töötab ja käivitub ka pärast taaskäivitust
+          ansible.builtin.service:
+            name: nginx
+            state: started
+            enabled: true
+
+        - name: avaleht on mallist
+          ansible.builtin.template:
+            src: index.html.j2
+            dest: /usr/share/nginx/html/index.html
+    ```
+
+??? example "Starteris on `templates/index.html.j2`"
+    ```jinja2
+    <html>
+      <body>
+        <h1>Tere, {{ inventory_hostname }}!</h1>
+        <p>See leht töötab pordil {{ nginx_port }}.</p>
+      </body>
+    </html>
+    ```
 
 ```bash
-find roles/nginx
+ansible-playbook -i inventory.ini playbook.yml
+ssh proxmox1 "curl -s localhost"
 ```
 
 ??? success "Oodatav tulemus"
-    Kaustas `roles/nginx/` on alamkaustad `tasks`, `defaults`, `templates` ja `handlers`. Kaustas `tasks` on fail `main.yml`, teised kaustad on veel tühjad.
+    nginx on `proxmox1`-s N3-st juba olemas, nii et kaks esimest ülesannet on `ok`. Ülesanne `avaleht on mallist` on `changed`, sest leht asendub malli sisuga. Leht näitab `Tere, proxmox1!` ja `See leht töötab pordil 80.`
 
-??? info "Kuidas sellise skeleti ise loob"
-    Uue rolli kaustad loob käsk `ansible-galaxy init --init-path roles <rolli nimi>`. See teeb lisaks kaustad `files`, `vars`, `meta` ja `tests` ning faili `README.md`. Täna on skelett starteris valmis, et jõuaksid kohe rolli sisuni.
+??? warning "Kui tuleb `Permission denied` või `This command has to be run under the root user`"
+    Failis `playbook.yml` puudub rida `become: true`.
 
-Täna kasutad kaustu `tasks`, `defaults`, `templates` ja `handlers`.
+### Kujunda oma leht
 
-??? question "Küsimus"
-    `defaults/main.yml` ja `vars/main.yml` hoiavad mõlemad muutujaid. Vaata tabelit [Variable precedence](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable). Kumba paned väärtuse, mida rolli kasutaja peaks saama muuta?
+Mall on tavaline HTML-fail, kuhu Ansible paneb muutujate väärtused. Tee sellest oma leht: muuda pealkirja, lisa oma nimi ja paar rida enda kohta ning vali taustavärv. Jäta alles rida `See leht töötab pordil {{ nginx_port }}.`, seda läheb vaja osas 3.
 
-    ??? success "Vastus"
-        `defaults/main.yml`. Rolli vaikeväärtused on tabelis kõige nõrgemad ja iga teine koht (inventory, playbook, käsurida) kirjutab need üle. `vars/main.yml` on tabelis kõrgemal, sinna pannakse rolli sisemised väärtused.
+??? example "Näide: `templates/index.html.j2`"
+    ```jinja2
+    <html>
+      <body style="background: #e8f4ff; font-family: sans-serif;">
+        <h1>Mari Maasika server {{ inventory_hostname }}</h1>
+        <p>Õpin IT-süsteemide nooremspetsialistiks. Mulle meeldivad Linux ja korvpall.</p>
+        <p>See leht töötab pordil {{ nginx_port }}.</p>
+      </body>
+    </html>
+    ```
 
-## Osa 2 · nginx'i roll
+**Ennusta:** sa muutsid ainult malli. Milline kolmest ülesandest on järgmisel käivitusel `changed`?
 
-### 2.1 Paigaldus ja teenus
+```bash
+ansible-playbook -i inventory.ini playbook.yml
+ssh proxmox1 "curl -s localhost"
+```
 
-Rolli ülesanded on failis `roles/nginx/tasks/main.yml`. Süntaks on sama mis playbook'i plokis `tasks:`, aga ilma `hosts:` ja `tasks:` reata, sest masinad valib playbook. Starteris on failis juba kaks ülesannet, mis on samad mis N3-s: pakett on paigaldatud ning teenus töötab ja käivitub ka pärast taaskäivitust. Ava fail ja võrdle seda N3 playbook'iga.
+??? success "Oodatav tulemus"
+    Ainult `avaleht on mallist` on `changed` ja curl näitab sinu lehte. Pakett ja teenus jäid samaks, nii et need ülesanded on `ok`. Ansible muudab ainult seda, mis erineb kirjeldatud olekust.
 
-??? example "Starteris on `roles/nginx/tasks/main.yml`"
+Käivita sama käsk veel kord.
+
+??? success "Oodatav tulemus"
+    Kõik ülesanded on `ok` ja kokkuvõttes on `changed=0`. Serveri olek on juba sama, mis playbook'is kirjas.
+
+## Osa 2 · Sama töö rolliks
+
+Kolme ülesandega playbook on veel loetav. Kui ülesandeid on kolmkümmend ja sama nginx'i paigaldust on vaja ka teises projektis, läheb üks fail segaseks ja seda on raske uuesti kasutada. Roll jagab sama sisu kindlatesse kaustadesse. Ansible teab, kust igast kaustast mida otsida, nii et faile ei pea playbook'is eraldi nimetama.
+
+??? note "Tabel 11.1. Kuhu iga playbook'i osa rollis läheb"
+    | Osa `playbook.yml`-is | Koht rollis |
+    |---|---|
+    | `tasks:` all olevad ülesanded | `roles/nginx/tasks/main.yml` |
+    | `vars:` all olev muutuja | `roles/nginx/defaults/main.yml` |
+    | mall `templates/index.html.j2` | `roles/nginx/templates/index.html.j2` |
+    | `hosts:` ja `become:` | jäävad playbook'i, uus fail `site.yml` |
+
+Rolli kaustad loob käsk `ansible-galaxy init`:
+
+```bash
+ansible-galaxy init --init-path roles nginx
+find roles/nginx -maxdepth 1
+```
+
+??? success "Oodatav tulemus"
+    Kaustas `roles/nginx/` on alamkaustad `tasks`, `defaults`, `handlers`, `templates`, `files`, `vars`, `meta` ja `tests` ning fail `README.md`. Täna kasutad kaustu `tasks`, `defaults`, `templates` ja `handlers`, ülejäänud võivad tühjaks jääda.
+
+??? warning "Kui `ansible-galaxy init` annab vea „already exists“"
+    Kaust on juba olemas. Vaata, mis seal on (`find roles/nginx`). Kui seal on sinu varasem töö, jätka sellega. Ära kustuta kausta ega kasuta võtit `--force`, siis kaob sinu töö.
+
+### 2.1 Ülesanded
+
+Rolli ülesanded on failis `roles/nginx/tasks/main.yml`. Süntaks on sama mis playbook'i plokis `tasks:`, aga ilma `hosts:` ja `tasks:` reata ning taandeta, sest masinad valib playbook.
+
+??? example "Ülesanne: kirjuta `roles/nginx/tasks/main.yml`"
+    Kopeeri `playbook.yml`-ist kolm ülesannet. Asenda faili sisu (`---` rida võib jääda):
 
     ```yaml
     - name: nginx on paigaldatud
@@ -72,34 +154,14 @@ Rolli ülesanded on failis `roles/nginx/tasks/main.yml`. Süntaks on sama mis pl
         name: nginx
         state: started
         enabled: true
+
+    - name: avaleht on mallist
+      ansible.builtin.template:
+        src: index.html.j2
+        dest: /usr/share/nginx/html/index.html
     ```
 
-Roll ei tee midagi, kuni playbook selle käivitab. Playbook `site.yml` ütleb, millisele rühmale roll rakendub, ja `become: true` annab paketi paigaldamiseks root-õigused.
-
-??? example "Starteris on `site.yml`"
-    ```yaml
-    - hosts: web
-      become: true
-      roles:
-        - nginx
-    ```
-
-**Ennusta:** nginx on `proxmox1`-s N3-st juba olemas. Kas ülesanded on `changed` või `ok`?
-
-```bash
-ansible-playbook -i inventory.ini site.yml
-```
-
-??? success "Oodatav tulemus"
-    Mõlemad ülesanded on `ok`, sest nginx on juba paigaldatud ja töötab. Väljundis on ülesande nime ees rolli nimi: `TASK [nginx : nginx on paigaldatud]`. Roll kirjeldab soovitud olekut ja kui tegelik olek on juba sama, ei muuda roll midagi.
-
-??? warning "Kui tuleb viga `the role 'nginx' was not found`"
-    `ansible-playbook` otsib rolle kaustast `roles/` faili `site.yml` kõrval. Kontrolli, et oled kaustas `~/lab11` ja et roll on kaustas `roles/nginx`, mitte `nginx`.
-
-??? warning "Kui tuleb `Permission denied` või `This command has to be run under the root user`"
-    Failis `site.yml` puudub rida `become: true`.
-
-### 2.2 Vaikeväärtus ja mall
+### 2.2 Muutuja ja mall
 
 Kaust `defaults/` hoiab rolli vaikeväärtusi. Rolli kasutaja saab neid playbook'is või inventory's muuta, rolli sisu ei pea selleks puutuma.
 
@@ -108,25 +170,35 @@ Kaust `defaults/` hoiab rolli vaikeväärtusi. Rolli kasutaja saab neid playbook
     nginx_port: 80
     ```
 
-Mallid on rolli kaustas `templates/`. Moodulile `template` piisab faili nimest, sest roll otsib malli ise oma kaustast.
+Mall liigub rolli kausta `templates/`. Moodulile `template` piisab faili nimest, sest roll otsib malli ise oma kaustast. Käsk `git mv` tõstab faili ja Git näeb, et see on sama fail uues kohas.
 
-??? example "Ülesanne: loo mall `roles/nginx/templates/index.html.j2`"
-    ```jinja2
-    <html>
-      <body>
-        <h1>Tere, {{ inventory_hostname }}!</h1>
-        <p>See leht töötab pordil {{ nginx_port }}.</p>
-      </body>
-    </html>
-    ```
+```bash
+git mv templates/index.html.j2 roles/nginx/templates/index.html.j2
+```
 
-??? example "Ülesanne: lisa `roles/nginx/tasks/main.yml` lõppu"
+??? question "Küsimus"
+    `defaults/main.yml` ja `vars/main.yml` hoiavad mõlemad muutujaid. Vaata tabelit [Variable precedence](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable). Kumba paned väärtuse, mida rolli kasutaja peaks saama muuta?
+
+    ??? success "Vastus"
+        `defaults/main.yml`. Rolli vaikeväärtused on tabelis kõige nõrgemad ja iga teine koht (inventory, playbook, käsurida) kirjutab need üle. `vars/main.yml` on tabelis kõrgemal, sinna pannakse rolli sisemised väärtused.
+
+### 2.3 Playbook, mis käivitab rolli
+
+Roll ei tee midagi, kuni playbook selle käivitab. Uus playbook `site.yml` ütleb ainult, millisele rühmale roll rakendub ja et vaja on root-õigusi. Vana `playbook.yml` pole enam vaja.
+
+??? example "Ülesanne: loo `site.yml` ja kustuta `playbook.yml`"
     ```yaml
-    - name: avaleht on mallist
-      ansible.builtin.template:
-        src: index.html.j2
-        dest: /usr/share/nginx/html/index.html
+    - hosts: web
+      become: true
+      roles:
+        - nginx
     ```
+
+    ```bash
+    git rm playbook.yml
+    ```
+
+**Ennusta:** sa ei muutnud ühtegi ülesannet, ainult tõstsid need teise kohta. Kas ülesanded on `changed` või `ok`?
 
 ```bash
 ansible-playbook -i inventory.ini site.yml
@@ -134,7 +206,16 @@ ssh proxmox1 "curl -s localhost"
 ```
 
 ??? success "Oodatav tulemus"
-    Ülesanne `avaleht on mallist` on `changed`. Leht näitab `Tere, proxmox1!` ja `See leht töötab pordil 80.`
+    Kõik kolm ülesannet on `ok` ja kokkuvõttes on `changed=0`. Leht on sama mis enne, sinu kujundatud leht. Väljundis on ülesande nime ees rolli nimi: `TASK [nginx : avaleht on mallist]`. Sama töö on nüüd rollis ja tulemus serveris ei muutunud.
+
+??? warning "Kui tuleb viga `the role 'nginx' was not found`"
+    `ansible-playbook` otsib rolle kaustast `roles/` faili `site.yml` kõrval. Kontrolli, et oled kaustas `~/lab11` ja et roll on kaustas `roles/nginx`, mitte `nginx`.
+
+??? warning "Kui tuleb viga `Could not find or access 'index.html.j2'`"
+    Mall ei ole rolli kaustas. Kontrolli käsuga `find roles/nginx/templates`, et fail on `roles/nginx/templates/index.html.j2`.
+
+??? warning "Kui ülesanne `avaleht on mallist` on `changed`"
+    Rolli mall erineb sellest, mis serveris on. Kõige sagedamini kopeeriti mall enne kujundamist. Vaata `cat roles/nginx/templates/index.html.j2`.
 
 ## Osa 3 · Muutuja, mis ei muuda porti
 
