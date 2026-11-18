@@ -1,155 +1,180 @@
 ---
 tags:
+  - OpenTofu
   - Ansible
   - IaC
-  - Infrastruktuur
 ---
 
-# Loeng: terve serveripark koodina
+# Loeng: OpenTofu ja Ansible koos
 
-N11-s jagasid playbook'i rollideks. Täna rakendad sama koodi mitmele serverile ja mitmele keskkonnale ning vaatad, kuidas Ansible ja Terraform koos töötavad.
+N10-s lõi OpenTofu ühe virtuaalmasina ja N11-s paigaldas Ansible'i roll nginx'i. Täna ühendad need kaks tööriista: OpenTofu loob mitu masinat, kirjutab nende IP-aadressid Ansible'i inventory faili ja sama roll seadistab kõik masinad ühe käsuga.
 
 ??? abstract "Õpiväljundid"
-    Pärast loengut oskad:
+    Pärast loengut ja praktikumi oskad:
 
-    - selgitada, mis vahe on playbook'il, mis paigaldab nginx'i, ja infrastruktuuril koodina;
-    - kirjeldada, kuidas üks playbook haldab inventory gruppide abil mitut serverit korraga;
-    - eristada `group_vars` ja `host_vars`: sama kood, erinev keskkond;
-    - selgitada, millal kasutada Ansible'it ja millal Terraformi ning miks kumbki üksi ei piisa.
+    - selgitada, millist tööd teeb OpenTofu ja millist Ansible ning miks neid kasutatakse koos;
+    - kirjeldada mitu sarnast masinat ühe ressursiplokiga, kasutades `for_each`-i ja muutujat;
+    - anda OpenTofu tulemus edasi väljundi (`output`) ja genereeritud inventory faili kaudu;
+    - selgitada, kuidas cloud-init paneb uude masinasse kasutaja SSH-võtme;
+    - lisada serveriparki masina nii, et muutub ainult muutujate fail.
 
-## 1. Ühest serverist serveripargini
+## 1. Kaks tööriista, kaks ülesannet
 
-Playbook, mis paigaldab nginx'i ühte serverisse, on automatiseerimine, aga veel ei ole see infrastruktuur koodina (IaC). Vahe on ulatuses ja töökorralduses.
+OpenTofu ja Ansible kirjeldavad mõlemad soovitud olekut koodina, aga vastutavad eri asjade eest. OpenTofu loob infrastruktuuri: virtuaalmasinad, kettad ja võrguliidesed. Ansible seadistab olemasoleva masina sisu: paketid, konfiguratsioonifailid ja teenused.
 
-IaC tähendab, et kakskümmend serverit kolmes keskkonnas (arendus, test, tootmine) on koodis kirjeldatud ja igaüks saab need sama failikomplektiga nullist üles seada. Kogu teadmine serverite seadistusest on failides ja Gitis, seda saab lugeda ja korrata. Kui üks server läheb katki, kustutatakse see ja playbook seadistab identse asemele.
+??? note "Tabel 12.1. OpenTofu ja Ansible kõrvuti"
+    | | OpenTofu | Ansible |
+    |---|---|---|
+    | Mida teeb | Loob masina, ketta, võrguliidese | Paigaldab paketid, kirjutab konfiguratsioonifailid, käivitab teenused |
+    | Millele vastab | Millised masinad on olemas? | Mis on masinate sees? |
+    | Kust teab olekut | Olekufailist `terraform.tfstate` | Küsib iga kord masinalt endalt, olekufaili ei ole |
+    | Kursusel | N10 | N3, N4, N11 |
 
-??? info "Taust: *pets vs cattle*"
-    Inglise keeles kirjeldatakse sama vahet väljendiga *pets vs cattle*. Käsitsi hooldatud server on nagu lemmikloom: tal on eripärad, mida teab ainult üks inimene, ja tema kadumine on suur probleem. Koodiga kirjeldatud server on asendatav: kui see läheb katki, luuakse koodi järgi uus.
+Kumbki üksi jätab poole tööst tegemata. OpenTofu annab tühja masina, kus on ainult operatsioonisüsteem. Ansible eeldab, et masin on juba olemas ja et inventory's on selle aadress.
 
-## 2. Üks playbook, mitu serverit
-
-Ühe serveri seadistamisel on failis `inventory.ini` üks host. Töökohas on hoste mitu ja need on jagatud gruppidesse ([How to build your inventory](https://docs.ansible.com/projects/ansible/latest/inventory_guide/intro_inventory.html)):
-
-```ini
-[web]
-web1.example.com
-web2.example.com
-
-[db]
-db1.example.com
-
-[production:children]
-web
-db
-```
-
-`[web]` ja `[db]` on grupid. `[production:children]` on **grupp gruppidest**. Kui playbook'is on `hosts: web`, käivitub see korraga kõigis veebiserverites. Sama ülesanne tehakse ühe käsuga kahekümnes masinas.
+Kahe tööriista vahel on üks probleem: masina IP-aadressi teab alles OpenTofu pärast `apply` käsku, aga Ansible vajab seda inventory's. N10-s kopeerisid IP käsitsi. Kui masin luuakse uuesti, saab see DHCP-st tõenäoliselt uue aadressi ja käsitsi kirjutatud inventory on vale. Lahendus on lasta OpenToful inventory ise kirjutada.
 
 <figure markdown="span">
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'primaryColor':'#ede7f6','primaryBorderColor':'#5e35b1','primaryTextColor':'#212121','lineColor':'#7e57c2'}}}%%
-graph TD
-    P[site.yml<br/>hosts: web] --> W1[web1]
-    P --> W2[web2]
-    P --> W3[web3]
-    G[group_vars/web.yml<br/>nginx_port: 80] -.muutujad.-> P
+graph LR
+    V[terraform.tfvars<br/>veeb1, veeb2] --> T[tofu apply]
+    T --> M1[masin veeb1]
+    T --> M2[masin veeb2]
+    T --> I[inventory.ini<br/>nimed ja IP-d]
+    I --> A[ansible-playbook site.yml]
+    A -->|roll nginx| M1
+    A -->|roll nginx| M2
 ```
-  <figcaption>Joonis 12.1. Üks playbook rakendub kõigile grupi hostidele; group_vars annab neile ühised muutujad (Talvik, 2026).</figcaption>
+  <figcaption>Joonis 12.1. OpenTofu loob masinad ja kirjutab inventory, Ansible loeb inventory'st aadressid ja seadistab masinad (Talvik, 2026).</figcaption>
 </figure>
 
-## 3. group_vars ja host_vars: sama kood, erinev keskkond
+??? question "Kontrolli ennast"
+    1. Kumb tööriist paigaldab nginx'i ja kumb määrab masina mälu?
+    2. Miks ei ole käsitsi kirjutatud inventory OpenTofuga loodud masinate puhul hea lahendus?
 
-Kood on kõigis serverites sama. Arendusserver ei tohi aga kasutada tootmise parooli ja testserver ei tohi kasutada tootmise domeeni. Üks playbook peab andma igale keskkonnale omad väärtused.
+    ??? success "Vastused"
+        1. Nginx'i paigaldab Ansible, mälu määrab OpenTofu.
+        2. Masina IP-aadress selgub alles loomisel ja võib uuesti loomisel muutuda. Käsitsi kirjutatud fail jääb siis vanaks.
 
-Ansible loeb muutujad failinime järgi automaatselt ([Organizing host and group variables](https://docs.ansible.com/projects/ansible/latest/inventory_guide/intro_inventory.html#organizing-host-and-group-variables)):
+## 2. Mitu masinat ühe plokiga
 
-- `group_vars/web.yml` rakendub kõigile grupi `[web]` hostidele;
-- `group_vars/all.yml` rakendub kõigile hostidele;
-- `host_vars/web1.example.com.yml` rakendub ainult sellele ühele hostile.
+N10-s kirjeldas üks ressursiplokk ühte masinat. Teise masina jaoks võiks ploki kopeerida, aga kaks koopiat lähevad aja jooksul lahku: ühes parandatakse protsessori tüüp, teises mitte. Parem on kirjeldada masin üks kord ja anda eraldi nimekiri, milliseid masinaid on vaja.
 
-Seega annab sama `site.yml` koos rollidega arenduses ühe pordi ja tootmises teise, ilma et koodis midagi muutuks. Muutub ainult see, milline `group_vars` fail kehtib.
-
-IaC põhimõte on see, et kood kirjeldab struktuuri ja muutujad kirjeldavad keskkonda. Kui vahetad `group_vars` faili, saad teise keskkonna ja kood jääb puutumata.
-
-## 4. Idempotentsus infrastruktuuri tasemel
-
-[Idempotentsus](https://docs.ansible.com/projects/ansible/latest/reference_appendices/glossary.html#term-Idempotency) tähendab, et korduv käivitus ei muuda midagi, kui kõik on juba soovitud olekus. Ühe ülesande juures näed seda väljundis `ok` ja `changed`, aga kasulikum on see kogu serveripargi tasemel.
-
-Kui kogu serveripargi soovitud olek on kirjeldatud playbook'is, on playbook'i käivitamine ühtlasi kontroll. `changed=0` kõigis hostides tähendab, et kõik serverid on täpselt sellises olekus, nagu kood kirjeldab. Kui ühes hostis on `changed=3`, on keegi või miski seda serverit käsitsi muutnud ja Ansible taastas koodis kirjeldatud oleku.
-
-Nii leitakse ja parandatakse **triiv** (*configuration drift*). Triiv tähendab, et serveri tegelik olek on aja jooksul soovitud olekust erinema hakanud. Käsitsi hooldatud pargis lähevad serverid aeglaselt üksteisest lahku: üks sai turvapaiga, teine mitte, kolmandas muudeti konfiguratsioonifaili käsitsi. Keegi ei märka seda enne, kui midagi läheb katki.
-
-IaC-ga saab playbook'i käivitada näiteks cron'iga ja triiv parandatakse automaatselt.
-
-## 5. Ansible ja Terraform: millal kumbki
-
-Terraform (ja OpenTofu) ning Ansible kirjeldavad mõlemad infrastruktuuri koodina, aga teevad eri asju ja töökohtades kasutatakse neid sageli koos. Võrdlust saab lugeda ka HashiCorpi lehelt [Terraform vs. Chef, Puppet, etc.](https://developer.hashicorp.com/terraform/intro/vs/chef-puppet).
-
-??? note "Tabel 12.1. Terraform ja Ansible kõrvuti"
-    | | Terraform | Ansible |
-    |---|---|---|
-    | Mida teeb | Loob infrastruktuuri (VM, võrk, ketas) | Seadistab olemasolevat (paketid, konfiguratsioonifailid, teenused) |
-    | Küsimus | „Millised serverid on olemas?“ | „Mis on serverite sees?“ |
-    | Mudel | Deklaratiivne, hoiab olekufaili | Deklaratiivne, olekufaili ei hoia |
-    | Näide | Loo pilve 3 VM-i | Paigalda neisse nginx |
-
-Terraform loob tühjad masinad (*provisioning*), Ansible seadistab need (*configuration*). Tavaliselt loob Terraform kolm virtuaalmasinat ja väljastab nende IP-aadressid ning Ansible kasutab neid inventory's ja seadistab masinad. Kumbki üksi jätab poole tööst tegemata: Terraform annab tühja serveri ja Ansible eeldab, et server on juba olemas.
-
-Terraformiga saab ka serveri sisu seadistada (`local-exec` provisioner'id, mis käivitavad Bashi käske), aga siis on konfiguratsioon jagatud kahe tööriista vahel ja seda on raske hallata. Tööriist tuleb valida töö järgi.
-
-### Mitu keskkonda OpenTofuga: Terragrunt
-
-Ansible'is annab `group_vars` igale keskkonnale omad väärtused. OpenTofus on sama vajadus: arendus, test ja tootmine kasutavad sama koodi, aga eri väärtusi ja igaüks oma olekufaili. Kui iga keskkond on eraldi kaust, korduvad igas kaustas samad read: kus olekufail asub (backend), milline provider ja milline moodul.
-
-[Terragrunt](https://terragrunt.gruntwork.io/docs/) on ettevõtte Gruntwork tööriist, mis käivitab OpenTofu või Terraformi käske ja hoiab korduvad read ühes failis. Ise see infrastruktuuri ei loo.
-
-<figure markdown="span">
-  ![Vasakul ilma Terragruntita kolm kausta dev, test ja prod. Igas on punased read backend, provider ja moodul, mis korduvad, ning roheline rida, mis erineb: 1 masin 1 GB, 1 masin 2 GB, 3 masinat 4 GB. Paremal Terragruntiga: üleval fail root.hcl, kus backend ja provider on üks kord kirjas. Sellest lähevad noolega include kolm kausta, igas fail terragrunt.hcl ainult erineva väärtusega. Kõik kolm kasutavad sama moodulit moodulid/veeb](../images/n12_terragrunt.svg)
-  <figcaption>Joonis 12.2. Ilma Terragruntita korduvad backend, provider ja moodul igas keskkonnas, Terragruntiga on need ühes failis (Talvik, 2026).</figcaption>
-</figure>
-
-Igas keskkonna kaustas on lühike fail `terragrunt.hcl`. See võtab ühised seaded failist `root.hcl`, ütleb, millist moodulit kasutada, ja annab ainult need väärtused, mis selles keskkonnas erinevad:
+Argument **`for_each`** loob ressursist ühe eksemplari iga kaardi (`map`) kirje kohta. Ploki sees on `each.key` kirje võti ja `each.value` selle väärtus ([for_each](https://opentofu.org/docs/language/meta-arguments/for_each/)).
 
 ```hcl
-# prod/terragrunt.hcl
-include "root" {
-  path = find_in_parent_folders("root.hcl")
+variable "masinad" {
+  type = map(number)
 }
 
-terraform {
-  source = "../moodulid/veeb"
-}
+resource "proxmox_virtual_environment_vm" "veeb" {
+  for_each = var.masinad
 
-inputs = {
-  masinaid = 3
-  malu     = 4096
+  name  = "mtamm-${each.key}"
+  vm_id = each.value
+  # ülejäänud read on samad mis N10-s
 }
 ```
 
-Kui osad sõltuvad üksteisest, kirjeldab plokk `dependency`, et näiteks andmebaas vajab võrgu väljundit. Käsk `terragrunt run --all apply` käivitab siis OpenTofu kõigis kaustades õiges järjekorras.
+Muutuja väärtus on failis `terraform.tfvars`. Võti on masina nimi ja väärtus on masina number Proxmoxis (VMID):
 
-<figure markdown="span">
-  ![Käsk terragrunt run --all apply. Kolm kasti järjest: 1 võrk, väljund võrgu ID; 2 andmebaas, vajab võrgu ID-d; 3 veebiserverid, vajavad võrku ja andmebaasi. Kastide vahel nool dependency. All: Terragrunt loeb sõltuvused failidest ja käivitab OpenTofu igas kaustas eraldi, õiges järjekorras](../images/n12_terragrunt_jarjekord.svg)
-  <figcaption>Joonis 12.3. <code>run --all</code> käivitab osad sõltuvuste järjekorras (Talvik, 2026).</figcaption>
-</figure>
+```hcl
+masinad = {
+  veeb1 = 41001
+  veeb2 = 41002
+}
+```
 
-Terragrunti vajadus tekib siis, kui keskkondi ja mooduleid on palju. Ühe keskkonna ja paari faili jaoks piisab OpenTofust.
+OpenTofu tunneb iga masinat võtme järgi: aadressid on `proxmox_virtual_environment_vm.veeb["veeb1"]` ja `proxmox_virtual_environment_vm.veeb["veeb2"]`. Kui lisad kaardile kirje `veeb3`, näitab plaan ainult ühte uut masinat ja kaks olemasolevat jäävad puutumata. Kood ei muutu, muutub ainult andmete fail.
 
-??? info "Loe juurde"
-    - [What is Terragrunt?](https://notes.kodekloud.com/docs/Terragrunt-for-Beginners/Terragrunt-Basic-Concepts/What-Is-Terragrunt/page) (KodeKloud): algajale, kasutusjuhud ja võrdlus Terraformiga.
-    - [Terragrunt Quick Start](https://terragrunt.gruntwork.io/docs/getting-started/quick-start/): ametlik esimene näide.
+??? info "Miks mitte `count`"
+    OpenTofus on ka argument `count`, mis loob ressursist N eksemplari ja tunneb neid järjekorranumbri järgi (`veeb[0]`, `veeb[1]`). Kui eemaldad nimekirja keskelt ühe masina, nihkuvad järgmiste numbrid ja OpenTofu tahab need masinad uuesti luua. `for_each` tunneb masinat nime järgi, seega ühe masina eemaldamine ei puuduta teisi.
 
-## 6. Serveripark meeskonnas
+## 3. Väljund ja inventory
 
-DevOpsi meeskonnas ei logita 20 serverisse käsitsi sisse. Server on koodis kirjeldatud, muudatus tehakse pull request'iga, CI kontrollib seda ja playbook rakendab muudatuse. Uus töötaja saab serveri seadistuse teada failist `site.yml`. Kui server läheb katki, seadistab playbook uue.
+**Väljund** (`output`) näitab pärast `apply` käsku väärtusi, mis selgusid masinate loomisel. N10-s oli väljund `ip` üks aadress. Mitme masina puhul on väljund kaart, kus iga masina nime juures on selle IP-aadress. Selle teeb `for`-avaldis:
 
-Käsitsi tehtud ja dokumenteerimata teadmise asemel on kood, mida terve meeskond näeb, versioonib ja üle vaatab.
+```hcl
+output "ip" {
+  value = { for nimi, vm in proxmox_virtual_environment_vm.veeb : nimi => vm.ipv4_addresses[1][0] }
+}
+```
 
-Lehe käsud on kontrollitud Ansible core 2.17 versiooniga.
+Avaldis käib läbi kõik masinad ja paneb iga nime juurde teise võrguliidese esimese aadressi. Esimene liides on `lo` (127.0.0.1), seepärast on indeks `[1][0]` nagu N10-s.
+
+Inventory faili kirjutab provider [`hashicorp/local`](https://search.opentofu.org/provider/hashicorp/local/latest) ressursiga `local_file`. Faili sisu tuleb mallist funktsiooniga [`templatefile`](https://opentofu.org/docs/language/functions/templatefile/). OpenTofu mallis on tsükkel kujul `%{ for … }` ja väärtus kujul `${ … }`, Ansible'i Jinja mallis on samad asjad `{% for %}` ja `{{ }}`.
+
+```text
+[web]
+%{ for nimi, vm in masinad ~}
+${nimi} ansible_host=${vm.ipv4_addresses[1][0]}
+%{ endfor ~}
+```
+
+Kuna mall saab andmed masinate ressursist, kirjutab OpenTofu faili alles siis, kui masinad on olemas ja nende IP-d teada. Järjekorda ei pea eraldi kirja panema, OpenTofu leiab selle viidetest. Fail `inventory.ini` on genereeritud nagu olekufail ja seda Giti ei panda: iga `apply` kirjutab selle uuesti.
+
+??? question "Kontrolli ennast"
+    Masin `veeb2` kustutati Proxmoxis käsitsi ja `tofu apply` lõi selle uuesti. Mis juhtub failiga `inventory.ini`?
+
+    ??? success "Vastus"
+        Uus masin sai tõenäoliselt uue IP-aadressi. Mall annab siis teistsuguse sisu, plaan näitab faili muutust ja `apply` kirjutab faili uue aadressiga üle. Inventory'd ei pea käsitsi parandama.
+
+## 4. SSH-võti uude masinasse
+
+Ansible ühendub masinaga SSH kaudu. Mallist kloonitud masinas on kasutaja `kasutaja`, aga sinu SSH-võtit seal ei ole. N10 kodutöös kopeeriti võti käsuga `ssh-copy-id` ja parooliga. Kahe või kümne masina puhul ei ole see automatiseerimine.
+
+**Cloud-init** on masinas töötav programm, mis loeb esimesel käivitusel seadistuse väikeselt virtuaalselt CD-lt: kasutaja nime, SSH-võtme ja võrgu seadistuse. Selle CD koostab Proxmox OpenTofu plokist `initialization` ([provideri dokumentatsioon](https://search.opentofu.org/provider/bpg/proxmox/latest/docs/resources/virtual_environment_vm)):
+
+```hcl
+initialization {
+  datastore_id = "local-zfs"
+  upgrade      = false
+
+  ip_config {
+    ipv4 {
+      address = "dhcp"
+    }
+  }
+
+  user_account {
+    username = "kasutaja"
+    keys     = [trimspace(file(pathexpand(var.ssh_public_key_path)))]
+  }
+}
+```
+
+Rida `upgrade = false` jätab ära kõigi pakettide uuendamise esimesel käivitusel, mida Proxmox muidu cloud-init'ilt nõuab. Funktsioon `file` loeb avaliku võtme faili, `pathexpand` muudab märgi `~` kodukataloogi teeks ja `trimspace` eemaldab faili lõpust reavahetuse. Kui masin käivitub, lisab cloud-init võtme kasutaja `kasutaja` faili `~/.ssh/authorized_keys` ja Ansible saab ühenduda ilma paroolita.
+
+## 5. Masin juurde
+
+Kahe tööriista koos kasutamise kasu on näha siis, kui serveripark muutub. Kui on vaja kolmandat veebiserverit, lisad failis `terraform.tfvars` kaardile ühe rea ja käivitad samad kaks käsku:
+
+1. `tofu apply` loob ühe uue masina ja kirjutab inventory uuesti, nüüd kolme masinaga.
+2. `ansible-playbook site.yml` käib läbi kõik kolm masinat.
+
+Ansible'i kokkuvõttes on kahel vanal masinal `changed=0`, sest need on juba soovitud olekus. Uuel masinal on `changed` suurem kui null, sest seal paigaldati nginx ja kirjutati leht. See on idempotentsus kogu serveripargi tasemel: sama playbook sobib nii uuele kui ka vanale masinale ja muudab ainult seda, mis erineb.
+
+Sama käivitus näitab ka **triivi** (*configuration drift*). Triiv tähendab, et masina tegelik olek on soovitud olekust erinema hakanud, näiteks keegi muutis konfiguratsioonifaili käsitsi. Kui vanal masinal on korduval käivitusel `changed` suurem kui null, oli seal triiv ja Ansible taastas koodis kirjeldatud oleku.
+
+??? question "Kontrolli ennast"
+    1. Mitu ressurssi lisab `tofu plan`, kui lisad kaardile `veeb3`?
+    2. Milline kolmest masinast on pärast seda `ansible-playbook` väljundis `changed`?
+
+    ??? success "Vastused"
+        1. Ühe masina. Lisaks muutub fail `inventory.ini`, seega näitab plaan ka selle asendamist.
+        2. Ainult `veeb3`. Kahel vanal masinal on `changed=0`.
+
+Töökohas kirjeldatakse sel viisil kümneid masinaid ja mitut keskkonda. Muudatus tehakse pull request'iga, CI kontrollib koodi (`tofu validate`, `ansible-playbook --syntax-check`) ja pärast liitmist käivitatakse samad kaks käsku. Uus töötaja saab serveripargi ülesehituse teada failidest.
+
+Lehe näited on kontrollitud OpenTofu 1.13, provideri `bpg/proxmox` 0.118 ja Ansible core 2.14 versiooniga.
 
 ??? abstract "Kokkuvõte"
-    - IaC on kogu serveripargi oleku kirjeldus koodis, mida saab korrata ja versioonida.
-    - Üks playbook, mitu hosti: inventory grupid, `hosts: web` käivitub kõigis grupi hostides.
-    - `group_vars` ja `host_vars`: sama kood, erinev keskkond; muutub ainult muutujafail.
-    - Idempotentsus infrastruktuuri tasemel: `changed=0` näitab, et triivi ei ole, ja triiv parandatakse automaatselt.
-    - Ansible seadistab, Terraform loob; töökohas kasutatakse mõlemat koos.
+    | Mõiste | Lühidalt |
+    |---|---|
+    | OpenTofu ja Ansible | OpenTofu loob masinad, Ansible seadistab nende sisu |
+    | `for_each` | üks ressursiplokk, üks masin iga kaardi kirje kohta, masinat tuntakse nime järgi |
+    | `output` | väärtus, mis selgub alles loomisel, näiteks masinate IP-aadressid |
+    | `local_file` ja `templatefile` | OpenTofu kirjutab mallist Ansible'i inventory |
+    | cloud-init | paneb esimesel käivitusel uude masinasse kasutaja ja SSH-võtme |
+    | masin juurde | muutub ainult `terraform.tfvars`, Ansible muudab ainult uut masinat |

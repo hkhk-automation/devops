@@ -30,7 +30,7 @@ Kursuse lõpuks oskad:
 | N9 | Infrastruktuur koodina: mõtteviis *(iseseisev)* | - |
 | N10 | Infrastruktuuri kirjeldamine koodina | OpenTofu, Proxmox |
 | N11 | Korduvkasutatav infrastruktuur | OpenTofu moodulid või Ansible'i rollid |
-| N12 | Terve serveripark koodina | Ansible, group_vars |
+| N12 | OpenTofu ja Ansible koos | OpenTofu, Ansible'i roll, cloud-init |
 | N13 | Lõpuprojekt | stsenaariumi järgi |
 
 ## Enne esimest tundi
