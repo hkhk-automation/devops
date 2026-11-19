@@ -254,6 +254,9 @@ git push -u origin n07-ci
 
 Ava vahekaart **Actions**. Vasakul on nüüd töövoog **CI**. Paremal on uus käivitus, mille pealkiri on sinu commit'i sõnum, sest selles töövoos ei ole rida `run-name`. Klõpsa käivitusel, siis tööl `test` ja seejärel sammul `Run echo "tere runnerist"`. Logis on rida `tere runnerist`.
 
+??? warning "Kui käivitus on punane ja töö logi on tühi"
+    Ava käivituse kokkuvõte. Teade „The job was not started because recent account payments have failed or your spending limit needs to be increased“ tähendab, et organisatsiooni GitHubi masinate minutid on otsas. Kirjuta töövoofailis rea `runs-on: ubuntu-latest` asemele `runs-on: hkhk-runner`, siis käivitub töö kursuse runneris. Kursuse runnerit pärast tööd ei kustutata, seega võib seal olla eelmistest töödest jäänud pakette.
+
 ??? warning "Kui vahekaardil Actions ei ole ühtegi käivitust"
     Kontrolli kausta nime. See peab olema täpselt `.github/workflows/`. Nimed `.github/workflow/` ja `github/workflows/` ei tööta. Kontrolli ka GitHubi veebis, kas fail jõudis repositooriumi ehk kas push õnnestus.
 

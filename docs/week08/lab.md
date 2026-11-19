@@ -77,6 +77,9 @@ git push
 
 Push harusse `main` käivitab konveieri. Ava repositooriumis vahekaart **Actions** ja oota, kuni käivitus lõpeb. Ära veel midagi paranda.
 
+??? warning "Kui käivitus on punane ja töö logi on tühi"
+    Ava käivituse kokkuvõte. Teade „The job was not started because recent account payments have failed or your spending limit needs to be increased“ tähendab, et organisatsiooni GitHubi masinate minutid on otsas. Kirjuta töövoofailis rea `runs-on: ubuntu-latest` asemele `runs-on: hkhk-runner`, siis käivitub töö kursuse runneris. Kursuse runnerit pärast tööd ei kustutata, seega võib seal olla eelmistest töödest jäänud pakette.
+
 ### 1.4 Vigade issue'd
 
 Töökohas kirjeldatakse vead, et parandustest jääks jälg. Iga vea kohta luuakse **issue** ehk veakirje, kuhu pannakse kirja sümptom, hüpotees ja tõend. Paranduse commit viitab issue'le. Nii on hiljem näha, milline commit millise vea parandas.
