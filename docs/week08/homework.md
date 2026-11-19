@@ -99,7 +99,7 @@ git push
 
 **Kontrolli:** töövoos `Oma failid` on kaks rohelist tööd ja nende vahel nool. **Packages** all on uus pakett, mille nimi lõpeb `-<nimi>`. Paketi tag on sama mis käsu `git log --oneline -1` väljundi alguses olev lühiräsi.
 
-Kui töö on punane, järgi praktikumi veaotsingu samme: sümptom, hüpotees, tõend, parandus. Vead on tõenäoliselt samad, mis praktikumis. Kui `docker push` annab `denied`, puuduvad tööl `permissions` (praktikumi osa 2).
+Kui töö on punane, järgi praktikumi veaotsingu samme: sümptom, hüpotees, tõend, parandus. Vead on tõenäoliselt samad, mis praktikumis. Kui `docker push` annab `installation not allowed to Create organization package` või `denied`, puuduvad tööl `permissions` (praktikumi osa 2).
 
 Täida README kodutöö tabelis rida K1.
 

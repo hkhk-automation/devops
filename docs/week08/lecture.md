@@ -134,7 +134,7 @@ Iga töö logi esimene samm on **Set up job**. Selle all on lõik `GITHUB_TOKEN 
     Tokeneid ja paroole ei kirjutata `.yml` faili. Git'i ajalugu jääb alles. Kord commit'itud saladust näeb ka pärast kustutamist.
 
 ??? question "Kontrolli ennast"
-    1. Sisselogimine GHCR-i õnnestub, aga `docker push` ebaõnnestub veaga `denied`. Mida see tokeni kohta ütleb?
+    1. Sisselogimine GHCR-i õnnestub, aga `docker push` ebaõnnestub veaga `installation not allowed to Create organization package`. Mida see tokeni kohta ütleb?
     2. Miks ei anna me kõigile töödele `packages: write`?
 
 ## 5. Millal image ehitatakse

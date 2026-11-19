@@ -86,7 +86,7 @@ Töökohas kirjeldatakse vead, et parandustest jääks jälg. Iga vea kohta luua
 
 Repositooriumis on issue'de mall **Viga**. Iga vea juures toimi nii:
 
-1. Kui näed sümptomit, ava vahekaart **Issues** → **New issue** → **Viga**. Pealkirjaks kirjuta lühidalt, mida näed, näiteks `build-and-push: docker push denied`. Väljale **Sümptom** kopeeri rida logist.
+1. Kui näed sümptomit, ava vahekaart **Issues** → **New issue** → **Viga**. Pealkirjaks kirjuta lühidalt, mida näed, näiteks `build-and-push: docker push ei saa paketti luua`. Väljale **Sümptom** kopeeri rida logist.
 2. Kirjuta oma oletus väljale **Hüpotees**. Kui oled tõendi leidnud, täida väli **Tõend**.
 3. Lisa paranduse commit'i sõnumisse `Fixes #<issue number>`. Issue numbri näed pealkirja järel, näiteks `#2`:
 
@@ -131,11 +131,11 @@ Käivituse lehel on `test` ja `konteiner` rohelised. `build-and-push` on punane.
     Logi lõpus on:
 
     ```text
-    denied: installation not allowed to Create organization package
+    error from registry: installation not allowed to Create organization package
     Error: Process completed with exit code 1.
     ```
 
-    Sõnastus võib erineda, aga sõna `denied` on alati. Lõigus `GITHUB_TOKEN Permissions` on `Packages: read`. Sisselogimine õnnestus, sest token kehtib. Kirjutada ei tohtinud, sest organisatsioonis on tokenil vaikimisi ainult lugemisõigus ([loengu §4](lecture.md#4-oigused-github_token-ja-permissions)).
+    Kui pakett on GHCR-is juba olemas, on teade teistsugune, näiteks `denied: permission_denied: write_package`. Mõlemad tähendavad, et tokenil puudub õigus registrisse kirjutada. Lõigus `GITHUB_TOKEN Permissions` on `Packages: read`. Sisselogimine õnnestus, sest token kehtib. Kirjutada ei tohtinud, sest organisatsioonis on tokenil vaikimisi ainult lugemisõigus ([loengu §4](lecture.md#4-oigused-github_token-ja-permissions)).
 
     Lisa tööle `build-and-push` õigused. Kasuta sama taanet nagu real `runs-on`:
 
@@ -165,7 +165,7 @@ Kõik kolm tööd on rohelised. Repositooriumi avalehel paremal, jaotises **Pack
 git log --oneline -1
 ```
 
-??? warning "Kui `docker push` on ikka `denied`"
+??? warning "Kui `docker push` kukub ikka"
     - Kontrolli, et `permissions` on töö `build-and-push` all ja taane on sama mis real `runs-on`.
     - Ava uuesti **Set up job**. Kui seal on `Packages: write` ja push ikka kukub, küsi õpetajalt abi.
     - Kui hoopis `actions/checkout` kukub (`Repository not found`), puudub `contents: read`.
