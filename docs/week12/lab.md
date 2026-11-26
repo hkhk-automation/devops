@@ -106,7 +106,7 @@ Muutuja `masinad` väärtus on juba failis `terraform.tfvars`, aga OpenTofu kasu
 
 ### 2.2 Masinate kirjeldus
 
-Masina kirjeldus on sama mis N10-s, erinevusi on kolm. Rida `for_each = var.masinad` loob ressursist ühe masina iga kaardi kirje kohta. Nimes on `each.key` (näiteks `veeb1`) ja VMID on `each.value`. Plokk `initialization` annab cloud-init'ile kasutaja `kasutaja`, sinu SSH-võtme ja DHCP seadistuse. Cloud-init'i ketas luuakse hoidlasse `local-zfs`, sest sinna on sul kirjutamisõigus. Rida `upgrade = false` jätab ära kõigi pakettide uuendamise esimesel käivitusel, muidu ootaks Ansible mitu minutit, kuni uuendus lõpeb.
+Masina kirjeldus on sama mis N10-s, erinevusi on kolm. Rida `pool_id` on sama mis N10-s ja peab alles jääma: masinaid tohid luua ainult oma pool'i `tofu-<kasutaja>`. Rida `for_each = var.masinad` loob ressursist ühe masina iga kaardi kirje kohta. Nimes on `each.key` (näiteks `veeb1`) ja VMID on `each.value`. Plokk `initialization` annab cloud-init'ile kasutaja `kasutaja`, sinu SSH-võtme ja DHCP seadistuse. Cloud-init'i ketas luuakse hoidlasse `local-zfs`, sest sinna on sul kirjutamisõigus. Rida `upgrade = false` jätab ära kõigi pakettide uuendamise esimesel käivitusel, muidu ootaks Ansible mitu minutit, kuni uuendus lõpeb.
 
 ??? example "Ülesanne: loo fail `vm.tf`"
     ```hcl
@@ -230,7 +230,8 @@ tofu output ip
     Proxmoxi veebiliideses on pool'is `tofu-<kasutaja>` kaks töötavat masinat: `<kasutaja>-veeb1` ja `<kasutaja>-veeb2`. Masina vahekaardil **Cloud-Init** on kasutaja `kasutaja`, sinu võti ja `ip=dhcp`.
 
 ??? warning "Kui apply annab vea"
-    - `403 Forbidden` või `Permission check failed`: token on vale või tokenil on **Privilege Separation** sees. Loo token uuesti nagu N10 sammus 1.4.
+    - `Permission check failed (/vms/9000, VM.Clone)`: tokenil on **Privilege Separation** sees. Loo token uuesti nagu N10 sammus 1.4.
+    - `Permission check failed (/vms/<sinu VMID>, VM.Allocate)` või muu `403`: failis `vm.tf` puudub rida `pool_id = "tofu-${var.kasutaja}"` või failis `terraform.tfvars` on `kasutaja` vale. Kasutaja on sinu Proxmoxi nimi ilma `@pve` osata.
     - `VM ... already exists`: VMID on kellegi teise number. Kontrolli, et numbri alguses on sinu N10 number.
     - `Still creating...` kestab üle 5 minuti: ava Proxmoxis masina **Console** ja vaata, kas masin käivitus.
 
