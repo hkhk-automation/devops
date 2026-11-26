@@ -42,7 +42,7 @@ Tunnis alustad oma lahendust ja küsid abi kohe, kui midagi ei tööta. Tunni l�
 
 ## Osa 4 · Esitlus
 
-Esitlus kestab 5 minutit ja selles näitad lahendust töötamas:
+Esitlus kestab 5 minutit. Esitluse ülesehituse ja kujunduse teed ise: slaidid, joonis või ainult demo, nagu lahendust kõige paremini näitab. Esitlusel näitad lahendust töötamas:
 
 1. Ütle, mis taseme valisid ja mida lahendus teeb.
 2. Käivita lahendus: playbook, konveier või `tofu apply` ja playbook.
